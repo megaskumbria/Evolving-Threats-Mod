@@ -1,0 +1,32 @@
+{
+	"required": true,
+	"package": "com.example.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"AbstractSkeletonRaidDataMixin",
+		"AbstractSkeletonRaidGoalsMixin",
+		"SkeletonRaidSaveMixin",
+		"AbstractSkeletonDispenserGoalMixin",
+		"AbstractSkeletonDualWieldMixin",
+		"ExampleMixin",
+		"MeleeAttackGoalMixin",
+		"RangedBowAttackGoalMixin",
+		"SkeletonMeleeGoalSwapMixin",
+		"SkeletonMixin",
+		"ZombieRaidDataMixin",
+		"ZombieRaidGoalsMixin",
+		"ZombieRaidSaveMixin",
+		"ZombieRaidTickMixin",
+		"ZombieMixin",
+		"ZombieOverseerDataMixin",
+		"ZombieOverseerGoalsMixin",
+		"ZombieOverseerSaveMixin",
+		"ZombieOverseerTickMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

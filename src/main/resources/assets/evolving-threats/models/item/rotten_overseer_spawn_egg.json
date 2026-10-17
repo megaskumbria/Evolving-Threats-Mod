@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "evolving-threats:item/rotten_overseer_spawn_egg"
+  }
+}
