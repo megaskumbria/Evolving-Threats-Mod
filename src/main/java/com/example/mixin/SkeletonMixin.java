@@ -4,6 +4,8 @@ import com.example.entity.RaidParticipantEntity;
 import com.example.RandomArmor;
 import com.example.RandomDispenserSkull;
 import com.example.RandomWeapons;
+import com.example.beacon.JackLanternBeacon;
+import com.example.spawnerhead.SpawnerHeadMob;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -39,8 +41,12 @@ public class SkeletonMixin {
 
 		RandomWeapons.rollSkeletonLoadout(skeleton);
 		RandomArmor.rollForSkeleton(skeleton);
-		// После брони: раздатчик на голове перекрывает шлем, если выпал.
-		RandomDispenserSkull.tryEquipDispenserHead(skeleton);
+		// Одна «особая» голова: спавнер → маяк (jack) → раздатчик.
+		if (!SpawnerHeadMob.tryEquipOnSpawn(skeleton)) {
+			if (!JackLanternBeacon.tryEquipOnSpawn(skeleton)) {
+				RandomDispenserSkull.tryEquipDispenserHead(skeleton);
+			}
+		}
 		// Пересчитать цели ИИ: лук / ближний бой / оба (см. AbstractSkeletonDualWieldMixin).
 		skeleton.reassessWeaponGoal();
 	}

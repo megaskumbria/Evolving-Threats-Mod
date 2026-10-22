@@ -26,6 +26,12 @@ public final class RandomArmor {
 	public static final float SKELETON_ARMOR_PIECE_CHANCE = 0.50f;
 
 	/**
+	 * Незеритовая броня при спавне не используется (только кожа…алмаз).
+	 * Константа для ясности; менять не нужно, пока не добавишь незерит в ARMOR_PIECES.
+	 */
+	public static final boolean ALLOW_NETHERITE_ARMOR = false;
+
+	/**
 	 * Шанс, что выпавший предмет брони будет снят с моба при смерти (как у ванильных мобов).
 	 * 0.085 ≈ 8.5%. Поставь 1.0f, если хочешь, чтобы броня падала всегда.
 	 */

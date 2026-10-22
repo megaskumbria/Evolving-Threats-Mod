@@ -41,11 +41,8 @@ public final class RaidEliteLoadout {
 	/** Шанс, что зомби-прислуга получит оружие в основной руке. */
 	public static final float ZOMBIE_WEAPON_CHANCE = 0.90f;
 
-	/**
-	 * Веса материала оружия зомби: дерево, камень, золото, медь, железо, алмаз, незерит.
-	 * Незерит намеренно редкий (1).
-	 */
-	public static final int[] WEAPON_MATERIAL_WEIGHTS = { 5, 8, 4, 6, 30, 20, 1 };
+	/** Веса материала оружия зомби: дерево, камень, золото, медь, железо, алмаз (без незерита). */
+	public static final int[] WEAPON_MATERIAL_WEIGHTS = { 5, 8, 4, 6, 30, 21 };
 
 	/** Шанс зачаровать оружие зомби. */
 	public static final float WEAPON_ENCHANT_CHANCE = 0.50f;
@@ -83,7 +80,6 @@ public final class RaidEliteLoadout {
 			{ Items.COPPER_SWORD, Items.COPPER_AXE },
 			{ Items.IRON_SWORD, Items.IRON_AXE },
 			{ Items.DIAMOND_SWORD, Items.DIAMOND_AXE },
-			{ Items.NETHERITE_SWORD, Items.NETHERITE_AXE },
 	};
 
 	private RaidEliteLoadout() {

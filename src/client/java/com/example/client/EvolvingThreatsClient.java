@@ -1,10 +1,11 @@
 package com.example.client;
 
+import com.example.client.spawnerhead.SpawnerHeadParticles;
 import net.fabricmc.api.ClientModInitializer;
 
 public class EvolvingThreatsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+		SpawnerHeadParticles.register();
 	}
 }

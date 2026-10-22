@@ -46,6 +46,7 @@ public final class RandomWeapons {
 
 	// ========================================================================
 
+	/** Материалы оружия при спавне: только дерево…алмаз, без незерита. */
 	private static final Item[][] MATERIALS = {
 		{ Items.WOODEN_SWORD, Items.WOODEN_AXE, Items.WOODEN_SHOVEL, Items.WOODEN_PICKAXE, Items.WOODEN_HOE },
 		{ Items.STONE_SWORD, Items.STONE_AXE, Items.STONE_SHOVEL, Items.STONE_PICKAXE, Items.STONE_HOE },
@@ -53,11 +54,11 @@ public final class RandomWeapons {
 		{ Items.COPPER_SWORD, Items.COPPER_AXE, Items.COPPER_SHOVEL, Items.COPPER_PICKAXE, Items.COPPER_HOE },
 		{ Items.IRON_SWORD, Items.IRON_AXE, Items.IRON_SHOVEL, Items.IRON_PICKAXE, Items.IRON_HOE },
 		{ Items.DIAMOND_SWORD, Items.DIAMOND_AXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_PICKAXE, Items.DIAMOND_HOE },
-		{ Items.NETHERITE_SWORD, Items.NETHERITE_AXE, Items.NETHERITE_SHOVEL, Items.NETHERITE_PICKAXE, Items.NETHERITE_HOE },
 	};
 
+	/** Веса материала оружия: дерево, камень, золото, медь, железо, алмаз (без незерита). */
 	private static final int[] MATERIAL_WEIGHTS = {
-		30, 25, 10, 10, 15, 8, 2,
+		30, 25, 10, 10, 15, 10,
 	};
 
 	private RandomWeapons() {

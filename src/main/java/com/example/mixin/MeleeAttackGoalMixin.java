@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * У dual-wield скелета ванильная melee-цель включается, если есть путь к игроку (бег с 20 блоков).
- * Здесь: ближний бой только в настоящем радиусе удара — иначе при отбегании снова стреляет.
+ * Дальше лука — melee не включается (стреляет). Вплотную лук гасится mixin'ом лука;
+ * здесь разрешаем подойти и ударить, иначе скелет «замирает» между 4–5 блоками.
  */
 @Mixin(MeleeAttackGoal.class)
 public class MeleeAttackGoalMixin {
@@ -38,9 +39,15 @@ public class MeleeAttackGoalMixin {
 			return;
 		}
 
-		if (!mob.isWithinMeleeAttackRange(target)) {
-			cir.setReturnValue(false);
+		if (mob.isWithinMeleeAttackRange(target)) {
+			return;
 		}
+		// Лук уже «выключен» вплотную — иначе скелет стоит без лука и без удара.
+		if (RandomWeapons.shouldSuppressBow(skeleton, target, false)) {
+			return;
+		}
+
+		cir.setReturnValue(false);
 	}
 
 	@Inject(method = "canContinueToUse", at = @At("RETURN"), cancellable = true)
@@ -60,8 +67,13 @@ public class MeleeAttackGoalMixin {
 			return;
 		}
 
-		if (!mob.isWithinMeleeAttackRange(target)) {
-			cir.setReturnValue(false);
+		if (mob.isWithinMeleeAttackRange(target)) {
+			return;
 		}
+		if (RandomWeapons.shouldSuppressBow(skeleton, target, true)) {
+			return;
+		}
+
+		cir.setReturnValue(false);
 	}
 }

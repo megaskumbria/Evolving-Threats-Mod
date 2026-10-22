@@ -2,6 +2,8 @@ package com.example.mixin;
 
 import com.example.RandomArmor;
 import com.example.RandomWeapons;
+import com.example.beacon.JackLanternBeacon;
+import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
@@ -57,5 +59,9 @@ public class ZombieMixin {
 
 		RandomWeapons.tryEquip(zombie, RandomWeapons.ZOMBIE_WEAPON_CHANCE);
 		RandomArmor.rollForZombie(zombie);
+		// Редкая «голова»: спавнер или jack o'lantern-маяк (один слот HEAD).
+		if (!SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
+			JackLanternBeacon.tryEquipOnSpawn(zombie);
+		}
 	}
 }

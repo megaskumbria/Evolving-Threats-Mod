@@ -1,5 +1,8 @@
 package com.example.command;
 
+import com.example.creeper.DynamiteCreeper;
+import com.example.creeper.SapperCreeper;
+import com.example.creeper.ShieldBreakCreeper;
 import com.example.item.ModItems;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchor;
@@ -42,6 +45,12 @@ public final class EvolvingThreatsCommands {
 										ctx.getSource(),
 										EntityArgument.getPlayer(ctx, "target")
 								))))
+				.then(Commands.literal("dynamite")
+						.executes(ctx -> spawnDynamite(ctx.getSource())))
+				.then(Commands.literal("sapper")
+						.executes(ctx -> spawnSapper(ctx.getSource())))
+				.then(Commands.literal("shield")
+						.executes(ctx -> spawnShieldBreak(ctx.getSource())))
 				.then(Commands.literal("raid")
 						.executes(ctx -> spawnRaid(ctx.getSource(), null))
 						.then(Commands.argument("target", EntityArgument.player())
@@ -67,9 +76,75 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> giveEgg(ctx.getSource(), 1)));
 
+		dispatcher.register(Commands.literal("etsapper")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnSapper(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etdynamite")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnDynamite(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etshield")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnShieldBreak(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("etraid")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnRaid(ctx.getSource(), null)));
+	}
+
+	private static int spawnSapper(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		ServerPlayer lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(8.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		SapperCreeper.spawn(level, pos, lookAt);
+		source.sendSuccess(() -> Component.literal("Spawned sapper creeper"), true);
+		return 1;
+	}
+
+	private static int spawnShieldBreak(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		ServerPlayer lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(8.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		ShieldBreakCreeper.spawn(level, pos, lookAt);
+		source.sendSuccess(() -> Component.literal("Spawned shield-break creeper"), true);
+		return 1;
+	}
+
+	private static int spawnDynamite(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		ServerPlayer lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(10.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		DynamiteCreeper.spawn(level, pos, lookAt);
+		source.sendSuccess(() -> Component.literal("Spawned dynamite creeper"), true);
+		return 1;
 	}
 
 	private static int spawnRaid(CommandSourceStack source, ServerPlayer explicitTarget) {
