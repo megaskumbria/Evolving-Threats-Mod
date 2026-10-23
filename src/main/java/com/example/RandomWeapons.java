@@ -1,13 +1,23 @@
 package com.example;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.Weapon;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentTarget;
 
 /**
  * Логика случайного оружия для мобов.
@@ -31,6 +41,19 @@ public final class RandomWeapons {
 	 * 0.20 = 20%. Не пересекается с dual wield: сначала бросок dual, потом этот.
 	 */
 	public static final float SKELETON_MELEE_ONLY_CHANCE = 0.20f;
+
+	/**
+	 * Шанс (0.0–1.0), что зомби появится с оружием в ОБЕИХ руках (меч и меч, топор и кирка и т.д.).
+	 * 0.20 = 20%. Бросается раньше одного оружия, тотема и щита: вторая рука занята.
+	 * 0 = двух оружий не будет.
+	 */
+	public static final float ZOMBIE_DUAL_MELEE_CHANCE = 0.20f;
+
+	/**
+	 * То же для скелета и странника. 0.20 = 20%.
+	 * Лук при этом убирается: обе руки — ближний бой. Вредная стрела, тотем и щит не выдаются.
+	 */
+	public static final float SKELETON_DUAL_MELEE_CHANCE = 0.20f;
 
 	/**
 	 * Если игрок ближе этого расстояния (в блоках), скелет с луком+мечом НЕ стреляет (работает ближний бой).
@@ -169,6 +192,71 @@ public final class RandomWeapons {
 		ItemStack off = entity.getOffhandItem();
 		entity.setItemSlot(EquipmentSlot.MAINHAND, off);
 		entity.setItemSlot(EquipmentSlot.OFFHAND, main);
+	}
+
+	/**
+	 * Два случайных оружия ближнего боя, каждое выбирается отдельно.
+	 * Может совпасть (меч и меч) или разойтись (топор и кирка).
+	 *
+	 * @return true — обе руки заняты, щит, тотем и стрелу ставить не нужно
+	 */
+	public static boolean tryEquipDualMelee(Mob mob, float chance) {
+		if (chance <= 0.0f) {
+			return false;
+		}
+		RandomSource random = mob.getRandom();
+		if (random.nextFloat() >= chance) {
+			return false;
+		}
+		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pickRandomWeapon(random)));
+		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(pickRandomWeapon(random)));
+		return true;
+	}
+
+	/**
+	 * Сколько урона добавить с оружия во второй руке.
+	 * Сила моба и оружие в основной руке сюда не входят: их игра уже посчитала.
+	 * Острота со второй руки входит. 0, если во второй руке не наше оружие.
+	 */
+	public static float offhandMeleeDamage(ServerLevel level, Mob mob, Entity target) {
+		ItemStack offhand = mob.getOffhandItem();
+		if (!isModMeleeWeapon(offhand)) {
+			return 0.0f;
+		}
+		float damage = weaponAttackDamage(offhand);
+		var source = offhand.getDamageSource(mob);
+		damage = EnchantmentHelper.modifyDamage(level, offhand, target, source, damage);
+		damage += offhand.getItem().getAttackDamageBonus(target, damage, source);
+		return Math.max(0.0f, damage);
+	}
+
+	/**
+	 * После удара: огненный аспект со второй руки и износ этого оружия.
+	 * Вызывать только если удар прошёл.
+	 */
+	public static void applyOffhandOnHit(ServerLevel level, Mob mob, Entity target) {
+		ItemStack offhand = mob.getOffhandItem();
+		if (!isModMeleeWeapon(offhand)) {
+			return;
+		}
+		var source = offhand.getDamageSource(mob);
+		EnchantmentHelper.runIterationOnItem(offhand, EquipmentSlot.MAINHAND, mob, (enchantment, enchantLevel, item) ->
+				enchantment.value().doPostAttack(level, enchantLevel, item, EnchantmentTarget.ATTACKER, target, source));
+		Weapon weapon = offhand.get(DataComponents.WEAPON);
+		int wear = weapon != null ? weapon.itemDamagePerAttack() : 1;
+		offhand.hurtAndBreak(wear, mob, EquipmentSlot.OFFHAND);
+	}
+
+	/** Урон, написанный на предмете. Он прописан для основной руки, во второй игра его сама не прибавляет. */
+	private static float weaponAttackDamage(ItemStack weapon) {
+		ItemAttributeModifiers modifiers = weapon.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+		float[] damage = { 0.0f };
+		modifiers.forEach(EquipmentSlotGroup.MAINHAND, (attribute, modifier) -> {
+			if (attribute.equals(Attributes.ATTACK_DAMAGE) && modifier.operation() == AttributeModifier.Operation.ADD_VALUE) {
+				damage[0] += (float) modifier.amount();
+			}
+		});
+		return damage[0];
 	}
 
 	public static boolean tryEquip(Mob mob, float chance) {

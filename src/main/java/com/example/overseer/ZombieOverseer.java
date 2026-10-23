@@ -62,6 +62,7 @@ public final class ZombieOverseer {
 
 	public static final int MAIN_AXE_SHARPNESS = 3;
 
+	/** Острота топора во второй руке. Она прибавляется к удару вместе с уроном самого топора. */
 	public static final int OFFHAND_AXE_SHARPNESS = 2;
 
 	// ========================================================================

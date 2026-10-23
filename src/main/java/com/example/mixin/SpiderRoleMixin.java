@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.MobPotionBuffs;
 import com.example.entity.SpiderRoleEntity;
 import com.example.entity.ai.SpiderWebWeaveGoal;
 import com.example.spider.SpiderThreats;
@@ -42,7 +43,9 @@ public class SpiderRoleMixin implements SpiderRoleEntity {
 			EntitySpawnReason spawnReason,
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
-		SpiderThreats.rollOnSpawn((Spider) (Object) this, level);
+		Spider spider = (Spider) (Object) this;
+		SpiderThreats.rollOnSpawn(spider, level);
+		MobPotionBuffs.tryApply(spider);
 	}
 
 	@Inject(method = "registerGoals", at = @At("RETURN"))

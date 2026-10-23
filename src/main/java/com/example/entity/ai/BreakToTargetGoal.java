@@ -15,7 +15,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Зомби ломает блоки, только если к игроку нет пути и впереди реальная стена (не «ошибка» pathfinder).
@@ -24,18 +27,31 @@ import java.util.EnumSet;
  */
 public class BreakToTargetGoal extends Goal {
 
+	/**
+	 * Зомби, которые сейчас ломают стену. Пока зомби тут, обычная атака его не перебивает:
+	 * иначе она раз в секунду находит обрывок пути до стены и уводит его от блока.
+	 */
+	private static final Set<Zombie> DIGGING = Collections.newSetFromMap(new WeakHashMap<>());
+
 	private final Zombie zombie;
 
 	private long nextCheckGameTime;
+	private long nextPathCheckGameTime;
+	private long lastStopGameTime;
 	private boolean blocked;
 
 	private BlockPos breakPos;
 	private float progress;
 	private int ticksSinceSwing;
 
+	/** Ломает ли этот зомби сейчас стену к игроку. */
+	public static boolean isDigging(Zombie zombie) {
+		return DIGGING.contains(zombie);
+	}
+
 	public BreakToTargetGoal(Zombie zombie) {
 		this.zombie = zombie;
-		// MOVE: не работает параллельно с melee (приоритет 2) — иначе зомби стоит и ломает, хотя может ударить.
+		// MOVE: не работает параллельно с атакой (приоритет 3) — иначе зомби стоит и ломает, хотя может ударить.
 		this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 	}
 
@@ -52,19 +68,26 @@ public class BreakToTargetGoal extends Goal {
 		return isBlockedFromTarget();
 	}
 
+	/** Сам путь пересчитывается в tick() не каждый тик, а раз в STUCK_CHECK_INTERVAL_TICKS. */
 	@Override
 	public boolean canContinueToUse() {
 		LivingEntity target = resolveDigTarget();
-		return blocked && target != null && target.isAlive() && BlockBreaking.isBreaker(zombie)
-				&& isBlockedFromTarget();
+		return blocked && target != null && target.isAlive() && BlockBreaking.isBreaker(zombie);
 	}
 
 	@Override
 	public void start() {
 		blocked = true;
-		breakPos = null;
-		progress = 0.0f;
 		ticksSinceSwing = 0;
+		long now = zombie.level().getGameTime();
+		nextPathCheckGameTime = now + BlockBreaking.STUCK_CHECK_INTERVAL_TICKS;
+		// Короткая пауза (ударили, отвлёкся) не сбрасывает трещину на том же блоке.
+		if (breakPos != null && now - lastStopGameTime > BlockBreaking.KEEP_PROGRESS_TICKS) {
+			clearCracks();
+			breakPos = null;
+			progress = 0.0f;
+		}
+		DIGGING.add(zombie);
 	}
 
 	@Override
@@ -74,22 +97,24 @@ public class BreakToTargetGoal extends Goal {
 			return;
 		}
 		Level level = zombie.level();
+		long now = level.getGameTime();
 
-		// Каждый тик: если путь появился или можно ударить — бросаем копать и идём.
-		if (!isBlockedFromTarget()) {
-			blocked = false;
-			clearCracks();
-			breakPos = null;
-			progress = 0.0f;
-			zombie.getNavigation().moveTo(target, 1.0);
+		// Игрок в зоне удара или ушёл далеко — бросаем копать.
+		if (zombie.distanceTo(target) > BlockBreaking.DIG_MAX_DISTANCE_TO_TARGET
+				|| BlockBreaking.shouldPreferMeleeOverDig(zombie, target)) {
+			finishDigging();
 			return;
 		}
-		blocked = true;
-
-		long now = level.getGameTime();
-		if (now >= nextCheckGameTime) {
-			nextCheckGameTime = now + BlockBreaking.STUCK_CHECK_INTERVAL_TICKS;
+		// Путь к игроку проверяется раз в полсекунды: появился — идём по нему.
+		if (now >= nextPathCheckGameTime) {
+			nextPathCheckGameTime = now + BlockBreaking.STUCK_CHECK_INTERVAL_TICKS;
+			if (hasReachablePath(target)) {
+				finishDigging();
+				zombie.getNavigation().moveTo(target, 1.0);
+				return;
+			}
 		}
+		blocked = true;
 
 		if (breakPos != null) {
 			BlockState state = level.getBlockState(breakPos);
@@ -103,6 +128,8 @@ public class BreakToTargetGoal extends Goal {
 			breakPos = pickBlockToBreak(target);
 			progress = 0.0f;
 			if (breakPos == null) {
+				// Ломать нечего — отпускаем зомби к обычной атаке, а не держим его тут вечно.
+				finishDigging();
 				zombie.getNavigation().moveTo(target, 1.0);
 				return;
 			}
@@ -113,10 +140,18 @@ public class BreakToTargetGoal extends Goal {
 
 	@Override
 	public void stop() {
+		blocked = false;
+		lastStopGameTime = zombie.level().getGameTime();
+		DIGGING.remove(zombie);
+	}
+
+	/** Стена больше не мешает: убрать трещину и отпустить зомби к обычной атаке. */
+	private void finishDigging() {
+		blocked = false;
 		clearCracks();
 		breakPos = null;
 		progress = 0.0f;
-		blocked = false;
+		DIGGING.remove(zombie);
 	}
 
 	private void mine(Level level) {

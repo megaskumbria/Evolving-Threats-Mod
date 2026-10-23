@@ -1,5 +1,9 @@
 package com.example.mixin;
 
+import com.example.MobEnchantments;
+import com.example.MobPotionBuffs;
+import com.example.MobShields;
+import com.example.MobTotem;
 import com.example.RandomArmor;
 import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
@@ -39,9 +43,8 @@ public class ZombieMixin {
 
 		Zombie zombie = (Zombie) (Object) this;
 
-		// Утопленники (у них трезубец) и зомбифицированные пиглины (золотой меч)
-		// тоже наследуются от Zombie - их не трогаем.
-		if (zombie instanceof Drowned || zombie instanceof ZombifiedPiglin) {
+		// Зомбифицированный пиглин мирный, пока его не ударят. Ему бафы и оружие мода не выдаём.
+		if (zombie instanceof ZombifiedPiglin) {
 			return;
 		}
 
@@ -57,8 +60,22 @@ public class ZombieMixin {
 			return;
 		}
 
-		RandomWeapons.tryEquip(zombie, RandomWeapons.ZOMBIE_WEAPON_CHANCE);
+		// Зомби, кадавр, зомби-житель и утопленник. Утопленнику дальше оружие не выдаём: у него свой трезубец.
+		MobPotionBuffs.tryApply(zombie);
+		if (zombie instanceof Drowned) {
+			return;
+		}
+
+		// Два оружия занимают обе руки. Тотем и щит тогда не выдаём.
+		if (!RandomWeapons.tryEquipDualMelee(zombie, RandomWeapons.ZOMBIE_DUAL_MELEE_CHANCE)) {
+			RandomWeapons.tryEquip(zombie, RandomWeapons.ZOMBIE_WEAPON_CHANCE);
+			if (!MobTotem.tryEquip(zombie)) {
+				MobShields.tryEquip(zombie);
+			}
+		}
+		MobEnchantments.rollForZombie(zombie);
 		RandomArmor.rollForZombie(zombie);
+		MobEnchantments.rollArmorForZombie(zombie);
 		// Редкая «голова»: спавнер или jack o'lantern-маяк (один слот HEAD).
 		if (!SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
 			JackLanternBeacon.tryEquipOnSpawn(zombie);

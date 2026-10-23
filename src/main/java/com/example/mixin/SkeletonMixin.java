@@ -1,10 +1,17 @@
 package com.example.mixin;
 
+import com.example.MobPotionBuffs;
 import com.example.entity.RaidParticipantEntity;
+import com.example.MobEnchantments;
+import com.example.MobShields;
+import com.example.MobTotem;
 import com.example.RandomArmor;
 import com.example.RandomDispenserSkull;
 import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
+import com.example.skeleton.FastBowSkeleton;
+import com.example.skeleton.HarmfulArrowSkeleton;
+import com.example.skeleton.SmallSkeleton;
 import com.example.spawnerhead.SpawnerHeadMob;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -12,6 +19,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.monster.skeleton.Stray;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +39,8 @@ public class SkeletonMixin {
 
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
 
-		if (!(skeleton instanceof Skeleton || skeleton instanceof Stray)) {
+		// Скелет-иссушитель и так сильный. Бафы и набор мода ему не выдаём.
+		if (skeleton instanceof WitherSkeleton) {
 			return;
 		}
 
@@ -39,15 +48,35 @@ public class SkeletonMixin {
 			return;
 		}
 
-		RandomWeapons.rollSkeletonLoadout(skeleton);
+		// Обычный скелет, странник, болотный и пустынный. Оружие мода — только у первых двух.
+		MobPotionBuffs.tryApply(skeleton);
+		if (!(skeleton instanceof Skeleton || skeleton instanceof Stray)) {
+			return;
+		}
+
+		// Маленький скелет: без двух оружий и тотема. Лук остаётся обычным.
+		boolean small = SmallSkeleton.tryRoll(skeleton);
+		boolean handsTaken = !small
+				&& (RandomWeapons.tryEquipDualMelee(skeleton, RandomWeapons.SKELETON_DUAL_MELEE_CHANCE)
+						|| MobTotem.tryEquip(skeleton));
+		// Два оружия ближнего боя убирают лук. Иначе тотем, стрела или меч занимают вторую руку.
+		if (!handsTaken && !HarmfulArrowSkeleton.tryEquip(skeleton)) {
+			RandomWeapons.rollSkeletonLoadout(skeleton);
+			MobShields.tryEquip(skeleton);
+		}
+		MobEnchantments.rollForSkeleton(skeleton);
 		RandomArmor.rollForSkeleton(skeleton);
+		MobEnchantments.rollArmorForSkeleton(skeleton);
 		// Одна «особая» голова: спавнер → маяк (jack) → раздатчик.
 		if (!SpawnerHeadMob.tryEquipOnSpawn(skeleton)) {
 			if (!JackLanternBeacon.tryEquipOnSpawn(skeleton)) {
 				RandomDispenserSkull.tryEquipDispenserHead(skeleton);
 			}
 		}
-		// Пересчитать цели ИИ: лук / ближний бой / оба (см. AbstractSkeletonDualWieldMixin).
+		// Дальний лук только у взрослого и только если лук остался.
+		if (!small) {
+			FastBowSkeleton.tryRoll(skeleton);
+		}
 		skeleton.reassessWeaponGoal();
 	}
 }
