@@ -4,6 +4,7 @@ import com.example.beacon.JackLanternBeacon;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.monster.zombie.Drowned;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -146,7 +147,7 @@ public final class LightSeeking {
 			for (int dz = -rh; dz <= rh; dz++) {
 				cursor.set(origin.getX() + dx, origin.getY(), origin.getZ() + dz);
 				// Не трогаем незагруженные чанки (иначе сервер начнёт их грузить).
-				if (!level.hasChunkAt(cursor)) {
+				if (!level.hasChunk(SectionPos.blockToSectionCoord(cursor.getX()), SectionPos.blockToSectionCoord(cursor.getZ()))) {
 					continue;
 				}
 				for (int dy = -rv; dy <= rv; dy++) {

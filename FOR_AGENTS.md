@@ -67,6 +67,7 @@
 | Зомби-чародей | `zombie/ZombieSorcerer.java` | `mobs/zombies/зомби-чародей.txt` |
 | Ритуальная стая | `ritual/RitualBand.java` | `mobs/zombies/ритуальная-стая.txt` |
 | Утопленник | `drowned/DrownedThreats.java` | `mobs/zombies/утопленник.txt` |
+| Удочка утопленника | `drowned/DrownedFishing.java` | `mobs/zombies/утопленник-удочка.txt` |
 | Зомби ворует вещь | `zombie/ZombieTheft.java` | `mobs/zombies/зомби-ворует-предмет.txt` |
 
 ### Криперы, пауки, ведьмы, рейд
@@ -93,6 +94,7 @@
 | Невидимость ведьмы | `witch/WitchInvisibility.java` | `mobs/witches/ведьма-невидимость.txt` |
 | Зелья ведьмы в игрока | `witch/WitchThrownPotions.java` | `mobs/witches/ведьма-зелья.txt` |
 | Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
+| Магмовый куб | `magma/MagmaCubeThreats.java` | `mobs/slimes/магмовый-куб.txt` |
 | Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/шалкеры-снаряды.txt` |
 | Панцирь шалкера | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/шалкер-панцирь.txt` |
 | Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/брут-ломает-броню.txt` |

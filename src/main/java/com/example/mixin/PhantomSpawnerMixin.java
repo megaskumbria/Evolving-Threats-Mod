@@ -61,8 +61,18 @@ public class PhantomSpawnerMixin {
 			return vanillaRoll;
 		}
 		int vanillaCount = 1 + vanillaRoll;
-		Difficulty difficulty = Difficulty.byId(bound - 1);
+		Difficulty difficulty = difficultyById(bound - 1);
 		int grown = PhantomThreats.groupSize(player, difficulty, vanillaCount);
 		return grown - 1;
+	}
+
+	/** Номера сложности: 0 мирная, 1 лёгкая, 2 нормальная, 3 сложная. */
+	private static Difficulty difficultyById(int id) {
+		for (Difficulty difficulty : Difficulty.values()) {
+			if (difficulty.getId() == id) {
+				return difficulty;
+			}
+		}
+		return Difficulty.NORMAL;
 	}
 }

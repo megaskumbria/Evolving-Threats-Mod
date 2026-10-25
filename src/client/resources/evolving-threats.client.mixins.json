@@ -6,7 +6,8 @@
 		"ExampleClientMixin",
 		"LivingEntityRendererAccessor",
 		"TacticianBackItemStateMixin",
-		"TacticianSkeletonRendererMixin"
+		"TacticianSkeletonRendererMixin",
+		"DrownedFishingLineMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

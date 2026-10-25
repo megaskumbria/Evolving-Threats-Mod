@@ -4,7 +4,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.monster.skeleton.Stray;
 import net.minecraft.world.entity.monster.spider.Spider;
@@ -40,9 +39,7 @@ public final class MobHealth {
 	public static final int CREEPER_MIN = 20;
 	public static final int CREEPER_MAX = 30;
 
-	/** Эндермен. Сейчас 40. */
-	public static final int ENDERMAN_MIN = 40;
-	public static final int ENDERMAN_MAX = 60;
+	// Эндермен сюда не входит: у него всегда 40, как в обычной игре.
 
 	// ========================================================================
 
@@ -68,9 +65,6 @@ public final class MobHealth {
 		} else if (mob instanceof Creeper) {
 			min = CREEPER_MIN;
 			max = CREEPER_MAX;
-		} else if (mob instanceof Enderman) {
-			min = ENDERMAN_MIN;
-			max = ENDERMAN_MAX;
 		} else {
 			return;
 		}

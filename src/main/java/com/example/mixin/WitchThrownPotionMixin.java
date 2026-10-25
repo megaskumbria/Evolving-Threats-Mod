@@ -25,7 +25,6 @@ public class WitchThrownPotionMixin {
 					target = "Lnet/minecraft/world/entity/projectile/Projectile;spawnProjectileUsingShoot(Lnet/minecraft/world/entity/projectile/Projectile$ProjectileFactory;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;DDDFF)Lnet/minecraft/world/entity/projectile/Projectile;"
 			)
 	)
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Projectile evolvingthreats$witchThrow(
 			Projectile.ProjectileFactory creator,
 			ServerLevel level,
