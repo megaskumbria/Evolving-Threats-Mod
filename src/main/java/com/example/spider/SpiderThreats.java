@@ -25,8 +25,10 @@ import net.minecraft.world.phys.Vec3;
  *   <li><b>Ткач</b> — ставит паутину под ноги игроку (цель {@link com.example.entity.ai.SpiderWebWeaveGoal});</li>
  *   <li><b>Матка</b> — паук с 40 HP, при появлении рядом спавнятся 1–4 пещерных паука.</li>
  * </ul>
- * Одним броском при спавне паук становится либо маткой, либо ткачом, либо остаётся обычным.
+ * Одним броском при спавне: матка, иначе ткач, иначе рой ({@link SpiderSwarm}), иначе обычный паук.
  * Паутина ткача не исчезает сама.
+ * Паук, призванный другим мобом ({@link EntitySpawnReason#MOB_SUMMONED}), остаётся обычным:
+ * иначе помощники роя сами открывали бы новые рои.
  */
 public final class SpiderThreats {
 
@@ -95,8 +97,12 @@ public final class SpiderThreats {
 	}
 
 	/** Вызывается из finalizeSpawn паука (один раз при появлении моба в мире). */
-	public static void rollOnSpawn(Spider spider, ServerLevelAccessor level) {
+	public static void rollOnSpawn(Spider spider, ServerLevelAccessor level, EntitySpawnReason spawnReason) {
 		if (!ENABLED || !(spider instanceof SpiderRoleEntity data) || !isEligible(spider)) {
+			return;
+		}
+		// Помощники роя и прочие призванные пауки не становятся маткой, ткачом и новым роем.
+		if (spawnReason == EntitySpawnReason.MOB_SUMMONED) {
 			return;
 		}
 		float roll = spider.getRandom().nextFloat();
@@ -108,6 +114,11 @@ public final class SpiderThreats {
 			}
 		} else if (roll < MATRIARCH_SPAWN_CHANCE + WEAVER_SPAWN_CHANCE) {
 			data.evolvingthreats$setSpiderRole(ROLE_WEAVER);
+		} else if (SpiderSwarm.ENABLED
+				&& level instanceof ServerLevel serverLevel
+				&& roll < MATRIARCH_SPAWN_CHANCE + WEAVER_SPAWN_CHANCE + SpiderSwarm.SPAWN_CHANCE) {
+			// Генерация чанка тоже пропускается: там нет мира, куда ставить пачку.
+			SpiderSwarm.spawnPack(spider, serverLevel);
 		}
 	}
 

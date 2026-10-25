@@ -3,6 +3,7 @@ package com.example.mixin;
 import com.example.RandomWeapons;
 import com.example.digging.BlockBreaking;
 import com.example.entity.ai.BreakToTargetGoal;
+import com.example.skeleton.TacticianSkeleton;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -24,6 +25,21 @@ public class MeleeAttackGoalMixin {
 
 	@Shadow
 	protected PathfinderMob mob;
+
+	@Inject(method = "canUse", at = @At("RETURN"), cancellable = true)
+	private void evolvingthreats$tacticianKeepsChasing(CallbackInfoReturnable<Boolean> cir) {
+		// «700 IQ» после попадания бежит на игрока, даже если тот за углом.
+		if (TacticianSkeleton.isChasingMarked(mob)) {
+			cir.setReturnValue(true);
+		}
+	}
+
+	@Inject(method = "canContinueToUse", at = @At("RETURN"), cancellable = true)
+	private void evolvingthreats$tacticianKeepsChasingContinue(CallbackInfoReturnable<Boolean> cir) {
+		if (TacticianSkeleton.isChasingMarked(mob)) {
+			cir.setReturnValue(true);
+		}
+	}
 
 	@Inject(method = "canUse", at = @At("RETURN"), cancellable = true)
 	private void evolvingthreats$meleeOnlyInRange(CallbackInfoReturnable<Boolean> cir) {

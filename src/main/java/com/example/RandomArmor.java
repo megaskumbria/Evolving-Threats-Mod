@@ -119,6 +119,21 @@ public final class RandomArmor {
 		rollPieces(mob, SKELETON_ARMOR_PIECE_CHANCE);
 	}
 
+	/**
+	 * Только шлем, с тем же шансом и теми же материалами, что слот шлема у обычного скелета.
+	 * Нагрудник, штаны и ботинки не трогает. Незерита в списке нет.
+	 */
+	public static void rollHelmet(Mob mob) {
+		RandomSource random = mob.getRandom();
+		if (random.nextFloat() >= SKELETON_ARMOR_PIECE_CHANCE) {
+			return;
+		}
+		Item helmet = ARMOR_PIECES[pickMaterialIndex(random)][0];
+		mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(helmet));
+		mob.setDropChance(EquipmentSlot.HEAD, ARMOR_DROP_CHANCE);
+		dyeLeather(mob, random);
+	}
+
 	private static void rollPieces(Mob mob, float pieceChance) {
 		RandomSource random = mob.getRandom();
 

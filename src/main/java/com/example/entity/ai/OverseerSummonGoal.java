@@ -2,14 +2,20 @@ package com.example.entity.ai;
 
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -63,9 +69,19 @@ public class OverseerSummonGoal extends Goal {
 
 		int room = ZombieOverseer.MAX_SERVANTS_ALIVE - overseer.evolvingthreats$getActiveServantCount();
 		int toSpawn = Math.min(ZombieOverseer.SUMMON_ZOMBIES_PER_CAST, room);
+		int spawned = 0;
 
 		for (int i = 0; i < toSpawn; i++) {
-			spawnServant(level, target);
+			if (spawnServant(level, target)) {
+				spawned++;
+			}
+		}
+
+		// У стены места нет — короткая пауза, чтобы попробовать снова, когда выйдет в коридор.
+		int cooldown = spawned > 0 ? ZombieOverseer.SUMMON_COOLDOWN_TICKS : ZombieOverseer.SUMMON_FAIL_COOLDOWN_TICKS;
+		overseer.evolvingthreats$setSummonCooldownTicks(cooldown);
+		if (spawned == 0) {
+			return;
 		}
 
 		level.playSound(
@@ -76,28 +92,75 @@ public class OverseerSummonGoal extends Goal {
 				0.6f,
 				0.5f
 		);
-
-		overseer.evolvingthreats$setSummonCooldownTicks(ZombieOverseer.SUMMON_COOLDOWN_TICKS);
 	}
 
-	private void spawnServant(ServerLevel level, LivingEntity target) {
-		Zombie servant = net.minecraft.world.entity.EntityTypes.ZOMBIE.create(level, EntitySpawnReason.MOB_SUMMONED);
+	/** true — зомби встал на свободный пол, а не внутри блока. */
+	private boolean spawnServant(ServerLevel level, LivingEntity target) {
+		Vec3 pos = findOpenSpot(level);
+		if (pos == null) {
+			return false;
+		}
+		Zombie servant = EntityTypes.ZOMBIE.create(level, EntitySpawnReason.MOB_SUMMONED);
 		if (servant == null) {
-			return;
+			return false;
 		}
 
-		var random = level.getRandom();
-		double angle = random.nextDouble() * Math.PI * 2;
-		double radius = 2.0 + random.nextDouble() * 2.0;
-		double x = zombie.getX() + Math.cos(angle) * radius;
-		double z = zombie.getZ() + Math.sin(angle) * radius;
-		servant.snapTo(x, zombie.getY(), z, random.nextFloat() * 360.0f, 0.0f);
-
+		servant.snapTo(pos.x, pos.y, pos.z, level.getRandom().nextFloat() * 360.0f, 0.0f);
 		DifficultyInstance difficulty = level.getCurrentDifficultyAt(servant.blockPosition());
 		servant.finalizeSpawn(level, difficulty, EntitySpawnReason.MOB_SUMMONED, null);
 		servant.setTarget(target);
 		level.addFreshEntity(servant);
 
 		overseer.evolvingthreats$setActiveServantCount(overseer.evolvingthreats$getActiveServantCount() + 1);
+		return true;
+	}
+
+	/**
+	 * Точка рядом, где зомби стоит на блоке, а тело и голова в воздухе.
+	 * Иначе он появляется в стене и задыхается.
+	 */
+	private Vec3 findOpenSpot(ServerLevel level) {
+		var random = level.getRandom();
+		double min = ZombieOverseer.SUMMON_RADIUS_MIN;
+		double max = Math.max(min, ZombieOverseer.SUMMON_RADIUS_MAX);
+		int baseY = zombie.blockPosition().getY();
+		for (int attempt = 0; attempt < ZombieOverseer.SUMMON_SPOT_TRIES; attempt++) {
+			double angle = random.nextDouble() * Math.PI * 2;
+			double radius = min + random.nextDouble() * (max - min);
+			double x = zombie.getX() + Math.cos(angle) * radius;
+			double z = zombie.getZ() + Math.sin(angle) * radius;
+			for (int dy = ZombieOverseer.SUMMON_VERTICAL_STEPS; dy >= -ZombieOverseer.SUMMON_VERTICAL_STEPS; dy--) {
+				int y = baseY + dy;
+				if (canStand(level, x, y, z)) {
+					return new Vec3(x, y, z);
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Пол под ногами твёрдый, само тело в два блока не пересекает блоки и не в лаве. */
+	private boolean canStand(ServerLevel level, double x, int y, double z) {
+		BlockPos feet = BlockPos.containing(x, y, z);
+		if (!level.getWorldBorder().isWithinBounds(feet)) {
+			return false;
+		}
+		BlockPos ground = feet.below();
+		if (!hasCollision(level, ground)) {
+			return false;
+		}
+		if (hasCollision(level, feet) || hasCollision(level, feet.above())) {
+			return false;
+		}
+		if (level.getFluidState(feet).is(FluidTags.LAVA) || level.getFluidState(feet.above()).is(FluidTags.LAVA)) {
+			return false;
+		}
+		AABB body = EntityTypes.ZOMBIE.getDimensions().makeBoundingBox(x, y, z);
+		return level.noCollision(body);
+	}
+
+	private static boolean hasCollision(ServerLevel level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+		return !state.getCollisionShape(level, pos).isEmpty();
 	}
 }

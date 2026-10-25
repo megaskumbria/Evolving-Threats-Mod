@@ -34,8 +34,8 @@ public final class ZombieOverseer {
 
 	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
 
-	/** Шанс при спавне обычного зомби стать надсмотрщиком. 0.008 = 0.8%. */
-	public static final float SPAWN_CHANCE = 0.008f;
+	/** Шанс при спавне обычного зомби стать надсмотрщиком. 0.006 = 0.6%. */
+	public static final float SPAWN_CHANCE = 0.006f;
 
 	public static final float MAX_HEALTH = 50.0f;
 
@@ -54,7 +54,33 @@ public final class ZombieOverseer {
 
 	public static final int SUMMON_COOLDOWN_TICKS = 25 * 20;
 
+	/**
+	 * Если рядом нет свободного места и зомби не появились, пауза короче.
+	 * 100 тиков = 5 секунд. Иначе он ждал бы полные 25 секунд у стены впустую.
+	 * 20 тиков = 1 секунда.
+	 */
+	public static final int SUMMON_FAIL_COOLDOWN_TICKS = 100;
+
 	public static final int SUMMON_ZOMBIES_PER_CAST = 2;
+
+	/**
+	 * Как далеко от надсмотрщика искать место для помощника, в блоках.
+	 * 1.5 и 4.0 = от полутора до четырёх блоков в сторону.
+	 */
+	public static final double SUMMON_RADIUS_MIN = 1.5;
+	public static final double SUMMON_RADIUS_MAX = 4.0;
+
+	/**
+	 * Сколько случайных точек вокруг перебрать, прежде чем отказаться.
+	 * 12 хватает в коридоре. Больше — дольше ищет, если вокруг тесно.
+	 */
+	public static final int SUMMON_SPOT_TRIES = 12;
+
+	/**
+	 * На сколько блоков вверх и вниз от ног надсмотрщика ещё смотреть пол.
+	 * 4 = не ставит зомби в потолок и не роняет в яму глубже четырёх блоков.
+	 */
+	public static final int SUMMON_VERTICAL_STEPS = 4;
 
 	public static final int MAX_SERVANTS_ALIVE = 5;
 

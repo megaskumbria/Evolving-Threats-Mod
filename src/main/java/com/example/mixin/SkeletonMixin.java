@@ -12,6 +12,7 @@ import com.example.beacon.JackLanternBeacon;
 import com.example.skeleton.FastBowSkeleton;
 import com.example.skeleton.HarmfulArrowSkeleton;
 import com.example.skeleton.SmallSkeleton;
+import com.example.skeleton.TacticianSkeleton;
 import com.example.spawnerhead.SpawnerHeadMob;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -51,6 +52,12 @@ public class SkeletonMixin {
 		// Обычный скелет, странник, болотный и пустынный. Оружие мода — только у первых двух.
 		MobPotionBuffs.tryApply(skeleton);
 		if (!(skeleton instanceof Skeleton || skeleton instanceof Stray)) {
+			return;
+		}
+
+		// «700 IQ» — свой набор: шлем, лук и меч. Остальные варианты скелета ему не выдаём.
+		if (TacticianSkeleton.tryRoll(skeleton)) {
+			skeleton.reassessWeaponGoal();
 			return;
 		}
 

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Паук: хранит роль (ткач/матка), бросает шанс при появлении и подключает цель «паутина под ноги».
+ * Паук: хранит роль (ткач/матка), бросает шанс при появлении (включая рой) и подключает цель «паутина под ноги».
  * Сохранение роли в мире — {@link SpiderRoleSaveMixin}.
  */
 @Mixin(Spider.class)
@@ -44,7 +44,7 @@ public class SpiderRoleMixin implements SpiderRoleEntity {
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 		Spider spider = (Spider) (Object) this;
-		SpiderThreats.rollOnSpawn(spider, level);
+		SpiderThreats.rollOnSpawn(spider, level, spawnReason);
 		MobPotionBuffs.tryApply(spider);
 	}
 

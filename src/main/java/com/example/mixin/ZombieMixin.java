@@ -56,7 +56,11 @@ public class ZombieMixin {
 			return;
 		}
 
-		if (level instanceof ServerLevel serverLevel && ZombieOverseer.tryCreateOnSpawn(zombie, serverLevel)) {
+		// Помощники надсмотрщика приходят как MOB_SUMMONED. Если им тоже давать шанс
+		// стать надсмотрщиком, рядом с боем появляется ещё один, и стая плодится.
+		if (spawnReason != EntitySpawnReason.MOB_SUMMONED
+				&& level instanceof ServerLevel serverLevel
+				&& ZombieOverseer.tryCreateOnSpawn(zombie, serverLevel)) {
 			return;
 		}
 

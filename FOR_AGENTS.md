@@ -13,16 +13,62 @@
 
 Агент **не должен** сливать всю логику в mixin без комментариев и без вынесенных констант.
 
-## Архитектура (кратко)
+## Куда смотреть
 
-| Часть | Назначение |
-|--------|------------|
-| `EvolvingThreats.java` | Точка входа мода (`ModInitializer`) |
-| `RandomWeapons.java` | Пример: **логика + настройки** |
-| `mixin/*.java` | Врезка в код Minecraft в нужный момент (часто `finalizeSpawn`) |
-| `идея.txt` | Концепт: шкала сложности, броня, рейды, поведение мобов |
+Одна задача — одна строка таблицы ниже и, если нужно поведение, **один** файл в `mobs/`. В заметке строка «Код:» уже перечисляет миксины. Папку `mixin/` целиком не обходить.
 
-Новую механику предпочитать в **отдельном классе**; mixin — только вызов 1–2 методов.
+`entity/` и `entity/ai/` открывать только если класс механики ссылается на конкретный файл. `src/client` — только если задача про внешний вид.
+
+Не читать `.gradle/`, `build/`, `run/logs/` (они в `.cursorignore`). `.\gradlew` не запускать и логи не вытаскивать, пока автор сам не попросил. Исходники Minecraft не открывать пачкой.
+
+Пути в таблице — от `src/main/java/com/example/`.
+
+### Общее для многих мобов
+
+| В игре | Сначала этот файл | Заметка |
+|--------|-------------------|---------|
+| Случайное оружие и два оружия | `RandomWeapons.java` | `mobs/common/два-оружия.txt` |
+| Случайная и крашеная кожаная броня | `RandomArmor.java` | `mobs/common/крашеная-кожаная-броня.txt` |
+| Чары на оружии и броне | `MobEnchantments.java` | `mobs/common/чары-на-оружии.txt` |
+| Щиты | `MobShields.java` | `mobs/common/щиты.txt` |
+| Тотем бессмертия | `MobTotem.java` | `mobs/common/тотем-бессмертия.txt` |
+| Зелья при появлении | `MobPotionBuffs.java` | `mobs/common/бафы-зелий.txt` |
+| Случайное здоровье | `MobHealth.java` | `mobs/common/случайное-здоровье.txt` |
+
+### Скелеты
+
+| В игре | Сначала этот файл | Заметка |
+|--------|-------------------|---------|
+| Дальний быстрый лук | `skeleton/FastBowSkeleton.java` | `mobs/skeletons/скелет-дальний-лук.txt` |
+| Маленький скелет | `skeleton/SmallSkeleton.java` | `mobs/skeletons/маленький-скелет.txt` |
+| Вредная стрела | `skeleton/HarmfulArrowSkeleton.java` | `mobs/skeletons/скелет-вредная-стрела.txt` |
+| «700 IQ», меч на спине | `skeleton/TacticianSkeleton.java` | `mobs/skeletons/скелет-700-iq.txt` |
+| Раздатчик на голове, залп стрел | `RandomDispenserSkull.java` | заметки нет; цель — `entity/ai/DispenserBarrageGoal.java` |
+| Спектральная стрела поднимает мобов | `skeleton/SpectralArrowHunt.java` | заметки нет |
+
+### Зомби
+
+| В игре | Сначала этот файл | Заметка |
+|--------|-------------------|---------|
+| Идут на свет | `light/LightSeeking.java` | `mobs/zombies/зомби-идут-на-свет.txt` |
+| Ломают блоки к игроку | `digging/BlockBreaking.java` | `mobs/zombies/зомби-ломают-блоки.txt` |
+| Помнит игрока и идёт за стену | `grudge/PlayerGrudge.java` | заметки нет; этим пользуются свет и копание |
+| Маяк из тыквы | `beacon/JackLanternBeacon.java` | `mobs/zombies/маяк-тыквы.txt` |
+| Носитель спавнера | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/носитель-спавнера.txt` |
+| Гнилой надсмотрщик | `overseer/ZombieOverseer.java` | `mobs/zombies/гнилой-надсмотрщик.txt` |
+
+### Криперы, пауки, рейд
+
+| В игре | Сначала этот файл | Заметка |
+|--------|-------------------|---------|
+| Метатель динамита | `creeper/DynamiteCreeper.java` | `mobs/creepers/крипер-метатель-динамита.txt` |
+| Ломает щит взрывом | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/крипер-ломает-щит.txt` |
+| Подрывник | `creeper/SapperCreeper.java` | `mobs/creepers/крипер-подрывник.txt` |
+| Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
+| Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
+| Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
+
+Служебное, если задача не про моба: `EvolvingThreats.java` — вход мода, `command/EvolvingThreatsCommands.java` — тестовые команды, `идея.txt` — общий замысел. Новую механику класть в отдельный класс; mixin — только вызов 1–2 методов.
 
 ## Комментарии
 
@@ -37,4 +83,5 @@
 
 ## Cursor
 
-Постоянное правило для агента: `.cursor/rules/explain-code-for-author.mdc` (`alwaysApply: true`).
+Постоянные правила: `.cursor/rules/explain-code-for-author.mdc` и `.cursor/rules/ask-dont-assume.mdc`.  
+Тяжёлые папки закрыты в `.cursorignore`.

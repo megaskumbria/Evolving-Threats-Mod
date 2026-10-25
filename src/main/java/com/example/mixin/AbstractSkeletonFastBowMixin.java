@@ -45,9 +45,14 @@ public abstract class AbstractSkeletonFastBowMixin {
 		return speed;
 	}
 
-	/** 0.2 — надбавка вверх у обычного скелета. У быстрого она меньше, иначе стрела над головой. */
-	@ModifyConstant(method = "performRangedAttack", constant = @Constant(floatValue = 0.2F))
-	private float evolvingthreats$arrowArc(float arc) {
+	/**
+	 * Надбавка вверх у обычного скелета: в исходниках это 0.2, но игра хранит его
+	 * длинным числом, потому что умножает на расстояние.
+	 * Это число менять нельзя — иначе мод не запустится. Прицел быстрого лука
+	 * считается в {@link FastBowSkeleton#arrowArc()} из скорости стрелы.
+	 */
+	@ModifyConstant(method = "performRangedAttack", constant = @Constant(doubleValue = 0.20000000298023224))
+	private double evolvingthreats$arrowArc(double arc) {
 		if (isFastBow()) {
 			return FastBowSkeleton.arrowArc();
 		}

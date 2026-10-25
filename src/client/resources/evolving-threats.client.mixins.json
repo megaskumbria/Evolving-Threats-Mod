@@ -3,7 +3,10 @@
 	"package": "com.example.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ExampleClientMixin"
+		"ExampleClientMixin",
+		"LivingEntityRendererAccessor",
+		"TacticianBackItemStateMixin",
+		"TacticianSkeletonRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

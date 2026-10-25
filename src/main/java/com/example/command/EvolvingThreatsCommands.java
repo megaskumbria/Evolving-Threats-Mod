@@ -6,6 +6,7 @@ import com.example.creeper.ShieldBreakCreeper;
 import com.example.item.ModItems;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchor;
+import com.example.skeleton.TacticianSkeleton;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -16,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -57,7 +59,9 @@ public final class EvolvingThreatsCommands {
 								.executes(ctx -> spawnRaid(
 										ctx.getSource(),
 										EntityArgument.getPlayer(ctx, "target")
-								))))));
+								))))
+				.then(Commands.literal("tactician")
+						.executes(ctx -> spawnTactician(ctx.getSource())))));
 
 		dispatcher.register(root.then(Commands.literal("give")
 				.then(Commands.literal("overseer_egg")
@@ -91,6 +95,10 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("etraid")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnRaid(ctx.getSource(), null)));
+
+		dispatcher.register(Commands.literal("ettactician")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnTactician(ctx.getSource())));
 	}
 
 	private static int spawnSapper(CommandSourceStack source) {
@@ -166,6 +174,24 @@ public final class EvolvingThreatsCommands {
 
 		RaidAnchor.spawnRaid(level, pos, hunter);
 		source.sendSuccess(() -> Component.literal("Spawned raid anchor and elite minions"), true);
+		return 1;
+	}
+
+	private static int spawnTactician(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(4.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		TacticianSkeleton.spawn(level, pos, lookAt);
+		source.sendSuccess(() -> Component.literal("Spawned 700 IQ skeleton"), true);
 		return 1;
 	}
 
