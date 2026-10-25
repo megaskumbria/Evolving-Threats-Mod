@@ -136,7 +136,7 @@ public final class DrownedThreats {
 		}
 		bolt.snapTo(player.getX(), player.getY(), player.getZ());
 		level.addFreshEntity(bolt);
-		level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER, SoundSource.WEATHER, 5.0f, 1.0f);
+		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TRIDENT_THUNDER, SoundSource.WEATHER, 5.0f, 1.0f);
 	}
 
 	private static void equipHelmet(ServerLevel level, Drowned drowned) {

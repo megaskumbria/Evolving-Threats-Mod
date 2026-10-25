@@ -17,6 +17,6 @@ public class DrownedFishingMixin {
 	@Inject(method = "addBehaviourGoals", at = @At("RETURN"))
 	private void evolvingthreats$fishingRod(CallbackInfo ci) {
 		Drowned drowned = (Drowned) (Object) this;
-		drowned.goalSelector.addGoal(2, new DrownedFishingGoal(drowned));
+		drowned.getGoalSelector().addGoal(2, new DrownedFishingGoal(drowned));
 	}
 }

@@ -79,10 +79,21 @@ public final class RitualBand {
 	public static final float TORCH_DROP_CHANCE = 0.35f;
 
 	/**
-	 * Шанс, что выпадет голова крипера, пиглина или череп иссушителя. 1.0 = всегда.
+	 * Шанс (0.0–1.0), что выпадет голова крипера, пиглина или череп иссушителя,
+	 * если моба убил игрок. 0.025 = 2,5%, как череп со скелета-иссушителя.
+	 * Добыча I поднимает до 3,5%, II до 4,5%, III до 5,5% — так же, как у того черепа.
 	 * Голова игрока этим шансом не пользуется: вместо неё падает компас.
+	 * 0 = эти головы не падают. 1 = всегда.
 	 */
-	public static final float HEAD_DROP_CHANCE = 1.0f;
+	public static final float HEAD_DROP_CHANCE = 0.025f;
+
+	/**
+	 * Урон удара каждого в стае: и зомби, и скелета, любая голова.
+	 * У обычного зомби 3 (полтора сердца), у скелета с костью 2 (одно сердце).
+	 * 8 = четыре сердца до брони, примерно как зомби с железным мечом.
+	 * 4 = как у скелета-иссушителя. 12 = шесть сердец.
+	 */
+	public static final double ATTACK_DAMAGE = 8.0;
 
 	/** Сколько пороха с моба стаи крипера, включая зомби. 1 = одна кучка. */
 	public static final int GUNPOWDER_COUNT = 1;
@@ -206,15 +217,20 @@ public final class RitualBand {
 		}
 	}
 
-	/** true = этот урон стае пиглина не проходит: лава, огонь в тени. Солнце на открытом месте жжёт. */
+	/** true = этот урон стае пиглина не проходит: лава, огонь и солнце. */
 	public static boolean shouldCancelFire(Mob mob, DamageSource source) {
 		if (!isPiglinHead(mob)) {
 			return false;
 		}
-		if (source.is(DamageTypes.LAVA)) {
-			return true;
+		return source.is(DamageTypes.LAVA) || source.is(DamageTypeTags.IS_FIRE);
+	}
+
+	/** После шага моба. Иначе солнце снова поджигает зомби в том же тике. */
+	public static void keepOutOfFire(Mob mob) {
+		if (!isPiglinHead(mob) || mob.getRemainingFireTicks() <= 0) {
+			return;
 		}
-		return source.is(DamageTypeTags.IS_FIRE) && !inSun(mob);
+		mob.clearFire();
 	}
 
 	/** Удар или стрела стаи иссушителя. На нежить не вешается: иссушение её лечит. */
@@ -368,6 +384,22 @@ public final class RitualBand {
 		data.evolvingthreats$setRitualTorch(torch);
 	}
 
+	/**
+	 * Шанс головы и сила удара. Зовётся и при появлении, и когда стая загружается из мира:
+	 * иначе уже живущие остаются со старыми 100% и слабым ударом.
+	 */
+	public static void applyTuning(Mob mob) {
+		if (!(mob instanceof RitualMember data) || !data.evolvingthreats$isRitual()) {
+			return;
+		}
+		int head = data.evolvingthreats$getRitualHead();
+		mob.setDropChance(EquipmentSlot.HEAD, head == HEAD_PLAYER ? 0.0f : Math.max(0.0f, HEAD_DROP_CHANCE));
+		var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
+		if (attack != null) {
+			attack.setBaseValue(ATTACK_DAMAGE);
+		}
+	}
+
 	private static void equip(Mob mob) {
 		if (!(mob instanceof RitualMember data)) {
 			return;
@@ -375,7 +407,6 @@ public final class RitualBand {
 		mob.setCanPickUpLoot(false);
 		int head = data.evolvingthreats$getRitualHead();
 		mob.setItemSlot(EquipmentSlot.HEAD, headStack(head));
-		mob.setDropChance(EquipmentSlot.HEAD, head == HEAD_PLAYER ? 0.0f : Math.max(0.0f, HEAD_DROP_CHANCE));
 		boolean torch = data.evolvingthreats$isRitualTorch();
 		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(torch ? Items.REDSTONE_TORCH : Items.BONE));
 		mob.setDropChance(EquipmentSlot.MAINHAND, torch ? Math.max(0.0f, TORCH_DROP_CHANCE) : 0.0f);
@@ -395,6 +426,7 @@ public final class RitualBand {
 				follow.setBaseValue(SENSE_BLOCKS);
 			}
 		}
+		applyTuning(mob);
 		if (mob instanceof Skeleton skeleton) {
 			skeleton.reassessWeaponGoal();
 		}
@@ -438,15 +470,6 @@ public final class RitualBand {
 
 	private static boolean isWitherHead(Mob mob) {
 		return isRitual(mob) && ((RitualMember) mob).evolvingthreats$getRitualHead() == HEAD_WITHER;
-	}
-
-	/** День и небо над головой. Тогда огонь от солнца стае пиглина проходит. */
-	private static boolean inSun(Mob mob) {
-		Level level = mob.level();
-		if (!level.isBrightOutside()) {
-			return false;
-		}
-		return level.canSeeSky(mob.blockPosition().above());
 	}
 
 	private static @Nullable Player nearestPlayer(ServerLevel level, Mob mob, double range) {

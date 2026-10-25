@@ -19,6 +19,8 @@ import java.util.EnumSet;
 /**
  * Поборник рубит деревянный блок, если из-за него нет пути к цели.
  * Камень и землю не трогает. Если игрок уже под ударом — рубить не начинает.
+ * Пока рубит, топор остаётся в руке. Как только путь открыт или цель рядом,
+ * рубка отпускает его, и обычный удар топором снова работает.
  */
 public class VindicatorChopGoal extends Goal {
 
@@ -27,6 +29,9 @@ public class VindicatorChopGoal extends Goal {
 	private long nextCheckGameTime;
 	private long nextPathCheckGameTime;
 	private long lastStopGameTime;
+
+	/** true, пока эта рубка ещё нужна. false — отдать ход обычному удару. */
+	private boolean chopping;
 
 	private BlockPos breakPos;
 	private float progress;
@@ -52,13 +57,26 @@ public class VindicatorChopGoal extends Goal {
 
 	@Override
 	public boolean canContinueToUse() {
+		if (!chopping || !VindicatorWoodBreak.canChop(vindicator)) {
+			return false;
+		}
 		LivingEntity target = vindicator.getTarget();
-		return target != null && target.isAlive() && VindicatorWoodBreak.canChop(vindicator);
+		if (target == null || !target.isAlive()) {
+			return false;
+		}
+		if (vindicator.distanceTo(target) > VindicatorWoodBreak.MAX_DISTANCE_TO_TARGET) {
+			return false;
+		}
+		// Рядом уже можно бить топором, рубка не должна это перехватывать.
+		return !vindicator.isWithinMeleeAttackRange(target);
 	}
 
 	@Override
 	public void start() {
+		chopping = true;
 		ticksSinceSwing = 0;
+		// Скрещённые руки прячут топор. Пока рубит, он остаётся в боевой стойке, топор виден.
+		vindicator.setAggressive(true);
 		long now = vindicator.level().getGameTime();
 		nextPathCheckGameTime = now + VindicatorWoodBreak.CHECK_INTERVAL_TICKS;
 		if (breakPos != null && now - lastStopGameTime > VindicatorWoodBreak.KEEP_PROGRESS_TICKS) {
@@ -111,10 +129,17 @@ public class VindicatorChopGoal extends Goal {
 
 	@Override
 	public void stop() {
+		chopping = false;
 		lastStopGameTime = vindicator.level().getGameTime();
+		// Трещину на блоке не стираем сразу: если его отвлекли, прогресс ещё живёт несколько секунд.
+		// Цель ещё есть — обычный удар сам поднимет топор. Цели нет — руки снова скрещены.
+		if (vindicator.getTarget() == null) {
+			vindicator.setAggressive(false);
+		}
 	}
 
 	private void finish() {
+		chopping = false;
 		clearCracks();
 		breakPos = null;
 		progress = 0.0f;
@@ -122,6 +147,7 @@ public class VindicatorChopGoal extends Goal {
 
 	private void chop(Level level) {
 		BlockState state = level.getBlockState(breakPos);
+		vindicator.setAggressive(true);
 		vindicator.getLookControl().setLookAt(Vec3.atCenterOf(breakPos));
 		vindicator.getNavigation().stop();
 		progress += VindicatorWoodBreak.progressPerTick(vindicator, level, breakPos, state);

@@ -41,9 +41,9 @@ public final class ShulkerThreats {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что шалкер при появлении стреляет замедлением.
+	 * Шанс (0.0–1.0), что шалкер при появлении стреляет замедлением и слабостью.
 	 * 0.12 = 12%, примерно каждый восьмой. Левитация при этом остаётся.
-	 * 0 = замедления нет. 1 = замедление у каждого шалкера.
+	 * 0 = ни замедления, ни слабости. 1 = оба эффекта у каждого шалкера.
 	 */
 	public static final float SLOWNESS_CHANCE = 0.12f;
 
@@ -59,6 +59,19 @@ public final class ShulkerThreats {
 	 * 1 = Замедление II, примерно на 30% короче.
 	 */
 	public static final int SLOWNESS_AMPLIFIER = 0;
+
+	/**
+	 * Сколько секунд слабости вешает тот же редкий шалкер, что и замедление.
+	 * 20 = двадцать секунд. Левитация при этом остаётся.
+	 * 0 = слабости нет, замедление остаётся.
+	 */
+	public static final int WEAKNESS_SECONDS = 20;
+
+	/**
+	 * Сила слабости. 0 = Слабость I: удары игрока вблизи слабее на 4 здоровья (2 сердца).
+	 * 1 = Слабость II, меч почти не бьёт.
+	 */
+	public static final int WEAKNESS_AMPLIFIER = 0;
 
 	/**
 	 * Шанс (0.0–1.0), что шалкер выпускает два снаряда.
@@ -208,7 +221,7 @@ public final class ShulkerThreats {
 
 	/**
 	 * Снаряд уже попал и игра собралась повесить левитацию.
-	 * Здесь длина левитации, замедление и телепорт игрока.
+	 * Здесь длина левитации, замедление, слабость и телепорт игрока.
 	 */
 	public static boolean onHit(ShulkerBullet bullet, LivingEntity target, MobEffectInstance vanilla, Entity source) {
 		int duration = vanilla.getDuration();
@@ -230,6 +243,15 @@ public final class ShulkerThreats {
 					MobEffects.SLOWNESS,
 					SLOWNESS_SECONDS * TICKS_PER_SECOND,
 					Math.max(0, SLOWNESS_AMPLIFIER),
+					false,
+					true,
+					true), source);
+		}
+		if (traits.evolvingthreats$slowness() && WEAKNESS_SECONDS > 0) {
+			target.addEffect(new MobEffectInstance(
+					MobEffects.WEAKNESS,
+					WEAKNESS_SECONDS * TICKS_PER_SECOND,
+					Math.max(0, WEAKNESS_AMPLIFIER),
 					false,
 					true,
 					true), source);

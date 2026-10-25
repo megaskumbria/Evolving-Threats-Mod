@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.MoverType;
@@ -96,7 +97,7 @@ public final class DrownedFishing {
 		hook.snapTo(spawn.x, spawn.y, spawn.z, drowned.getYRot(), drowned.getXRot());
 		hook.setDeltaMovement(direction.scale(1.5));
 		level.addFreshEntity(hook);
-		drowned.swing(InteractionHand.MAIN_HAND);
+		drowned.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
 		level.playSound(null, drowned.getX(), drowned.getY(), drowned.getZ(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.HOSTILE, 0.8f, 0.8f);
 		return hook;
 	}

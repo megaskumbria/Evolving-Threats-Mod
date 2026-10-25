@@ -66,6 +66,10 @@ public class ShulkerThreatMixin implements ShulkerVariant {
 	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
 	private void evolvingthreats$loadShulker(ValueInput input, CallbackInfo ci) {
 		if (!input.getBooleanOr("EvolvingThreatsShulkerRolled", false)) {
+			Shulker shulker = (Shulker) (Object) this;
+			if (shulker.level() instanceof ServerLevel) {
+				ShulkerThreats.rollOnSpawn(shulker);
+			}
 			return;
 		}
 		evolvingthreats$rolled = true;

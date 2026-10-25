@@ -1,6 +1,8 @@
 package com.example.mixin;
 
 import com.example.entity.RitualMember;
+import com.example.ritual.RitualBand;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -103,5 +105,6 @@ public class RitualZombieMixin implements RitualMember {
 		evolvingthreats$ritualHead = input.getIntOr("EvolvingThreatsRitualHead", 0);
 		evolvingthreats$ritualTorch = input.getBooleanOr("EvolvingThreatsRitualTorch", false);
 		input.getString("EvolvingThreatsRitualGroup").ifPresent(raw -> evolvingthreats$ritualGroup = UUID.fromString(raw));
+		RitualBand.applyTuning((Mob) (Object) this);
 	}
 }

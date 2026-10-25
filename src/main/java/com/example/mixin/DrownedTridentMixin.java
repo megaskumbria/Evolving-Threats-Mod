@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Попадание брошенного трезубца. Сюда заходит только удар, который уже снял здоровье.
  * Щит и мигание молнию не вызывают. Ближний удар трезубцем молнию не вызывает.
+ * Вызов ищется у самого трезубца: в этой версии игры он не записан как вызов стрелы.
  */
 @Mixin(ThrownTrident.class)
 public class DrownedTridentMixin {
@@ -19,7 +20,7 @@ public class DrownedTridentMixin {
 			method = "onHitEntity",
 			at = @At(
 					value = "INVOKE",
-					target = "Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;doPostHurtEffects(Lnet/minecraft/world/entity/LivingEntity;)V"
+					target = "Lnet/minecraft/world/entity/projectile/arrow/ThrownTrident;doPostHurtEffects(Lnet/minecraft/world/entity/LivingEntity;)V"
 			)
 	)
 	private void evolvingthreats$tridentLightning(EntityHitResult hitResult, CallbackInfo ci) {

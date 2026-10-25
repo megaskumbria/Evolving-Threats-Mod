@@ -95,6 +95,7 @@
 | Зелья ведьмы в игрока | `witch/WitchThrownPotions.java` | `mobs/witches/ведьма-зелья.txt` |
 | Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
 | Магмовый куб | `magma/MagmaCubeThreats.java` | `mobs/slimes/магмовый-куб.txt` |
+| Обмен местами эндермена | `enderman/EndermanSwap.java` | `mobs/endermen/обмен-местами.txt` |
 | Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/шалкеры-снаряды.txt` |
 | Панцирь шалкера | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/шалкер-панцирь.txt` |
 | Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/брут-ломает-броню.txt` |

@@ -10,6 +10,7 @@ import com.example.item.ModItems;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchor;
 import com.example.skeleton.SkeletonCaptain;
+import com.example.skeleton.SkeletonPunchBow;
 import com.example.skeleton.SkeletonHorseman;
 import com.example.zombie.TntZombie;
 import com.example.zombie.ZombieSorcerer;
@@ -102,7 +103,11 @@ public final class EvolvingThreatsCommands {
 				.then(Commands.literal("tool")
 						.executes(ctx -> spawnFloatingTool(ctx.getSource())))
 				.then(Commands.literal("golem")
-						.executes(ctx -> spawnDamagedGolem(ctx.getSource())))));
+						.executes(ctx -> spawnDamagedGolem(ctx.getSource())))
+				.then(Commands.literal("punch")
+						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
+						.then(Commands.literal("v")
+								.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_V))))));
 
 		dispatcher.register(root.then(Commands.literal("give")
 				.then(Commands.literal("overseer_egg")
@@ -192,6 +197,34 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("etgolem")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnDamagedGolem(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etpunch")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
+				.then(Commands.literal("v")
+						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_V))));
+	}
+
+	private static int spawnPunchBow(CommandSourceStack source, int punchLevel) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (!SkeletonPunchBow.spawn(level, pos, lookAt, punchLevel)) {
+			source.sendFailure(Component.literal("Could not spawn skeleton"));
+			return 0;
+		}
+		String roman = punchLevel >= SkeletonPunchBow.PUNCH_LEVEL_VI ? "VI" : "V";
+		source.sendSuccess(() -> Component.literal("Spawned skeleton with Punch " + roman), true);
+		return 1;
 	}
 
 	private static int spawnFloatingTool(CommandSourceStack source) {

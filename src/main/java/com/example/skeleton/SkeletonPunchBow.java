@@ -1,14 +1,20 @@
 package com.example.skeleton;
 
+import com.example.entity.TacticianSkeletonEntity;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -62,6 +68,54 @@ public final class SkeletonPunchBow {
 	private static final EquipmentSlot[] HANDS = { EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND };
 
 	private SkeletonPunchBow() {
+	}
+
+	/**
+	 * Команда. Скелет появляется в указанной точке уже с этим луком, шанс не бросается.
+	 * level — {@link #PUNCH_LEVEL_V} или {@link #PUNCH_LEVEL_VI}.
+	 * false — скелета не удалось создать.
+	 */
+	public static boolean spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt, int punchLevel) {
+		AbstractSkeleton skeleton = EntityTypes.SKELETON.create(level, EntitySpawnReason.COMMAND);
+		if (skeleton == null) {
+			return false;
+		}
+		float yaw = lookAt == null ? level.getRandom().nextFloat() * 360.0f : faceYaw(pos, lookAt);
+		skeleton.snapTo(pos.x, pos.y, pos.z, yaw, 0.0f);
+		skeleton.finalizeSpawn(
+				level,
+				level.getCurrentDifficultyAt(skeleton.blockPosition()),
+				EntitySpawnReason.COMMAND,
+				null);
+		if (skeleton instanceof TacticianSkeletonEntity tactician && tactician.evolvingthreats$isTactician()) {
+			tactician.evolvingthreats$setTactician(false);
+			tactician.evolvingthreats$setBackItem(ItemStack.EMPTY);
+			tactician.evolvingthreats$setMarkedPlayer(null);
+			tactician.evolvingthreats$setMeleeUntil(0L);
+		}
+		giveBow(skeleton, punchLevel);
+		if (lookAt != null) {
+			skeleton.setTarget(lookAt);
+		}
+		level.addFreshEntity(skeleton);
+		return true;
+	}
+
+	/** Кладёт лук с заданным Откидыванием в основную руку. Такой лук не падает. */
+	private static void giveBow(AbstractSkeleton skeleton, int punchLevel) {
+		int level = punchLevel >= PUNCH_LEVEL_VI ? PUNCH_LEVEL_VI : PUNCH_LEVEL_V;
+		ItemStack bow = new ItemStack(Items.BOW);
+		var holder = skeleton.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.PUNCH);
+		EnchantmentHelper.updateEnchantments(bow, mutable -> mutable.set(holder, level));
+		skeleton.setItemSlot(EquipmentSlot.MAINHAND, bow);
+		skeleton.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
+		skeleton.reassessWeaponGoal();
+	}
+
+	private static float faceYaw(Vec3 from, LivingEntity lookAt) {
+		double dx = lookAt.getX() - from.x;
+		double dz = lookAt.getZ() - from.z;
+		return (float) (Math.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
 	}
 
 	/**

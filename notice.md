@@ -46,6 +46,8 @@
 ритуальная стая (случайная голова, или player / creeper / piglin / wither):
 /etritual
 /etritual wither
+/etritual creeper
+/etritual piglin
 
 парящий инструмент:
 /ettool

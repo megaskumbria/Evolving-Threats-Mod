@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Свои из стаи не бьют друг друга.
- * Стая пиглина не берёт урон от лавы и от огня в тени.
+ * Стая пиглина не берёт урон от лавы, огня и солнца.
  * Удар стаи иссушителя вешает короткое иссушение, если удар прошёл.
  */
 @Mixin(LivingEntity.class)
