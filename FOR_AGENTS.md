@@ -45,6 +45,10 @@
 | «700 IQ», меч на спине | `skeleton/TacticianSkeleton.java` | `mobs/skeletons/скелет-700-iq.txt` |
 | Раздатчик на голове, залп стрел | `RandomDispenserSkull.java` | заметки нет; цель — `entity/ai/DispenserBarrageGoal.java` |
 | Спектральная стрела поднимает мобов | `skeleton/SpectralArrowHunt.java` | заметки нет |
+| Иссушитель со спавнером | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/иссушитель-со-спавнером.txt` |
+| Капитан скелетов | `skeleton/SkeletonCaptain.java` | `mobs/skeletons/капитан-скелетов.txt` |
+| Скелет на костяной лошади | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/скелет-наездник.txt` |
+| Лук с Откидыванием V–VI | `skeleton/SkeletonPunchBow.java` | `mobs/skeletons/лук-откидывание.txt` |
 
 ### Зомби
 
@@ -56,6 +60,7 @@
 | Маяк из тыквы | `beacon/JackLanternBeacon.java` | `mobs/zombies/маяк-тыквы.txt` |
 | Носитель спавнера | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/носитель-спавнера.txt` |
 | Гнилой надсмотрщик | `overseer/ZombieOverseer.java` | `mobs/zombies/гнилой-надсмотрщик.txt` |
+| Зомби с динамитом | `zombie/TntZombie.java` | `mobs/zombies/зомби-с-динамитом.txt` |
 
 ### Криперы, пауки, рейд
 
@@ -67,6 +72,10 @@
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
 | Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
+| Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
+| Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |
+| Блейз-алхимик | `blaze/BlazeAlchemist.java` | `mobs/blazes/блейз-алхимик.txt` |
+| Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
 
 Служебное, если задача не про моба: `EvolvingThreats.java` — вход мода, `command/EvolvingThreatsCommands.java` — тестовые команды, `идея.txt` — общий замысел. Новую механику класть в отдельный класс; mixin — только вызов 1–2 методов.
 

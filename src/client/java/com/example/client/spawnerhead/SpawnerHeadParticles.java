@@ -8,6 +8,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -38,6 +39,12 @@ public final class SpawnerHeadParticles {
 
 	/** Смещение центра эффекта вверх от ног моба (блоки). Подстрой, если частицы не над спавнером. */
 	public static final double HEAD_CENTER_ABOVE_FEET = 1.55;
+
+	/**
+	 * То же для скелета-иссушителя: он выше обычного скелета.
+	 * 2.20 — дым у блока на голове, а не на груди.
+	 */
+	public static final double WITHER_HEAD_CENTER_ABOVE_FEET = 2.20;
 
 	// ========================================================================
 
@@ -78,7 +85,8 @@ public final class SpawnerHeadParticles {
 	/** Как {@code BaseSpawner} на клиенте: smoke + flame в случайной точке внутри куба. */
 	private static void emitSpawnerLikeBurst(ClientLevel level, Mob mob, RandomSource random) {
 		double baseX = mob.getX();
-		double baseY = mob.getY() + HEAD_CENTER_ABOVE_FEET;
+		double aboveFeet = mob instanceof WitherSkeleton ? WITHER_HEAD_CENTER_ABOVE_FEET : HEAD_CENTER_ABOVE_FEET;
+		double baseY = mob.getY() + aboveFeet;
 		double baseZ = mob.getZ();
 
 		for (int i = 0; i < PARTICLE_BURSTS_PER_TICK; i++) {

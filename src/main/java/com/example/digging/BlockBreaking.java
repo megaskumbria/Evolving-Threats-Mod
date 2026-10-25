@@ -1,5 +1,6 @@
 package com.example.digging;
 
+import com.example.zombie.TntZombie;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -132,7 +133,8 @@ public final class BlockBreaking {
 			return false;
 		}
 		// Утопленники — в воде, зомби-пиглины — не верхний мир.
-		if (zombie instanceof Drowned || zombie instanceof ZombifiedPiglin) {
+		// Зомби с динамитом стену не копает: если пути нет, он роняет TNT.
+		if (zombie instanceof Drowned || zombie instanceof ZombifiedPiglin || TntZombie.isTntZombie(zombie)) {
 			return false;
 		}
 		if (BREAKER_FRACTION >= 1.0) {

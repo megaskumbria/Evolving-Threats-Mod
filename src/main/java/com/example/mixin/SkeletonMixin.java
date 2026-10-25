@@ -10,6 +10,9 @@ import com.example.RandomDispenserSkull;
 import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
 import com.example.skeleton.FastBowSkeleton;
+import com.example.skeleton.SkeletonCaptain;
+import com.example.skeleton.SkeletonHorseman;
+import com.example.skeleton.SkeletonPunchBow;
 import com.example.skeleton.HarmfulArrowSkeleton;
 import com.example.skeleton.SmallSkeleton;
 import com.example.skeleton.TacticianSkeleton;
@@ -41,11 +44,18 @@ public class SkeletonMixin {
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
 
 		// Скелет-иссушитель и так сильный. Бафы и набор мода ему не выдаём.
+		// Спавнер на голове — отдельно: каждые 2 удара зовёт двоих таких же.
 		if (skeleton instanceof WitherSkeleton) {
+			SpawnerHeadMob.tryEquipWitherSkeleton(skeleton);
 			return;
 		}
 
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
+			return;
+		}
+
+		// Капитан и его помощники: свой набор и свой отряд. Зелья и случайное оружие им не выдаём.
+		if (SkeletonCaptain.tryClaim(skeleton, level, spawnReason)) {
 			return;
 		}
 
@@ -58,6 +68,7 @@ public class SkeletonMixin {
 		// «700 IQ» — свой набор: шлем, лук и меч. Остальные варианты скелета ему не выдаём.
 		if (TacticianSkeleton.tryRoll(skeleton)) {
 			skeleton.reassessWeaponGoal();
+			SkeletonHorseman.tryMount(skeleton, level, spawnReason);
 			return;
 		}
 
@@ -72,6 +83,8 @@ public class SkeletonMixin {
 			MobShields.tryEquip(skeleton);
 		}
 		MobEnchantments.rollForSkeleton(skeleton);
+		// Откидывание V/VI поверх обычных чар. Капитан и «700 IQ» сюда не доходят.
+		SkeletonPunchBow.tryApply(skeleton);
 		RandomArmor.rollForSkeleton(skeleton);
 		MobEnchantments.rollArmorForSkeleton(skeleton);
 		// Одна «особая» голова: спавнер → маяк (jack) → раздатчик.
@@ -85,5 +98,6 @@ public class SkeletonMixin {
 			FastBowSkeleton.tryRoll(skeleton);
 		}
 		skeleton.reassessWeaponGoal();
+		SkeletonHorseman.tryMount(skeleton, level, spawnReason);
 	}
 }

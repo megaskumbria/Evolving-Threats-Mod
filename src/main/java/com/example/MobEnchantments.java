@@ -186,6 +186,19 @@ public final class MobEnchantments {
 		rollForArmor(mob, SKELETON_ARMOR_ENCHANT_CHANCE);
 	}
 
+	/**
+	 * Шанс отдельно на каждый кусок брони. 0.45 = 45% на шлем, отдельно 45% на нагрудник и так далее.
+	 * 0 = броня без чар. 1 = зачарован каждый кусок.
+	 */
+	public static void rollArmorPieces(Mob mob, float chancePerPiece) {
+		rollForArmor(mob, chancePerPiece);
+	}
+
+	/** Шанс отдельно на каждый предмет в руках. 0 = оружие без чар. */
+	public static void rollHeldWeapons(Mob mob, float chancePerItem) {
+		rollForHeldItems(mob, chancePerItem);
+	}
+
 	/** Бросает шанс отдельно для каждого куска брони. Особые «головы» (спавнер, тыква, раздатчик) не трогает. */
 	private static void rollForArmor(Mob mob, float chance) {
 		if (!ENABLED || chance <= 0.0f) {

@@ -1,12 +1,18 @@
 package com.example.command;
 
+import com.example.blaze.BlazeAlchemist;
 import com.example.creeper.DynamiteCreeper;
+import com.example.illager.IllagerPatrol;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
 import com.example.item.ModItems;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchor;
+import com.example.skeleton.SkeletonCaptain;
+import com.example.skeleton.SkeletonHorseman;
+import com.example.zombie.TntZombie;
 import com.example.skeleton.TacticianSkeleton;
+import com.example.spawnerhead.SpawnerHeadMob;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -61,7 +67,19 @@ public final class EvolvingThreatsCommands {
 										EntityArgument.getPlayer(ctx, "target")
 								))))
 				.then(Commands.literal("tactician")
-						.executes(ctx -> spawnTactician(ctx.getSource())))));
+						.executes(ctx -> spawnTactician(ctx.getSource())))
+				.then(Commands.literal("patrol")
+						.executes(ctx -> spawnPatrol(ctx.getSource())))
+				.then(Commands.literal("alchemist")
+						.executes(ctx -> spawnAlchemist(ctx.getSource())))
+				.then(Commands.literal("wither_spawner")
+						.executes(ctx -> spawnWitherSpawner(ctx.getSource())))
+				.then(Commands.literal("captain")
+						.executes(ctx -> spawnCaptain(ctx.getSource())))
+				.then(Commands.literal("horseman")
+						.executes(ctx -> spawnHorseman(ctx.getSource())))
+				.then(Commands.literal("tnt_zombie")
+						.executes(ctx -> spawnTntZombie(ctx.getSource())))));
 
 		dispatcher.register(root.then(Commands.literal("give")
 				.then(Commands.literal("overseer_egg")
@@ -96,9 +114,33 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnRaid(ctx.getSource(), null)));
 
+		dispatcher.register(Commands.literal("etpatrol")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnPatrol(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("ettactician")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnTactician(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etalchemist")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnAlchemist(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etwitherspawner")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnWitherSpawner(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etcaptain")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnCaptain(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("ethorseman")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnHorseman(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("ettnt")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnTntZombie(ctx.getSource())));
 	}
 
 	private static int spawnSapper(CommandSourceStack source) {
@@ -177,6 +219,23 @@ public final class EvolvingThreatsCommands {
 		return 1;
 	}
 
+	private static int spawnPatrol(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		if (!(source.getEntity() instanceof ServerPlayer player)) {
+			source.sendFailure(Component.literal("Only a player can call the patrol"));
+			return 0;
+		}
+		if (!IllagerPatrol.summonFor(level, player)) {
+			source.sendFailure(Component.literal("No open ground for the patrol"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned illager patrol"), true);
+		return 1;
+	}
+
 	private static int spawnTactician(CommandSourceStack source) {
 		if (!(source.getLevel() instanceof ServerLevel level)) {
 			source.sendFailure(Component.literal("Must run on server level"));
@@ -192,6 +251,111 @@ public final class EvolvingThreatsCommands {
 		}
 		TacticianSkeleton.spawn(level, pos, lookAt);
 		source.sendSuccess(() -> Component.literal("Spawned 700 IQ skeleton"), true);
+		return 1;
+	}
+
+	private static int spawnCaptain(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (SkeletonCaptain.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Skeleton captain is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned Captain of the Skeletons"), true);
+		return 1;
+	}
+
+	private static int spawnHorseman(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(8.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (SkeletonHorseman.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Skeleton horseman is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned skeleton horseman"), true);
+		return 1;
+	}
+
+	private static int spawnTntZombie(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (TntZombie.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("TNT zombie is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned TNT zombie"), true);
+		return 1;
+	}
+
+	private static int spawnWitherSpawner(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(4.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (SpawnerHeadMob.spawnWitherCarrier(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Spawner head is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned wither skeleton with a spawner"), true);
+		return 1;
+	}
+
+	private static int spawnAlchemist(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(10.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (BlazeAlchemist.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Blaze alchemist is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned blaze alchemist"), true);
 		return 1;
 	}
 

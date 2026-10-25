@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.command.EvolvingThreatsCommands;
+import com.example.illager.IllagerPatrolEvents;
 import com.example.item.ModItems;
 import com.example.overseer.OverseerBossBarEvents;
 import com.example.raid.RaidAnchorEvents;
@@ -31,6 +32,7 @@ public class EvolvingThreats implements ModInitializer {
 		EvolvingThreatsCommands.register();
 		OverseerBossBarEvents.register();
 		RaidAnchorEvents.register();
+		IllagerPatrolEvents.register();
 	}
 
 	public static @NotNull Identifier id(@NotNull String path) {

@@ -19,3 +19,21 @@
 тактический скелет:
 /ettactician
 
+патруль у дома:
+/etpatrol
+
+блейз-алхимик:
+/etalchemist
+
+иссушитель со спавнером:
+/etwitherspawner
+
+капитан скелетов:
+/etcaptain
+
+скелет наездник:
+/ethorseman
+
+зомби с динамитом:
+/ettnt
+

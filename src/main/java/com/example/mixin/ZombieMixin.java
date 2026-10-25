@@ -8,6 +8,7 @@ import com.example.RandomArmor;
 import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.zombie.TntZombie;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
@@ -67,6 +68,16 @@ public class ZombieMixin {
 		// Зомби, кадавр, зомби-житель и утопленник. Утопленнику дальше оружие не выдаём: у него свой трезубец.
 		MobPotionBuffs.tryApply(zombie);
 		if (zombie instanceof Drowned) {
+			return;
+		}
+
+		// Динамит вместо меча. Блоки не ломает. Броня и зелья остаются.
+		if (TntZombie.tryClaim(zombie, spawnReason)) {
+			RandomArmor.rollForZombie(zombie);
+			MobEnchantments.rollArmorForZombie(zombie);
+			if (!SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
+				JackLanternBeacon.tryEquipOnSpawn(zombie);
+			}
 			return;
 		}
 
