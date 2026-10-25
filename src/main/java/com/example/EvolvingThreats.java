@@ -1,10 +1,12 @@
 package com.example;
 
 import com.example.command.EvolvingThreatsCommands;
+import com.example.golem.DamagedGolem;
 import com.example.illager.IllagerPatrolEvents;
 import com.example.item.ModItems;
 import com.example.overseer.OverseerBossBarEvents;
 import com.example.raid.RaidAnchorEvents;
+import com.example.tool.FloatingTool;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.resources.Identifier;
@@ -29,6 +31,8 @@ public class EvolvingThreats implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 		ModItems.register();
+		FloatingTool.register();
+		DamagedGolem.register();
 		EvolvingThreatsCommands.register();
 		OverseerBossBarEvents.register();
 		RaidAnchorEvents.register();

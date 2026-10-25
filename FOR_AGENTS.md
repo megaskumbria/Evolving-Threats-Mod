@@ -34,6 +34,8 @@
 | Тотем бессмертия | `MobTotem.java` | `mobs/common/тотем-бессмертия.txt` |
 | Зелья при появлении | `MobPotionBuffs.java` | `mobs/common/бафы-зелий.txt` |
 | Случайное здоровье | `MobHealth.java` | `mobs/common/случайное-здоровье.txt` |
+| Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/парящий-инструмент.txt` |
+| Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/повреждённый-голем.txt` |
 
 ### Скелеты
 

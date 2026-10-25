@@ -1,3 +1,5 @@
 {
-  "item.evolving-threats.rotten_overseer_spawn_egg": "Rotten Overseer Spawn Egg"
+  "item.evolving-threats.rotten_overseer_spawn_egg": "Rotten Overseer Spawn Egg",
+  "entity.evolving-threats.floating_tool": "Floating Tool",
+  "entity.evolving-threats.damaged_golem": "Damaged Golem"
 }

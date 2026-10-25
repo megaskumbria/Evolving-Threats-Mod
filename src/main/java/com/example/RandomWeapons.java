@@ -69,7 +69,7 @@ public final class RandomWeapons {
 
 	// ========================================================================
 
-	/** Материалы оружия при спавне: только дерево…алмаз, без незерита. */
+	/** Материалы оружия при спавне: только дерево…алмаз, без незерита. Парящий инструмент берёт предмет отсюда же. */
 	private static final Item[][] MATERIALS = {
 		{ Items.WOODEN_SWORD, Items.WOODEN_AXE, Items.WOODEN_SHOVEL, Items.WOODEN_PICKAXE, Items.WOODEN_HOE },
 		{ Items.STONE_SWORD, Items.STONE_AXE, Items.STONE_SHOVEL, Items.STONE_PICKAXE, Items.STONE_HOE },

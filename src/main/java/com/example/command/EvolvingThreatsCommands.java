@@ -12,7 +12,9 @@ import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SkeletonHorseman;
 import com.example.zombie.TntZombie;
 import com.example.skeleton.TacticianSkeleton;
+import com.example.golem.DamagedGolem;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.tool.FloatingTool;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -79,7 +81,11 @@ public final class EvolvingThreatsCommands {
 				.then(Commands.literal("horseman")
 						.executes(ctx -> spawnHorseman(ctx.getSource())))
 				.then(Commands.literal("tnt_zombie")
-						.executes(ctx -> spawnTntZombie(ctx.getSource())))));
+						.executes(ctx -> spawnTntZombie(ctx.getSource())))
+				.then(Commands.literal("tool")
+						.executes(ctx -> spawnFloatingTool(ctx.getSource())))
+				.then(Commands.literal("golem")
+						.executes(ctx -> spawnDamagedGolem(ctx.getSource())))));
 
 		dispatcher.register(root.then(Commands.literal("give")
 				.then(Commands.literal("overseer_egg")
@@ -141,6 +147,61 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("ettnt")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnTntZombie(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("ettool")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnFloatingTool(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etgolem")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnDamagedGolem(ctx.getSource())));
+	}
+
+	private static int spawnFloatingTool(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0)).add(0.0, 1.2, 0.0);
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (FloatingTool.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Could not spawn floating tool"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned floating tool"), true);
+		return 1;
+	}
+
+	private static int spawnDamagedGolem(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			Vec3 look = self.getLookAngle();
+			Vec3 flat = new Vec3(look.x, 0.0, look.z);
+			if (flat.lengthSqr() < 1.0E-4) {
+				flat = new Vec3(0.0, 0.0, 1.0);
+			}
+			pos = self.position().add(flat.normalize().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (DamagedGolem.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Could not spawn damaged golem"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned damaged golem"), true);
+		return 1;
 	}
 
 	private static int spawnSapper(CommandSourceStack source) {
