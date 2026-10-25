@@ -44,6 +44,7 @@
 | Дальний быстрый лук | `skeleton/FastBowSkeleton.java` | `mobs/skeletons/скелет-дальний-лук.txt` |
 | Маленький скелет | `skeleton/SmallSkeleton.java` | `mobs/skeletons/маленький-скелет.txt` |
 | Вредная стрела | `skeleton/HarmfulArrowSkeleton.java` | `mobs/skeletons/скелет-вредная-стрела.txt` |
+| Стрела выбивает вещи из рук | `skeleton/SkeletonDisarm.java` | `mobs/skeletons/скелет-выбивает-предмет.txt` |
 | «700 IQ», меч на спине | `skeleton/TacticianSkeleton.java` | `mobs/skeletons/скелет-700-iq.txt` |
 | Раздатчик на голове, залп стрел | `RandomDispenserSkull.java` | заметки нет; цель — `entity/ai/DispenserBarrageGoal.java` |
 | Спектральная стрела поднимает мобов | `skeleton/SpectralArrowHunt.java` | заметки нет |
@@ -66,12 +67,14 @@
 | Зомби-чародей | `zombie/ZombieSorcerer.java` | `mobs/zombies/зомби-чародей.txt` |
 | Ритуальная стая | `ritual/RitualBand.java` | `mobs/zombies/ритуальная-стая.txt` |
 | Утопленник | `drowned/DrownedThreats.java` | `mobs/zombies/утопленник.txt` |
+| Зомби ворует вещь | `zombie/ZombieTheft.java` | `mobs/zombies/зомби-ворует-предмет.txt` |
 
 ### Криперы, пауки, ведьмы, рейд
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
 | Метатель динамита | `creeper/DynamiteCreeper.java` | `mobs/creepers/крипер-метатель-динамита.txt` |
+| Заряженный крипер | `creeper/ChargedCreeper.java` | `mobs/creepers/крипер-заряженный.txt` |
 | Ломает щит взрывом | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/крипер-ломает-щит.txt` |
 | Подрывник | `creeper/SapperCreeper.java` | `mobs/creepers/крипер-подрывник.txt` |
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
@@ -80,6 +83,7 @@
 | Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
 | Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/фантомы-слабость.txt` |
 | Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |
+| Ракета разбойника | `illager/PillagerFirework.java` | `mobs/illagers/разбойник-фейерверк.txt` |
 | Алмазный топор поборника | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/поборник-алмазный-топор.txt` |
 | Поборник рубит дерево | `illager/VindicatorWoodBreak.java` | `mobs/illagers/поборник-рубит-дерево.txt` |
 | Разоритель пробивает стены | `illager/RavagerWallBreak.java` | `mobs/illagers/разоритель-пробивает-стены.txt` |
@@ -90,6 +94,9 @@
 | Зелья ведьмы в игрока | `witch/WitchThrownPotions.java` | `mobs/witches/ведьма-зелья.txt` |
 | Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
 | Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/шалкеры-снаряды.txt` |
+| Панцирь шалкера | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/шалкер-панцирь.txt` |
+| Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/брут-ломает-броню.txt` |
+| Здоровье брута | `piglin/PiglinBruteHealth.java` | `mobs/piglins/брут-здоровье.txt` |
 
 Служебное, если задача не про моба: `EvolvingThreats.java` — вход мода, `command/EvolvingThreatsCommands.java` — тестовые команды, `идея.txt` — общий замысел. Новую механику класть в отдельный класс; mixin — только вызов 1–2 методов.
 

@@ -16,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Чары на оружии разбойника (арбалет) и громилы (топор) при появлении.
  * Один и тот же код вешается на оба класса — у обоих свой finalizeSpawn, после которого оружие уже в руке.
- * Мобы из рейда после этого получают чары от самой игры (applyRaidBuffs), наши на них заменяются.
+ * Разбойник из рейда здесь пропускается: игра следом выдаёт арбалет заново,
+ * и чары вешает {@link PillagerRaidEnchantMixin} уже на него.
  */
 @Mixin({ Pillager.class, Vindicator.class })
 public class IllagerWeaponEnchantMixin {
@@ -28,6 +29,10 @@ public class IllagerWeaponEnchantMixin {
 			EntitySpawnReason spawnReason,
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
-		MobEnchantments.rollForIllager((Mob) (Object) this);
+		Mob mob = (Mob) (Object) this;
+		if (mob instanceof Pillager pillager && pillager.getCurrentRaid() != null) {
+			return;
+		}
+		MobEnchantments.rollForIllager(mob);
 	}
 }

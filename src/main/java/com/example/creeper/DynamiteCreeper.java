@@ -134,6 +134,10 @@ public final class DynamiteCreeper {
 		if (creeper instanceof SapperCreeperEntity sapper && sapper.evolvingthreats$isSapperCreeper()) {
 			return;
 		}
+		// Заряженный крипер динамит не кидает. Подрывником или ломателем щита он быть может.
+		if (creeper.isPowered()) {
+			return;
+		}
 		if (reason == EntitySpawnReason.COMMAND) {
 			return;
 		}

@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.creeper.ChargedCreeper;
 import com.example.creeper.DynamiteCreeper;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
@@ -15,8 +16,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Шанс особого крипера при появлении: подрывник (5%), метатель (4%), ломатель щита (5%).
- * Если один уже выпал, следующие шансы на этого крипера не бросаются.
+ * Шанс особого крипера при появлении: заряженный (1%), подрывник (5%), метатель (4%), ломатель щита (5%).
+ * Заряженный динамит не бросает, но может быть подрывником или ломателем щита.
+ * Если подрывник или метатель уже выпал, ломатель щита на этого крипера не бросается.
  * Метод finalizeSpawn объявлен в Mob, у Creeper своей копии нет — поэтому mixin на Mob.
  */
 @Mixin(Mob.class)
@@ -30,6 +32,7 @@ public class MobDynamiteCreeperSpawnMixin {
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 		if ((Object) this instanceof Creeper creeper) {
+			ChargedCreeper.rollOnSpawn(creeper, spawnReason);
 			SapperCreeper.rollOnSpawn(creeper, spawnReason);
 			DynamiteCreeper.rollOnSpawn(creeper, level, spawnReason);
 			ShieldBreakCreeper.rollOnSpawn(creeper, spawnReason);
