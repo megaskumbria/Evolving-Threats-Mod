@@ -3,6 +3,7 @@ package com.example.grudge;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieGrudgeEntity;
 import com.example.entity.ZombieOverseerEntity;
+import com.example.ritual.RitualBand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.zombie.Drowned;
@@ -18,7 +19,7 @@ import java.util.UUID;
  * даже если ваниль сбросила цель (игрок спрятался за блоками / под землёй).
  * Пока память активна, зомби не идёт на факелы ({@link com.example.entity.ai.LightSeekGoal}).
  *
- * Надсмотрщик и рейд используют свою охоту — для них память не нужна.
+ * Надсмотрщик, рейд и ритуальная стая используют свою охоту — для них память не нужна.
  */
 public final class PlayerGrudge {
 
@@ -52,6 +53,9 @@ public final class PlayerGrudge {
 			return false;
 		}
 		if (zombie instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
+			return false;
+		}
+		if (RitualBand.isRitual(zombie)) {
 			return false;
 		}
 		return zombie instanceof ZombieGrudgeEntity;

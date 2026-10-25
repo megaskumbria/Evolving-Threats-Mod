@@ -17,6 +17,7 @@ import com.example.skeleton.HarmfulArrowSkeleton;
 import com.example.skeleton.SmallSkeleton;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.ritual.RitualBand;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -51,6 +52,11 @@ public class SkeletonMixin {
 		}
 
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
+			return;
+		}
+
+		// Ритуальная стая раньше капитана: свой набор, без лука и без чар.
+		if (skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
 			return;
 		}
 

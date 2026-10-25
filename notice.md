@@ -25,6 +25,9 @@
 блейз-алхимик:
 /etalchemist
 
+ведьма-обнулитель:
+/etwitch
+
 иссушитель со спавнером:
 /etwitherspawner
 
@@ -36,6 +39,13 @@
 
 зомби с динамитом:
 /ettnt
+
+зомби-чародей:
+/etsorcerer
+
+ритуальная стая (случайная голова, или player / creeper / piglin / wither):
+/etritual
+/etritual wither
 
 парящий инструмент:
 /ettool

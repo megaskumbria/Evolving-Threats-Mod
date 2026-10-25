@@ -1,6 +1,8 @@
 package com.example.digging;
 
 import com.example.zombie.TntZombie;
+import com.example.zombie.ZombieSorcerer;
+import com.example.ritual.RitualBand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -134,7 +136,13 @@ public final class BlockBreaking {
 		}
 		// Утопленники — в воде, зомби-пиглины — не верхний мир.
 		// Зомби с динамитом стену не копает: если пути нет, он роняет TNT.
-		if (zombie instanceof Drowned || zombie instanceof ZombifiedPiglin || TntZombie.isTntZombie(zombie)) {
+		// Чародей не копает: мотыга у него для вида, он колдует.
+		// Ритуальная стая не копает: иначе она разбредается от своего круга.
+		if (zombie instanceof Drowned
+				|| zombie instanceof ZombifiedPiglin
+				|| TntZombie.isTntZombie(zombie)
+				|| ZombieSorcerer.isSorcerer(zombie)
+				|| RitualBand.isRitual(zombie)) {
 			return false;
 		}
 		if (BREAKER_FRACTION >= 1.0) {

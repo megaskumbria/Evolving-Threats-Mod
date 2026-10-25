@@ -9,6 +9,8 @@ import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
 import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.zombie.TntZombie;
+import com.example.zombie.ZombieSorcerer;
+import com.example.ritual.RitualBand;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
@@ -65,9 +67,19 @@ public class ZombieMixin {
 			return;
 		}
 
+		// Ритуальная стая: своя кожа и голова. Случайное оружие и чары ей не выдаём.
+		if (RitualBand.tryClaim(zombie, spawnReason)) {
+			return;
+		}
+
 		// Зомби, кадавр, зомби-житель и утопленник. Утопленнику дальше оружие не выдаём: у него свой трезубец.
 		MobPotionBuffs.tryApply(zombie);
 		if (zombie instanceof Drowned) {
+			return;
+		}
+
+		// Чародей: своя броня и мотыга, без чар. Случайное оружие и голова ему не выдаются.
+		if (ZombieSorcerer.tryClaim(zombie, spawnReason)) {
 			return;
 		}
 

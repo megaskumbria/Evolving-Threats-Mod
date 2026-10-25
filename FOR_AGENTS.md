@@ -63,8 +63,11 @@
 | Носитель спавнера | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/носитель-спавнера.txt` |
 | Гнилой надсмотрщик | `overseer/ZombieOverseer.java` | `mobs/zombies/гнилой-надсмотрщик.txt` |
 | Зомби с динамитом | `zombie/TntZombie.java` | `mobs/zombies/зомби-с-динамитом.txt` |
+| Зомби-чародей | `zombie/ZombieSorcerer.java` | `mobs/zombies/зомби-чародей.txt` |
+| Ритуальная стая | `ritual/RitualBand.java` | `mobs/zombies/ритуальная-стая.txt` |
+| Утопленник | `drowned/DrownedThreats.java` | `mobs/zombies/утопленник.txt` |
 
-### Криперы, пауки, рейд
+### Криперы, пауки, ведьмы, рейд
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
@@ -75,9 +78,18 @@
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
 | Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
 | Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
+| Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/фантомы-слабость.txt` |
 | Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |
+| Алмазный топор поборника | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/поборник-алмазный-топор.txt` |
+| Поборник рубит дерево | `illager/VindicatorWoodBreak.java` | `mobs/illagers/поборник-рубит-дерево.txt` |
+| Разоритель пробивает стены | `illager/RavagerWallBreak.java` | `mobs/illagers/разоритель-пробивает-стены.txt` |
+| Урон и слабость досаждателя | `vex/VexDamage.java` | `mobs/illagers/досаждатель-урон.txt` |
 | Блейз-алхимик | `blaze/BlazeAlchemist.java` | `mobs/blazes/блейз-алхимик.txt` |
+| Ведьма-обнулитель | `witch/WitchNullifier.java` | `mobs/witches/ведьма-обнулитель.txt` |
+| Невидимость ведьмы | `witch/WitchInvisibility.java` | `mobs/witches/ведьма-невидимость.txt` |
+| Зелья ведьмы в игрока | `witch/WitchThrownPotions.java` | `mobs/witches/ведьма-зелья.txt` |
 | Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
+| Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/шалкеры-снаряды.txt` |
 
 Служебное, если задача не про моба: `EvolvingThreats.java` — вход мода, `command/EvolvingThreatsCommands.java` — тестовые команды, `идея.txt` — общий замысел. Новую механику класть в отдельный класс; mixin — только вызов 1–2 методов.
 

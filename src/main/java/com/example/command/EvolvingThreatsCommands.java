@@ -1,6 +1,7 @@
 package com.example.command;
 
 import com.example.blaze.BlazeAlchemist;
+import com.example.witch.WitchNullifier;
 import com.example.creeper.DynamiteCreeper;
 import com.example.illager.IllagerPatrol;
 import com.example.creeper.SapperCreeper;
@@ -11,6 +12,8 @@ import com.example.raid.RaidAnchor;
 import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SkeletonHorseman;
 import com.example.zombie.TntZombie;
+import com.example.zombie.ZombieSorcerer;
+import com.example.ritual.RitualBand;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.golem.DamagedGolem;
 import com.example.spawnerhead.SpawnerHeadMob;
@@ -74,6 +77,8 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnPatrol(ctx.getSource())))
 				.then(Commands.literal("alchemist")
 						.executes(ctx -> spawnAlchemist(ctx.getSource())))
+				.then(Commands.literal("witch")
+						.executes(ctx -> spawnNullifierWitch(ctx.getSource())))
 				.then(Commands.literal("wither_spawner")
 						.executes(ctx -> spawnWitherSpawner(ctx.getSource())))
 				.then(Commands.literal("captain")
@@ -82,6 +87,18 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnHorseman(ctx.getSource())))
 				.then(Commands.literal("tnt_zombie")
 						.executes(ctx -> spawnTntZombie(ctx.getSource())))
+				.then(Commands.literal("sorcerer")
+						.executes(ctx -> spawnSorcerer(ctx.getSource())))
+				.then(Commands.literal("ritual")
+						.executes(ctx -> spawnRitual(ctx.getSource(), 0))
+						.then(Commands.literal("player")
+								.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_PLAYER)))
+						.then(Commands.literal("creeper")
+								.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_CREEPER)))
+						.then(Commands.literal("piglin")
+								.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_PIGLIN)))
+						.then(Commands.literal("wither")
+								.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_WITHER))))
 				.then(Commands.literal("tool")
 						.executes(ctx -> spawnFloatingTool(ctx.getSource())))
 				.then(Commands.literal("golem")
@@ -132,6 +149,10 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnAlchemist(ctx.getSource())));
 
+		dispatcher.register(Commands.literal("etwitch")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnNullifierWitch(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("etwitherspawner")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnWitherSpawner(ctx.getSource())));
@@ -147,6 +168,22 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("ettnt")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnTntZombie(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etsorcerer")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnSorcerer(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etritual")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnRitual(ctx.getSource(), 0))
+				.then(Commands.literal("player")
+						.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_PLAYER)))
+				.then(Commands.literal("creeper")
+						.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_CREEPER)))
+				.then(Commands.literal("piglin")
+						.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_PIGLIN)))
+				.then(Commands.literal("wither")
+						.executes(ctx -> spawnRitual(ctx.getSource(), RitualBand.HEAD_WITHER))));
 
 		dispatcher.register(Commands.literal("ettool")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
@@ -378,6 +415,50 @@ public final class EvolvingThreatsCommands {
 		return 1;
 	}
 
+	private static int spawnSorcerer(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (ZombieSorcerer.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Zombie sorcerer is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned zombie sorcerer"), true);
+		return 1;
+	}
+
+	private static int spawnRitual(CommandSourceStack source, int head) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		float yaw = 0.0f;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+			yaw = self.getYRot();
+		} else {
+			pos = source.getPosition();
+		}
+		if (!RitualBand.spawnCommand(level, pos, yaw, head, lookAt)) {
+			source.sendFailure(Component.literal("Ritual band is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned ritual band"), true);
+		return 1;
+	}
+
 	private static int spawnWitherSpawner(CommandSourceStack source) {
 		if (!(source.getLevel() instanceof ServerLevel level)) {
 			source.sendFailure(Component.literal("Must run on server level"));
@@ -417,6 +498,27 @@ public final class EvolvingThreatsCommands {
 			return 0;
 		}
 		source.sendSuccess(() -> Component.literal("Spawned blaze alchemist"), true);
+		return 1;
+	}
+
+	private static int spawnNullifierWitch(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(8.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (WitchNullifier.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Nullifier witch is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned nullifier witch"), true);
 		return 1;
 	}
 
