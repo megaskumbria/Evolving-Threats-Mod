@@ -7,6 +7,7 @@ import com.example.MobTotem;
 import com.example.RandomArmor;
 import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
+import com.example.siege.SiegeNight;
 import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.zombie.TntZombie;
 import com.example.zombie.ZombieSorcerer;
@@ -61,8 +62,10 @@ public class ZombieMixin {
 
 		// Помощники надсмотрщика приходят как MOB_SUMMONED. Если им тоже давать шанс
 		// стать надсмотрщиком, рядом с боем появляется ещё один, и стая плодится.
+		// В ночь осады мини-боссы не появляются: надсмотрщик в том числе.
 		if (spawnReason != EntitySpawnReason.MOB_SUMMONED
 				&& level instanceof ServerLevel serverLevel
+				&& !SiegeNight.isWindowOpen(serverLevel)
 				&& ZombieOverseer.tryCreateOnSpawn(zombie, serverLevel)) {
 			return;
 		}

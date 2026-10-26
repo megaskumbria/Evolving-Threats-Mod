@@ -3,6 +3,7 @@ package com.example.skeleton;
 import com.example.MobEnchantments;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.SkeletonSquadMember;
+import com.example.siege.SiegeNight;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -207,6 +208,10 @@ public final class SkeletonCaptain {
 			return true;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return false;
+		}
+		// В ночь осады мини-боссы не появляются.
+		if (SiegeNight.isWindowOpen(skeleton.level())) {
 			return false;
 		}
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {

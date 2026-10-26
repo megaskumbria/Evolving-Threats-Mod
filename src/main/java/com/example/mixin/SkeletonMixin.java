@@ -9,6 +9,7 @@ import com.example.RandomArmor;
 import com.example.RandomDispenserSkull;
 import com.example.RandomWeapons;
 import com.example.beacon.JackLanternBeacon;
+import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.FastBowSkeleton;
 import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SkeletonHorseman;
@@ -57,6 +58,11 @@ public class SkeletonMixin {
 
 		// Ритуальная стая раньше капитана: свой набор, без лука и без чар.
 		if (skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
+			return;
+		}
+
+		// Василиск раньше капитана: свой незерит и лук. Обычный набор мода ему не выдаём.
+		if (BasiliskSkeleton.tryClaim(skeleton, spawnReason)) {
 			return;
 		}
 

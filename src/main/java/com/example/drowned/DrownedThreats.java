@@ -3,6 +3,7 @@ package com.example.drowned;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.resources.ResourceKey;
@@ -21,8 +22,9 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 /**
- * Утопленник: черепаший шлем, лечение в воде и трезубец с грозой.
- * Шлем и трезубец решаются один раз при появлении. Лечение работает у всех, пока они в воде.
+ * Утопленник: черепаший шлем, лечение в воде и чары на трезубце, который уже выдала игра.
+ * Шлем и чары решаются один раз при появлении. Лечение работает у всех, пока они в воде.
+ * Новый трезубец мод не создаёт и удочку не забирает. Если игра успела повесить свои чары, мод их заменяет.
  */
 public final class DrownedThreats {
 
@@ -46,16 +48,17 @@ public final class DrownedThreats {
 	public static final int HELMET_PROTECTION = 2;
 
 	/**
-	 * Шанс (0.0–1.0) нести трезубец с чарами «Громовержец».
-	 * 0.20 = 20%, примерно каждый пятый. Если в руке уже трезубец, чары вешаются на него.
-	 * Если рука пустая или там удочка, появляется новый трезубец.
-	 * 0 = таких трезубцев нет. 1 = трезубец с грозой у каждого.
+	 * Шанс (0.0–1.0), что на трезубце, который уже выдала игра, будет «Громовержец».
+	 * Считается только если трезубец уже в руке. Новый трезубец мод не создаёт.
+	 * 0.30 = 30%. Остальные 70% получают одну другую чару: Пронзатель, Верность, Тягун или Прочность.
+	 * 0 = «Громовержца» нет, всегда другая чара. 1 = «Громовержец» на каждом таком трезубце.
 	 */
-	public static final float CHANNELING_CHANCE = 0.20f;
+	public static final float CHANNELING_CHANCE = 0.30f;
 
 	/**
-	 * Шанс (0.0–1.0), что шлем или трезубец выпадет при смерти.
+	 * Шанс (0.0–1.0), что черепаший шлем выпадет при смерти.
 	 * 0.085 = 8.5%, как обычная броня мобов. 0 = не выпадает. 1 = выпадает всегда.
+	 * На трезубец не влияет: его выдала игра, и падает он по её правилам.
 	 */
 	public static final float DROP_CHANCE = 0.085f;
 
@@ -79,7 +82,7 @@ public final class DrownedThreats {
 	private DrownedThreats() {
 	}
 
-	/** Шлем и трезубец. Вызывать, когда игра уже выдала обычную удочку или трезубец. */
+	/** Черепаший шлем и чары на уже выданный трезубец. Удочку не заменяет. */
 	public static void onSpawn(Drowned drowned) {
 		if (!ENABLED || drowned.level().isClientSide()) {
 			return;
@@ -90,8 +93,8 @@ public final class DrownedThreats {
 		if (drowned.getRandom().nextFloat() < HELMET_CHANCE && drowned.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
 			equipHelmet(level, drowned);
 		}
-		if (drowned.getRandom().nextFloat() < CHANNELING_CHANCE) {
-			equipChannelingTrident(level, drowned);
+		if (drowned.getMainHandItem().is(Items.TRIDENT)) {
+			enchantTrident(level, drowned);
 		}
 	}
 
@@ -116,7 +119,8 @@ public final class DrownedThreats {
 
 	/**
 	 * Брошенный трезубец уже попал в цель и снял здоровье.
-	 * Молния бьёт игрока в 100% случаев, даже без дождя и под крышей.
+	 * Молния бьёт игрока, только если на трезубце «Громовержец» — его вешает мод, примерно на каждый третий такой трезубец.
+	 * Тогда удар бьёт молнией даже без дождя и под крышей.
 	 * В грозу под открытым небом молнию вызывает сама игра, второй раз не бьём.
 	 */
 	public static void onTridentHit(ThrownTrident trident, Entity target) {
@@ -150,18 +154,38 @@ public final class DrownedThreats {
 		drowned.setDropChance(EquipmentSlot.HEAD, Math.max(0.0f, DROP_CHANCE));
 	}
 
-	private static void equipChannelingTrident(ServerLevel level, Drowned drowned) {
+	/**
+	 * Одна чара на трезубец игры. Свои чары игры, если они уже были, стираются.
+	 * Уровень другой чары — от I до её максимума, каждый уровень равновероятен.
+	 * «Громовержец» бывает только I.
+	 */
+	private static void enchantTrident(ServerLevel level, Drowned drowned) {
 		ItemStack trident = drowned.getMainHandItem();
-		boolean fresh = !trident.is(Items.TRIDENT);
-		if (fresh) {
-			trident = new ItemStack(Items.TRIDENT);
+		if (!trident.is(Items.TRIDENT)) {
+			return;
 		}
-		Holder<Enchantment> channeling = enchantment(level, Enchantments.CHANNELING);
-		EnchantmentHelper.updateEnchantments(trident, mutable -> mutable.set(channeling, 1));
-		if (fresh) {
-			drowned.setItemSlot(EquipmentSlot.MAINHAND, trident);
-			drowned.setDropChance(EquipmentSlot.MAINHAND, Math.max(0.0f, DROP_CHANCE));
-		}
+		RandomSource random = drowned.getRandom();
+		ResourceKey<Enchantment> key = random.nextFloat() < CHANNELING_CHANCE
+				? Enchantments.CHANNELING
+				: otherTridentEnchant(random.nextInt(4));
+		Holder<Enchantment> holder = enchantment(level, key);
+		int maxLevel = Math.max(1, holder.value().getMaxLevel());
+		int levelValue = 1 + random.nextInt(maxLevel);
+		EnchantmentHelper.updateEnchantments(trident, mutable -> {
+			mutable.removeIf(ignored -> true);
+			mutable.set(holder, levelValue);
+		});
+		drowned.setItemSlot(EquipmentSlot.MAINHAND, trident);
+	}
+
+	/** Пронзатель, Верность, Тягун, Прочность — поровну. «Громовержца» среди них нет. */
+	private static ResourceKey<Enchantment> otherTridentEnchant(int roll) {
+		return switch (roll) {
+			case 0 -> Enchantments.IMPALING;
+			case 1 -> Enchantments.LOYALTY;
+			case 2 -> Enchantments.RIPTIDE;
+			default -> Enchantments.UNBREAKING;
+		};
 	}
 
 	private static boolean hasChanneling(ServerLevel level, ItemStack stack) {

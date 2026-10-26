@@ -1,6 +1,7 @@
 package com.example.spawn;
 
 import com.example.golem.DamagedGolem;
+import com.example.siege.SiegeNight;
 import com.example.tool.FloatingTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +26,11 @@ public final class NaturalMonsterSwap {
 		}
 		if (original.getCategory() != MobCategory.MONSTER) {
 			return original;
+		}
+		// Осада: в верхнем мире остаются только зомби и скелеты. Остальные превращаются в них,
+		// а парящих инструментов и големов в эту ночь нет совсем.
+		if (SiegeNight.isWindowOpen(server)) {
+			return SiegeNight.swapForSiege(server.getRandom(), original);
 		}
 		if (original == FloatingTool.TYPE || original == DamagedGolem.TYPE) {
 			return original;

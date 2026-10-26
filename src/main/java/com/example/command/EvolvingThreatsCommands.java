@@ -9,6 +9,8 @@ import com.example.creeper.ShieldBreakCreeper;
 import com.example.item.ModItems;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchor;
+import com.example.siege.SiegeNight;
+import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SkeletonPunchBow;
 import com.example.skeleton.SkeletonHorseman;
@@ -84,6 +86,8 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnWitherSpawner(ctx.getSource())))
 				.then(Commands.literal("captain")
 						.executes(ctx -> spawnCaptain(ctx.getSource())))
+				.then(Commands.literal("basilisk")
+						.executes(ctx -> spawnBasilisk(ctx.getSource())))
 				.then(Commands.literal("horseman")
 						.executes(ctx -> spawnHorseman(ctx.getSource())))
 				.then(Commands.literal("tnt_zombie")
@@ -116,6 +120,28 @@ public final class EvolvingThreatsCommands {
 								.executes(ctx -> giveEgg(
 										ctx.getSource(),
 										IntegerArgumentType.getInteger(ctx, "count")
+								))))));
+
+		// Проверка осады без ожидания 10-15 дней.
+		//   status   — когда следующая и на каком этапе.
+		//   warn     — предупреждение сейчас, ночь осады начнётся через 2 минуты.
+		//   start    — ночь осады сразу (днём мобы на солнце горят, это нормально).
+		//   stop     — прекратить осаду.
+		//   in <дни> — назначить осаду через столько игровых дней (0 = в ночь сегодня).
+		dispatcher.register(root.then(Commands.literal("siege")
+				.then(Commands.literal("status")
+						.executes(ctx -> siegeStatus(ctx.getSource())))
+				.then(Commands.literal("warn")
+						.executes(ctx -> siegeWarn(ctx.getSource())))
+				.then(Commands.literal("start")
+						.executes(ctx -> siegeStart(ctx.getSource())))
+				.then(Commands.literal("stop")
+						.executes(ctx -> siegeStop(ctx.getSource())))
+				.then(Commands.literal("in")
+						.then(Commands.argument("days", IntegerArgumentType.integer(0, 100))
+								.executes(ctx -> siegeIn(
+										ctx.getSource(),
+										IntegerArgumentType.getInteger(ctx, "days")
 								))))));
 
 		dispatcher.register(Commands.literal("etoverseer")
@@ -166,6 +192,10 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnCaptain(ctx.getSource())));
 
+		dispatcher.register(Commands.literal("etbasilisk")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnBasilisk(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("ethorseman")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnHorseman(ctx.getSource())));
@@ -203,6 +233,38 @@ public final class EvolvingThreatsCommands {
 				.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
 				.then(Commands.literal("v")
 						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_V))));
+	}
+
+	private static int siegeStatus(CommandSourceStack source) {
+		ServerLevel overworld = source.getServer().overworld();
+		source.sendSuccess(() -> Component.literal(SiegeNight.status(overworld)), false);
+		return 1;
+	}
+
+	private static int siegeWarn(CommandSourceStack source) {
+		SiegeNight.forceWarning(source.getServer().overworld());
+		return 1;
+	}
+
+	private static int siegeStart(CommandSourceStack source) {
+		SiegeNight.forceStart(source.getServer().overworld());
+		source.sendSuccess(() -> Component.literal("Siege night started"), true);
+		return 1;
+	}
+
+	private static int siegeStop(CommandSourceStack source) {
+		SiegeNight.forceStop(source.getServer().overworld());
+		source.sendSuccess(() -> Component.literal("Siege stopped, next one rescheduled"), true);
+		return 1;
+	}
+
+	private static int siegeIn(CommandSourceStack source, int days) {
+		if (!SiegeNight.scheduleIn(source.getServer().overworld(), days)) {
+			source.sendFailure(Component.literal("A siege is running now. Use /evolvingthreats siege stop first"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Next siege in " + days + " day(s)"), true);
+		return 1;
 	}
 
 	private static int spawnPunchBow(CommandSourceStack source, int punchLevel) {
@@ -382,6 +444,27 @@ public final class EvolvingThreatsCommands {
 		}
 		TacticianSkeleton.spawn(level, pos, lookAt);
 		source.sendSuccess(() -> Component.literal("Spawned 700 IQ skeleton"), true);
+		return 1;
+	}
+
+	private static int spawnBasilisk(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (!BasiliskSkeleton.spawn(level, pos, lookAt)) {
+			source.sendFailure(Component.literal("Basilisk is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned Basilisk"), true);
 		return 1;
 	}
 

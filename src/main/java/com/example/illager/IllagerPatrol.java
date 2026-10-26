@@ -1,6 +1,7 @@
 package com.example.illager;
 
 import com.example.entity.IllagerPatrolMember;
+import com.example.siege.SiegeNight;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -178,6 +179,10 @@ public final class IllagerPatrol {
 	/** true — отряд вышел, и следующая пауза снова случайные дни. */
 	private static boolean trySpawn(ServerLevel level) {
 		if (level.getDifficulty() == Difficulty.PEACEFUL) {
+			return false;
+		}
+		// В осаду отряды не выходят. Попробуем снова через RETRY_TICKS, после рассвета получится.
+		if (SiegeNight.isWindowOpen(level)) {
 			return false;
 		}
 		if (DAYTIME_ONLY && !level.isBrightOutside()) {

@@ -1,6 +1,8 @@
 package com.example.mixin;
 
+import com.example.entity.BasiliskSkeletonEntity;
 import com.example.entity.FastBowSkeletonEntity;
+import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.FastBowSkeleton;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
@@ -39,6 +41,9 @@ public abstract class AbstractSkeletonFastBowMixin {
 			index = 6
 	)
 	private float evolvingthreats$arrowSpeed(float speed) {
+		if (isBasilisk()) {
+			return BasiliskSkeleton.ARROW_SPEED;
+		}
 		if (isFastBow()) {
 			return FastBowSkeleton.ARROW_SPEED;
 		}
@@ -53,10 +58,18 @@ public abstract class AbstractSkeletonFastBowMixin {
 	 */
 	@ModifyConstant(method = "performRangedAttack", constant = @Constant(doubleValue = 0.20000000298023224))
 	private double evolvingthreats$arrowArc(double arc) {
+		if (isBasilisk()) {
+			return BasiliskSkeleton.arrowArc();
+		}
 		if (isFastBow()) {
 			return FastBowSkeleton.arrowArc();
 		}
 		return arc;
+	}
+
+	private boolean isBasilisk() {
+		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
+		return skeleton instanceof BasiliskSkeletonEntity data && data.evolvingthreats$isBasilisk();
 	}
 
 	private boolean isFastBow() {

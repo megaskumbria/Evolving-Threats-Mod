@@ -2,6 +2,8 @@ package com.example.mixin;
 
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ai.RaidHuntGoal;
+import com.example.entity.ai.SiegeMarchGoal;
+import com.example.entity.ai.SiegeTargetGoal;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,6 +16,9 @@ public class AbstractSkeletonRaidGoalsMixin {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$registerRaidGoals(CallbackInfo ci) {
 		AbstractSkeleton self = (AbstractSkeleton) (Object) this;
+		// Осада: цель и поход к игроку. На обычного скелета не действуют, пока нет метки осады.
+		((MobTargetSelectorAccessor) self).evolvingthreats$getTargetSelector().addGoal(0, new SiegeTargetGoal(self));
+		self.getGoalSelector().addGoal(1, new SiegeMarchGoal(self));
 		if (!(self instanceof RaidParticipantEntity raid) || !raid.evolvingthreats$isRaidMinion()) {
 			return;
 		}

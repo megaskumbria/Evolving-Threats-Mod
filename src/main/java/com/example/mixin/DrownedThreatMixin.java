@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление утопленника: шлем и трезубец.
- * Срабатывает после того, как игра уже решила, дать ли ему обычный трезубец.
+ * Появление утопленника: черепаший шлем и чары на трезубец, который уже выдала игра.
+ * Сам трезубец мод не создаёт. Если игра успела повесить свои чары, они заменяются.
  * Числа — {@link DrownedThreats}.
  */
 @Mixin(Drowned.class)

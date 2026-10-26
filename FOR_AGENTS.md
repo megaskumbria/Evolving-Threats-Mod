@@ -50,6 +50,7 @@
 | Спектральная стрела поднимает мобов | `skeleton/SpectralArrowHunt.java` | заметки нет |
 | Иссушитель со спавнером | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/иссушитель-со-спавнером.txt` |
 | Капитан скелетов | `skeleton/SkeletonCaptain.java` | `mobs/skeletons/капитан-скелетов.txt` |
+| Василиск | `skeleton/BasiliskSkeleton.java` | `mobs/skeletons/василиск.txt` |
 | Скелет на костяной лошади | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/скелет-наездник.txt` |
 | Лук с Откидыванием V–VI | `skeleton/SkeletonPunchBow.java` | `mobs/skeletons/лук-откидывание.txt` |
 
@@ -81,6 +82,7 @@
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
 | Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
+| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java` | `mobs/raids/осада.txt` |
 | Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
 | Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/фантомы-слабость.txt` |
 | Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |

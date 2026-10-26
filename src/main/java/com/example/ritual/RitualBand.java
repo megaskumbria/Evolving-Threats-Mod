@@ -3,6 +3,7 @@ package com.example.ritual;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.RitualMember;
 import com.example.entity.ZombieOverseerEntity;
+import com.example.siege.SiegeNight;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
@@ -437,6 +438,10 @@ public final class RitualBand {
 			return false;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return false;
+		}
+		// В ночь осады ритуальные стаи не появляются.
+		if (SiegeNight.isWindowOpen(mob.level())) {
 			return false;
 		}
 		if (mob instanceof Zombie zombie) {

@@ -21,6 +21,12 @@ public class FishingHookDrownedMixin {
 		if (!(hook.getOwner() instanceof Drowned drowned)) {
 			return;
 		}
+		if (hook.level().isClientSide()) {
+			// Позицию уже сгладил общий тик. Здесь только не даём крючку пропасть:
+			// обычная удочка живёт лишь у игрока.
+			ci.cancel();
+			return;
+		}
 		if (!DrownedFishing.tickBobber(hook, drowned)) {
 			hook.discard();
 		}
