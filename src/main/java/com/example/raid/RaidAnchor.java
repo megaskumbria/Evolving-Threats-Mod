@@ -2,6 +2,7 @@ package com.example.raid;
 
 import com.example.entity.RaidParticipantEntity;
 import com.example.overseer.ZombieOverseer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,6 +82,38 @@ public final class RaidAnchor {
 		}
 		RaidRegistry.registerAnchor(raidId, anchor.getId());
 
+		spawnMinions(level, anchorPos, raidId, huntId, false);
+
+		if (huntId != null && target != null) {
+			anchor.setTarget(target);
+		}
+	}
+
+	/**
+	 * Естественное появление: обычный зомби, который только что заспавнился, сам становится якорем
+	 * (так же, как зомби становится надсмотрщиком), а прислуги появляются вокруг него.
+	 * Вызывается из {@link RaidAnchorNatural}. Прислуги ставятся на поверхность земли, а не на высоту якоря.
+	 *
+	 * @param zombie свежий зомби, ещё не добавленный в мир (его добавит сама игра)
+	 * @param hunter ближайший игрок — цель рейда; может быть null
+	 */
+	public static void convertToAnchor(ServerLevel level, Zombie zombie, @Nullable ServerPlayer hunter) {
+		UUID raidId = UUID.randomUUID();
+		UUID huntId = hunter != null ? hunter.getUUID() : null;
+
+		setupAnchor(zombie, raidId, huntId);
+		RaidBossBars.createFor(zombie);
+		RaidRegistry.registerAnchor(raidId, zombie.getId());
+
+		spawnMinions(level, zombie.position(), raidId, huntId, true);
+
+		if (hunter != null) {
+			zombie.setTarget(hunter);
+		}
+	}
+
+	/** Создаёт прислуг кольцом вокруг якоря. surface=true — ставить на поверхность земли (для естественного рейда). */
+	private static void spawnMinions(ServerLevel level, Vec3 anchorPos, UUID raidId, @Nullable UUID huntId, boolean surface) {
 		var random = level.getRandom();
 		int count = MINION_COUNT_MIN + random.nextInt(MINION_COUNT_MAX - MINION_COUNT_MIN + 1);
 		for (int i = 0; i < count; i++) {
@@ -89,6 +123,10 @@ public final class RaidAnchor {
 			double x = anchorPos.x + Math.cos(angle) * radius;
 			double z = anchorPos.z + Math.sin(angle) * radius;
 			double y = anchorPos.y;
+			if (surface) {
+				// Без этого на холмистой местности прислуги оказывались бы внутри склона или в воздухе.
+				y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(x, y, z)).getY();
+			}
 			Vec3 minionPos = new Vec3(x, y, z);
 
 			if (random.nextFloat() < MINION_ZOMBIE_FRACTION) {
@@ -96,10 +134,6 @@ public final class RaidAnchor {
 			} else {
 				spawnSkeletonMinion(level, minionPos, raidId, huntId);
 			}
-		}
-
-		if (huntId != null && target != null) {
-			anchor.setTarget(target);
 		}
 	}
 
@@ -110,7 +144,15 @@ public final class RaidAnchor {
 			return null;
 		}
 		anchor.snapTo(pos.x, pos.y, pos.z, level.getRandom().nextFloat() * 360.0f, 0.0f);
+		setupAnchor(anchor, raidId, huntId);
 
+		level.addFreshEntity(anchor);
+		RaidBossBars.createFor(anchor);
+		return anchor;
+	}
+
+	/** Превращает зомби в якорь: метки рейда, здоровье, имя, золотая мотыга. В мир его не добавляет. */
+	private static void setupAnchor(Zombie anchor, UUID raidId, @Nullable UUID huntId) {
 		if (anchor instanceof RaidParticipantEntity raid) {
 			raid.evolvingthreats$setRaidAnchor(true);
 			raid.evolvingthreats$setRaidMinion(false);
@@ -126,10 +168,6 @@ public final class RaidAnchor {
 		anchor.setCustomNameVisible(true);
 		anchor.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_HOE));
 		anchor.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
-
-		level.addFreshEntity(anchor);
-		RaidBossBars.createFor(anchor);
-		return anchor;
 	}
 
 	private static void spawnZombieMinion(ServerLevel level, Vec3 pos, UUID raidId, @Nullable UUID huntId) {

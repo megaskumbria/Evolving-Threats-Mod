@@ -1,5 +1,7 @@
 package com.example.beacon;
 
+import com.example.threat.ThreatScale;
+
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.light.LightSeeking;
@@ -33,7 +35,8 @@ public final class JackLanternBeacon {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) при спавне стать носителем. 0.05 = 5%.
+	 * Шанс (0.0–1.0) при спавне стать носителем на 100-й день (РАСТЁТ: в начале игры в 10 раз меньше,
+	 * см. ThreatTable.DANGEROUS_START_RATIO). 0.05 = 5%.
 	 * Бросок после спавнера (и раздатчика у скелета): голова одна.
 	 */
 	public static final float CARRIER_SPAWN_CHANCE = 0.05f;
@@ -116,7 +119,7 @@ public final class JackLanternBeacon {
 		if (SpawnerHeadMob.hasSpawnerOnHead(mob)) {
 			return false;
 		}
-		if (mob.getRandom().nextFloat() >= CARRIER_SPAWN_CHANCE) {
+		if (mob.getRandom().nextFloat() >= ThreatScale.dangerousChance(mob.level(), CARRIER_SPAWN_CHANCE)) {
 			return false;
 		}
 		mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.JACK_O_LANTERN));

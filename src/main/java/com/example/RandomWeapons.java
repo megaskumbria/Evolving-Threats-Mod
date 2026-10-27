@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -79,7 +81,10 @@ public final class RandomWeapons {
 		{ Items.DIAMOND_SWORD, Items.DIAMOND_AXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_PICKAXE, Items.DIAMOND_HOE },
 	};
 
-	/** Веса материала оружия: дерево, камень, золото, медь, железо, алмаз (без незерита). */
+	/**
+	 * Веса материала оружия на 100-й день (конец шкалы): дерево, камень, золото, медь, железо, алмаз (без незерита).
+	 * В начале игры веса другие: ThreatTable.WEAPON_MATERIAL_WEIGHTS_START.
+	 */
 	private static final int[] MATERIAL_WEIGHTS = {
 		30, 25, 10, 10, 15, 10,
 	};
@@ -91,13 +96,16 @@ public final class RandomWeapons {
 	public static void rollSkeletonLoadout(Mob mob) {
 		RandomSource random = mob.getRandom();
 		float roll = random.nextFloat();
+		// РАСТЁТ: оба шанса выше написаны для 100-го дня, в начале игры они меньше (ThreatTable.WEAPON_START_RATIO).
+		float dualWield = growing(mob, SKELETON_DUAL_WIELD_CHANCE);
+		float meleeOnly = growing(mob, SKELETON_MELEE_ONLY_CHANCE);
 
-		if (roll < SKELETON_DUAL_WIELD_CHANCE) {
+		if (roll < dualWield) {
 			equipDualWieldArcher(mob);
 			return;
 		}
 
-		if (roll < SKELETON_DUAL_WIELD_CHANCE + SKELETON_MELEE_ONLY_CHANCE) {
+		if (roll < dualWield + meleeOnly) {
 			equipMeleeOnly(mob);
 		}
 		// иначе — ванильный скелет только с луком
@@ -107,13 +115,13 @@ public final class RandomWeapons {
 	 * Лук остаётся в основной руке (ваниль уже выдала), случайное оружие — во второй.
 	 */
 	public static void equipDualWieldArcher(Mob mob) {
-		Item weapon = pickRandomWeapon(mob.getRandom());
+		Item weapon = pickRandomWeapon(mob);
 		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(weapon));
 	}
 
 	/** Заменяет лук в основной руке на случайное оружие. */
 	public static void equipMeleeOnly(Mob mob) {
-		Item weapon = pickRandomWeapon(mob.getRandom());
+		Item weapon = pickRandomWeapon(mob);
 		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(weapon));
 	}
 
@@ -205,12 +213,18 @@ public final class RandomWeapons {
 			return false;
 		}
 		RandomSource random = mob.getRandom();
-		if (random.nextFloat() >= chance) {
+		// chance — значение на 100-й день, в начале игры шанс меньше.
+		if (random.nextFloat() >= growing(mob, chance)) {
 			return false;
 		}
-		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pickRandomWeapon(random)));
-		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(pickRandomWeapon(random)));
+		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pickRandomWeapon(mob)));
+		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(pickRandomWeapon(mob)));
 		return true;
+	}
+
+	/** РАСТЁТ: шанс от {@code endChance × WEAPON_START_RATIO} (день 0) до {@code endChance} (день 100). */
+	private static float growing(Mob mob, float endChance) {
+		return ThreatScale.growingChance(mob.level(), endChance, ThreatTable.WEAPON_START_RATIO);
 	}
 
 	/**
@@ -261,28 +275,19 @@ public final class RandomWeapons {
 
 	public static boolean tryEquip(Mob mob, float chance) {
 		RandomSource random = mob.getRandom();
-		if (random.nextFloat() >= chance) {
+		// chance — значение на 100-й день, в начале игры шанс меньше.
+		if (random.nextFloat() >= growing(mob, chance)) {
 			return false;
 		}
 		equipMeleeOnly(mob);
 		return true;
 	}
 
-	private static Item pickRandomWeapon(RandomSource random) {
-		int totalWeight = 0;
-		for (int weight : MATERIAL_WEIGHTS) {
-			totalWeight += weight;
-		}
-
-		int roll = random.nextInt(totalWeight);
-		int materialIndex = 0;
-		for (int i = 0; i < MATERIAL_WEIGHTS.length; i++) {
-			roll -= MATERIAL_WEIGHTS[i];
-			if (roll < 0) {
-				materialIndex = i;
-				break;
-			}
-		}
+	/** Материал по весам, которые плавно меняются от начала шкалы угрозы к концу. Вид оружия (меч, топор…) — поровну. */
+	private static Item pickRandomWeapon(Mob mob) {
+		RandomSource random = mob.getRandom();
+		int materialIndex = ThreatScale.pickWeighted(
+				mob.level(), random, ThreatTable.WEAPON_MATERIAL_WEIGHTS_START, MATERIAL_WEIGHTS);
 
 		Item[] tools = MATERIALS[materialIndex];
 		return tools[random.nextInt(tools.length)];

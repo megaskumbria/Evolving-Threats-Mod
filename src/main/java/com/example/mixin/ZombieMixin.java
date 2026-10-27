@@ -15,6 +15,7 @@ import com.example.ritual.RitualBand;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
+import com.example.raid.RaidAnchorNatural;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -67,6 +68,12 @@ public class ZombieMixin {
 				&& level instanceof ServerLevel serverLevel
 				&& !SiegeNight.isWindowOpen(serverLevel)
 				&& ZombieOverseer.tryCreateOnSpawn(zombie, serverLevel)) {
+			return;
+		}
+
+		// Рейдовый якорь (с 80-го дня, очень редко, ночью на поверхности). Подробности в RaidAnchorNatural.
+		if (level instanceof ServerLevel serverLevel
+				&& RaidAnchorNatural.tryConvertOnSpawn(zombie, serverLevel, spawnReason)) {
 			return;
 		}
 

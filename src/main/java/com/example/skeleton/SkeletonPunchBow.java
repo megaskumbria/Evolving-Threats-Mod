@@ -1,5 +1,8 @@
 package com.example.skeleton;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+
 import com.example.entity.TacticianSkeletonEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +38,8 @@ public final class SkeletonPunchBow {
 
 	/**
 	 * Шанс (0.0–1.0), что у скелета или странника с луком будет Откидывание V или VI.
-	 * 0.12 = 12%. Бросается после обычных чар. Капитан, его помощники и «700 IQ» этот шанс не бросают.
+	 * 0.12 = 12% на 100-й день (РАСТЁТ: в начале в 10 раз меньше). Совсем не выдаётся до дня
+	 * ThreatTable.STRONG_BOW_DAY (20-й). Бросается после обычных чар. Капитан, его помощники и «700 IQ» этот шанс не бросают.
 	 * 1.0 = такой лук у каждого, у кого лук остался. 0 = не выдавать.
 	 */
 	public static final float CHANCE = 0.12f;
@@ -126,8 +130,14 @@ public final class SkeletonPunchBow {
 		if (!ENABLED || CHANCE <= 0.0f) {
 			return;
 		}
+		// «Чары сильнее ванильных»: до ThreatTable.STRONG_BOW_DAY таких луков нет совсем,
+		// потом шанс растёт от начала к концу шкалы вместе с луной.
+		if (!ThreatScale.reached(skeleton.level(), ThreatTable.STRONG_BOW_DAY)) {
+			return;
+		}
 		EquipmentSlot slot = bowSlot(skeleton);
-		if (slot == null || skeleton.getRandom().nextFloat() >= CHANCE) {
+		if (slot == null
+				|| skeleton.getRandom().nextFloat() >= ThreatScale.dangerousChance(skeleton.level(), CHANCE)) {
 			return;
 		}
 		int level = rollLevel(skeleton.getRandom());

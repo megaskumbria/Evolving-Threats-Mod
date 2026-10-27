@@ -1,5 +1,7 @@
 package com.example.skeleton;
 
+import com.example.threat.ThreatScale;
+
 import com.example.MobEnchantments;
 import com.example.RandomArmor;
 import com.example.entity.TacticianSkeletonEntity;
@@ -49,7 +51,8 @@ public final class TacticianSkeleton {
 
 	/**
 	 * Шанс (0.0–1.0), что обычный скелет или странник будет этим типом.
-	 * 0.05 = 5%. Реже маленького и дальнего: этот сильнее в бою.
+	 * 0.05 = 5% на 100-й день (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO).
+	 * Реже маленького и дальнего: этот сильнее в бою.
 	 * 0 = таких скелетов не будет.
 	 */
 	public static final float SPAWN_CHANCE = 0.05f;
@@ -118,7 +121,7 @@ public final class TacticianSkeleton {
 			equip(skeleton, data);
 			return true;
 		}
-		if (skeleton.getRandom().nextFloat() >= SPAWN_CHANCE) {
+		if (skeleton.getRandom().nextFloat() >= ThreatScale.dangerousChance(skeleton.level(), SPAWN_CHANCE)) {
 			return false;
 		}
 		equip(skeleton, data);

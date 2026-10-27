@@ -1,5 +1,8 @@
 package com.example.skeleton;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+
 import com.example.MobEnchantments;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.SkeletonSquadMember;
@@ -215,6 +218,10 @@ public final class SkeletonCaptain {
 			return false;
 		}
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
+			return false;
+		}
+		// С какого дня капитаны вообще появляются (ThreatTable.SKELETON_CAPTAIN_DAY). Шанс ниже от дня не меняется.
+		if (!ThreatScale.reached(skeleton.level(), ThreatTable.SKELETON_CAPTAIN_DAY)) {
 			return false;
 		}
 		if (skeleton.getRandom().nextFloat() >= SPAWN_CHANCE) {

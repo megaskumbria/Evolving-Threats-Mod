@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -41,37 +43,45 @@ public final class MobEnchantments {
 	/** Включить механику. false — мобы не получают чар (оружие по-прежнему выдаётся как раньше). */
 	public static final boolean ENABLED = true;
 
+	/*
+	 * ВАЖНО про шансы ниже: это значения на 100-й день (КОНЕЦ шкалы угрозы).
+	 * В начале игры шанс намного меньше (ThreatTable.WEAPON_ENCHANT_CHANCE_START / ARMOR_ENCHANT_CHANCE_START)
+	 * и плавно растёт вместе со шкалой и луной. Так же растут число чар и их уровни.
+	 * Механики с меткой ФИКС (парящий инструмент, капитан, рейд, ритуалы) растут не должны: они зовут
+	 * rollHeldWeapons / rollArmorPieces со своим шансом, и там остаются ваши прежние числа (COUNT_WEIGHTS и LEVEL_BIAS_FIXED).
+	 */
+
 	/**
-	 * Шанс (0.0–1.0), что КАЖДЫЙ предмет в руках зомби будет зачарован. 0.30 = 30%.
+	 * Шанс (0.0–1.0), что КАЖДЫЙ предмет в руках зомби будет зачарован на 100-й день. 0.45 = 45%.
 	 * Это шанс уже для зомби, у которого оружие есть (оно у ~40% зомби, см. RandomWeapons).
 	 * 0 = у зомби чар не будет.
 	 */
-	public static final float ZOMBIE_ENCHANT_CHANCE = 0.30f;
+	public static final float ZOMBIE_ENCHANT_CHANCE = 0.45f;
 
 	/**
 	 * Шанс (0.0–1.0) для КАЖДОГО предмета в руках скелета/странника (лук и второе оружие бросаются отдельно).
-	 * 0.30 = 30%. 0 = у скелетов чар не будет.
+	 * 0.45 = 45% на 100-й день. 0 = у скелетов чар не будет.
 	 */
-	public static final float SKELETON_ENCHANT_CHANCE = 0.30f;
+	public static final float SKELETON_ENCHANT_CHANCE = 0.45f;
 
 	/**
 	 * Шанс (0.0–1.0) для оружия разбойника (арбалет) и громилы (топор).
-	 * 0.30 = 30%. В рейде у разбойника тот же шанс, но бросок после арбалета самой игры.
+	 * 0.45 = 45% на 100-й день. В рейде у разбойника тот же шанс, но бросок после арбалета самой игры.
 	 * Если выпало — чары мода заменяют быструю перезарядку рейда. Если нет — она остаётся.
 	 * Громилу в рейде это не затрагивает: игра меняет ему топор уже после нашего броска.
 	 * 0 = чар не будет.
 	 */
-	public static final float ILLAGER_ENCHANT_CHANCE = 0.30f;
+	public static final float ILLAGER_ENCHANT_CHANCE = 0.45f;
 
 	/**
-	 * Шанс (0.0–1.0), что КАЖДЫЙ надетый кусок брони зомби будет зачарован. 0.25 = 25%.
+	 * Шанс (0.0–1.0), что КАЖДЫЙ надетый кусок брони зомби будет зачарован на 100-й день. 0.40 = 40%.
 	 * Считается отдельно для шлема, нагрудника, поножей и ботинок (броня сама выпадает у зомби с шансом 50% на слот,
 	 * см. RandomArmor). 0 = у зомби брони с чарами не будет.
 	 */
-	public static final float ZOMBIE_ARMOR_ENCHANT_CHANCE = 0.25f;
+	public static final float ZOMBIE_ARMOR_ENCHANT_CHANCE = 0.40f;
 
-	/** То же для брони скелетов и странников. 0.25 = 25% на каждый кусок. 0 = чар на броне скелетов не будет. */
-	public static final float SKELETON_ARMOR_ENCHANT_CHANCE = 0.25f;
+	/** То же для брони скелетов и странников. 0.40 = 40% на каждый кусок. 0 = чар на броне скелетов не будет. */
+	public static final float SKELETON_ARMOR_ENCHANT_CHANCE = 0.40f;
 
 	/**
 	 * Сколько чар сразу на одном предмете-ОРУЖИИ. Индекс 0 = одна чара, 1 = две, 2 = три и т.д. Числа — «вес» (шанс относительно остальных).
@@ -89,12 +99,18 @@ public final class MobEnchantments {
 	public static final int[] ARMOR_COUNT_WEIGHTS = { 60, 28, 10, 2 };
 
 	/**
-	 * Насколько уровень чары тяготеет к низким значениям.
-	 * 1.0 = все уровни равновероятны (острота V так же часто, как I).
-	 * 2.0 = низкие уровни заметно чаще, максимальный редкий (для остроты V: I ~45%, V ~2%).
-	 * 3.0 = максимальный уровень почти не встречается.
+	 * Насколько уровень чары тяготеет к низким значениям — на 100-й день (конец шкалы угрозы).
+	 * Для остроты (максимум V): 0.0 = все уровни равновероятны (V = 20%), 0.5 = V ≈ 12%,
+	 * 1.0 = V ≈ 7%, 2.0 = V ≈ 2% (I ≈ 45%), 3.0 = V почти не встречается. Меньше нуля — высокие чаще низких.
+	 * В начале игры уклон сильнее (ThreatTable.ENCHANT_LEVEL_BIAS_START).
 	 */
-	public static final double LEVEL_BIAS = 2.0;
+	public static final double LEVEL_BIAS = 0.5;
+
+	/**
+	 * Тот же уклон для механик с меткой ФИКС (парящий инструмент, капитан, рейд, ритуальные группы):
+	 * они от шкалы не зависят, поэтому остаются на прежних 2.0. См. описание LEVEL_BIAS.
+	 */
+	public static final double LEVEL_BIAS_FIXED = 2.0;
 
 	/**
 	 * Какие чары вообще могут выпасть и как часто (вес; 0 = выключена).
@@ -165,71 +181,82 @@ public final class MobEnchantments {
 
 	/** Вызывается из ZombieMixin после того, как зомби получил оружие. */
 	public static void rollForZombie(Mob mob) {
-		rollForHeldItems(mob, ZOMBIE_ENCHANT_CHANCE);
+		rollForHeldItems(mob, ZOMBIE_ENCHANT_CHANCE, true);
 	}
 
 	/** Вызывается из SkeletonMixin после того, как скелет получил лук/оружие. */
 	public static void rollForSkeleton(Mob mob) {
-		rollForHeldItems(mob, SKELETON_ENCHANT_CHANCE);
+		rollForHeldItems(mob, SKELETON_ENCHANT_CHANCE, true);
 	}
 
 	/** Вызывается из IllagerWeaponEnchantMixin для разбойников и громил. */
 	public static void rollForIllager(Mob mob) {
-		rollForHeldItems(mob, ILLAGER_ENCHANT_CHANCE);
+		rollForHeldItems(mob, ILLAGER_ENCHANT_CHANCE, true);
 	}
 
 	/** Вызывается из ZombieMixin ПОСЛЕ того, как зомби получил броню (RandomArmor). */
 	public static void rollArmorForZombie(Mob mob) {
-		rollForArmor(mob, ZOMBIE_ARMOR_ENCHANT_CHANCE);
+		rollForArmor(mob, ZOMBIE_ARMOR_ENCHANT_CHANCE, true);
 	}
 
 	/** Вызывается из SkeletonMixin ПОСЛЕ того, как скелет получил броню (RandomArmor). */
 	public static void rollArmorForSkeleton(Mob mob) {
-		rollForArmor(mob, SKELETON_ARMOR_ENCHANT_CHANCE);
+		rollForArmor(mob, SKELETON_ARMOR_ENCHANT_CHANCE, true);
 	}
 
 	/**
 	 * Шанс отдельно на каждый кусок брони. 0.45 = 45% на шлем, отдельно 45% на нагрудник и так далее.
 	 * 0 = броня без чар. 1 = зачарован каждый кусок.
+	 * Для механик с меткой ФИКС (капитан, рейд, ритуал): шанс и уровни от шкалы угрозы не зависят.
 	 */
 	public static void rollArmorPieces(Mob mob, float chancePerPiece) {
-		rollForArmor(mob, chancePerPiece);
+		rollForArmor(mob, chancePerPiece, false);
 	}
 
-	/** Шанс отдельно на каждый предмет в руках. 0 = оружие без чар. */
+	/** Шанс отдельно на каждый предмет в руках. 0 = оружие без чар. От шкалы угрозы не зависит (метка ФИКС). */
 	public static void rollHeldWeapons(Mob mob, float chancePerItem) {
-		rollForHeldItems(mob, chancePerItem);
+		rollForHeldItems(mob, chancePerItem, false);
 	}
 
-	/** Бросает шанс отдельно для каждого куска брони. Особые «головы» (спавнер, тыква, раздатчик) не трогает. */
-	private static void rollForArmor(Mob mob, float chance) {
+	/**
+	 * Бросает шанс отдельно для каждого куска брони. Особые «головы» (спавнер, тыква, раздатчик) не трогает.
+	 *
+	 * @param growing true — {@code chance} это значение на 100-й день, в начале игры оно меньше (РАСТЁТ)
+	 */
+	private static void rollForArmor(Mob mob, float chance, boolean growing) {
 		if (!ENABLED || chance <= 0.0f) {
 			return;
 		}
+		float actual = growing
+				? ThreatScale.lerp(mob.level(), ThreatTable.ARMOR_ENCHANT_CHANCE_START, chance)
+				: chance;
 		RandomSource random = mob.getRandom();
 		for (EquipmentSlot slot : ARMOR_SLOTS) {
 			ItemStack stack = mob.getItemBySlot(slot);
-			if (!RandomArmor.isModArmor(stack) || random.nextFloat() >= chance) {
+			if (!RandomArmor.isModArmor(stack) || random.nextFloat() >= actual) {
 				continue;
 			}
-			if (enchant(mob, stack, random, ARMOR_COUNT_WEIGHTS)) {
+			if (enchant(mob, stack, random, true, growing)) {
 				mob.setItemSlot(slot, stack);
 			}
 		}
 	}
 
-	/** Бросает шанс отдельно для каждого предмета в основной и второй руке. */
-	private static void rollForHeldItems(Mob mob, float chance) {
+	/** Бросает шанс отдельно для каждого предмета в основной и второй руке. {@code growing} — как у брони. */
+	private static void rollForHeldItems(Mob mob, float chance, boolean growing) {
 		if (!ENABLED || chance <= 0.0f) {
 			return;
 		}
+		float actual = growing
+				? ThreatScale.lerp(mob.level(), ThreatTable.WEAPON_ENCHANT_CHANCE_START, chance)
+				: chance;
 		RandomSource random = mob.getRandom();
 		for (EquipmentSlot slot : HAND_SLOTS) {
 			ItemStack stack = mob.getItemBySlot(slot);
-			if (!isEnchantableWeapon(stack) || random.nextFloat() >= chance) {
+			if (!isEnchantableWeapon(stack) || random.nextFloat() >= actual) {
 				continue;
 			}
-			if (enchant(mob, stack, random, COUNT_WEIGHTS)) {
+			if (enchant(mob, stack, random, false, growing)) {
 				// Кладём обратно на случай, если игра отдала копию, а не сам предмет.
 				mob.setItemSlot(slot, stack);
 			}
@@ -248,13 +275,26 @@ public final class MobEnchantments {
 	 *
 	 * @return true, если на предмет что-то повешено
 	 */
-	private static boolean enchant(Mob mob, ItemStack stack, RandomSource random, int[] countWeights) {
+	private static boolean enchant(Mob mob, ItemStack stack, RandomSource random, boolean armor, boolean growing) {
 		List<Option> pool = buildPool(mob, stack);
 		if (pool.isEmpty()) {
 			return false;
 		}
 
-		int wanted = pickCount(random, countWeights);
+		// РАСТЁТ: и число чар, и их уровни зависят от шкалы угрозы. ФИКС: прежние значения.
+		int[] endCounts = armor ? ARMOR_COUNT_WEIGHTS : COUNT_WEIGHTS;
+		int wanted;
+		double levelBias;
+		if (growing) {
+			double[] startCounts = armor
+					? ThreatTable.ARMOR_ENCHANT_COUNT_WEIGHTS_START
+					: ThreatTable.ENCHANT_COUNT_WEIGHTS_START;
+			wanted = ThreatScale.pickWeighted(mob.level(), random, startCounts, endCounts) + 1;
+			levelBias = ThreatScale.lerp(mob.level(), ThreatTable.ENCHANT_LEVEL_BIAS_START, LEVEL_BIAS);
+		} else {
+			wanted = pickCount(random, endCounts);
+			levelBias = LEVEL_BIAS_FIXED;
+		}
 		List<Option> chosen = new ArrayList<>();
 		while (chosen.size() < wanted && !pool.isEmpty()) {
 			Option pick = pickWeighted(random, pool);
@@ -267,7 +307,7 @@ public final class MobEnchantments {
 		EnchantmentHelper.updateEnchantments(stack, mutable -> {
 			mutable.removeIf(holder -> true);
 			for (Option option : chosen) {
-				mutable.set(option.holder(), pickLevel(random, option.holder().value().getMaxLevel()));
+				mutable.set(option.holder(), pickLevel(random, option.holder().value().getMaxLevel(), levelBias));
 			}
 		});
 		return true;
@@ -322,15 +362,15 @@ public final class MobEnchantments {
 		return pool.get(0);
 	}
 
-	/** Уровень от 1 до maxLevel; чем выше уровень, тем он реже (см. LEVEL_BIAS). */
-	private static int pickLevel(RandomSource random, int maxLevel) {
+	/** Уровень от 1 до maxLevel; чем больше {@code bias}, тем реже высокие уровни (см. LEVEL_BIAS). */
+	private static int pickLevel(RandomSource random, int maxLevel, double bias) {
 		if (maxLevel <= 1) {
 			return 1;
 		}
 		double[] weights = new double[maxLevel];
 		double total = 0.0;
 		for (int level = 1; level <= maxLevel; level++) {
-			weights[level - 1] = Math.pow(maxLevel - level + 1, LEVEL_BIAS);
+			weights[level - 1] = Math.pow(maxLevel - level + 1, bias);
 			total += weights[level - 1];
 		}
 		double roll = random.nextDouble() * total;

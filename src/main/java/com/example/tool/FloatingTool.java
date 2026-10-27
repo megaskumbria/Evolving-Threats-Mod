@@ -11,6 +11,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -82,6 +85,14 @@ public class FloatingTool extends Monster {
 	public static final float VISUAL_SCALE = 1.6f;
 
 	/**
+	 * Куда смотрит картинка, пока инструмент атакует, в градусах.
+	 * 0 = туда же, куда повёрнут сам моб (на игрока). Вокруг своей оси в этот момент не крутится.
+	 * 90 или 180 — если лезвие смотрит вбок или назад.
+	 * Когда никого не атакует, предмет снова крутится, как брошенная вещь.
+	 */
+	public static final float ATTACK_FACING_OFFSET = 0.0f;
+
+	/**
 	 * «Кулак» моба, в сердечках урона это половина числа (1.0 = полсердца).
 	 * Урон самого инструмента прибавляется сверху: деревянный меч слабее алмазного,
 	 * мотыга слабее меча. Не ставь сюда 5–10 — иначе даже мотыга будет бить как меч.
@@ -146,6 +157,13 @@ public class FloatingTool extends Monster {
 
 	public static EntityType<FloatingTool> TYPE;
 
+	/**
+	 * true, пока есть цель. Клиент по этому флагу перестаёт крутить картинку.
+	 * Сама цель на клиент не приходит, поэтому флаг шлётся отдельно.
+	 */
+	private static final EntityDataAccessor<Boolean> DATA_ATTACKING = SynchedEntityData.defineId(
+			FloatingTool.class, EntityDataSerializers.BOOLEAN);
+
 	public FloatingTool(EntityType<? extends FloatingTool> type, Level level) {
 		super(type, level);
 		this.xpReward = EXPERIENCE_REWARD;
@@ -196,9 +214,30 @@ public class FloatingTool extends Monster {
 		if (lookAt != null) {
 			tool.setTarget(lookAt);
 			tool.getLookControl().setLookAt(lookAt, 30.0f, 30.0f);
+			// Сразу, чтобы картинка не крутанулась в первый миг после /ettool.
+			tool.entityData.set(DATA_ATTACKING, true);
 		}
 		level.addFreshEntity(tool);
 		return tool;
+	}
+
+	@Override
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(DATA_ATTACKING, false);
+	}
+
+	/** true — гонится за целью, картинка не крутится вокруг своей оси. */
+	public boolean isAttacking() {
+		return this.entityData.get(DATA_ATTACKING);
+	}
+
+	@Override
+	protected void customServerAiStep(ServerLevel level) {
+		boolean attacking = this.getTarget() != null;
+		if (this.isAttacking() != attacking) {
+			this.entityData.set(DATA_ATTACKING, attacking);
+		}
 	}
 
 	@Override

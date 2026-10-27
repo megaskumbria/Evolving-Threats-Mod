@@ -1,5 +1,7 @@
 package com.example.skeleton;
 
+import com.example.threat.ThreatScale;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
@@ -30,7 +32,8 @@ public final class HarmfulArrowSkeleton {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет или странник появится с вредной стрелой. 0.20 = 20%.
+	 * Шанс (0.0–1.0), что обычный скелет или странник появится с вредной стрелой, на 100-й день
+	 * (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.20 = 20%.
 	 * Бросается раньше случайного меча и щита: если выпало, вторая рука занята стрелой.
 	 */
 	public static final float SPAWN_CHANCE = 0.20f;
@@ -121,7 +124,7 @@ public final class HarmfulArrowSkeleton {
 			return false;
 		}
 		RandomSource random = skeleton.getRandom();
-		if (random.nextFloat() >= SPAWN_CHANCE) {
+		if (random.nextFloat() >= ThreatScale.dangerousChance(skeleton.level(), SPAWN_CHANCE)) {
 			return false;
 		}
 		if (!skeleton.getMainHandItem().is(Items.BOW)) {

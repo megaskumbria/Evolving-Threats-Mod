@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -14,7 +16,10 @@ public final class RandomDispenserSkull {
 
 	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
 
-	/** Шанс (0.0–1.0), что у скелета на голове будет раздатчик. 0.15 = 15%. */
+	/**
+	 * Шанс (0.0–1.0), что у скелета на голове будет раздатчик, на 100-й день
+	 * (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.15 = 15%.
+	 */
 	public static final float SKELETON_DISPENSER_HEAD_CHANCE = 0.15f;
 
 	/** Минимальная пауза между залпами, секунды. */
@@ -54,7 +59,7 @@ public final class RandomDispenserSkull {
 	}
 
 	public static void tryEquipDispenserHead(Mob mob) {
-		if (mob.getRandom().nextFloat() >= SKELETON_DISPENSER_HEAD_CHANCE) {
+		if (mob.getRandom().nextFloat() >= ThreatScale.dangerousChance(mob.level(), SKELETON_DISPENSER_HEAD_CHANCE)) {
 			return;
 		}
 		mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.DISPENSER));

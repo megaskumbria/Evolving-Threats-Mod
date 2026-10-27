@@ -1,5 +1,7 @@
 package com.example.spawnerhead;
 
+import com.example.threat.ThreatScale;
+
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.SpawnerHeadCarrierEntity;
 import com.example.entity.ZombieOverseerEntity;
@@ -43,13 +45,14 @@ public final class SpawnerHeadMob {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что при спавне зомби или скелет станет носителем. 0.04 = 4% (редко).
+	 * Шанс (0.0–1.0), что при спавне зомби или скелет станет носителем, на 100-й день (РАСТЁТ: в начале игры
+	 * в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.04 = 4% (редко).
 	 * Отдельный бросок для каждого зомби/скелета. Скелет-иссушитель этот шанс не использует.
 	 */
 	public static final float CARRIER_SPAWN_CHANCE = 0.04f;
 
 	/**
-	 * Шанс (0.0–1.0), что скелет-иссушитель появится со спавнером на голове. 0.04 = 4%.
+	 * Шанс (0.0–1.0), что скелет-иссушитель появится со спавнером на голове, на 100-й день (РАСТЁТ). 0.04 = 4%.
 	 * Свой шанс, чтобы крутить ад, не меняя обычный мир. Команда спавна его не бросает.
 	 */
 	public static final float WITHER_CARRIER_SPAWN_CHANCE = 0.04f;
@@ -87,7 +90,7 @@ public final class SpawnerHeadMob {
 		if (!ENABLED || !isEligibleType(mob) || !isEligibleSpecial(mob)) {
 			return false;
 		}
-		if (mob.getRandom().nextFloat() >= CARRIER_SPAWN_CHANCE) {
+		if (mob.getRandom().nextFloat() >= ThreatScale.dangerousChance(mob.level(), CARRIER_SPAWN_CHANCE)) {
 			return false;
 		}
 		if (!(mob instanceof SpawnerHeadCarrierEntity carrier)) {
@@ -118,7 +121,7 @@ public final class SpawnerHeadMob {
 		if (carrier.evolvingthreats$isSpawnerReinforcement()) {
 			return false;
 		}
-		if (mob.getRandom().nextFloat() >= WITHER_CARRIER_SPAWN_CHANCE) {
+		if (mob.getRandom().nextFloat() >= ThreatScale.dangerousChance(mob.level(), WITHER_CARRIER_SPAWN_CHANCE)) {
 			return false;
 		}
 		equipSpawner(mob, carrier);

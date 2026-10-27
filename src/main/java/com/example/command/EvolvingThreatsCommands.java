@@ -20,6 +20,8 @@ import com.example.ritual.RitualBand;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.golem.DamagedGolem;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.threat.ThreatEvents;
+import com.example.threat.ThreatScale;
 import com.example.tool.FloatingTool;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -144,6 +146,19 @@ public final class EvolvingThreatsCommands {
 										IntegerArgumentType.getInteger(ctx, "days")
 								))))));
 
+		// Шкала угрозы (см. threat/ThreatScale.java).
+		//   day         — показать день, фазу луны и текущую угрозу.
+		//   day set <N> — сделать так, будто с установки мода прошло N дней (время мира и луна не меняются).
+		//                 day set 0 — начать шкалу заново. Для проверки любой стадии.
+		dispatcher.register(root.then(Commands.literal("day")
+				.executes(ctx -> dayStatus(ctx.getSource()))
+				.then(Commands.literal("set")
+						.then(Commands.argument("day", IntegerArgumentType.integer(0, 100000))
+								.executes(ctx -> daySet(
+										ctx.getSource(),
+										IntegerArgumentType.getInteger(ctx, "day")
+								))))));
+
 		dispatcher.register(Commands.literal("etoverseer")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnOverseer(ctx.getSource(), null)));
@@ -233,6 +248,24 @@ public final class EvolvingThreatsCommands {
 				.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
 				.then(Commands.literal("v")
 						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_V))));
+	}
+
+	private static int dayStatus(CommandSourceStack source) {
+		ServerLevel overworld = source.getServer().overworld();
+		source.sendSuccess(() -> Component.literal(ThreatScale.describe(overworld)), false);
+		return 1;
+	}
+
+	private static int daySet(CommandSourceStack source, int day) {
+		var server = source.getServer();
+		ServerLevel overworld = server.overworld();
+		// Время мира и луна не трогаем: сдвигаем только «момент старта» шкалы, чтобы прошло ровно day дней.
+		long start = overworld.getOverworldClockTime() - day * ThreatScale.TICKS_PER_DAY;
+		ThreatEvents.setStartClock(server, start);
+		// Расписание осады привязано к дням шкалы, поэтому пересчитываем его (если осада сейчас не идёт).
+		SiegeNight.reschedule(overworld);
+		source.sendSuccess(() -> Component.literal("Day set. " + ThreatScale.describe(overworld)), true);
+		return 1;
 	}
 
 	private static int siegeStatus(CommandSourceStack source) {

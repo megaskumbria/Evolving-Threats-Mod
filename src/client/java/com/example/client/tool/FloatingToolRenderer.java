@@ -17,8 +17,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 
 /**
  * Рисует парящий инструмент готовой моделью предмета.
- * Своей анимации нет: предмет крутится и чуть покачивается, как брошенная вещь.
- * Размер — {@link FloatingTool#VISUAL_SCALE}.
+ * Пока никого не атакует — крутится и чуть покачивается, как брошенная вещь.
+ * Пока атакует — смотрит на цель и вокруг своей оси не крутится.
+ * Размер — {@link FloatingTool#VISUAL_SCALE}, доворот — {@link FloatingTool#ATTACK_FACING_OFFSET}.
  */
 public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingToolRenderer.State> {
 
@@ -46,6 +47,9 @@ public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingT
 				ItemDisplayContext.GROUND,
 				entity
 		);
+		state.attacking = entity.isAttacking();
+		// Куда смотрит моб. В атаке картинка берёт этот угол вместо кручения.
+		state.facingYaw = entity.getYRot(partialTicks);
 	}
 
 	@Override
@@ -56,7 +60,12 @@ public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingT
 			poseStack.translate(0.0f, 0.25f + bob, 0.0f);
 			float scale = FloatingTool.VISUAL_SCALE;
 			poseStack.scale(scale, scale, scale);
-			poseStack.rotate(Axis.YP, ItemEntity.getSpin(state.ageInTicks, 0.0f));
+			if (state.attacking) {
+				// 180 — как у обычных мобов: «лицо» модели смотрит туда же, куда yRot.
+				poseStack.rotateDegrees(Axis.YP, 180.0f - state.facingYaw + FloatingTool.ATTACK_FACING_OFFSET);
+			} else {
+				poseStack.rotate(Axis.YP, ItemEntity.getSpin(state.ageInTicks, 0.0f));
+			}
 			state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
 			poseStack.popPose();
 		}
@@ -65,5 +74,7 @@ public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingT
 
 	public static class State extends EntityRenderState {
 		public final ItemStackRenderState item = new ItemStackRenderState();
+		public boolean attacking;
+		public float facingYaw;
 	}
 }

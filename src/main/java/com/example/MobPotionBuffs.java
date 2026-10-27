@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -39,9 +41,11 @@ public final class MobPotionBuffs {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Сколько эффектов сразу. Индекс 0 = ни одного, 1 = один, … 5 = пять.
+	 * Сколько эффектов сразу на 100-й день (КОНЕЦ шкалы угрозы). Индекс 0 = ни одного, 1 = один, … 5 = пять.
 	 * Числа — вес (шанс относительно остальных). {50, 24, 13, 7, 4, 2} в сумме 100:
 	 * без зелья 50%, одно 24%, два 13%, три 7%, четыре 4%, пять 2%.
+	 * В начале игры веса другие (ThreatTable.POTION_COUNT_WEIGHTS_START: почти у всех ни одного зелья)
+	 * и плавно приходят к этим значениям вместе со шкалой и луной.
 	 * Хочешь, чтобы пять эффектов почти не встречались — уменьши последнее число.
 	 * Больше пяти не добавляй: на мобе всего 10 разных эффектов.
 	 */
@@ -121,7 +125,7 @@ public final class MobPotionBuffs {
 		if (!ENABLED || !(mob.level() instanceof ServerLevel)) {
 			return;
 		}
-		int count = rollCount(mob.getRandom());
+		int count = rollCount(mob);
 		if (count <= 0) {
 			return;
 		}
@@ -162,27 +166,9 @@ public final class MobPotionBuffs {
 	}
 
 	/** 0 = без эффекта. Чем правее индекс в {@link #COUNT_WEIGHTS}, тем больше эффектов. */
-	private static int rollCount(RandomSource random) {
-		int total = 0;
-		for (int weight : COUNT_WEIGHTS) {
-			if (weight > 0) {
-				total += weight;
-			}
-		}
-		if (total <= 0) {
-			return 0;
-		}
-		int roll = random.nextInt(total);
-		int seen = 0;
-		for (int count = 0; count < COUNT_WEIGHTS.length; count++) {
-			if (COUNT_WEIGHTS[count] > 0) {
-				seen += COUNT_WEIGHTS[count];
-			}
-			if (roll < seen) {
-				return count;
-			}
-		}
-		return 0;
+	private static int rollCount(Mob mob) {
+		// РАСТЁТ: в начале игры почти у всех ноль зелий, веса плавно доходят до COUNT_WEIGHTS к 100-му дню.
+		return ThreatScale.pickWeighted(mob.level(), mob.getRandom(), ThreatTable.POTION_COUNT_WEIGHTS_START, COUNT_WEIGHTS);
 	}
 
 	private record Buff(Holder<MobEffect> effect, boolean canBeStrong) {

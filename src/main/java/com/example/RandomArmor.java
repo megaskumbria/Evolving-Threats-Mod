@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,12 +22,13 @@ public final class RandomArmor {
 	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
 
 	/**
-	 * Шанс (0.0–1.0) для КАЖДОГО слота брони у зомби.
+	 * Шанс (0.0–1.0) для КАЖДОГО слота брони у зомби на 100-й день (конец шкалы угрозы).
 	 * 0.50 = 50% на шлем, 50% на нагрудник, и т.д. (независимо друг от друга).
+	 * В начале игры шанс меньше (ThreatTable.ARMOR_PIECE_CHANCE_START) и растёт вместе со шкалой и луной.
 	 */
 	public static final float ZOMBIE_ARMOR_PIECE_CHANCE = 0.50f;
 
-	/** То же для обычного скелета и странника. */
+	/** То же для обычного скелета и странника (конец шкалы). */
 	public static final float SKELETON_ARMOR_PIECE_CHANCE = 0.50f;
 
 	/**
@@ -73,13 +76,18 @@ public final class RandomArmor {
 		{ Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS },
 	};
 
+	/**
+	 * Веса материала на 100-й день (конец шкалы). В начале игры веса другие:
+	 * ThreatTable.ARMOR_MATERIAL_WEIGHTS_START. Между ними идёт плавный переход по шкале угрозы и луне.
+	 * Незерита нет: он только у Василиска.
+	 */
 	private static final int[] MATERIAL_WEIGHTS = {
-		28, // кожа
+		26, // кожа
 		12, // золото
 		18, // кольчуга
 		12, // медь
-		22, // железо
-		8,  // алмаз
+		20, // железо
+		12, // алмаз
 	};
 
 	private static final EquipmentSlot[] SLOTS = {
@@ -112,11 +120,16 @@ public final class RandomArmor {
 	}
 
 	public static void rollForZombie(Mob mob) {
-		rollPieces(mob, ZOMBIE_ARMOR_PIECE_CHANCE);
+		rollPieces(mob, pieceChance(mob, ZOMBIE_ARMOR_PIECE_CHANCE));
 	}
 
 	public static void rollForSkeleton(Mob mob) {
-		rollPieces(mob, SKELETON_ARMOR_PIECE_CHANCE);
+		rollPieces(mob, pieceChance(mob, SKELETON_ARMOR_PIECE_CHANCE));
+	}
+
+	/** РАСТЁТ: шанс слота между ThreatTable.ARMOR_PIECE_CHANCE_START (день 0) и {@code endChance} (день 100). */
+	private static float pieceChance(Mob mob, float endChance) {
+		return ThreatScale.lerp(mob.level(), ThreatTable.ARMOR_PIECE_CHANCE_START, endChance);
 	}
 
 	/**
@@ -125,10 +138,10 @@ public final class RandomArmor {
 	 */
 	public static void rollHelmet(Mob mob) {
 		RandomSource random = mob.getRandom();
-		if (random.nextFloat() >= SKELETON_ARMOR_PIECE_CHANCE) {
+		if (random.nextFloat() >= pieceChance(mob, SKELETON_ARMOR_PIECE_CHANCE)) {
 			return;
 		}
-		Item helmet = ARMOR_PIECES[pickMaterialIndex(random)][0];
+		Item helmet = ARMOR_PIECES[pickMaterialIndex(mob, random)][0];
 		mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(helmet));
 		mob.setDropChance(EquipmentSlot.HEAD, ARMOR_DROP_CHANCE);
 		dyeLeather(mob, random);
@@ -142,7 +155,7 @@ public final class RandomArmor {
 				continue;
 			}
 
-			int materialIndex = pickMaterialIndex(random);
+			int materialIndex = pickMaterialIndex(mob, random);
 			Item armorItem = ARMOR_PIECES[materialIndex][slotIndex];
 			EquipmentSlot slot = SLOTS[slotIndex];
 
@@ -195,19 +208,8 @@ public final class RandomArmor {
 		return random.nextInt(0x1000000);
 	}
 
-	private static int pickMaterialIndex(RandomSource random) {
-		int totalWeight = 0;
-		for (int weight : MATERIAL_WEIGHTS) {
-			totalWeight += weight;
-		}
-
-		int roll = random.nextInt(totalWeight);
-		for (int i = 0; i < MATERIAL_WEIGHTS.length; i++) {
-			roll -= MATERIAL_WEIGHTS[i];
-			if (roll < 0) {
-				return i;
-			}
-		}
-		return 0;
+	/** Материал по весам, которые плавно меняются от начала шкалы угрозы к концу. */
+	private static int pickMaterialIndex(Mob mob, RandomSource random) {
+		return ThreatScale.pickWeighted(mob.level(), random, ThreatTable.ARMOR_MATERIAL_WEIGHTS_START, MATERIAL_WEIGHTS);
 	}
 }

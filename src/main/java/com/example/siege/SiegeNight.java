@@ -1,5 +1,7 @@
 package com.example.siege;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -54,6 +56,14 @@ public final class SiegeNight {
 	 * игра возьмёт минимум.
 	 */
 	public static final int DAYS_MAX = 15;
+
+	/**
+	 * Насколько луна влияет на выбор дня осады (см. scheduleNext). Вес дня = сила луны в этой степени:
+	 * полнолуние 1.0, убывающая 0.75, четверть 0.5, серп 0.25, новолуние 0 (осады не бывает никогда).
+	 * 1.0 = влияние мягкое, 2.0 = полнолуние заметно предпочтительнее, 0 = луна не влияет (кроме новолуния).
+	 * Первая осада на 25-й день (ThreatTable.SIEGE_FIRST_DAY) от луны не зависит.
+	 */
+	public static final double MOON_WEIGHT_POWER = 2.0;
 
 	/**
 	 * Во сколько начинается ночь осады, в тиках от начала дня. 13000 = как ночь в ванили.
@@ -348,10 +358,42 @@ public final class SiegeNight {
 		}
 	}
 
+	/**
+	 * Назначает следующую осаду.
+	 * 1) Пока мир не дошёл до дня ThreatTable.SIEGE_FIRST_DAY (25), осада назначается ровно на этот день.
+	 * 2) Дальше — через DAYS_MIN…DAYS_MAX дней, но день выбирается с учётом луны:
+	 *    чем светлее луна в тот день, тем вероятнее (вес = сила луны в степени MOON_WEIGHT_POWER),
+	 *    а в новолуние осады не бывает никогда.
+	 */
 	private static void scheduleNext(ServerLevel level, SiegeData data, long today) {
+		if (ThreatScale.ENABLED && ThreatScale.day(level) < ThreatTable.SIEGE_FIRST_DAY) {
+			// Осады считаются по дням мира, а 25-й день — это день ШКАЛЫ (от установки мода).
+			data.nextSiegeDay = Math.max(today, ThreatScale.worldDayOfThreatDay(ThreatTable.SIEGE_FIRST_DAY));
+			data.setDirty();
+			return;
+		}
 		int min = Math.max(1, DAYS_MIN);
 		int max = Math.max(min, DAYS_MAX);
-		data.nextSiegeDay = today + level.getRandom().nextIntBetweenInclusive(min, max);
+		double[] weights = new double[max - min + 1];
+		double total = 0.0;
+		for (int i = 0; i < weights.length; i++) {
+			long candidate = today + min + i;
+			float moon = ThreatScale.moonLight(ThreatScale.moonPhaseOfDay(candidate));
+			weights[i] = Math.pow(moon, MOON_WEIGHT_POWER);
+			total += weights[i];
+		}
+		long chosen = today + min;
+		if (total > 0.0) {
+			double roll = level.getRandom().nextDouble() * total;
+			for (int i = 0; i < weights.length; i++) {
+				roll -= weights[i];
+				if (roll < 0.0) {
+					chosen = today + min + i;
+					break;
+				}
+			}
+		}
+		data.nextSiegeDay = chosen;
 		data.setDirty();
 	}
 
@@ -530,6 +572,20 @@ public final class SiegeNight {
 		finish(level, data, level.getOverworldClockTime(), false);
 		windowOpen = false;
 		nightActive = false;
+	}
+
+	/**
+	 * Пересчитывает расписание осады по обычным правилам (например, после /evolvingthreats day set).
+	 * Если осада идёт прямо сейчас — ничего не меняет.
+	 */
+	public static void reschedule(ServerLevel level) {
+		SiegeData data = SiegeData.get(level);
+		if (data.phase != SiegeData.PHASE_IDLE) {
+			return;
+		}
+		long today = Math.floorDiv(level.getOverworldClockTime(), TICKS_PER_DAY);
+		data.omenSentFor = -1L;
+		scheduleNext(level, data, today);
 	}
 
 	/**

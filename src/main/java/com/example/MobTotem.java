@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -21,7 +23,8 @@ public final class MobTotem {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что зомби или скелет появится с тотемом во второй руке. 0.04 = 4%.
+	 * Шанс (0.0–1.0), что зомби или скелет появится с тотемом во второй руке на 100-й день (конец шкалы угрозы). 0.04 = 4%.
+	 * В начале игры шанс намного меньше и растёт со шкалой.
 	 * Реже щита (25%): тотем один раз отменяет смерть. 0 = тотемов не будет. 1 = у всех, у кого свободна вторая рука.
 	 */
 	public static final float SPAWN_CHANCE = 0.04f;
@@ -50,7 +53,8 @@ public final class MobTotem {
 			return false;
 		}
 		RandomSource random = mob.getRandom();
-		if (random.nextFloat() >= SPAWN_CHANCE) {
+		// РАСТЁТ: SPAWN_CHANCE — шанс на 100-й день, в начале игры он меньше (ThreatTable.TOTEM_START_RATIO).
+		if (random.nextFloat() >= ThreatScale.growingChance(mob.level(), SPAWN_CHANCE, ThreatTable.TOTEM_START_RATIO)) {
 			return false;
 		}
 		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.TOTEM_OF_UNDYING));

@@ -1,5 +1,10 @@
 package com.example.digging;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+import com.example.entity.RaidParticipantEntity;
+import com.example.entity.ZombieOverseerEntity;
+
 import com.example.zombie.TntZombie;
 import com.example.zombie.ZombieSorcerer;
 import com.example.ritual.RitualBand;
@@ -128,6 +133,13 @@ public final class BlockBreaking {
 	/** Умеет ли этот зомби ломать блоки (общее правило для обоих поведений). */
 	public static boolean isBreaker(Zombie zombie) {
 		if (!ENABLED) {
+			return false;
+		}
+		// С какого дня зомби вообще ломают блоки (ThreatTable.BLOCK_BREAK_DAY). Скорость разрушения от дня не меняется.
+		// Надсмотрщик и прислуги рейдового якоря копают всегда: у них свои дни появления.
+		boolean ownSchedule = (zombie instanceof ZombieOverseerEntity overseer && overseer.evolvingthreats$isOverseer())
+				|| (zombie instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant());
+		if (!ownSchedule && !ThreatScale.reached(zombie.level(), ThreatTable.BLOCK_BREAK_DAY)) {
 			return false;
 		}
 		if (RESPECT_MOB_GRIEFING

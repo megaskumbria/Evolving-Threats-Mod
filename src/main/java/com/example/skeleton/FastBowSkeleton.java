@@ -1,5 +1,7 @@
 package com.example.skeleton;
 
+import com.example.threat.ThreatScale;
+
 import com.example.entity.FastBowSkeletonEntity;
 import com.example.mixin.RangedBowAttackGoalAccessor;
 import net.minecraft.world.Difficulty;
@@ -21,7 +23,8 @@ public final class FastBowSkeleton {
 
 	/**
 	 * Шанс (0.0–1.0), что скелет или странник с луком будет стрелять дальше и быстрее.
-	 * 0.15 = 15%. Бросается после оружия: если лука нет (два меча), шанс не тратится.
+	 * 0.15 = 15% на 100-й день (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO).
+	 * Бросается после оружия: если лука нет (два меча), шанс не тратится.
 	 * 0 = таких скелетов не будет.
 	 */
 	public static final float SPAWN_CHANCE = 0.15f;
@@ -98,7 +101,7 @@ public final class FastBowSkeleton {
 		if (!(skeleton instanceof FastBowSkeletonEntity data)) {
 			return;
 		}
-		if (skeleton.getRandom().nextFloat() >= SPAWN_CHANCE) {
+		if (skeleton.getRandom().nextFloat() >= ThreatScale.dangerousChance(skeleton.level(), SPAWN_CHANCE)) {
 			return;
 		}
 		data.evolvingthreats$setFastBow(true);

@@ -1,5 +1,7 @@
 package com.example.zombie;
 
+import com.example.threat.ThreatScale;
+
 import com.example.digging.BlockBreaking;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.TntZombieEntity;
@@ -43,7 +45,8 @@ public final class TntZombie {
 
 	/**
 	 * Шанс (0.0–1.0), что обычный зомби при появлении возьмёт динамит.
-	 * 0.04 = 4%. Утопленник, зомби-пиглин, надсмотрщик и рейд этот шанс не бросают.
+	 * 0.04 = 4% на 100-й день (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO).
+	 * Утопленник, зомби-пиглин, надсмотрщик и рейд этот шанс не бросают.
 	 * Команда шанс не использует.
 	 */
 	public static final float SPAWN_CHANCE = 0.04f;
@@ -112,7 +115,7 @@ public final class TntZombie {
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
 			return false;
 		}
-		if (zombie.getRandom().nextFloat() >= SPAWN_CHANCE) {
+		if (zombie.getRandom().nextFloat() >= ThreatScale.dangerousChance(zombie.level(), SPAWN_CHANCE)) {
 			return false;
 		}
 		data.evolvingthreats$setTntZombie(true);

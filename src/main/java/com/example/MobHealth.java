@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -24,6 +26,8 @@ public final class MobHealth {
 	/**
 	 * Зомби, кадавр, зомби-житель, утопленник, скелет и странник.
 	 * Сейчас у них 20. 20 и 40 = от 20 до 40 жизней (от 10 до 20 сердец).
+	 * MAX — это потолок на 100-й день: в начале игры он ниже и растёт вместе со шкалой угрозы
+	 * (стартовое значение — в ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START).
 	 */
 	public static final int ZOMBIE_SKELETON_MIN = 20;
 	public static final int ZOMBIE_SKELETON_MAX = 40;
@@ -57,8 +61,10 @@ public final class MobHealth {
 		int min;
 		int max;
 		if (mob instanceof Zombie || mob instanceof Skeleton || mob instanceof Stray) {
+			// РАСТЁТ: потолок здоровья поднимается от ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START до MAX к 100-му дню.
 			min = ZOMBIE_SKELETON_MIN;
-			max = ZOMBIE_SKELETON_MAX;
+			max = Math.round(ThreatScale.lerp(mob.level(), (float) ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START,
+					(float) ZOMBIE_SKELETON_MAX));
 		} else if (mob instanceof Spider) {
 			min = SPIDER_MIN;
 			max = SPIDER_MAX;

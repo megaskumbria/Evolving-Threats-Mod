@@ -1,5 +1,8 @@
 package com.example.light;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+
 import com.example.beacon.JackLanternBeacon;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
@@ -98,6 +101,10 @@ public final class LightSeeking {
 	/** Может ли этот зомби вообще искать свет. */
 	public static boolean isEligible(Zombie zombie) {
 		if (!ENABLED) {
+			return false;
+		}
+		// С какого дня зомби вообще бегут на свет (ThreatTable.LIGHT_SEEK_DAY).
+		if (!ThreatScale.reached(zombie.level(), ThreatTable.LIGHT_SEEK_DAY)) {
 			return false;
 		}
 		if (zombie instanceof Drowned || zombie instanceof ZombifiedPiglin) {

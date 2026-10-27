@@ -1,5 +1,8 @@
 package com.example.skeleton;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+
 import com.example.entity.BasiliskSkeletonEntity;
 import com.example.entity.RaidParticipantEntity;
 import com.example.mixin.RangedBowAttackGoalAccessor;
@@ -164,6 +167,10 @@ public final class BasiliskSkeleton {
 			return false;
 		}
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
+			return false;
+		}
+		// С какого дня Василиски вообще появляются (ThreatTable.BASILISK_DAY). Шанс ниже от дня не меняется.
+		if (!ThreatScale.reached(skeleton.level(), ThreatTable.BASILISK_DAY)) {
 			return false;
 		}
 		if (SPAWN_CHANCE <= 0.0f || skeleton.getRandom().nextFloat() >= SPAWN_CHANCE) {

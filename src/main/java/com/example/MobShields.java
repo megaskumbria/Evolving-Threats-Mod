@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -34,8 +36,8 @@ public final class MobShields {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что зомби или скелет появится со щитом. 0.25 = 25%.
-	 * Бросается один раз на моба. 0 = щитов не будет.
+	 * Шанс (0.0–1.0), что зомби или скелет появится со щитом на 100-й день (конец шкалы угрозы). 0.25 = 25%.
+	 * В начале игры шанс меньше и растёт со шкалой. Бросается один раз на моба. 0 = щитов не будет.
 	 */
 	public static final float SPAWN_CHANCE = 0.25f;
 
@@ -72,7 +74,8 @@ public final class MobShields {
 			return;
 		}
 		RandomSource random = mob.getRandom();
-		if (random.nextFloat() >= SPAWN_CHANCE) {
+		// РАСТЁТ: SPAWN_CHANCE — шанс на 100-й день, в начале игры он меньше (ThreatTable.SHIELD_START_RATIO).
+		if (random.nextFloat() >= ThreatScale.growingChance(mob.level(), SPAWN_CHANCE, ThreatTable.SHIELD_START_RATIO)) {
 			return;
 		}
 		mob.setItemSlot(EquipmentSlot.OFFHAND, createShield(mob, random));

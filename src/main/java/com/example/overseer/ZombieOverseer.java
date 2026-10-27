@@ -1,5 +1,8 @@
 package com.example.overseer;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+
 import com.example.entity.ZombieOverseerEntity;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -104,6 +107,10 @@ public final class ZombieOverseer {
 			return false;
 		}
 		if (overseer.evolvingthreats$isOverseer()) {
+			return false;
+		}
+		// С какого дня надсмотрщики вообще появляются (ThreatTable.OVERSEER_DAY). Шанс ниже от дня не меняется.
+		if (!ThreatScale.reached(level, ThreatTable.OVERSEER_DAY)) {
 			return false;
 		}
 		if (zombie.getRandom().nextFloat() >= SPAWN_CHANCE) {

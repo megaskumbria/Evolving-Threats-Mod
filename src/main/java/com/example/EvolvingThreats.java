@@ -7,6 +7,7 @@ import com.example.item.ModItems;
 import com.example.overseer.OverseerBossBarEvents;
 import com.example.raid.RaidAnchorEvents;
 import com.example.siege.SiegeEvents;
+import com.example.threat.ThreatEvents;
 import com.example.tool.FloatingTool;
 import net.fabricmc.api.ModInitializer;
 
@@ -39,6 +40,7 @@ public class EvolvingThreats implements ModInitializer {
 		RaidAnchorEvents.register();
 		IllagerPatrolEvents.register();
 		SiegeEvents.register();
+		ThreatEvents.register();
 	}
 
 	public static @NotNull Identifier id(@NotNull String path) {

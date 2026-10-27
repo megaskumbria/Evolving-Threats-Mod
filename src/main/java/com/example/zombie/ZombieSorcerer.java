@@ -1,5 +1,8 @@
 package com.example.zombie;
 
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
+
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.entity.ZombieSorcererEntity;
@@ -158,6 +161,10 @@ public final class ZombieSorcerer {
 			return true;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return false;
+		}
+		// С какого дня чародеи вообще появляются (ThreatTable.SORCERER_DAY). Шанс ниже от дня не меняется.
+		if (!ThreatScale.reached(zombie.level(), ThreatTable.SORCERER_DAY)) {
 			return false;
 		}
 		if (zombie.getRandom().nextFloat() >= SPAWN_CHANCE) {
