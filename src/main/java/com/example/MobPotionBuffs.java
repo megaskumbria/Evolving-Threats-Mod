@@ -2,6 +2,7 @@ package com.example;
 
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
+import com.example.tool.FloatingTool;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -130,6 +131,12 @@ public final class MobPotionBuffs {
 			return;
 		}
 		List<Buff> pool = new ArrayList<>(BUFFS);
+		// Крипер и парящий инструмент без невидимости.
+		// Крипера и так легко не заметить, а у инструмента нет тела: зелье прячет его целиком.
+		// Остальные эффекты из списка им по-прежнему выпадают. Снять запрет — убрать эту проверку.
+		if (mob instanceof Creeper || mob instanceof FloatingTool) {
+			pool.removeIf(buff -> buff.effect == MobEffects.INVISIBILITY);
+		}
 		RandomSource random = mob.getRandom();
 		for (int i = 0; i < count && !pool.isEmpty(); i++) {
 			Buff buff = pool.remove(random.nextInt(pool.size()));

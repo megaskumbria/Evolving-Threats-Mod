@@ -9,6 +9,7 @@ import com.example.entity.ZombieOverseerEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.monster.zombie.Drowned;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -81,17 +83,39 @@ public final class LightSeeking {
 	 */
 	public static final boolean BREAK_LIGHT = true;
 
-	/**
-	 * Через сколько тиков у света зомби его ломает: 300 = 15 сек.
-	 * Пока ждёт, на блоке медленно нарастают трещины. Если за это время зомби заметит игрока — бросит свет и пойдёт на игрока.
-	 */
-	public static final int BREAK_LIGHT_DELAY_TICKS = 15 * 20;
+	// Скорость ломания света отдельной константы не имеет: она такая же, как у обычных блоков
+	// (BlockBreaking.SPEED_MULTIPLIER + твёрдость блока + инструмент в руке зомби).
+	// Факел/лампа с твёрдостью 0 ломаются сразу, светокамень — за пару секунд.
+	// Если зомби заметит игрока или жителя, пока ломает — бросит свет и пойдёт на цель.
 
 	/** Сколько не возвращаться к уже посещённому свету (тики): 2400 = 2 минуты. */
 	public static final int IGNORE_VISITED_LIGHT_TICKS = 2 * 60 * 20;
 
 	/** Макс. время одного похода к свету (тики), чтобы не застрять навсегда: 600 = 30 сек. */
 	public static final int MAX_WALK_TICKS = 30 * 20;
+
+	/**
+	 * Жители важнее света: если зомби «чувствует» жителя рядом — он бросает свет
+	 * (не идёт к нему и не ломает) и идёт убивать/заражать жителя.
+	 * false — как раньше: зомби без цели в первую очередь идёт на свет.
+	 */
+	public static final boolean VILLAGER_BEATS_LIGHT = true;
+
+	/**
+	 * Как далеко (блоки по горизонтали) зомби чувствует жителя. Сквозь стены тоже.
+	 * 40 = чуть дальше ванильных 35. Не ставь больше SEARCH_RADIUS_HORIZONTAL — смысла нет.
+	 * Больше число = зомби «видят» деревню издалека и чаще бросают свет ради неё.
+	 */
+	public static final double VILLAGER_SENSE_RADIUS = 40.0;
+
+	/**
+	 * Как далеко вверх/вниз (блоки) зомби чувствует жителя.
+	 * В ваниле только ±4 — поэтому житель на втором этаже или в подвале зомби «не замечал» и он шёл ломать факел.
+	 */
+	public static final double VILLAGER_SENSE_VERTICAL = 16.0;
+
+	/** Как часто (тики) зомби по пути к свету/у света проверяет, не появился ли рядом житель: 10 = полсекунды. */
+	public static final int VILLAGER_RECHECK_TICKS = 10;
 
 	// ========================================================================
 
@@ -120,6 +144,32 @@ public final class LightSeeking {
 		if (JackLanternBeacon.skipsLightSeeking(zombie)) {
 			return false;
 		}
+		return true;
+	}
+
+	/**
+	 * Если рядом есть живой житель (или странствующий торговец — как в ваниле) — сделать его целью зомби.
+	 * Возвращает true, если цель назначена (значит, свет сейчас не интересен).
+	 * Дальше зомби сам идёт к жителю обычной атакой (а двери/блоки на пути ломает BreakToTargetGoal).
+	 */
+	public static boolean targetNearbyVillager(Zombie zombie) {
+		if (!VILLAGER_BEATS_LIGHT) {
+			return false;
+		}
+		AABB box = zombie.getBoundingBox().inflate(VILLAGER_SENSE_RADIUS, VILLAGER_SENSE_VERTICAL, VILLAGER_SENSE_RADIUS);
+		AbstractVillager best = null;
+		double bestDistSqr = Double.MAX_VALUE;
+		for (AbstractVillager villager : zombie.level().getEntitiesOfClass(AbstractVillager.class, box, v -> v.isAlive())) {
+			double distSqr = zombie.distanceToSqr(villager);
+			if (distSqr < bestDistSqr) {
+				best = villager;
+				bestDistSqr = distSqr;
+			}
+		}
+		if (best == null) {
+			return false;
+		}
+		zombie.setTarget(best);
 		return true;
 	}
 

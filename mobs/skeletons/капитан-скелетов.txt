@@ -71,7 +71,7 @@
 НАСТРОЙКИ (SkeletonCaptain.java)
 --------------------------------
   ENABLED ...................... true
-  SPAWN_CHANCE ................. 0.006 — шанс у обычного скелета (0.6%)
+  SPAWN_CHANCE ................. 0.002 — шанс у обычного скелета (0.2%)
   HELPER_COUNT ................. 2
   CAPTAIN_NAME ................. Captain of the Skeletons
   ARMOR_ENCHANT_CHANCE ......... 0.45 — шанс чар на каждый кусок брони

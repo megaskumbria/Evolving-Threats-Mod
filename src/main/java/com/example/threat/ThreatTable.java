@@ -65,6 +65,12 @@ public final class ThreatTable {
 	/** Шанс надеть кусок брони (на каждый слот) в начале игры. 0.08 = 8%. Конец шкалы — в {@code RandomArmor}. */
 	public static final float ARMOR_PIECE_CHANCE_START = 0.08f;
 
+	/**
+	 * Шанс полного комплекта брони в начале игры. 0 = в первый день такого моба нет.
+	 * Конец шкалы — {@code RandomArmor.FULL_SET_CHANCE}. Растёт вместе со шкалой и луной.
+	 */
+	public static final float FULL_ARMOR_SET_CHANCE_START = 0.0f;
+
 	/** Шанс чар на оружии в руках в начале игры. 0.01 = 1%. Конец шкалы — в {@code MobEnchantments}. */
 	public static final float WEAPON_ENCHANT_CHANCE_START = 0.01f;
 

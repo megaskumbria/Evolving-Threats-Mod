@@ -7,6 +7,7 @@ import com.example.RandomWeapons;
 import com.example.entity.ai.FloatingToolAttackGoal;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,7 +39,12 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,15 +53,18 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Враждебный парящий инструмент: меч, топор, лопата, кирка или мотыга.
- * Летит к игроку и бьёт вблизи. Незерита нет — набор тот же, что у зомби ({@link RandomWeapons}).
- * Чары те же, что на оружии зомби ({@link MobEnchantments}): острота и огненный аспект бьют,
+ * Летит к игроку и бьёт вблизи. В обычном мире незерита нет — набор тот же, что у зомби ({@link RandomWeapons}).
+ * В аду инструмент всегда незеритовый и с Заговором огня III, сам предмет не выпадает.
+ * Чары в обычном мире те же, что на оружии зомби ({@link MobEnchantments}): острота и огненный аспект бьют,
  * эффективность и удача только украшают выпавший предмет.
  * Зелья те же, что у зомби ({@link MobPotionBuffs}): от нуля до пяти, пока моб жив.
+ * Невидимости нет: она прятала бы сам предмет, тела у этого моба нет.
  *
  * <p>Отдельной модели и анимации нет: на экране рисуется обычная модель предмета
  * (см. клиентский рендерер). Здесь только «тело», полёт и удар.
  * В обычном мире ночью появляется сам, на месте обычного враждебного моба.
- * Шанс — {@link #NATURAL_SPAWN_CHANCE}. Команда {@code /ettool} только для проверки и шанс не бросает.
+ * Шанс — {@link #NATURAL_SPAWN_CHANCE}. В аду — {@link #NETHER_SPAWN_CHANCE}, в любое время.
+ * Команда {@code /ettool} шанс не бросает: в аду она тоже даёт незерит.
  */
 public class FloatingTool extends Monster {
 
@@ -63,12 +72,33 @@ public class FloatingTool extends Monster {
 
 	/**
 	 * Шанс (0.0–1.0), что вместо обычного ночного монстра появится этот инструмент.
-	 * 0.05 = 5%. Общий бросок с повреждённым големом: сначала этот шанс, потом шанс голема.
-	 * 0.05 и 0.05 вместе = 10% особых мобов, они не занимают одно и то же появление.
+	 * 0.05 = 5%. Общий бросок с повреждённым големом: сначала этот шанс, потом шанс голема (1%).
+	 * 0.05 и 0.01 вместе = 6% особых мобов, они не занимают одно и то же появление.
 	 * Обычный мир, не ад и не Энд. Ближе 24 блоков игра не ставит, как любых монстров.
 	 * Команда /ettool этот шанс не бросает. 0 = в мире сам не появляется.
 	 */
 	public static final float NATURAL_SPAWN_CHANCE = 0.05f;
+
+	/**
+	 * Шанс (0.0–1.0), что вместо враждебного моба в аду появится незеритовый инструмент.
+	 * 0.05 = 5%. ФИКС: с первого дня, от шкалы угрозы не растёт.
+	 * Ад не ждёт ночи: монстры там появляются и днём. 0 = в аду их нет.
+	 * Обычный мир этот шанс не использует.
+	 */
+	public static final float NETHER_SPAWN_CHANCE = 0.05f;
+
+	/**
+	 * Заговор огня на адском инструменте. 3 = III. У стола зачарований потолок II.
+	 * Каждый уровень дольше держит игрока в огне. 2 = обычный Заговор огня II. 0 = без огня.
+	 */
+	public static final int NETHER_FIRE_ASPECT_LEVEL = 3;
+
+	/**
+	 * Шанс выпадения адского инструмента. 0 = не падает никогда, Добыча это не меняет:
+	 * игра прибавляет Добычу только если шанс уже не ноль.
+	 * 1 = падает всегда. Обычный мир смотрит на {@link #DROP_CHANCE}, не на это число.
+	 */
+	public static final float NETHER_DROP_CHANCE = 0.0f;
 
 	/**
 	 * Невидимое тело, по которому нужно попасть (ширина и высота в блоках).
@@ -108,6 +138,9 @@ public class FloatingTool extends Monster {
 	public static final double HEALTH_IRON = 20.0;
 	public static final double HEALTH_DIAMOND = 28.0;
 
+	/** Незерит в аду. 36 = 18 сердец. Алмазный инструмент — 28 (14 сердец). */
+	public static final double HEALTH_NETHERITE = 36.0;
+
 	/**
 	 * Как быстро летит, когда никого не догоняет. Больше — резвее.
 	 * Вместе с {@link #CHASE_SPEED}: 0.9 и 1.2 — догоняет бегущего игрока, но не телепортируется.
@@ -138,7 +171,11 @@ public class FloatingTool extends Monster {
 	 */
 	public static final float DROP_CHANCE = 0.15f;
 
-	/** Опыт за убийство. 5 — как у обычного монстра. */
+	/**
+	 * Опыт до общего множителя. 5 — как у обычного монстра.
+	 * Потом {@link com.example.MobExperience} удваивает: с моба падает 10.
+	 * Множитель выключен или стоит 1 — упадёт ровно это число.
+	 */
 	public static final int EXPERIENCE_REWARD = 5;
 
 	/** Как часто сыпятся частицы зачарования, в тиках. 5 = четыре раза в секунду. Больше — реже. */
@@ -290,13 +327,17 @@ public class FloatingTool extends Monster {
 			@Nullable SpawnGroupData groupData
 	) {
 		SpawnGroupData data = super.finalizeSpawn(level, difficulty, spawnReason, groupData);
-		// Тот же случайный меч/топор/лопата/кирка/мотыга, что у зомби. Незерита в списке нет.
-		RandomWeapons.equipMeleeOnly(this);
-		MobEnchantments.rollHeldWeapons(this, ENCHANT_CHANCE);
-		this.setDropChance(EquipmentSlot.MAINHAND, DROP_CHANCE);
+		if (level instanceof ServerLevel server && server.dimension() == Level.NETHER) {
+			equipNetherTool(server);
+		} else {
+			// Тот же случайный меч/топор/лопата/кирка/мотыга, что у зомби. Незерита в списке нет.
+			RandomWeapons.equipMeleeOnly(this);
+			MobEnchantments.rollHeldWeapons(this, ENCHANT_CHANCE);
+			this.setDropChance(EquipmentSlot.MAINHAND, DROP_CHANCE);
+		}
 		applyHealthForTool();
 		// Те же зелья, что у зомби и скелета: сколько штук и какие — в MobPotionBuffs.
-		// Невидимость прячет сам инструмент: отдельного тела у этого моба нет.
+		// Невидимость этому мобу не выдаётся: см. проверку в tryApply.
 		MobPotionBuffs.tryApply(this);
 		return data;
 	}
@@ -327,13 +368,38 @@ public class FloatingTool extends Monster {
 	}
 
 	/**
+	 * Ад: незеритовый меч, топор, лопата, кирка или мотыга, поровну.
+	 * Заговор огня III. Шанс выпадения 0 — Добыча к нулю ничего не прибавляет.
+	 */
+	private void equipNetherTool(ServerLevel level) {
+		Item[] tools = {
+				Items.NETHERITE_SWORD,
+				Items.NETHERITE_AXE,
+				Items.NETHERITE_SHOVEL,
+				Items.NETHERITE_PICKAXE,
+				Items.NETHERITE_HOE,
+		};
+		ItemStack stack = new ItemStack(tools[this.random.nextInt(tools.length)]);
+		if (NETHER_FIRE_ASPECT_LEVEL > 0) {
+			Holder<Enchantment> fire = level.registryAccess()
+					.lookupOrThrow(Registries.ENCHANTMENT)
+					.getOrThrow(Enchantments.FIRE_ASPECT);
+			EnchantmentHelper.updateEnchantments(stack, mutable -> mutable.set(fire, NETHER_FIRE_ASPECT_LEVEL));
+		}
+		this.setItemSlot(EquipmentSlot.MAINHAND, stack);
+		this.setDropChance(EquipmentSlot.MAINHAND, NETHER_DROP_CHANCE);
+	}
+
+	/**
 	 * Здоровье по имени предмета: diamond_sword, iron_pickaxe и т.д.
 	 * Незнакомый материал (если добавишь его в RandomWeapons и забудешь сюда) получает здоровье дерева.
 	 */
 	private void applyHealthForTool() {
 		String name = BuiltInRegistries.ITEM.getKey(this.getMainHandItem().getItem()).getPath();
 		double health = HEALTH_WOOD_GOLD;
-		if (name.startsWith("diamond_")) {
+		if (name.startsWith("netherite_")) {
+			health = HEALTH_NETHERITE;
+		} else if (name.startsWith("diamond_")) {
 			health = HEALTH_DIAMOND;
 		} else if (name.startsWith("iron_")) {
 			health = HEALTH_IRON;

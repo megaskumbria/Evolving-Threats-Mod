@@ -22,9 +22,7 @@ public final class OverseerBossBars {
 
 	public static void createFor(Zombie overseer) {
 		remove(overseer.getUUID());
-		Component title = Component.literal(ZombieOverseer.DISPLAY_NAME)
-				.append("\n")
-				.append(Component.literal(ZombieOverseer.BOSS_BAR_SUBTITLE).withStyle(style -> style.withColor(0xAAAAAA)));
+		Component title = Component.literal(ZombieOverseer.DISPLAY_NAME);
 
 		ServerBossEvent event = new ServerBossEvent(
 				overseer.getUUID(),

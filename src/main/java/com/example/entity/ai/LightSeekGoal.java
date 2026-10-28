@@ -18,6 +18,7 @@ import java.util.Map;
 /**
  * Зомби без цели идёт к ближайшему яркому свету, стоит там и идёт дальше.
  * Как только появляется цель (игрок), ванильная атака (приоритет выше) перебивает эту цель.
+ * Жители важнее света: если рядом есть житель, зомби берёт его в цель (см. LightSeeking.VILLAGER_BEATS_LIGHT).
  */
 public class LightSeekGoal extends Goal {
 
@@ -30,6 +31,8 @@ public class LightSeekGoal extends Goal {
 	private long nextScanGameTime;
 	private int walkTicks;
 	private int waitTicks;
+	/** Сколько света уже «сломано» (0.0–1.0, 1.0 = блок разрушен). */
+	private float breakProgress;
 	private boolean arrived;
 	private boolean finished;
 
@@ -49,6 +52,10 @@ public class LightSeekGoal extends Goal {
 		}
 		long now = zombie.level().getGameTime();
 		if (now < nextScanGameTime) {
+			return false;
+		}
+		// Житель рядом важнее света: делаем его целью и свет не трогаем.
+		if (LightSeeking.targetNearbyVillager(zombie)) {
 			return false;
 		}
 		// Случайный сдвиг, чтобы все зомби не сканировали в один и тот же тик.
@@ -73,6 +80,7 @@ public class LightSeekGoal extends Goal {
 	public void start() {
 		walkTicks = 0;
 		waitTicks = 0;
+		breakProgress = 0.0f;
 		arrived = false;
 		finished = false;
 		// reachRange 2: достаточно подойти вплотную — свет может висеть в стене или на потолке.
@@ -88,6 +96,12 @@ public class LightSeekGoal extends Goal {
 	@Override
 	public void tick() {
 		if (finished || lightPos == null) {
+			return;
+		}
+		// Пока идёт к свету или ломает его — периодически проверяем, не появился ли житель.
+		// Нашёл → цель назначена, цель «свет» завершается (canContinueToUse увидит target != null), трещины убираются в stop().
+		if (zombie.tickCount % LightSeeking.VILLAGER_RECHECK_TICKS == 0 && LightSeeking.targetNearbyVillager(zombie)) {
+			finished = true;
 			return;
 		}
 		// Свет убрали (сломали факел) — идти больше некуда.
@@ -115,18 +129,24 @@ public class LightSeekGoal extends Goal {
 					&& BlockBreaking.canBreak(zombie.level(), lightPos, lightState);
 
 			if (willBreak) {
-				// Ждём BREAK_LIGHT_DELAY_TICKS, на блоке растут трещины, потом ломаем.
+				// Ломаем по тем же правилам, что и обычные блоки (BlockBreaking.progressPerTick):
+				// зависит от твёрдости блока и инструмента в руке зомби. На блоке растут трещины.
 				zombie.getLookControl().setLookAt(Vec3.atCenterOf(lightPos));
-				int delay = LightSeeking.BREAK_LIGHT_DELAY_TICKS;
-				if (waitTicks >= delay) {
+				breakProgress += BlockBreaking.progressPerTick(zombie, zombie.level(), lightPos, lightState);
+				if (breakProgress >= 1.0f) {
 					clearCracks();
 					zombie.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
 					zombie.level().destroyBlock(lightPos, BlockBreaking.DROP_ITEMS, zombie);
 					markVisited();
 					finished = true;
-				} else if (waitTicks % 10 == 0) {
-					int stage = Math.min(9, waitTicks * 10 / delay);
-					zombie.level().destroyBlockProgress(zombie.getId(), lightPos, stage);
+				} else {
+					if (waitTicks % 6 == 0) {
+						zombie.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
+					}
+					if (waitTicks % 5 == 0) {
+						int stage = Math.min(9, (int) (breakProgress * 10.0f));
+						zombie.level().destroyBlockProgress(zombie.getId(), lightPos, stage);
+					}
 				}
 			} else if (waitTicks >= LightSeeking.WAIT_AT_LIGHT_TICKS) {
 				markVisited();

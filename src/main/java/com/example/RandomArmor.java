@@ -15,6 +15,7 @@ import net.minecraft.world.item.component.DyedItemColor;
 /**
  * Случайная броня по слотам. Каждый слот (шлем, нагрудник, штаны, ботинки)
  * бросается отдельно — поэтому бывает «алмазный нагрудник + кожаные штаны».
+ * Отдельно есть редкий полный комплект одного материала: он растёт со шкалой угрозы.
  * Незеритовой брони здесь нет.
  */
 public final class RandomArmor {
@@ -36,6 +37,15 @@ public final class RandomArmor {
 	 * Константа для ясности; менять не нужно, пока не добавишь незерит в ARMOR_PIECES.
 	 */
 	public static final boolean ALLOW_NETHERITE_ARMOR = false;
+
+	/**
+	 * Шанс (0.0–1.0) полного комплекта на 100-й день: шлем, нагрудник, штаны и ботинки одного материала.
+	 * 0.02 = 2% зомби или скелетов. В начале игры шанса нет (ThreatTable.FULL_ARMOR_SET_CHANCE_START = 0)
+	 * и он растёт вместе со шкалой и луной. 0 = таких мобов нет даже в конце.
+	 * Материал внутри комплекта — поровну: кожа, золото, кольчуга, медь, железо или алмаз.
+	 * Обычная броня кусками, если комплект не выпал, считается отдельно.
+	 */
+	public static final float FULL_SET_CHANCE = 0.02f;
 
 	/**
 	 * Шанс (0.0–1.0), что моб с кожаной бронёй будет в КРАШЕНОЙ кожаной броне. 0.50 = 50%.
@@ -119,12 +129,46 @@ public final class RandomArmor {
 		return false;
 	}
 
-	public static void rollForZombie(Mob mob) {
+	/**
+	 * Броня зомби. true = надет полный комплект: шлем не заменять тыквой или спавнером.
+	 */
+	public static boolean rollForZombie(Mob mob) {
+		if (tryFullSet(mob)) {
+			return true;
+		}
 		rollPieces(mob, pieceChance(mob, ZOMBIE_ARMOR_PIECE_CHANCE));
+		return false;
 	}
 
-	public static void rollForSkeleton(Mob mob) {
+	/**
+	 * Броня скелета и странника. true = надет полный комплект: шлем не заменять.
+	 */
+	public static boolean rollForSkeleton(Mob mob) {
+		if (tryFullSet(mob)) {
+			return true;
+		}
 		rollPieces(mob, pieceChance(mob, SKELETON_ARMOR_PIECE_CHANCE));
+		return false;
+	}
+
+	/**
+	 * Редкий цельный сет. true = все четыре слота заняты одним материалом,
+	 * обычный бросок по кускам делать не нужно.
+	 */
+	private static boolean tryFullSet(Mob mob) {
+		float chance = ThreatScale.lerp(mob.level(), ThreatTable.FULL_ARMOR_SET_CHANCE_START, FULL_SET_CHANCE);
+		RandomSource random = mob.getRandom();
+		if (chance <= 0.0f || random.nextFloat() >= chance) {
+			return false;
+		}
+		int materialIndex = random.nextInt(ARMOR_PIECES.length);
+		for (int slotIndex = 0; slotIndex < SLOTS.length; slotIndex++) {
+			EquipmentSlot slot = SLOTS[slotIndex];
+			mob.setItemSlot(slot, new ItemStack(ARMOR_PIECES[materialIndex][slotIndex]));
+			mob.setDropChance(slot, ARMOR_DROP_CHANCE);
+		}
+		dyeLeather(mob, random);
+		return true;
 	}
 
 	/** РАСТЁТ: шанс слота между ThreatTable.ARMOR_PIECE_CHANCE_START (день 0) и {@code endChance} (день 100). */

@@ -52,11 +52,13 @@
 | Шкала угрозы на экране (HUD) | `src/client/.../client/threat/ThreatHud.java`, картинки делает `tools/prepare_threat_textures.py` из `art/threat_hud/` | — |
 | Случайное оружие и два оружия | `RandomWeapons.java` | `mobs/common/два-оружия.txt` |
 | Случайная и крашеная кожаная броня | `RandomArmor.java` | `mobs/common/крашеная-кожаная-броня.txt` |
+| Полный комплект брони | `RandomArmor.java` (`FULL_SET_CHANCE`) | `mobs/common/полный-комплект-брони.txt` |
 | Чары на оружии и броне | `MobEnchantments.java` | `mobs/common/чары-на-оружии.txt` |
 | Щиты | `MobShields.java` | `mobs/common/щиты.txt` |
 | Тотем бессмертия | `MobTotem.java` | `mobs/common/тотем-бессмертия.txt` |
 | Зелья при появлении | `MobPotionBuffs.java` | `mobs/common/бафы-зелий.txt` |
 | Случайное здоровье | `MobHealth.java` | `mobs/common/случайное-здоровье.txt` |
+| Опыт за убийство усиленных | `MobExperience.java` | `mobs/common/опыт-за-убийство.txt` |
 | Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/парящий-инструмент.txt` |
 | Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/повреждённый-голем.txt` |
 
@@ -84,11 +86,13 @@
 | Идут на свет | `light/LightSeeking.java` | `mobs/zombies/зомби-идут-на-свет.txt` |
 | Ломают блоки к игроку | `digging/BlockBreaking.java` | `mobs/zombies/зомби-ломают-блоки.txt` |
 | Помнит игрока и идёт за стену | `grudge/PlayerGrudge.java` | заметки нет; этим пользуются свет и копание |
-| Маяк из тыквы | `beacon/JackLanternBeacon.java` | `mobs/zombies/маяк-тыквы.txt` |
+| Маяк из тыквы | `beacon/JackLanternBeacon.java`, свет — `beacon/JackLanternLight.java` | `mobs/zombies/маяк-тыквы.txt` |
 | Носитель спавнера | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/носитель-спавнера.txt` |
 | Гнилой надсмотрщик | `overseer/ZombieOverseer.java` | `mobs/zombies/гнилой-надсмотрщик.txt` |
 | Зомби с динамитом | `zombie/TntZombie.java` | `mobs/zombies/зомби-с-динамитом.txt` |
 | Зомби-чародей | `zombie/ZombieSorcerer.java` | `mobs/zombies/зомби-чародей.txt` |
+| Зомби Excalibur | `zombie/ZombieExcalibur.java` | `mobs/zombies/зомби-экскалибур.txt` |
+| Зомби Mjölnir | `zombie/ZombieMjolnir.java` | `mobs/zombies/зомби-мьельнир.txt` |
 | Ритуальная стая | `ritual/RitualBand.java` | `mobs/zombies/ритуальная-стая.txt` |
 | Утопленник | `drowned/DrownedThreats.java` | `mobs/zombies/утопленник.txt` |
 | Удочка утопленника | `drowned/DrownedFishing.java` | `mobs/zombies/утопленник-удочка.txt` |
@@ -102,6 +106,7 @@
 | Заряженный крипер | `creeper/ChargedCreeper.java` | `mobs/creepers/крипер-заряженный.txt` |
 | Ломает щит взрывом | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/крипер-ломает-щит.txt` |
 | Подрывник | `creeper/SapperCreeper.java` | `mobs/creepers/крипер-подрывник.txt` |
+| Супербыстрый крипер | `creeper/FastCreeper.java` | `mobs/creepers/крипер-быстрый.txt` |
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
 | Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
@@ -121,6 +126,7 @@
 | Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
 | Магмовый куб | `magma/MagmaCubeThreats.java` | `mobs/slimes/магмовый-куб.txt` |
 | Обмен местами эндермена | `enderman/EndermanSwap.java` | `mobs/endermen/обмен-местами.txt` |
+| Чаще берёт и ставит блоки | `enderman/EndermanBlocks.java` | `mobs/endermen/блоки.txt` |
 | Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/шалкеры-снаряды.txt` |
 | Панцирь шалкера | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/шалкер-панцирь.txt` |
 | Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/брут-ломает-броню.txt` |

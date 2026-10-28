@@ -58,7 +58,6 @@ public final class RaidAnchor {
 	// ========================================================================
 
 	public static final String DISPLAY_NAME = "Raid Anchor";
-	public static final String BOSS_BAR_SUBTITLE = "The horde hears you";
 
 	private RaidAnchor() {
 	}

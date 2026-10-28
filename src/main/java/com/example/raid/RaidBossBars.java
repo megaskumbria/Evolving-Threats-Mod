@@ -20,9 +20,7 @@ public final class RaidBossBars {
 
 	public static void createFor(Zombie anchor) {
 		remove(anchor.getUUID());
-		Component title = Component.literal(RaidAnchor.DISPLAY_NAME)
-				.append("\n")
-				.append(Component.literal(RaidAnchor.BOSS_BAR_SUBTITLE).withStyle(s -> s.withColor(0xAAAAAA)));
+		Component title = Component.literal(RaidAnchor.DISPLAY_NAME);
 
 		ServerBossEvent event = new ServerBossEvent(
 				anchor.getUUID(),

@@ -10,9 +10,13 @@ import com.example.beacon.JackLanternBeacon;
 import com.example.siege.SiegeNight;
 import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.zombie.TntZombie;
+import com.example.zombie.ZombieExcalibur;
+import com.example.zombie.ZombieMjolnir;
 import com.example.zombie.ZombieSorcerer;
 import com.example.ritual.RitualBand;
 import com.example.entity.RaidParticipantEntity;
+import com.example.entity.ZombieExcaliburEntity;
+import com.example.entity.ZombieMjolnirEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchorNatural;
@@ -61,6 +65,20 @@ public class ZombieMixin {
 			return;
 		}
 
+		// Команда уже пометила его. Надсмотрщик, якорь и чародей этого зомби не забирают.
+		if (zombie instanceof ZombieExcaliburEntity excalibur && excalibur.evolvingthreats$isExcalibur()) {
+			MobPotionBuffs.tryApply(zombie);
+			ZombieExcalibur.tryClaim(zombie, spawnReason);
+			return;
+		}
+
+		// Команда уже пометила его Mjölnir. Надсмотрщик, якорь и чародей этого зомби не забирают.
+		if (zombie instanceof ZombieMjolnirEntity mjolnir && mjolnir.evolvingthreats$isMjolnir()) {
+			MobPotionBuffs.tryApply(zombie);
+			ZombieMjolnir.tryClaim(zombie, spawnReason);
+			return;
+		}
+
 		// Помощники надсмотрщика приходят как MOB_SUMMONED. Если им тоже давать шанс
 		// стать надсмотрщиком, рядом с боем появляется ещё один, и стая плодится.
 		// В ночь осады мини-боссы не появляются: надсмотрщик в том числе.
@@ -93,11 +111,22 @@ public class ZombieMixin {
 			return;
 		}
 
+		// Excalibur: меч с Остротой 20. Случайные оружие, броня, щит и голова ему не выдаются.
+		if (ZombieExcalibur.tryClaim(zombie, spawnReason)) {
+			return;
+		}
+
+		// Mjölnir: булава с Отдачей 20. Случайные оружие, щит и голова ему не выдаются. Броня — как у обычного зомби.
+		if (ZombieMjolnir.tryClaim(zombie, spawnReason)) {
+			return;
+		}
+
 		// Динамит вместо меча. Блоки не ломает. Броня и зелья остаются.
 		if (TntZombie.tryClaim(zombie, spawnReason)) {
-			RandomArmor.rollForZombie(zombie);
+			boolean fullSet = RandomArmor.rollForZombie(zombie);
 			MobEnchantments.rollArmorForZombie(zombie);
-			if (!SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
+			// У полного комплекта шлем не забираем: иначе сета из четырёх вещей не видно.
+			if (!fullSet && !SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
 				JackLanternBeacon.tryEquipOnSpawn(zombie);
 			}
 			return;
@@ -111,10 +140,11 @@ public class ZombieMixin {
 			}
 		}
 		MobEnchantments.rollForZombie(zombie);
-		RandomArmor.rollForZombie(zombie);
+		boolean fullSet = RandomArmor.rollForZombie(zombie);
 		MobEnchantments.rollArmorForZombie(zombie);
 		// Редкая «голова»: спавнер или jack o'lantern-маяк (один слот HEAD).
-		if (!SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
+		// Полный комплект шлем не отдаёт.
+		if (!fullSet && !SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
 			JackLanternBeacon.tryEquipOnSpawn(zombie);
 		}
 	}

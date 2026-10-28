@@ -97,10 +97,11 @@ public class SkeletonMixin {
 		MobEnchantments.rollForSkeleton(skeleton);
 		// Откидывание V/VI поверх обычных чар. Капитан и «700 IQ» сюда не доходят.
 		SkeletonPunchBow.tryApply(skeleton);
-		RandomArmor.rollForSkeleton(skeleton);
+		boolean fullSet = RandomArmor.rollForSkeleton(skeleton);
 		MobEnchantments.rollArmorForSkeleton(skeleton);
 		// Одна «особая» голова: спавнер → маяк (jack) → раздатчик.
-		if (!SpawnerHeadMob.tryEquipOnSpawn(skeleton)) {
+		// Полный комплект шлем не отдаёт.
+		if (!fullSet && !SpawnerHeadMob.tryEquipOnSpawn(skeleton)) {
 			if (!JackLanternBeacon.tryEquipOnSpawn(skeleton)) {
 				RandomDispenserSkull.tryEquipDispenserHead(skeleton);
 			}

@@ -11,9 +11,10 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Один бросок на появление враждебного моба в обычном мире.
- * Сначала шанс парящего инструмента, сразу за ним — шанс повреждённого голема.
- * Команда, яйцо и спавнер сюда не попадают: это только ночной спавн.
+ * Один бросок на появление враждебного моба.
+ * В обычном мире: сначала шанс парящего инструмента, сразу за ним — шанс повреждённого голема.
+ * В аду: отдельный шанс незеритового инструмента, голема нет.
+ * Команда, яйцо и спавнер сюда не попадают: это только естественный спавн.
  */
 public final class NaturalMonsterSwap {
 
@@ -21,10 +22,13 @@ public final class NaturalMonsterSwap {
 	}
 
 	public static EntityType<?> pick(Level level, EntityType<?> original, @Nullable BlockPos feet) {
-		if (!(level instanceof ServerLevel server) || server.dimension() != Level.OVERWORLD) {
+		if (!(level instanceof ServerLevel server) || original.getCategory() != MobCategory.MONSTER) {
 			return original;
 		}
-		if (original.getCategory() != MobCategory.MONSTER) {
+		if (server.dimension() == Level.NETHER) {
+			return pickNether(server, original);
+		}
+		if (server.dimension() != Level.OVERWORLD) {
 			return original;
 		}
 		// Осада: в верхнем мире остаются только зомби и скелеты. Остальные превращаются в них,
@@ -51,6 +55,18 @@ public final class NaturalMonsterSwap {
 				&& feet != null
 				&& DamagedGolem.hasRoom(server, feet)) {
 			return DamagedGolem.TYPE;
+		}
+		return original;
+	}
+
+	/** Ад: иногда парящий незерит вместо гаста, магмового куба и прочих монстров. Голема тут нет. */
+	private static EntityType<?> pickNether(ServerLevel server, EntityType<?> original) {
+		if (original == FloatingTool.TYPE || FloatingTool.TYPE == null) {
+			return original;
+		}
+		float chance = Math.max(0.0f, FloatingTool.NETHER_SPAWN_CHANCE);
+		if (chance > 0.0f && server.getRandom().nextFloat() < chance) {
+			return FloatingTool.TYPE;
 		}
 		return original;
 	}

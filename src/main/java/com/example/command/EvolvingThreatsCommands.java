@@ -3,6 +3,7 @@ package com.example.command;
 import com.example.blaze.BlazeAlchemist;
 import com.example.witch.WitchNullifier;
 import com.example.creeper.DynamiteCreeper;
+import com.example.creeper.FastCreeper;
 import com.example.illager.IllagerPatrol;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
@@ -15,6 +16,8 @@ import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SkeletonPunchBow;
 import com.example.skeleton.SkeletonHorseman;
 import com.example.zombie.TntZombie;
+import com.example.zombie.ZombieExcalibur;
+import com.example.zombie.ZombieMjolnir;
 import com.example.zombie.ZombieSorcerer;
 import com.example.ritual.RitualBand;
 import com.example.skeleton.TacticianSkeleton;
@@ -69,6 +72,8 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnSapper(ctx.getSource())))
 				.then(Commands.literal("shield")
 						.executes(ctx -> spawnShieldBreak(ctx.getSource())))
+				.then(Commands.literal("fast_creeper")
+						.executes(ctx -> spawnFastCreeper(ctx.getSource())))
 				.then(Commands.literal("raid")
 						.executes(ctx -> spawnRaid(ctx.getSource(), null))
 						.then(Commands.argument("target", EntityArgument.player())
@@ -96,6 +101,10 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnTntZombie(ctx.getSource())))
 				.then(Commands.literal("sorcerer")
 						.executes(ctx -> spawnSorcerer(ctx.getSource())))
+				.then(Commands.literal("excalibur")
+						.executes(ctx -> spawnExcalibur(ctx.getSource())))
+				.then(Commands.literal("mjolnir")
+						.executes(ctx -> spawnMjolnir(ctx.getSource())))
 				.then(Commands.literal("ritual")
 						.executes(ctx -> spawnRitual(ctx.getSource(), 0))
 						.then(Commands.literal("player")
@@ -179,6 +188,10 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnShieldBreak(ctx.getSource())));
 
+		dispatcher.register(Commands.literal("etfast")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnFastCreeper(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("etraid")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnRaid(ctx.getSource(), null)));
@@ -222,6 +235,14 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("etsorcerer")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnSorcerer(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etexcalibur")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnExcalibur(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etmjolnir")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnMjolnir(ctx.getSource())));
 
 		dispatcher.register(Commands.literal("etritual")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
@@ -405,6 +426,27 @@ public final class EvolvingThreatsCommands {
 		return 1;
 	}
 
+	private static int spawnFastCreeper(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		ServerPlayer lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(12.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (FastCreeper.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Fast creeper is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned fast creeper"), true);
+		return 1;
+	}
+
 	private static int spawnDynamite(CommandSourceStack source) {
 		if (!(source.getLevel() instanceof ServerLevel level)) {
 			source.sendFailure(Component.literal("Must run on server level"));
@@ -582,6 +624,48 @@ public final class EvolvingThreatsCommands {
 			return 0;
 		}
 		source.sendSuccess(() -> Component.literal("Spawned zombie sorcerer"), true);
+		return 1;
+	}
+
+	private static int spawnExcalibur(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (ZombieExcalibur.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Excalibur is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned Excalibur"), true);
+		return 1;
+	}
+
+	private static int spawnMjolnir(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (ZombieMjolnir.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Mjolnir is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned Mjolnir"), true);
 		return 1;
 	}
 

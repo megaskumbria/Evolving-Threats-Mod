@@ -37,8 +37,8 @@ public final class ZombieOverseer {
 
 	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
 
-	/** Шанс при спавне обычного зомби стать надсмотрщиком. 0.006 = 0.6%. */
-	public static final float SPAWN_CHANCE = 0.006f;
+	/** Шанс при спавне обычного зомби стать надсмотрщиком. 0.002 = 0.2% (было 0.6%, слишком часто). */
+	public static final float SPAWN_CHANCE = 0.002f;
 
 	public static final float MAX_HEALTH = 50.0f;
 
@@ -97,7 +97,6 @@ public final class ZombieOverseer {
 	// ========================================================================
 
 	public static final String DISPLAY_NAME = "Rotten Overseer";
-	public static final String BOSS_BAR_SUBTITLE = "Rallying the horde";
 
 	private ZombieOverseer() {
 	}
