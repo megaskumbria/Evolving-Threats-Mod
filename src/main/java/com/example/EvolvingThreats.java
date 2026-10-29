@@ -4,7 +4,6 @@ import com.example.command.EvolvingThreatsCommands;
 import com.example.golem.DamagedGolem;
 import com.example.illager.IllagerPatrolEvents;
 import com.example.item.ModItems;
-import com.example.overseer.OverseerBossBarEvents;
 import com.example.raid.RaidAnchorEvents;
 import com.example.siege.SiegeEvents;
 import com.example.threat.ThreatEvents;
@@ -36,7 +35,6 @@ public class EvolvingThreats implements ModInitializer {
 		FloatingTool.register();
 		DamagedGolem.register();
 		EvolvingThreatsCommands.register();
-		OverseerBossBarEvents.register();
 		RaidAnchorEvents.register();
 		IllagerPatrolEvents.register();
 		SiegeEvents.register();

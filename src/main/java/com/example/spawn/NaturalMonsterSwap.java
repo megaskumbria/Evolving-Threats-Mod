@@ -31,10 +31,10 @@ public final class NaturalMonsterSwap {
 		if (server.dimension() != Level.OVERWORLD) {
 			return original;
 		}
-		// Осада: в верхнем мире остаются только зомби и скелеты. Остальные превращаются в них,
-		// а парящих инструментов и големов в эту ночь нет совсем.
+		// Осада: в верхнем мире любой ночной монстр заменяется на моба из состава осады (по долям).
+		// Парящих инструментов и големов в эту ночь нет совсем.
 		if (SiegeNight.isWindowOpen(server)) {
-			return SiegeNight.swapForSiege(server.getRandom(), original);
+			return SiegeNight.swapForSiege(server, feet);
 		}
 		if (original == FloatingTool.TYPE || original == DamagedGolem.TYPE) {
 			return original;

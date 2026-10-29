@@ -24,13 +24,13 @@ public final class RandomArmor {
 
 	/**
 	 * Шанс (0.0–1.0) для КАЖДОГО слота брони у зомби на 100-й день (конец шкалы угрозы).
-	 * 0.50 = 50% на шлем, 50% на нагрудник, и т.д. (независимо друг от друга).
+	 * 0.75 = 75% на шлем, 75% на нагрудник, и т.д. (независимо друг от друга).
 	 * В начале игры шанс меньше (ThreatTable.ARMOR_PIECE_CHANCE_START) и растёт вместе со шкалой и луной.
 	 */
-	public static final float ZOMBIE_ARMOR_PIECE_CHANCE = 0.50f;
+	public static final float ZOMBIE_ARMOR_PIECE_CHANCE = 0.75f;
 
 	/** То же для обычного скелета и странника (конец шкалы). */
-	public static final float SKELETON_ARMOR_PIECE_CHANCE = 0.50f;
+	public static final float SKELETON_ARMOR_PIECE_CHANCE = 0.75f;
 
 	/**
 	 * Незеритовая броня при спавне не используется (только кожа…алмаз).
@@ -92,12 +92,12 @@ public final class RandomArmor {
 	 * Незерита нет: он только у Василиска.
 	 */
 	private static final int[] MATERIAL_WEIGHTS = {
-		26, // кожа
-		12, // золото
-		18, // кольчуга
-		12, // медь
-		20, // железо
-		12, // алмаз
+		10, // кожа
+		5, // золото
+		10, // кольчуга
+		8, // медь
+		32, // железо
+		35, // алмаз (35% от всей надетой брони на 100-й день)
 	};
 
 	private static final EquipmentSlot[] SLOTS = {

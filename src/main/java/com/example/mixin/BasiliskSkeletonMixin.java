@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.MobNames;
 import com.example.entity.BasiliskSkeletonEntity;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.level.storage.ValueInput;
@@ -42,7 +43,9 @@ public class BasiliskSkeletonMixin implements BasiliskSkeletonEntity {
 	private void evolvingthreats$loadBasilisk(ValueInput input, CallbackInfo ci) {
 		evolvingthreats$basilisk = input.getBooleanOr("EvolvingThreatsBasilisk", false);
 		if (evolvingthreats$basilisk) {
-			((Skeleton) (Object) this).reassessWeaponGoal();
+			Skeleton self = (Skeleton) (Object) this;
+			self.reassessWeaponGoal();
+			MobNames.showOnlyWhenLookedAt(self);
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package com.example.mixin;
 
+import com.example.MobNames;
 import com.example.entity.SkeletonSquadMember;
+import com.example.skeleton.SkeletonCaptain;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -116,5 +118,8 @@ public class SkeletonSquadMixin implements SkeletonSquadMember {
 				}
 			}
 		});
+		if (evolvingthreats$squadRole == SkeletonCaptain.ROLE_CAPTAIN) {
+			MobNames.showOnlyWhenLookedAt((Skeleton) (Object) this);
+		}
 	}
 }

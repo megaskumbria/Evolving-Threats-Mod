@@ -1,5 +1,6 @@
 package com.example.raid;
 
+import com.example.MobNames;
 import com.example.entity.RaidParticipantEntity;
 import com.example.overseer.ZombieOverseer;
 import net.minecraft.core.BlockPos;
@@ -25,13 +26,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Событие «Рейдовый якорь»: слабый якорь + 12–15 прислуг с {@link RaidEliteLoadout}.
+ * Событие «Рейдовый якорь»: якорь с золотой мотыгой + 12–15 прислуг с {@link RaidEliteLoadout}.
  */
 public final class RaidAnchor {
 
 	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
 
-	public static final float ANCHOR_MAX_HEALTH = 35.0f;
+	/** Здоровье якоря. 100 = 50 сердец. Оружие по-прежнему золотая мотыга. */
+	public static final float ANCHOR_MAX_HEALTH = 100.0f;
 
 	/** Минимум и максимум прислуг (включительно). */
 	public static final int MINION_COUNT_MIN = 12;
@@ -46,8 +48,6 @@ public final class RaidAnchor {
 
 	/** Как далеко от якоря/прислуг ещё работает «GPS» на игрока (блоки). */
 	public static final double HUNT_MAX_DISTANCE = 128.0;
-
-	public static final double BOSS_BAR_SHOW_DISTANCE = 64.0;
 
 	/** После смерти якоря: Slowness II на прислуг, секунды × 20 = тики. */
 	public static final int MINION_SLOWNESS_TICKS = 30 * 20;
@@ -101,7 +101,6 @@ public final class RaidAnchor {
 		UUID huntId = hunter != null ? hunter.getUUID() : null;
 
 		setupAnchor(zombie, raidId, huntId);
-		RaidBossBars.createFor(zombie);
 		RaidRegistry.registerAnchor(raidId, zombie.getId());
 
 		spawnMinions(level, zombie.position(), raidId, huntId, true);
@@ -146,7 +145,6 @@ public final class RaidAnchor {
 		setupAnchor(anchor, raidId, huntId);
 
 		level.addFreshEntity(anchor);
-		RaidBossBars.createFor(anchor);
 		return anchor;
 	}
 
@@ -164,9 +162,27 @@ public final class RaidAnchor {
 		anchor.setHealth(ANCHOR_MAX_HEALTH);
 		anchor.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(HUNT_MAX_DISTANCE);
 		anchor.setCustomName(Component.literal(DISPLAY_NAME));
-		anchor.setCustomNameVisible(true);
+		MobNames.showOnlyWhenLookedAt(anchor);
 		anchor.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_HOE));
 		anchor.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
+	}
+
+	/**
+	 * Уже живущий якорь при загрузке мира.
+	 * Если запас меньше {@link #ANCHOR_MAX_HEALTH}, поднимает его.
+	 * Сколько сердец уже сняли — столько и остаётся снятым.
+	 */
+	public static void raiseStoredHealth(Zombie anchor) {
+		var maxHealth = anchor.getAttribute(Attributes.MAX_HEALTH);
+		if (maxHealth == null || maxHealth.getBaseValue() >= ANCHOR_MAX_HEALTH) {
+			return;
+		}
+		float missing = (float) (maxHealth.getBaseValue() - anchor.getHealth());
+		if (missing < 0.0f) {
+			missing = 0.0f;
+		}
+		maxHealth.setBaseValue(ANCHOR_MAX_HEALTH);
+		anchor.setHealth(Math.max(1.0f, ANCHOR_MAX_HEALTH - missing));
 	}
 
 	private static void spawnZombieMinion(ServerLevel level, Vec3 pos, UUID raidId, @Nullable UUID huntId) {
@@ -203,11 +219,8 @@ public final class RaidAnchor {
 	}
 
 	/** Вызывается при смерти якоря: Slowness прислугам, сброс GPS и цели. */
-	public static void disbandRaidNear(ServerLevel level, UUID raidId, Vec3 center, @Nullable UUID anchorEntityUuid) {
+	public static void disbandRaidNear(ServerLevel level, UUID raidId, Vec3 center) {
 		RaidRegistry.unregister(raidId);
-		if (anchorEntityUuid != null) {
-			RaidBossBars.remove(anchorEntityUuid);
-		}
 
 		double boxSize = HUNT_MAX_DISTANCE + 48;
 		var box = new net.minecraft.world.phys.AABB(center, center).inflate(boxSize);

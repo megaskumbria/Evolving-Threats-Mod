@@ -2,6 +2,7 @@
 ===============
 
 Тип: редкий вариант обычного зомби. Над головой имя Excalibur.
+Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
 Код: zombie/ZombieExcalibur.java (настройки, меч, лут, команда),
      mixin/ZombieExcaliburMixin.java (флаг и опыт),
      mixin/ZombieExcaliburLootMixin.java (бирка),

@@ -1,7 +1,6 @@
 package com.example.mixin;
 
 import com.example.entity.ZombieOverseerEntity;
-import com.example.overseer.OverseerBossBars;
 import com.example.overseer.ZombieOverseer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +24,6 @@ public class ZombieOverseerTickMixin {
 		}
 
 		ZombieOverseer.refreshServantCount(self, serverLevel);
-		OverseerBossBars.tick(self, serverLevel);
 		tickSummonCooldown(overseer);
 		tickHuntTimeout(self, overseer, serverLevel);
 	}

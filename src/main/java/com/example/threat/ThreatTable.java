@@ -20,6 +20,12 @@ public final class ThreatTable {
 	/** Первая осада. Через сколько дней дальше — в {@code SiegeNight}. */
 	public static final int SIEGE_FIRST_DAY = 25;
 
+	/**
+	 * С этого дня осада может быть «иллагерской» (разорители, разбойники, вызыватели, поборники).
+	 * До него все осады из нежити и тварей. Шанс иллагерской осады — в {@code SiegeComposition}.
+	 */
+	public static final int SIEGE_ILLAGER_DAY = 40;
+
 	/** Скелеты с луком Откидывание V–VI («чары сильнее ванильных»). До этого дня таких нет. */
 	public static final int STRONG_BOW_DAY = 20;
 
@@ -37,6 +43,9 @@ public final class ThreatTable {
 
 	/** Капитан скелетов с охраной. */
 	public static final int SKELETON_CAPTAIN_DAY = 60;
+
+	/** Бастион: обычный зомби или скелет с большим запасом здоровья. Шанс в {@code Bastion}, от дня не растёт. */
+	public static final int BASTION_DAY = 60;
 
 	/** Рейдовый якорь: с этого дня он может появиться сам (шанс и пауза — в RaidAnchorNatural). */
 	public static final int RAID_ANCHOR_DAY = 80;

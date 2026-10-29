@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.mirror.Mirror;
 import com.example.piglin.PiglinBruteHealth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -25,6 +26,8 @@ public class PiglinBruteHealthMixin {
 			EntitySpawnReason spawnReason,
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
-		PiglinBruteHealth.onSpawn((PiglinBrute) (Object) this);
+		PiglinBrute brute = (PiglinBrute) (Object) this;
+		PiglinBruteHealth.onSpawn(brute);
+		Mirror.tryRoll(brute, spawnReason);
 	}
 }

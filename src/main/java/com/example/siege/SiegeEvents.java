@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
 /**
  * Подключение осады к игре: тик мира, попытка лечь в кровать и выключение сервера.
- * Запрет порталов — в mixin/EntityPortalSiegeMixin, спавн — в NaturalMonsterSwap и mixin/SiegeSpawnMixin.
+ * Запрет порталов — в mixin/EntityPortalSiegeMixin, спавн — в NaturalMonsterSwap и mixin/SiegeMobMixin.
  */
 public final class SiegeEvents {
 

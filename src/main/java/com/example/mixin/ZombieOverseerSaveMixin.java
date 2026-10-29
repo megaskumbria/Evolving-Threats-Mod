@@ -1,7 +1,8 @@
 package com.example.mixin;
 
+import com.example.MobNames;
 import com.example.entity.ZombieOverseerEntity;
-import com.example.overseer.OverseerBossBars;
+import com.example.overseer.ZombieOverseer;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -40,7 +41,8 @@ public class ZombieOverseerSaveMixin {
 		data.evolvingthreats$setHuntStartedGameTime(input.getLongOr("EvolvingThreatsHuntStarted", 0L));
 		data.evolvingthreats$setActiveServantCount(input.getIntOr("EvolvingThreatsServants", 0));
 		if (data.evolvingthreats$isOverseer()) {
-			OverseerBossBars.createFor(self);
+			MobNames.showOnlyWhenLookedAt(self);
+			ZombieOverseer.raiseStoredHealth(self);
 		}
 	}
 }

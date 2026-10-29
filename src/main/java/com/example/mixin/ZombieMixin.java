@@ -6,6 +6,8 @@ import com.example.MobShields;
 import com.example.MobTotem;
 import com.example.RandomArmor;
 import com.example.RandomWeapons;
+import com.example.bastion.Bastion;
+import com.example.mirror.Mirror;
 import com.example.beacon.JackLanternBeacon;
 import com.example.siege.SiegeNight;
 import com.example.spawnerhead.SpawnerHeadMob;
@@ -20,6 +22,7 @@ import com.example.entity.ZombieMjolnirEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchorNatural;
+import com.example.threat.ThreatPack;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -51,29 +54,38 @@ public class ZombieMixin {
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 
 		Zombie zombie = (Zombie) (Object) this;
+		try {
 
 		// Зомбифицированный пиглин мирный, пока его не ударят. Ему бафы и оружие мода не выдаём.
 		if (zombie instanceof ZombifiedPiglin) {
 			return;
 		}
 
-		if (zombie instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
+		// Чем выше шкала угрозы, тем чаще к ночному зомби добавляются ещё такие же (ThreatPack).
+		if (level instanceof ServerLevel packLevel) {
+			ThreatPack.tryAddExtras(zombie, packLevel, spawnReason);
+		}
+
+		// Команда уже пометила Бастиона. Редкие роли его не забирают: ему нужен обычный набор.
+		boolean bastion = Bastion.isBastion(zombie);
+
+		if (!bastion && zombie instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
 			return;
 		}
 
-		if (zombie instanceof ZombieOverseerEntity data && data.evolvingthreats$isOverseer()) {
+		if (!bastion && zombie instanceof ZombieOverseerEntity data && data.evolvingthreats$isOverseer()) {
 			return;
 		}
 
 		// Команда уже пометила его. Надсмотрщик, якорь и чародей этого зомби не забирают.
-		if (zombie instanceof ZombieExcaliburEntity excalibur && excalibur.evolvingthreats$isExcalibur()) {
+		if (!bastion && zombie instanceof ZombieExcaliburEntity excalibur && excalibur.evolvingthreats$isExcalibur()) {
 			MobPotionBuffs.tryApply(zombie);
 			ZombieExcalibur.tryClaim(zombie, spawnReason);
 			return;
 		}
 
 		// Команда уже пометила его Mjölnir. Надсмотрщик, якорь и чародей этого зомби не забирают.
-		if (zombie instanceof ZombieMjolnirEntity mjolnir && mjolnir.evolvingthreats$isMjolnir()) {
+		if (!bastion && zombie instanceof ZombieMjolnirEntity mjolnir && mjolnir.evolvingthreats$isMjolnir()) {
 			MobPotionBuffs.tryApply(zombie);
 			ZombieMjolnir.tryClaim(zombie, spawnReason);
 			return;
@@ -82,7 +94,8 @@ public class ZombieMixin {
 		// Помощники надсмотрщика приходят как MOB_SUMMONED. Если им тоже давать шанс
 		// стать надсмотрщиком, рядом с боем появляется ещё один, и стая плодится.
 		// В ночь осады мини-боссы не появляются: надсмотрщик в том числе.
-		if (spawnReason != EntitySpawnReason.MOB_SUMMONED
+		if (!bastion
+				&& spawnReason != EntitySpawnReason.MOB_SUMMONED
 				&& level instanceof ServerLevel serverLevel
 				&& !SiegeNight.isWindowOpen(serverLevel)
 				&& ZombieOverseer.tryCreateOnSpawn(zombie, serverLevel)) {
@@ -90,13 +103,14 @@ public class ZombieMixin {
 		}
 
 		// Рейдовый якорь (с 80-го дня, очень редко, ночью на поверхности). Подробности в RaidAnchorNatural.
-		if (level instanceof ServerLevel serverLevel
+		if (!bastion
+				&& level instanceof ServerLevel serverLevel
 				&& RaidAnchorNatural.tryConvertOnSpawn(zombie, serverLevel, spawnReason)) {
 			return;
 		}
 
 		// Ритуальная стая: своя кожа и голова. Случайное оружие и чары ей не выдаём.
-		if (RitualBand.tryClaim(zombie, spawnReason)) {
+		if (!bastion && RitualBand.tryClaim(zombie, spawnReason)) {
 			return;
 		}
 
@@ -107,22 +121,22 @@ public class ZombieMixin {
 		}
 
 		// Чародей: своя броня и мотыга, без чар. Случайное оружие и голова ему не выдаются.
-		if (ZombieSorcerer.tryClaim(zombie, spawnReason)) {
+		if (!bastion && ZombieSorcerer.tryClaim(zombie, spawnReason)) {
 			return;
 		}
 
 		// Excalibur: меч с Остротой 20. Случайные оружие, броня, щит и голова ему не выдаются.
-		if (ZombieExcalibur.tryClaim(zombie, spawnReason)) {
+		if (!bastion && ZombieExcalibur.tryClaim(zombie, spawnReason)) {
 			return;
 		}
 
 		// Mjölnir: булава с Отдачей 20. Случайные оружие, щит и голова ему не выдаются. Броня — как у обычного зомби.
-		if (ZombieMjolnir.tryClaim(zombie, spawnReason)) {
+		if (!bastion && ZombieMjolnir.tryClaim(zombie, spawnReason)) {
 			return;
 		}
 
 		// Динамит вместо меча. Блоки не ломает. Броня и зелья остаются.
-		if (TntZombie.tryClaim(zombie, spawnReason)) {
+		if (!bastion && TntZombie.tryClaim(zombie, spawnReason)) {
 			boolean fullSet = RandomArmor.rollForZombie(zombie);
 			MobEnchantments.rollArmorForZombie(zombie);
 			// У полного комплекта шлем не забираем: иначе сета из четырёх вещей не видно.
@@ -146,6 +160,14 @@ public class ZombieMixin {
 		// Полный комплект шлем не отдаёт.
 		if (!fullSet && !SpawnerHeadMob.tryEquipOnSpawn(zombie)) {
 			JackLanternBeacon.tryEquipOnSpawn(zombie);
+		}
+		// После брони и чар: 1000 здоровья, удар не сдвигает. Ломание блоков этот вызов не выключает.
+		if (bastion || Bastion.tryRoll(zombie, spawnReason)) {
+			Bastion.apply(zombie);
+		}
+		} finally {
+			// После всех ранних выходов: Бастион и остальные именные уже поставили имя и этот шанс пропускают.
+			Mirror.tryRoll(zombie, spawnReason);
 		}
 	}
 }

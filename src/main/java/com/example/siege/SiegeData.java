@@ -8,6 +8,9 @@ import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Что игра помнит об осадах между перезапусками: когда следующая и на каком этапе мы сейчас.
  * Лежит в папке мира (data/evolving-threats/siege.dat). Здесь нет настроек для баланса:
@@ -42,12 +45,20 @@ public final class SiegeData extends SavedData {
 	/** Для какой осады уже показали утренний намёк. Чтобы он не повторялся. */
 	public long omenSentFor = -1L;
 
+	/**
+	 * Состав текущей осады: доли видов мобов (в сумме 1.0), по порядку {@link SiegeComposition.Kind}.
+	 * Пусто — состав ещё не выбран (выбирается при начале осады). Хранится, чтобы после перезапуска
+	 * игры осада продолжилась с теми же мобами.
+	 */
+	public float[] shares = new float[0];
+
 	public static final Codec<SiegeData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.LONG.optionalFieldOf("next_siege_day", -1L).forGetter(data -> data.nextSiegeDay),
 			Codec.INT.optionalFieldOf("phase", PHASE_IDLE).forGetter(data -> data.phase),
 			Codec.LONG.optionalFieldOf("night_start_clock", 0L).forGetter(data -> data.nightStartClock),
 			Codec.LONG.optionalFieldOf("end_clock", 0L).forGetter(data -> data.endClock),
-			Codec.LONG.optionalFieldOf("omen_sent_for", -1L).forGetter(data -> data.omenSentFor)
+			Codec.LONG.optionalFieldOf("omen_sent_for", -1L).forGetter(data -> data.omenSentFor),
+			Codec.FLOAT.listOf().optionalFieldOf("shares", List.of()).forGetter(data -> toList(data.shares))
 	).apply(instance, SiegeData::new));
 
 	public static final SavedDataType<SiegeData> TYPE = new SavedDataType<>(
@@ -60,12 +71,25 @@ public final class SiegeData extends SavedData {
 	public SiegeData() {
 	}
 
-	private SiegeData(long nextSiegeDay, int phase, long nightStartClock, long endClock, long omenSentFor) {
+	private SiegeData(long nextSiegeDay, int phase, long nightStartClock, long endClock, long omenSentFor,
+			List<Float> shares) {
 		this.nextSiegeDay = nextSiegeDay;
 		this.phase = phase;
 		this.nightStartClock = nightStartClock;
 		this.endClock = endClock;
 		this.omenSentFor = omenSentFor;
+		this.shares = new float[shares.size()];
+		for (int i = 0; i < this.shares.length; i++) {
+			this.shares[i] = shares.get(i);
+		}
+	}
+
+	private static List<Float> toList(float[] values) {
+		List<Float> list = new ArrayList<>(values.length);
+		for (float value : values) {
+			list.add(value);
+		}
+		return list;
 	}
 
 	/** Данные хранятся один раз на весь мир, в верхнем мире. Можно передать любой мир сервера. */

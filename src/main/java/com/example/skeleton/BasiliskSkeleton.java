@@ -1,5 +1,6 @@
 package com.example.skeleton;
 
+import com.example.MobNames;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -38,8 +40,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Редкий скелет Basilisk. Игра его не добавляет: это обычный скелет в незерите
- * с луком, который уносит игрока очень далеко и поджигает.
- * Лук и броня не падают. С него всегда падает бирка с его именем.
+ * с луком и чёрным щитом. Лук уносит игрока очень далеко и поджигает.
+ * Лук, щит и броня не падают. С него всегда падает бирка с его именем.
  */
 public final class BasiliskSkeleton {
 
@@ -57,6 +59,13 @@ public final class BasiliskSkeleton {
 
 	/** Имя над головой и текст на бирке. По-английски, как у капитана. */
 	public static final String NAME = "Basilisk";
+
+	/**
+	 * Здоровье. У обычного скелета 20 (10 сердец), случайный бросок мода (20–40) ему не оставляем:
+	 * это число ставится после того броска и всегда одно и то же.
+	 * 100 = 50 сердец. Меньше 1 игра почти сразу убивает.
+	 */
+	public static final float MAX_HEALTH = 100.0f;
 
 	/**
 	 * Сколько опыта падает при смерти. 100. Обычный скелет даёт 5.
@@ -286,7 +295,7 @@ public final class BasiliskSkeleton {
 
 	private static void equip(AbstractSkeleton skeleton) {
 		skeleton.setCustomName(name());
-		skeleton.setCustomNameVisible(true);
+		MobNames.showOnlyWhenLookedAt(skeleton);
 		skeleton.setCanPickUpLoot(false);
 		skeleton.setPersistenceRequired();
 
@@ -295,7 +304,12 @@ public final class BasiliskSkeleton {
 		enchant(skeleton, bow, Enchantments.POWER, BOW_POWER_LEVEL);
 		enchant(skeleton, bow, Enchantments.PUNCH, BOW_PUNCH_LEVEL);
 		skeleton.setItemSlot(EquipmentSlot.MAINHAND, bow);
-		skeleton.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+		// Чёрный щит без узора флага: только цвет основы. Другой цвет — DyeColor, например RED.
+		// Удар по нему с шансом MobShields.BLOCK_CHANCE (сейчас 10%) гасится целиком, как у обычного щита мода.
+		// Щит не падает: шанс выпадения второй руки ниже стоит в 0.
+		ItemStack shield = new ItemStack(Items.SHIELD);
+		shield.set(DataComponents.BASE_COLOR, DyeColor.BLACK);
+		skeleton.setItemSlot(EquipmentSlot.OFFHAND, shield);
 
 		skeleton.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.NETHERITE_HELMET));
 		skeleton.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.NETHERITE_CHESTPLATE));
@@ -306,6 +320,11 @@ public final class BasiliskSkeleton {
 		skeleton.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
 		for (EquipmentSlot slot : ARMOR) {
 			skeleton.setDropChance(slot, 0.0f);
+		}
+		var maxHealth = skeleton.getAttribute(Attributes.MAX_HEALTH);
+		if (maxHealth != null) {
+			maxHealth.setBaseValue(MAX_HEALTH);
+			skeleton.setHealth(MAX_HEALTH);
 		}
 		setSight(skeleton);
 		skeleton.reassessWeaponGoal();

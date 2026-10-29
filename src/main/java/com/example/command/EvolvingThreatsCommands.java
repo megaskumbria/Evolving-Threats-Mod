@@ -1,5 +1,7 @@
 package com.example.command;
 
+import com.example.bastion.Bastion;
+import com.example.mirror.Mirror;
 import com.example.blaze.BlazeAlchemist;
 import com.example.witch.WitchNullifier;
 import com.example.creeper.DynamiteCreeper;
@@ -8,8 +10,10 @@ import com.example.illager.IllagerPatrol;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
 import com.example.item.ModItems;
+import com.example.kit.SurvivalKit;
 import com.example.overseer.ZombieOverseer;
 import com.example.raid.RaidAnchor;
+import com.example.siege.SiegeComposition;
 import com.example.siege.SiegeNight;
 import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.SkeletonCaptain;
@@ -95,6 +99,11 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnCaptain(ctx.getSource())))
 				.then(Commands.literal("basilisk")
 						.executes(ctx -> spawnBasilisk(ctx.getSource())))
+				.then(Commands.literal("bastion")
+						.executes(ctx -> spawnBastion(ctx.getSource(), false))
+						.then(Commands.literal("skeleton")
+								.executes(ctx -> spawnBastion(ctx.getSource(), true))))
+				.then(mirrorSpawn()))
 				.then(Commands.literal("horseman")
 						.executes(ctx -> spawnHorseman(ctx.getSource())))
 				.then(Commands.literal("tnt_zombie")
@@ -131,21 +140,46 @@ public final class EvolvingThreatsCommands {
 								.executes(ctx -> giveEgg(
 										ctx.getSource(),
 										IntegerArgumentType.getInteger(ctx, "count")
-								))))));
+								))))
+				// Набор незерита для проверки боёв. Числа чар — в kit/SurvivalKit.java.
+				.then(Commands.literal("kit")
+						.executes(ctx -> SurvivalKit.give(ctx.getSource())))));
 
 		// Проверка осады без ожидания 10-15 дней.
 		//   status   — когда следующая и на каком этапе.
 		//   warn     — предупреждение сейчас, ночь осады начнётся через 2 минуты.
 		//   start    — ночь осады сразу (днём мобы на солнце горят, это нормально).
+		//   warn/start undead   — то же, но обязательно нежить и твари (зомби, криперы, пауки…).
+		//   warn/start illagers — то же, но обязательно иллагеры (разбойники, разорители…), день не проверяется.
+		//   warn/start <вид>    — осада на 100% из одного вида: zombie, skeleton, wither_skeleton,
+		//                         drowned, creeper, spider, witch, slime, phantom,
+		//                         pillager, vindicator, evoker, ravager.
 		//   stop     — прекратить осаду.
 		//   in <дни> — назначить осаду через столько игровых дней (0 = в ночь сегодня).
+		var siegeWarn = Commands.literal("warn")
+				.executes(ctx -> siegeWarn(ctx.getSource(), null))
+				.then(Commands.literal("undead")
+						.executes(ctx -> siegeWarn(ctx.getSource(), SiegeComposition.Faction.UNDEAD)))
+				.then(Commands.literal("illagers")
+						.executes(ctx -> siegeWarn(ctx.getSource(), SiegeComposition.Faction.ILLAGER)));
+		var siegeStart = Commands.literal("start")
+				.executes(ctx -> siegeStart(ctx.getSource(), null))
+				.then(Commands.literal("undead")
+						.executes(ctx -> siegeStart(ctx.getSource(), SiegeComposition.Faction.UNDEAD)))
+				.then(Commands.literal("illagers")
+						.executes(ctx -> siegeStart(ctx.getSource(), SiegeComposition.Faction.ILLAGER)));
+		for (SiegeComposition.Kind kind : SiegeComposition.Kind.values()) {
+			String name = kind.name().toLowerCase(java.util.Locale.ROOT);
+			siegeWarn.then(Commands.literal(name)
+					.executes(ctx -> siegeWarnKind(ctx.getSource(), kind)));
+			siegeStart.then(Commands.literal(name)
+					.executes(ctx -> siegeStartKind(ctx.getSource(), kind)));
+		}
 		dispatcher.register(root.then(Commands.literal("siege")
 				.then(Commands.literal("status")
 						.executes(ctx -> siegeStatus(ctx.getSource())))
-				.then(Commands.literal("warn")
-						.executes(ctx -> siegeWarn(ctx.getSource())))
-				.then(Commands.literal("start")
-						.executes(ctx -> siegeStart(ctx.getSource())))
+				.then(siegeWarn)
+				.then(siegeStart)
 				.then(Commands.literal("stop")
 						.executes(ctx -> siegeStop(ctx.getSource())))
 				.then(Commands.literal("in")
@@ -224,6 +258,21 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnBasilisk(ctx.getSource())));
 
+		dispatcher.register(Commands.literal("etbastion")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnBastion(ctx.getSource(), false))
+				.then(Commands.literal("skeleton")
+						.executes(ctx -> spawnBastion(ctx.getSource(), true))));
+
+		var etmirror = Commands.literal("etmirror")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnMirror(ctx.getSource(), "zombie"));
+		for (String kind : MIRROR_KINDS) {
+			String word = kind;
+			etmirror.then(Commands.literal(word).executes(ctx -> spawnMirror(ctx.getSource(), word)));
+		}
+		dispatcher.register(etmirror);
+
 		dispatcher.register(Commands.literal("ethorseman")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnHorseman(ctx.getSource())));
@@ -269,6 +318,10 @@ public final class EvolvingThreatsCommands {
 				.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
 				.then(Commands.literal("v")
 						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_V))));
+
+		dispatcher.register(Commands.literal("etkit")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> SurvivalKit.give(ctx.getSource())));
 	}
 
 	private static int dayStatus(CommandSourceStack source) {
@@ -295,14 +348,27 @@ public final class EvolvingThreatsCommands {
 		return 1;
 	}
 
-	private static int siegeWarn(CommandSourceStack source) {
-		SiegeNight.forceWarning(source.getServer().overworld());
+	private static int siegeWarn(CommandSourceStack source, SiegeComposition.Faction faction) {
+		SiegeNight.forceWarning(source.getServer().overworld(), faction);
 		return 1;
 	}
 
-	private static int siegeStart(CommandSourceStack source) {
-		SiegeNight.forceStart(source.getServer().overworld());
-		source.sendSuccess(() -> Component.literal("Siege night started"), true);
+	private static int siegeStart(CommandSourceStack source, SiegeComposition.Faction faction) {
+		ServerLevel overworld = source.getServer().overworld();
+		SiegeNight.forceStart(overworld, faction);
+		source.sendSuccess(() -> Component.literal("Siege night started; " + SiegeNight.status(overworld)), true);
+		return 1;
+	}
+
+	private static int siegeWarnKind(CommandSourceStack source, SiegeComposition.Kind kind) {
+		SiegeNight.forceWarning(source.getServer().overworld(), kind);
+		return 1;
+	}
+
+	private static int siegeStartKind(CommandSourceStack source, SiegeComposition.Kind kind) {
+		ServerLevel overworld = source.getServer().overworld();
+		SiegeNight.forceStart(overworld, kind);
+		source.sendSuccess(() -> Component.literal("Siege night started; " + SiegeNight.status(overworld)), true);
 		return 1;
 	}
 
@@ -519,6 +585,63 @@ public final class EvolvingThreatsCommands {
 		}
 		TacticianSkeleton.spawn(level, pos, lookAt);
 		source.sendSuccess(() -> Component.literal("Spawned 700 IQ skeleton"), true);
+		return 1;
+	}
+
+	private static final String[] MIRROR_KINDS = {
+			"skeleton", "wither", "blaze", "spider", "piglin", "brute", "enderman", "silverfish", "creeper", "witch"
+	};
+
+	/** Ветка /evolvingthreats spawn mirror. Без слова — зомби. */
+	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> mirrorSpawn() {
+		var mirror = Commands.literal("mirror")
+				.executes(ctx -> spawnMirror(ctx.getSource(), "zombie"));
+		for (String kind : MIRROR_KINDS) {
+			String word = kind;
+			mirror = mirror.then(Commands.literal(word).executes(ctx -> spawnMirror(ctx.getSource(), word)));
+		}
+		return mirror;
+	}
+
+	private static int spawnMirror(CommandSourceStack source, String kind) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (!Mirror.spawn(level, pos, lookAt, kind)) {
+			source.sendFailure(Component.literal("Mirror is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned Mirror " + kind), true);
+		return 1;
+	}
+
+	private static int spawnBastion(CommandSourceStack source, boolean skeleton) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (!Bastion.spawn(level, pos, lookAt, skeleton)) {
+			source.sendFailure(Component.literal("Bastion is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal(skeleton ? "Spawned Bastion skeleton" : "Spawned Bastion zombie"), true);
 		return 1;
 	}
 

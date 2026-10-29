@@ -1,7 +1,8 @@
 package com.example.mixin;
 
+import com.example.MobNames;
 import com.example.entity.RaidParticipantEntity;
-import com.example.raid.RaidBossBars;
+import com.example.raid.RaidAnchor;
 import com.example.raid.RaidRegistry;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.storage.ValueInput;
@@ -45,7 +46,8 @@ public class ZombieRaidSaveMixin {
 		input.getString("EvolvingThreatsRaidId").ifPresent(s -> raid.evolvingthreats$setRaidId(UUID.fromString(s)));
 		input.getString("EvolvingThreatsRaidHunt").ifPresent(s -> raid.evolvingthreats$setRaidHuntTargetId(UUID.fromString(s)));
 		if (raid.evolvingthreats$isRaidAnchor()) {
-			RaidBossBars.createFor(self);
+			MobNames.showOnlyWhenLookedAt(self);
+			RaidAnchor.raiseStoredHealth(self);
 			if (raid.evolvingthreats$getRaidId() != null) {
 				RaidRegistry.registerAnchor(raid.evolvingthreats$getRaidId(), self.getId());
 			}

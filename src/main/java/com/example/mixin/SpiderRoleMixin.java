@@ -1,6 +1,7 @@
 package com.example.mixin;
 
 import com.example.MobPotionBuffs;
+import com.example.mirror.Mirror;
 import com.example.entity.SpiderRoleEntity;
 import com.example.entity.ai.SpiderWebWeaveGoal;
 import com.example.spider.SpiderThreats;
@@ -46,6 +47,8 @@ public class SpiderRoleMixin implements SpiderRoleEntity {
 		Spider spider = (Spider) (Object) this;
 		SpiderThreats.rollOnSpawn(spider, level, spawnReason);
 		MobPotionBuffs.tryApply(spider);
+		// Пещерный паук сюда тоже заходит, но шанс у него не бросается: в списке только обычный паук.
+		Mirror.tryRoll(spider, spawnReason);
 	}
 
 	@Inject(method = "registerGoals", at = @At("RETURN"))

@@ -1,5 +1,7 @@
 package com.example.siege;
 
+import com.example.siege.SiegeComposition.Faction;
+import com.example.siege.SiegeComposition.Kind;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 import net.minecraft.ChatFormatting;
@@ -13,20 +15,21 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * «Осада» — редкая ночь, когда в верхнем мире бродят только зомби и скелеты,
+ * «Осада» — редкая ночь, когда в верхнем мире бродят только мобы одной фракции
+ * (нежить и твари либо иллагеры, см. {@link SiegeComposition}),
  * идут волнами издалека и охотятся на игрока до самого рассвета.
  *
  * Здесь расписание (когда осада), предупреждение, запрет сна и порталов, подмена обычного спавна.
- * Сами волны мобов — в {@link SiegeWaves}. Эта механика не связана с «Рейдовым якорем» (raid/RaidAnchor).
+ * Сами волны мобов — в {@link SiegeWaves}, состав и доли — в {@link SiegeComposition}. Эта механика не связана с «Рейдовым якорем» (raid/RaidAnchor).
  *
  * Этапы одной осады:
  *   1. Утром за день до осады — туманный намёк в чат (необязательно).
@@ -91,9 +94,6 @@ public final class SiegeNight {
 
 	/** Во сколько утром приходит намёк, в тиках от начала дня. 1000 = вскоре после рассвета. */
 	public static final int OMEN_TICK = 1000;
-
-	/** Доля зомби при подмене обычного спавна. 0.60 = 60% зомби, остальное скелеты. */
-	public static final float SWAP_ZOMBIE_FRACTION = 0.60f;
 
 	/** Сколько длится осада, если запустить её командой в тестовых целях, в тиках. 10000 = как ночь. */
 	public static final int FORCED_NIGHT_LENGTH_TICKS = 10000;
@@ -312,7 +312,8 @@ public final class SiegeNight {
 			// На мирной сложности мобов нет вообще. Ждём конца ночи, потом назначим новую.
 			return;
 		}
-		begin(level, data, nightStart, end, clock >= nightStart ? SiegeData.PHASE_NIGHT : SiegeData.PHASE_WARNING);
+		begin(level, data, nightStart, end,
+				clock >= nightStart ? SiegeData.PHASE_NIGHT : SiegeData.PHASE_WARNING, null, null);
 	}
 
 	/** Утренний намёк за день до осады (необязательно). */
@@ -329,11 +330,19 @@ public final class SiegeNight {
 		broadcast(level, OMEN_MESSAGES, OMEN_MESSAGES_EN);
 	}
 
-	/** Начинает осаду: сразу с предупреждения или (если время уже ночное) с самой ночи. */
-	private static void begin(ServerLevel level, SiegeData data, long nightStart, long end, int phase) {
+	/**
+	 * Начинает осаду: сразу с предупреждения или (если время уже ночное) с самой ночи.
+	 * Здесь же выбирается состав осады (кто придёт и в каких долях), он держится до рассвета.
+	 */
+	private static void begin(ServerLevel level, SiegeData data, long nightStart, long end, int phase,
+			@Nullable Faction forced, @Nullable Kind forcedKind) {
 		data.phase = phase;
 		data.nightStartClock = nightStart;
 		data.endClock = end;
+		// Команда проверки может задать один вид на 100%. Иначе состав случайный (фракция — по дню или по команде).
+		data.shares = forcedKind != null
+				? SiegeComposition.only(forcedKind)
+				: SiegeComposition.roll(level.getRandom(), SiegeComposition.illagersAllowed(level), forced);
 		data.setDirty();
 
 		wakeSleepers(level);
@@ -351,6 +360,7 @@ public final class SiegeNight {
 	/** Заканчивает осаду и назначает следующую через DAYS_MIN–DAYS_MAX дней. */
 	private static void finish(ServerLevel level, SiegeData data, long clock, boolean announceDawn) {
 		data.phase = SiegeData.PHASE_IDLE;
+		data.shares = new float[0];
 		scheduleNext(level, data, Math.floorDiv(clock, TICKS_PER_DAY));
 		soundStartGameTime = -1L;
 		if (announceDawn) {
@@ -449,33 +459,12 @@ public final class SiegeNight {
 	// Подмена обычного спавна
 	// ------------------------------------------------------------------
 
-	/** Зомби и их варианты: обычный, кадавр, утопленник, зомби-житель, зомби-пиглин. */
-	public static boolean isZombieFamily(EntityType<?> type) {
-		return type == EntityTypes.ZOMBIE
-				|| type == EntityTypes.HUSK
-				|| type == EntityTypes.DROWNED
-				|| type == EntityTypes.ZOMBIE_VILLAGER
-				|| type == EntityTypes.ZOMBIFIED_PIGLIN;
-	}
-
-	/** Скелеты и их варианты: обычный, странник, болотный, пустынный, иссушитель. */
-	public static boolean isSkeletonFamily(EntityType<?> type) {
-		return type == EntityTypes.SKELETON
-				|| type == EntityTypes.STRAY
-				|| type == EntityTypes.BOGGED
-				|| type == EntityTypes.PARCHED
-				|| type == EntityTypes.WITHER_SKELETON;
-	}
-
 	/**
-	 * Что ставить вместо моба, которого выбрала игра. Зомби и скелеты (и все их варианты) остаются,
-	 * остальные (крипер, паук, ведьма, эндермен, слизень и т. д.) заменяются на зомби или скелета.
+	 * Что ставить вместо моба, которого выбрала игра. Любой ночной монстр заменяется на моба из состава
+	 * этой осады (по долям), см. {@link SiegeComposition}. Вызывается из NaturalMonsterSwap.
 	 */
-	public static EntityType<?> swapForSiege(RandomSource random, EntityType<?> original) {
-		if (isZombieFamily(original) || isSkeletonFamily(original)) {
-			return original;
-		}
-		return random.nextFloat() < SWAP_ZOMBIE_FRACTION ? EntityTypes.ZOMBIE : EntityTypes.SKELETON;
+	public static EntityType<?> swapForSiege(ServerLevel level, @Nullable BlockPos feet) {
+		return SiegeComposition.swapForSiege(level, feet);
 	}
 
 	// ------------------------------------------------------------------
@@ -547,23 +536,44 @@ public final class SiegeNight {
 		String next = data.nextSiegeDay < 0
 				? "ещё не назначена"
 				: "день " + data.nextSiegeDay + " (через " + (data.nextSiegeDay - today) + " дн.)";
-		return "Siege: " + phase + "; сегодня день " + today + "; следующая: " + next
+		String mobs = data.phase == SiegeData.PHASE_IDLE
+				? ""
+				: "; состав: " + SiegeComposition.describe(SiegeComposition.current(level));
+		return "Siege: " + phase + "; сегодня день " + today + "; следующая: " + next + mobs
 				+ (ENABLED ? "" : " [ВЫКЛЮЧЕНА, ENABLED = false]");
 	}
 
-	/** Предупреждение сейчас: ночь осады начнётся через WARNING_BEFORE_NIGHT_TICKS. */
-	public static void forceWarning(ServerLevel level) {
+	/**
+	 * Предупреждение сейчас: ночь осады начнётся через WARNING_BEFORE_NIGHT_TICKS.
+	 * faction — принудительная фракция для проверки (null = выбрать по обычным правилам).
+	 */
+	public static void forceWarning(ServerLevel level, @Nullable Faction faction) {
 		SiegeData data = SiegeData.get(level);
 		long clock = level.getOverworldClockTime();
 		long start = clock + Math.max(0, WARNING_BEFORE_NIGHT_TICKS);
-		begin(level, data, start, start + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_WARNING);
+		begin(level, data, start, start + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_WARNING, faction, null);
+	}
+
+	/** То же, но осада на 100% из одного вида. Для проверки в игре. */
+	public static void forceWarning(ServerLevel level, Kind kind) {
+		SiegeData data = SiegeData.get(level);
+		long clock = level.getOverworldClockTime();
+		long start = clock + Math.max(0, WARNING_BEFORE_NIGHT_TICKS);
+		begin(level, data, start, start + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_WARNING, null, kind);
 	}
 
 	/** Ночь осады сразу, без предупреждения. Днём зомби и скелеты на солнце горят: это не ошибка. */
-	public static void forceStart(ServerLevel level) {
+	public static void forceStart(ServerLevel level, @Nullable Faction faction) {
 		SiegeData data = SiegeData.get(level);
 		long clock = level.getOverworldClockTime();
-		begin(level, data, clock, clock + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_NIGHT);
+		begin(level, data, clock, clock + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_NIGHT, faction, null);
+	}
+
+	/** Ночь осады сразу, на 100% из одного вида. День и шанс фракции не смотрим. */
+	public static void forceStart(ServerLevel level, Kind kind) {
+		SiegeData data = SiegeData.get(level);
+		long clock = level.getOverworldClockTime();
+		begin(level, data, clock, clock + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_NIGHT, null, kind);
 	}
 
 	/** Прекращает осаду сейчас и назначает следующую по обычному расписанию. */

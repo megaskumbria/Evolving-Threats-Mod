@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.MobNames;
 import com.example.entity.ZombieMjolnirEntity;
 import com.example.zombie.ZombieMjolnir;
 import net.minecraft.server.level.ServerLevel;
@@ -52,5 +53,8 @@ public class ZombieMjolnirMixin implements ZombieMjolnirEntity {
 	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
 	private void evolvingthreats$loadMjolnir(ValueInput input, CallbackInfo ci) {
 		evolvingthreats$mjolnir = input.getBooleanOr("EvolvingThreatsZombieMjolnir", false);
+		if (evolvingthreats$mjolnir) {
+			MobNames.showOnlyWhenLookedAt((Zombie) (Object) this);
+		}
 	}
 }

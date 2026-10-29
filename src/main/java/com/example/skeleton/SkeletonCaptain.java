@@ -1,5 +1,6 @@
 package com.example.skeleton;
 
+import com.example.MobNames;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 
@@ -347,7 +348,7 @@ public final class SkeletonCaptain {
 
 	private static void equipCaptain(AbstractSkeleton skeleton) {
 		skeleton.setCustomName(Component.literal(CAPTAIN_NAME));
-		skeleton.setCustomNameVisible(true);
+		MobNames.showOnlyWhenLookedAt(skeleton);
 		skeleton.setCanPickUpLoot(false);
 		skeleton.setPersistenceRequired();
 

@@ -1,5 +1,6 @@
 package com.example.overseer;
 
+import com.example.MobNames;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 
@@ -9,7 +10,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -40,7 +40,8 @@ public final class ZombieOverseer {
 	/** Шанс при спавне обычного зомби стать надсмотрщиком. 0.002 = 0.2% (было 0.6%, слишком часто). */
 	public static final float SPAWN_CHANCE = 0.002f;
 
-	public static final float MAX_HEALTH = 50.0f;
+	/** Здоровье. 100 = 50 сердец. Случайные 20–40 обычного зомби ему не остаются. */
+	public static final float MAX_HEALTH = 100.0f;
 
 	/** Радиус, в котором держит/ищет цель (блоки). */
 	public static final double FOLLOW_RANGE = 112.0;
@@ -50,8 +51,6 @@ public final class ZombieOverseer {
 
 	/** Сколько тиков (20/сек) охотиться, если игрок всё время слишком далеко — 2 минуты. */
 	public static final int HUNT_TIMEOUT_TICKS = 20 * 60 * 2;
-
-	public static final double BOSS_BAR_SHOW_DISTANCE = 64.0;
 
 	public static final double SUMMON_PLAYER_MAX_DISTANCE = 96.0;
 
@@ -166,7 +165,7 @@ public final class ZombieOverseer {
 		zombie.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(FOLLOW_RANGE);
 
 		zombie.setCustomName(Component.literal(DISPLAY_NAME));
-		zombie.setCustomNameVisible(true);
+		MobNames.showOnlyWhenLookedAt(zombie);
 
 		equipArmor(zombie, level);
 		zombie.setItemSlot(EquipmentSlot.MAINHAND, enchantAxe(level, MAIN_AXE_SHARPNESS));
@@ -179,8 +178,24 @@ public final class ZombieOverseer {
 		}
 		zombie.setDropChance(EquipmentSlot.MAINHAND, 0.12f);
 		zombie.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
+	}
 
-		OverseerBossBars.createFor(zombie);
+	/**
+	 * Уже живущий надсмотрщик при загрузке мира.
+	 * Если запас меньше {@link #MAX_HEALTH}, поднимает его.
+	 * Сколько сердец уже сняли — столько и остаётся снятым.
+	 */
+	public static void raiseStoredHealth(Zombie zombie) {
+		var maxHealth = zombie.getAttribute(Attributes.MAX_HEALTH);
+		if (maxHealth == null || maxHealth.getBaseValue() >= MAX_HEALTH) {
+			return;
+		}
+		float missing = (float) (maxHealth.getBaseValue() - zombie.getHealth());
+		if (missing < 0.0f) {
+			missing = 0.0f;
+		}
+		maxHealth.setBaseValue(MAX_HEALTH);
+		zombie.setHealth(Math.max(1.0f, MAX_HEALTH - missing));
 	}
 
 	private static void equipArmor(Zombie zombie, ServerLevel level) {
@@ -221,14 +236,6 @@ public final class ZombieOverseer {
 				.filter(p -> zombie.distanceToSqr(p) <= maxDistSqr)
 				.min(Comparator.comparingDouble(zombie::distanceToSqr))
 				.orElse(null);
-	}
-
-	public static BossEvent.BossBarColor bossBarColor() {
-		return BossEvent.BossBarColor.GREEN;
-	}
-
-	public static BossEvent.BossBarOverlay bossBarOverlay() {
-		return BossEvent.BossBarOverlay.NOTCHED_10;
 	}
 
 	/** Считает призванных зомби рядом с тем же target (для лимита слуг). */

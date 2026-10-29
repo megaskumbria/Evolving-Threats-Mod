@@ -2,6 +2,7 @@
 =============
 
 Тип: редкий вариант обычного зомби. Над головой имя Mjölnir.
+Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
 Код: zombie/ZombieMjolnir.java (настройки, молот, лут, команда),
      mixin/ZombieMjolnirMixin.java (флаг и опыт),
      mixin/ZombieMjolnirLootMixin.java (бирка и редкий молот),

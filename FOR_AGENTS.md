@@ -61,6 +61,8 @@
 | Опыт за убийство усиленных | `MobExperience.java` | `mobs/common/опыт-за-убийство.txt` |
 | Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/парящий-инструмент.txt` |
 | Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/повреждённый-голем.txt` |
+| Бастион (зомби или скелет) | `bastion/Bastion.java` | `mobs/common/бастион.txt` |
+| Зеркало (возврат удара) | `mirror/Mirror.java` | `mobs/common/зеркало.txt` |
 
 ### Скелеты
 
@@ -109,8 +111,9 @@
 | Супербыстрый крипер | `creeper/FastCreeper.java` | `mobs/creepers/крипер-быстрый.txt` |
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
+| Яд пещерного паука может убить | `spider/CaveSpiderPoison.java` | `mobs/spiders/пещерный-паук-яд.txt` |
 | Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
-| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java` | `mobs/raids/осада.txt` |
+| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java`, `siege/SiegeComposition.java` (фракции и доли мобов) | `mobs/raids/осада.txt` |
 | Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
 | Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/фантомы-слабость.txt` |
 | Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |

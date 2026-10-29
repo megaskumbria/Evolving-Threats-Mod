@@ -8,6 +8,8 @@ import com.example.MobTotem;
 import com.example.RandomArmor;
 import com.example.RandomDispenserSkull;
 import com.example.RandomWeapons;
+import com.example.bastion.Bastion;
+import com.example.mirror.Mirror;
 import com.example.beacon.JackLanternBeacon;
 import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.FastBowSkeleton;
@@ -19,6 +21,8 @@ import com.example.skeleton.SmallSkeleton;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.ritual.RitualBand;
+import com.example.threat.ThreatPack;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -44,6 +48,12 @@ public class SkeletonMixin {
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
+		try {
+
+		// Чем выше шкала угрозы, тем чаще к ночному скелету добавляются ещё такие же (ThreatPack).
+		if (level instanceof ServerLevel packLevel) {
+			ThreatPack.tryAddExtras(skeleton, packLevel, spawnReason);
+		}
 
 		// Скелет-иссушитель и так сильный. Бафы и набор мода ему не выдаём.
 		// Спавнер на голове — отдельно: каждые 2 удара зовёт двоих таких же.
@@ -56,18 +66,21 @@ public class SkeletonMixin {
 			return;
 		}
 
+		// Команда уже пометила Бастиона. Редкие роли его не забирают: ему нужен обычный набор.
+		boolean bastion = Bastion.isBastion(skeleton);
+
 		// Ритуальная стая раньше капитана: свой набор, без лука и без чар.
-		if (skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
+		if (!bastion && skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
 			return;
 		}
 
 		// Василиск раньше капитана: свой незерит и лук. Обычный набор мода ему не выдаём.
-		if (BasiliskSkeleton.tryClaim(skeleton, spawnReason)) {
+		if (!bastion && BasiliskSkeleton.tryClaim(skeleton, spawnReason)) {
 			return;
 		}
 
 		// Капитан и его помощники: свой набор и свой отряд. Зелья и случайное оружие им не выдаём.
-		if (SkeletonCaptain.tryClaim(skeleton, level, spawnReason)) {
+		if (!bastion && SkeletonCaptain.tryClaim(skeleton, level, spawnReason)) {
 			return;
 		}
 
@@ -78,14 +91,17 @@ public class SkeletonMixin {
 		}
 
 		// «700 IQ» — свой набор: шлем, лук и меч. Остальные варианты скелета ему не выдаём.
-		if (TacticianSkeleton.tryRoll(skeleton)) {
+		if (!bastion && TacticianSkeleton.tryRoll(skeleton)) {
 			skeleton.reassessWeaponGoal();
 			SkeletonHorseman.tryMount(skeleton, level, spawnReason);
 			return;
 		}
 
-		// Маленький скелет: без двух оружий и тотема. Лук остаётся обычным.
-		boolean small = SmallSkeleton.tryRoll(skeleton);
+		// Маленький скелет быстрее и с малым здоровьем. Бастиону это не выдаём.
+		if (!bastion) {
+			bastion = Bastion.tryRoll(skeleton, spawnReason);
+		}
+		boolean small = !bastion && SmallSkeleton.tryRoll(skeleton);
 		boolean handsTaken = !small
 				&& (RandomWeapons.tryEquipDualMelee(skeleton, RandomWeapons.SKELETON_DUAL_MELEE_CHANCE)
 						|| MobTotem.tryEquip(skeleton));
@@ -112,5 +128,13 @@ public class SkeletonMixin {
 		}
 		skeleton.reassessWeaponGoal();
 		SkeletonHorseman.tryMount(skeleton, level, spawnReason);
+		// После брони, чар и лука: 1000 здоровья, удар не сдвигает. Скорость шага не меняем.
+		if (bastion) {
+			Bastion.apply(skeleton);
+		}
+		} finally {
+			// Скелет и скелет-иссушитель. Василиск и капитан уже с именем — шанс их не трогает.
+			Mirror.tryRoll(skeleton, spawnReason);
+		}
 	}
 }

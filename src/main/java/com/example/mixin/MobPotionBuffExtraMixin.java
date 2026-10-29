@@ -2,6 +2,7 @@ package com.example.mixin;
 
 import com.example.MobHealth;
 import com.example.MobPotionBuffs;
+import com.example.mirror.Mirror;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Mob;
@@ -30,5 +31,8 @@ public class MobPotionBuffExtraMixin {
 		Mob mob = (Mob) (Object) this;
 		MobHealth.tryRoll(mob);
 		MobPotionBuffs.tryApplyExtra(mob);
+		// Ифрит, ведьма, крипер, пиглин, эндермен, чешуйница.
+		// Зомби, скелет, паук и брут бросают шанс у себя, иначе вышло бы два броска.
+		Mirror.tryRollSharedSpawn(mob, spawnReason);
 	}
 }

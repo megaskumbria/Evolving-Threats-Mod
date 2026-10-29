@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
- * Смерть якоря → снятие boss bar и «разрыв связи» с прислугами.
+ * Смерть якоря → «разрыв связи» с прислугами.
  */
 public final class RaidAnchorEvents {
 
@@ -28,7 +28,7 @@ public final class RaidAnchorEvents {
 			if (raidId == null) {
 				return;
 			}
-			RaidAnchor.disbandRaidNear(level, raidId, anchor.position(), anchor.getUUID());
+			RaidAnchor.disbandRaidNear(level, raidId, anchor.position());
 		});
 	}
 }

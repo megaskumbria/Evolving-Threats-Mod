@@ -1,5 +1,6 @@
 package com.example.zombie;
 
+import com.example.MobNames;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieExcaliburEntity;
 import com.example.entity.ZombieOverseerEntity;
@@ -178,7 +179,7 @@ public final class ZombieExcalibur {
 
 	private static void equip(Zombie zombie) {
 		zombie.setCustomName(name());
-		zombie.setCustomNameVisible(true);
+		MobNames.showOnlyWhenLookedAt(zombie);
 		// Имя уже не даёт ему исчезнуть. Чужую вещь не подбирает, иначе меч сменится.
 		zombie.setCanPickUpLoot(false);
 		zombie.setItemSlot(EquipmentSlot.MAINHAND, sword(zombie));
