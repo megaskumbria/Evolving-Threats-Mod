@@ -177,6 +177,28 @@ public final class RandomArmor {
 	}
 
 	/**
+	 * Один случайный кусок в уже выбранный слот. Материал как у обычной брони моба (кожа…алмаз).
+	 * Spiky зовёт это, если колючий слот пустой: без куска брони колоть нечем.
+	 * Уже надетое в других слотах не трогает.
+	 */
+	public static void equipRandomPiece(Mob mob, EquipmentSlot slot) {
+		int slotIndex = -1;
+		for (int i = 0; i < SLOTS.length; i++) {
+			if (SLOTS[i] == slot) {
+				slotIndex = i;
+				break;
+			}
+		}
+		if (slotIndex < 0) {
+			return;
+		}
+		RandomSource random = mob.getRandom();
+		Item armorItem = ARMOR_PIECES[pickMaterialIndex(mob, random)][slotIndex];
+		mob.setItemSlot(slot, new ItemStack(armorItem));
+		mob.setDropChance(slot, ARMOR_DROP_CHANCE);
+	}
+
+	/**
 	 * Только шлем, с тем же шансом и теми же материалами, что слот шлема у обычного скелета.
 	 * Нагрудник, штаны и ботинки не трогает. Незерита в списке нет.
 	 */

@@ -3,6 +3,7 @@ package com.example.mixin;
 import com.example.creeper.ChargedCreeper;
 import com.example.creeper.DynamiteCreeper;
 import com.example.creeper.FastCreeper;
+import com.example.creeper.FeintCreeper;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
 import net.minecraft.world.DifficultyInstance;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Шанс особого крипера при появлении: заряженный (1%), подрывник (5%), метатель (4%), ломатель щита (5%),
- * супербыстрый (3%). Быстрый не бывает подрывником и метателем.
+ * обманка (0,3%), супербыстрый (3%). Быстрый и обманка не бывают подрывником и метателем и не бывают друг другом.
  * Заряженный динамит не бросает, но может быть подрывником или ломателем щита.
  * Если подрывник или метатель уже выпал, ломатель щита на этого крипера не бросается.
  * Метод finalizeSpawn объявлен в Mob, у Creeper своей копии нет — поэтому mixin на Mob.
@@ -38,6 +39,7 @@ public class MobDynamiteCreeperSpawnMixin {
 			SapperCreeper.rollOnSpawn(creeper, spawnReason);
 			DynamiteCreeper.rollOnSpawn(creeper, level, spawnReason);
 			ShieldBreakCreeper.rollOnSpawn(creeper, spawnReason);
+			FeintCreeper.rollOnSpawn(creeper, spawnReason);
 			FastCreeper.rollOnSpawn(creeper, spawnReason);
 		}
 	}

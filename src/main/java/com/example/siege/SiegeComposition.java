@@ -2,8 +2,11 @@ package com.example.siege;
 
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
@@ -24,13 +27,16 @@ import java.util.List;
  * и не меняется до рассвета (хранится в {@link SiegeData#shares}).
  *
  * Две фракции, они НИКОГДА не смешиваются в одной осаде:
- *   НЕЖИТЬ И ТВАРИ — зомби, скелеты, иссушители, утопленники, криперы, пауки, ведьмы, слизни, фантомы.
+ *   НЕЖИТЬ И ТВАРИ — зомби, скелеты, иссушители, криперы, пауки, ведьмы, фантомы.
  *   ИЛЛАГЕРЫ       — разбойники, поборники, вызыватели, разорители.
+ * Утопленников и слизней в осаде нет.
+ * Иссушители — только если кто-то в мире уже был в Аду ({@link #WITHER_SKELETONS_REQUIRE_NETHER}).
  *
  * Как выбирается состав:
  *   1. Фракция. Иллагеры возможны с {@link ThreatTable#SIEGE_ILLAGER_DAY} дня, шанс {@link #ILLAGER_SIEGE_CHANCE}.
  *   2. Сколько видов участвует: 1, 2 или 3 (шансы ONE_KIND_CHANCE / TWO_KINDS_CHANCE, остальное — три).
  *   3. Какие именно виды: случайно, но у каждого вида свой «вес» (см. {@link Kind}).
+ *      Иссушители в этот выбор не входят, пока в Аду никто не был.
  *   4. Доли выбранных видов — случайные, в сумме 100%. Например, 90% криперов и 10% зомби, или 100% зомби.
  *
  * Здесь же: какой моб соответствует какому виду и какие мобы получают «поход к игроку».
@@ -61,6 +67,19 @@ public final class SiegeComposition {
 	 * 1.0 = доли почти равные.
 	 */
 	public static final float SHARE_FLOOR = 0.10f;
+
+	/**
+	 * true — скелеты-иссушители в случайной осаде только после похода в Ад.
+	 * false — иссушители могут выпасть и без Ада, как остальные виды нежити.
+	 * Команда /evolvingthreats siege start wither_skeleton это не смотрит: она для проверки.
+	 */
+	public static final boolean WITHER_SKELETONS_REQUIRE_NETHER = true;
+
+	/**
+	 * Достижение игры «Нам нужно забраться глубже»: выдаётся, когда игрок входит в Ад.
+	 * По нему видно старые визиты, которые были до этого правила.
+	 */
+	private static final Identifier ENTER_NETHER = Identifier.withDefaultNamespace("story/enter_the_nether");
 
 	/** Какая часть пауков — пещерные (ядовитые). 0.20 = 20%. */
 	public static final float CAVE_SPIDER_FRACTION = 0.20f;
@@ -97,12 +116,11 @@ public final class SiegeComposition {
 		//        фракция           вес   цена  max  название для команды /siege status
 		ZOMBIE(Faction.UNDEAD, 3.0f, 1, 0, "зомби"),
 		SKELETON(Faction.UNDEAD, 3.0f, 1, 0, "скелеты"),
+		// Вес как у редких видов. В случайный состав попадает только после Ада, см. WITHER_SKELETONS_REQUIRE_NETHER.
 		WITHER_SKELETON(Faction.UNDEAD, 1.0f, 1, 0, "иссушители"),
-		DROWNED(Faction.UNDEAD, 1.0f, 1, 0, "утопленники"),
 		CREEPER(Faction.UNDEAD, 2.0f, 1, 0, "криперы"),
 		SPIDER(Faction.UNDEAD, 2.0f, 1, 0, "пауки"),
 		WITCH(Faction.UNDEAD, 1.5f, 1, 6, "ведьмы"),
-		SLIME(Faction.UNDEAD, 1.0f, 1, 0, "слизни"),
 		PHANTOM(Faction.UNDEAD, 1.0f, 1, 0, "фантомы"),
 		PILLAGER(Faction.ILLAGER, 3.0f, 1, 0, "разбойники"),
 		VINDICATOR(Faction.ILLAGER, 3.0f, 1, 0, "поборники"),
@@ -128,7 +146,7 @@ public final class SiegeComposition {
 	public enum AiMode {
 		/** Ничего (обычный моб, или зомби и скелет — у них своя связка в ZombieRaidGoalsMixin и AbstractSkeletonRaidGoalsMixin). */
 		NONE,
-		/** Только держать игрока целью. Слизни и фантомы сами летят и прыгают к цели, отрезками их вести не нужно. */
+		/** Только держать игрока целью. Фантомы сами летят к цели, отрезками их вести не нужно. */
 		TARGET_ONLY,
 		/** Цель и поход отрезками (как у зомби). */
 		TARGET_AND_MARCH
@@ -147,12 +165,69 @@ public final class SiegeComposition {
 	}
 
 	/**
+	 * Иссушители уже можно выбирать в случайный состав?
+	 * Смотрит память мира и, если её ещё нет, игроков онлайн: достижение «вход в Ад» или сам Ад.
+	 * Находку запоминает. Пока false — в осаде будут другие виды нежити и тварей.
+	 */
+	public static boolean witherSkeletonsAllowed(ServerLevel level) {
+		if (!WITHER_SKELETONS_REQUIRE_NETHER) {
+			return true;
+		}
+		SiegeData data = SiegeData.get(level);
+		if (data.netherVisited) {
+			return true;
+		}
+		for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+			if (playerVisitedNether(player)) {
+				markNetherVisited(level);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Игрок зашёл в мир. Если он уже бывал в Аду, мир это запоминает. */
+	public static void notePlayer(ServerPlayer player) {
+		if (!(player.level() instanceof ServerLevel level) || !playerVisitedNether(player)) {
+			return;
+		}
+		markNetherVisited(level);
+	}
+
+	/**
+	 * Кто-то вошёл в Ад. Хватает одного раза на весь мир: следующие осады уже могут быть с иссушителями.
+	 * Повторный заход ничего не меняет.
+	 */
+	public static void markNetherVisited(ServerLevel level) {
+		SiegeData data = SiegeData.get(level);
+		if (data.netherVisited) {
+			return;
+		}
+		data.netherVisited = true;
+		data.setDirty();
+	}
+
+	/** Стоит в Аду или уже получил ванильное достижение за вход туда. */
+	private static boolean playerVisitedNether(ServerPlayer player) {
+		if (!(player.level() instanceof ServerLevel level)) {
+			return false;
+		}
+		if (level.dimension() == Level.NETHER) {
+			return true;
+		}
+		AdvancementHolder holder = level.getServer().getAdvancements().get(ENTER_NETHER);
+		return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();
+	}
+
+	/**
 	 * Выбирает новый состав.
 	 *
 	 * @param forced если не null — фракция задана принудительно (команда для проверки), день и шанс не смотрим
+	 * @param witherSkeletonsAllowed иссушители входят в выбор. Команда одного вида сюда не попадает
 	 * @return доли по порядку {@link Kind#values()}, в сумме 1.0
 	 */
-	public static float[] roll(RandomSource random, boolean illagersAllowed, @Nullable Faction forced) {
+	public static float[] roll(RandomSource random, boolean illagersAllowed, boolean witherSkeletonsAllowed,
+			@Nullable Faction forced) {
 		Faction faction;
 		if (forced != null) {
 			faction = forced;
@@ -162,9 +237,14 @@ public final class SiegeComposition {
 
 		List<Kind> pool = new ArrayList<>();
 		for (Kind kind : Kind.values()) {
-			if (kind.faction == faction) {
-				pool.add(kind);
+			if (kind.faction != faction) {
+				continue;
 			}
+			// Без похода в Ад иссушители просто не участвуют в выборе. Остальные виды на месте.
+			if (kind == Kind.WITHER_SKELETON && !witherSkeletonsAllowed) {
+				continue;
+			}
+			pool.add(kind);
 		}
 
 		int count = Math.min(pool.size(), rollKindCount(random));
@@ -238,7 +318,7 @@ public final class SiegeComposition {
 	public static float[] current(ServerLevel level) {
 		SiegeData data = SiegeData.get(level);
 		if (!isValid(data.shares)) {
-			data.shares = roll(level.getRandom(), illagersAllowed(level), null);
+			data.shares = roll(level.getRandom(), illagersAllowed(level), witherSkeletonsAllowed(level), null);
 			data.setDirty();
 		}
 		return data.shares;
@@ -354,9 +434,6 @@ public final class SiegeComposition {
 		if (type == EntityTypes.WITHER_SKELETON) {
 			return Kind.WITHER_SKELETON;
 		}
-		if (type == EntityTypes.DROWNED) {
-			return Kind.DROWNED;
-		}
 		if (type == EntityTypes.CREEPER) {
 			return Kind.CREEPER;
 		}
@@ -365,9 +442,6 @@ public final class SiegeComposition {
 		}
 		if (type == EntityTypes.WITCH) {
 			return Kind.WITCH;
-		}
-		if (type == EntityTypes.SLIME) {
-			return Kind.SLIME;
 		}
 		if (type == EntityTypes.PHANTOM) {
 			return Kind.PHANTOM;
@@ -403,12 +477,10 @@ public final class SiegeComposition {
 			case ZOMBIE -> biomePick(level, pos, Kind.ZOMBIE, EntityTypes.ZOMBIE);
 			case SKELETON -> biomePick(level, pos, Kind.SKELETON, EntityTypes.SKELETON);
 			case WITHER_SKELETON -> EntityTypes.WITHER_SKELETON;
-			case DROWNED -> EntityTypes.DROWNED;
 			case CREEPER -> EntityTypes.CREEPER;
 			case SPIDER -> level.getRandom().nextFloat() < CAVE_SPIDER_FRACTION
 					? EntityTypes.CAVE_SPIDER : EntityTypes.SPIDER;
 			case WITCH -> EntityTypes.WITCH;
-			case SLIME -> EntityTypes.SLIME;
 			case PHANTOM -> EntityTypes.PHANTOM;
 			case PILLAGER -> EntityTypes.PILLAGER;
 			case VINDICATOR -> EntityTypes.VINDICATOR;
@@ -470,8 +542,8 @@ public final class SiegeComposition {
 			return AiMode.NONE;
 		}
 		return switch (kind) {
-			case ZOMBIE, SKELETON, WITHER_SKELETON, DROWNED -> AiMode.NONE;
-			case SLIME, PHANTOM -> AiMode.TARGET_ONLY;
+			case ZOMBIE, SKELETON, WITHER_SKELETON -> AiMode.NONE;
+			case PHANTOM -> AiMode.TARGET_ONLY;
 			default -> AiMode.TARGET_AND_MARCH;
 		};
 	}

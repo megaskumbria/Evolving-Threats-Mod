@@ -38,6 +38,12 @@ public final class ThreatTable {
 	/** Зомби-чародей. */
 	public static final int SORCERER_DAY = 40;
 
+	/**
+	 * Spiky: обычный зомби или скелет, один кусок брони колет на 7–8 сердец сквозь броню.
+	 * Шанс в {@code Spiky}, от дня не растёт.
+	 */
+	public static final int SPIKY_DAY = 40;
+
 	/** Гнилой надсмотрщик. */
 	public static final int OVERSEER_DAY = 60;
 

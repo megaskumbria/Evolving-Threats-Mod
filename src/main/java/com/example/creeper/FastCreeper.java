@@ -2,7 +2,9 @@ package com.example.creeper;
 
 import com.example.entity.DynamiteCreeperEntity;
 import com.example.entity.FastCreeperEntity;
+import com.example.entity.FeintCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
+import com.example.mixin.CreeperFuseAccessor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -16,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Редкий крипер, от которого нельзя убежать.
  * Бежит заметно быстрее спринта: по прямой догоняет и игрока, и прыжки в спринте.
- * Шипит и взрывается как обычный. Подрывником и метателем динамита не бывает:
- * у тех свой способ добраться до игрока.
+ * Шипит полсекунды и взрывается. У обычного крипера шипение 1,5 секунды.
+ * Подрывником, метателем динамита и обманкой не бывает: у тех свой способ добраться до игрока.
  */
 public final class FastCreeper {
 
@@ -50,6 +52,13 @@ public final class FastCreeper {
 	 */
 	public static final double FOLLOW_RANGE = 48.0;
 
+	/**
+	 * Сколько секунд шипит, прежде чем взорваться. 0.5 = полсекунды.
+	 * У обычного крипера 1.5. Сила взрыва та же.
+	 * 0 и меньше игра считает как один миг, иначе взрыв случится в тот же тик, что и шипение.
+	 */
+	public static final float FUSE_SECONDS = 0.5f;
+
 	// ========================================================================
 
 	private FastCreeper() {
@@ -70,11 +79,14 @@ public final class FastCreeper {
 			apply(creeper);
 			return;
 		}
-		// Подрывник и метатель догоняют по-своему. Скорость им не подменяем.
+		// Подрывник и метатель догоняют по-своему. Обманка быстрая только вблизи. Скорость им не подменяем.
 		if (creeper instanceof SapperCreeperEntity sapper && sapper.evolvingthreats$isSapperCreeper()) {
 			return;
 		}
 		if (creeper instanceof DynamiteCreeperEntity dynamite && dynamite.evolvingthreats$isDynamiteCreeper()) {
+			return;
+		}
+		if (creeper instanceof FeintCreeperEntity feint && feint.evolvingthreats$isFeintCreeper()) {
 			return;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
@@ -86,7 +98,7 @@ public final class FastCreeper {
 		apply(creeper);
 	}
 
-	/** Скорость и дальность погони. Вызывать и при появлении, и когда крипер загрузился из мира. */
+	/** Скорость, дальность погони и короткое шипение. Вызывать и при появлении, и когда крипер загрузился из мира. */
 	public static void apply(Creeper creeper) {
 		if (!(creeper instanceof FastCreeperEntity data)) {
 			return;
@@ -100,6 +112,14 @@ public final class FastCreeper {
 		if (follow != null) {
 			follow.setBaseValue(Math.max(1.0, FOLLOW_RANGE));
 		}
+		if (creeper instanceof CreeperFuseAccessor fuse) {
+			fuse.evolvingthreats$setMaxSwell(fuseTicks());
+		}
+	}
+
+	/** Тики шипения. 20 тиков = 1 секунда. 0.5 секунды = 10 тиков. */
+	public static int fuseTicks() {
+		return Math.max(1, Math.round(FUSE_SECONDS * 20.0f));
 	}
 
 	/** Команда: быстрый крипер перед игроком. null — механика выключена. */

@@ -62,6 +62,7 @@
 | Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/парящий-инструмент.txt` |
 | Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/повреждённый-голем.txt` |
 | Бастион (зомби или скелет) | `bastion/Bastion.java` | `mobs/common/бастион.txt` |
+| Spiky (укол брони на 7–8 сердец) | `spiky/Spiky.java` | `mobs/common/spiky.txt` |
 | Зеркало (возврат удара) | `mirror/Mirror.java` | `mobs/common/зеркало.txt` |
 
 ### Скелеты
@@ -109,6 +110,7 @@
 | Ломает щит взрывом | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/крипер-ломает-щит.txt` |
 | Подрывник | `creeper/SapperCreeper.java` | `mobs/creepers/крипер-подрывник.txt` |
 | Супербыстрый крипер | `creeper/FastCreeper.java` | `mobs/creepers/крипер-быстрый.txt` |
+| Крипер-обманка | `creeper/FeintCreeper.java` | `mobs/creepers/крипер-обманка.txt` |
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
 | Яд пещерного паука может убить | `spider/CaveSpiderPoison.java` | `mobs/spiders/пещерный-паук-яд.txt` |

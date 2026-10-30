@@ -2,10 +2,12 @@ package com.example.command;
 
 import com.example.bastion.Bastion;
 import com.example.mirror.Mirror;
+import com.example.spiky.Spiky;
 import com.example.blaze.BlazeAlchemist;
 import com.example.witch.WitchNullifier;
 import com.example.creeper.DynamiteCreeper;
 import com.example.creeper.FastCreeper;
+import com.example.creeper.FeintCreeper;
 import com.example.illager.IllagerPatrol;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
@@ -78,6 +80,8 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnShieldBreak(ctx.getSource())))
 				.then(Commands.literal("fast_creeper")
 						.executes(ctx -> spawnFastCreeper(ctx.getSource())))
+				.then(Commands.literal("feint_creeper")
+						.executes(ctx -> spawnFeintCreeper(ctx.getSource())))
 				.then(Commands.literal("raid")
 						.executes(ctx -> spawnRaid(ctx.getSource(), null))
 						.then(Commands.argument("target", EntityArgument.player())
@@ -103,7 +107,11 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnBastion(ctx.getSource(), false))
 						.then(Commands.literal("skeleton")
 								.executes(ctx -> spawnBastion(ctx.getSource(), true))))
-				.then(mirrorSpawn()))
+				.then(Commands.literal("spiky")
+						.executes(ctx -> spawnSpiky(ctx.getSource(), false))
+						.then(Commands.literal("skeleton")
+								.executes(ctx -> spawnSpiky(ctx.getSource(), true))))
+				.then(mirrorSpawn())
 				.then(Commands.literal("horseman")
 						.executes(ctx -> spawnHorseman(ctx.getSource())))
 				.then(Commands.literal("tnt_zombie")
@@ -152,8 +160,9 @@ public final class EvolvingThreatsCommands {
 		//   warn/start undead   — то же, но обязательно нежить и твари (зомби, криперы, пауки…).
 		//   warn/start illagers — то же, но обязательно иллагеры (разбойники, разорители…), день не проверяется.
 		//   warn/start <вид>    — осада на 100% из одного вида: zombie, skeleton, wither_skeleton,
-		//                         drowned, creeper, spider, witch, slime, phantom,
+		//                         creeper, spider, witch, phantom,
 		//                         pillager, vindicator, evoker, ravager.
+		//                         wither_skeleton не проверяет, был ли игрок в Аду.
 		//   stop     — прекратить осаду.
 		//   in <дни> — назначить осаду через столько игровых дней (0 = в ночь сегодня).
 		var siegeWarn = Commands.literal("warn")
@@ -226,6 +235,10 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnFastCreeper(ctx.getSource())));
 
+		dispatcher.register(Commands.literal("etfeint")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnFeintCreeper(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("etraid")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnRaid(ctx.getSource(), null)));
@@ -263,6 +276,12 @@ public final class EvolvingThreatsCommands {
 				.executes(ctx -> spawnBastion(ctx.getSource(), false))
 				.then(Commands.literal("skeleton")
 						.executes(ctx -> spawnBastion(ctx.getSource(), true))));
+
+		dispatcher.register(Commands.literal("etspiky")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnSpiky(ctx.getSource(), false))
+				.then(Commands.literal("skeleton")
+						.executes(ctx -> spawnSpiky(ctx.getSource(), true))));
 
 		var etmirror = Commands.literal("etmirror")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
@@ -513,6 +532,27 @@ public final class EvolvingThreatsCommands {
 		return 1;
 	}
 
+	private static int spawnFeintCreeper(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		ServerPlayer lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(12.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (FeintCreeper.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Feint creeper is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned feint creeper"), true);
+		return 1;
+	}
+
 	private static int spawnDynamite(CommandSourceStack source) {
 		if (!(source.getLevel() instanceof ServerLevel level)) {
 			source.sendFailure(Component.literal("Must run on server level"));
@@ -642,6 +682,27 @@ public final class EvolvingThreatsCommands {
 			return 0;
 		}
 		source.sendSuccess(() -> Component.literal(skeleton ? "Spawned Bastion skeleton" : "Spawned Bastion zombie"), true);
+		return 1;
+	}
+
+	private static int spawnSpiky(CommandSourceStack source, boolean skeleton) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (!Spiky.spawn(level, pos, lookAt, skeleton)) {
+			source.sendFailure(Component.literal("Spiky is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal(skeleton ? "Spawned Spiky skeleton" : "Spawned Spiky zombie"), true);
 		return 1;
 	}
 

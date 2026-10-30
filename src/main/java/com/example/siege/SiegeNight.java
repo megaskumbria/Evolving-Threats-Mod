@@ -342,7 +342,8 @@ public final class SiegeNight {
 		// Команда проверки может задать один вид на 100%. Иначе состав случайный (фракция — по дню или по команде).
 		data.shares = forcedKind != null
 				? SiegeComposition.only(forcedKind)
-				: SiegeComposition.roll(level.getRandom(), SiegeComposition.illagersAllowed(level), forced);
+				: SiegeComposition.roll(level.getRandom(), SiegeComposition.illagersAllowed(level),
+						SiegeComposition.witherSkeletonsAllowed(level), forced);
 		data.setDirty();
 
 		wakeSleepers(level);
@@ -539,7 +540,11 @@ public final class SiegeNight {
 		String mobs = data.phase == SiegeData.PHASE_IDLE
 				? ""
 				: "; состав: " + SiegeComposition.describe(SiegeComposition.current(level));
-		return "Siege: " + phase + "; сегодня день " + today + "; следующая: " + next + mobs
+		// Пока в Аду никто не был, в статусе видно, почему иссушителей в осаде нет.
+		String wither = SiegeComposition.witherSkeletonsAllowed(level)
+				? ""
+				: "; иссушители: после похода в Ад";
+		return "Siege: " + phase + "; сегодня день " + today + "; следующая: " + next + mobs + wither
 				+ (ENABLED ? "" : " [ВЫКЛЮЧЕНА, ENABLED = false]");
 	}
 

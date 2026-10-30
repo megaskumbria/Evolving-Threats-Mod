@@ -50,6 +50,13 @@ public final class Bastion {
 	public static final float MAX_HEALTH = 1000.0f;
 
 	/**
+	 * Опыт за убийство. 200 = двести. Всегда столько, броня и оружие сверху не добавляют.
+	 * Общий множитель опыта (сейчас ×2) это число не увеличивает.
+	 * 0 = опыта нет. Обычный зомби без этого даёт около 10.
+	 */
+	public static final int XP_REWARD = 200;
+
+	/**
 	 * Насколько удар сдвигает с места. 1.0 = не сдвигает вообще.
 	 * 0.0 = как обычный моб. Выше 1 игра всё равно считает полным отказом.
 	 * Стрела с Откидыванием и взрыв тоже не толкают: игра считает их тем же сдвигом.
@@ -63,6 +70,14 @@ public final class Bastion {
 
 	public static boolean isBastion(Mob mob) {
 		return mob instanceof BastionEntity data && data.evolvingthreats$isBastion();
+	}
+
+	/** Сколько опыта дать. -1 = это не Бастион, пусть решает игра. */
+	public static int experienceReward(Mob mob) {
+		if (!isBastion(mob)) {
+			return -1;
+		}
+		return Math.max(0, XP_REWARD);
 	}
 
 	/**

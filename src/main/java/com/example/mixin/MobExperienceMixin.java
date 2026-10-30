@@ -1,6 +1,7 @@
 package com.example.mixin;
 
 import com.example.MobExperience;
+import com.example.bastion.Bastion;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,14 @@ public class MobExperienceMixin {
 
 	@Inject(method = "getBaseExperienceReward", at = @At("RETURN"), cancellable = true)
 	private void evolvingthreats$bonusXp(ServerLevel level, CallbackInfoReturnable<Integer> cir) {
-		int xp = MobExperience.reward((Mob) (Object) this, cir.getReturnValue());
+		Mob mob = (Mob) (Object) this;
+		// Своё число Бастиона. Иначе ниже его удвоил бы общий множитель.
+		int bastion = Bastion.experienceReward(mob);
+		if (bastion >= 0) {
+			cir.setReturnValue(bastion);
+			return;
+		}
+		int xp = MobExperience.reward(mob, cir.getReturnValue());
 		if (xp >= 0) {
 			cir.setReturnValue(xp);
 		}

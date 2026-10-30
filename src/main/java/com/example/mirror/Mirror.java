@@ -31,11 +31,11 @@ public final class Mirror {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) при появлении подходящего моба. 0.001 = 0,1%.
+	 * Шанс (0.0–1.0) при появлении подходящего моба. 0.003 = 0,3%.
 	 * ФИКС: с первого дня, от шкалы и луны не меняется.
 	 * Бросается отдельно у каждого вида из списка. Команда этот шанс не бросает.
 	 */
-	public static final float SPAWN_CHANCE = 0.001f;
+	public static final float SPAWN_CHANCE = 0.003f;
 
 	/** Имя над головой. По-английски, как у остальных именных мобов. */
 	public static final String NAME = "Mirror";

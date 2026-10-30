@@ -10,6 +10,7 @@ import com.example.RandomDispenserSkull;
 import com.example.RandomWeapons;
 import com.example.bastion.Bastion;
 import com.example.mirror.Mirror;
+import com.example.spiky.Spiky;
 import com.example.beacon.JackLanternBeacon;
 import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.FastBowSkeleton;
@@ -66,21 +67,22 @@ public class SkeletonMixin {
 			return;
 		}
 
-		// Команда уже пометила Бастиона. Редкие роли его не забирают: ему нужен обычный набор.
+		// Команда уже пометила Бастиона или Spiky. Редкие роли их не забирают: им нужен обычный набор.
 		boolean bastion = Bastion.isBastion(skeleton);
+		boolean spiky = Spiky.isSpiky(skeleton);
 
 		// Ритуальная стая раньше капитана: свой набор, без лука и без чар.
-		if (!bastion && skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
+		if (!bastion && !spiky && skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
 			return;
 		}
 
 		// Василиск раньше капитана: свой незерит и лук. Обычный набор мода ему не выдаём.
-		if (!bastion && BasiliskSkeleton.tryClaim(skeleton, spawnReason)) {
+		if (!bastion && !spiky && BasiliskSkeleton.tryClaim(skeleton, spawnReason)) {
 			return;
 		}
 
 		// Капитан и его помощники: свой набор и свой отряд. Зелья и случайное оружие им не выдаём.
-		if (!bastion && SkeletonCaptain.tryClaim(skeleton, level, spawnReason)) {
+		if (!bastion && !spiky && SkeletonCaptain.tryClaim(skeleton, level, spawnReason)) {
 			return;
 		}
 
@@ -91,17 +93,20 @@ public class SkeletonMixin {
 		}
 
 		// «700 IQ» — свой набор: шлем, лук и меч. Остальные варианты скелета ему не выдаём.
-		if (!bastion && TacticianSkeleton.tryRoll(skeleton)) {
+		if (!bastion && !spiky && TacticianSkeleton.tryRoll(skeleton)) {
 			skeleton.reassessWeaponGoal();
 			SkeletonHorseman.tryMount(skeleton, level, spawnReason);
 			return;
 		}
 
-		// Маленький скелет быстрее и с малым здоровьем. Бастиону это не выдаём.
-		if (!bastion) {
+		// Маленький скелет быстрее и с малым здоровьем. Бастиону и Spiky это не выдаём.
+		if (!bastion && !spiky) {
 			bastion = Bastion.tryRoll(skeleton, spawnReason);
 		}
-		boolean small = !bastion && SmallSkeleton.tryRoll(skeleton);
+		if (!bastion && !spiky) {
+			spiky = Spiky.tryRoll(skeleton, spawnReason);
+		}
+		boolean small = !bastion && !spiky && SmallSkeleton.tryRoll(skeleton);
 		boolean handsTaken = !small
 				&& (RandomWeapons.tryEquipDualMelee(skeleton, RandomWeapons.SKELETON_DUAL_MELEE_CHANCE)
 						|| MobTotem.tryEquip(skeleton));
@@ -128,9 +133,11 @@ public class SkeletonMixin {
 		}
 		skeleton.reassessWeaponGoal();
 		SkeletonHorseman.tryMount(skeleton, level, spawnReason);
-		// После брони, чар и лука: 1000 здоровья, удар не сдвигает. Скорость шага не меняем.
+		// После брони, чар и лука. Бастион и Spiky вместе не бывают.
 		if (bastion) {
 			Bastion.apply(skeleton);
+		} else if (spiky) {
+			Spiky.apply(skeleton);
 		}
 		} finally {
 			// Скелет и скелет-иссушитель. Василиск и капитан уже с именем — шанс их не трогает.
