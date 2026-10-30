@@ -2,6 +2,7 @@ package com.example.mixin;
 
 import com.example.MobExperience;
 import com.example.bastion.Bastion;
+import com.example.skeleton.WitherSkeletonSword;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +25,12 @@ public class MobExperienceMixin {
 		int bastion = Bastion.experienceReward(mob);
 		if (bastion >= 0) {
 			cir.setReturnValue(bastion);
+			return;
+		}
+		// Своё число иссушителя. Иначе ниже его удвоил бы общий множитель.
+		int wither = WitherSkeletonSword.experienceReward(mob);
+		if (wither >= 0) {
+			cir.setReturnValue(wither);
 			return;
 		}
 		int xp = MobExperience.reward(mob, cir.getReturnValue());

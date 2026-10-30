@@ -89,10 +89,17 @@ public final class RitualBand {
 	public static final float HEAD_DROP_CHANCE = 0.025f;
 
 	/**
-	 * Урон удара каждого в стае: и зомби, и скелета, любая голова.
+	 * Здоровье каждого в стае: и зомби, и скелета, любая голова. 50 = 25 сердец.
+	 * У обычного зомби и скелета в этом моде случайно 20–40. Это число ставится после того броска.
+	 * Меньше 1 игра почти сразу убивает.
+	 */
+	public static final float MAX_HEALTH = 50.0f;
+
+	/**
+	 * Урон удара каждого в стае: и зомби, и скелета, любая голова. 2 урона = 1 сердце.
 	 * У обычного зомби 3 (полтора сердца), у скелета с костью 2 (одно сердце).
-	 * 8 = четыре сердца до брони, примерно как зомби с железным мечом.
-	 * 4 = как у скелета-иссушителя. 12 = шесть сердец.
+	 * 8 = четыре сердца до брони. Без брони игрок переживает два удара.
+	 * 14 было слишком больно. 4 = как у скелета-иссушителя.
 	 */
 	public static final double ATTACK_DAMAGE = 8.0;
 
@@ -386,8 +393,8 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Шанс головы и сила удара. Зовётся и при появлении, и когда стая загружается из мира:
-	 * иначе уже живущие остаются со старыми 100% и слабым ударом.
+	 * Шанс головы, здоровье и сила удара. Зовётся и при появлении, и когда стая загружается из мира:
+	 * иначе уже живущие остаются со старым запасом жизней и слабым ударом.
 	 */
 	public static void applyTuning(Mob mob) {
 		if (!(mob instanceof RitualMember data) || !data.evolvingthreats$isRitual()) {
@@ -398,6 +405,30 @@ public final class RitualBand {
 		var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
 		if (attack != null) {
 			attack.setBaseValue(ATTACK_DAMAGE);
+		}
+		applyHealth(mob);
+	}
+
+	/**
+	 * Поднимает запас до {@link #MAX_HEALTH}. Если полоска была полной, она становится полной и на новом запасе.
+	 * Уже снятое здоровье при загрузке мира не лечится.
+	 */
+	private static void applyHealth(Mob mob) {
+		if (MAX_HEALTH < 1.0f) {
+			return;
+		}
+		var maxHealth = mob.getAttribute(Attributes.MAX_HEALTH);
+		if (maxHealth == null) {
+			return;
+		}
+		double previous = maxHealth.getBaseValue();
+		if (previous == MAX_HEALTH) {
+			return;
+		}
+		float current = mob.getHealth();
+		maxHealth.setBaseValue(MAX_HEALTH);
+		if (current >= previous - 0.5f || current > MAX_HEALTH) {
+			mob.setHealth(MAX_HEALTH);
 		}
 	}
 

@@ -44,7 +44,7 @@
   ENABLED ...................... true
   JACK_HEAD_DROP_CHANCE ........ 0.085 — шанс выпадения тыквы
   LIGHT_LEVEL .................. 15 — яркость вокруг головы, 0 = не светить. Это в JackLanternLight.java
-  CARRIER_SPAWN_CHANCE ......... 0.05 — шанс при спавне (5%)
+  CARRIER_SPAWN_CHANCE ......... 0.01 — шанс при спавне на 100-й день (1%). В начале игры в 10 раз меньше
   BEACON_RADIUS ................ 20 — радиус ускорения стаи
   BEACON_PULSE_INTERVAL_TICKS .. 20 — как часто пульс
   ALLY_SPEED_AMPLIFIER ......... 0 — Speed I

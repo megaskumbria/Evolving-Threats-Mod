@@ -36,10 +36,10 @@ public final class JackLanternBeacon {
 
 	/**
 	 * Шанс (0.0–1.0) при спавне стать носителем на 100-й день (РАСТЁТ: в начале игры в 10 раз меньше,
-	 * см. ThreatTable.DANGEROUS_START_RATIO). 0.05 = 5%.
+	 * см. ThreatTable.DANGEROUS_START_RATIO). 0.01 = 1%. 0.05 = снова каждый двадцатый.
 	 * Бросок после спавнера (и раздатчика у скелета): голова одна.
 	 */
-	public static final float CARRIER_SPAWN_CHANCE = 0.05f;
+	public static final float CARRIER_SPAWN_CHANCE = 0.01f;
 
 	/** Шанс дропа jack o'lantern с головы при смерти. */
 	public static final float JACK_HEAD_DROP_CHANCE = 0.085f;

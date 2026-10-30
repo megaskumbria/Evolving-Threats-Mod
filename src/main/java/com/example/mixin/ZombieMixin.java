@@ -127,7 +127,7 @@ public class ZombieMixin {
 			return;
 		}
 
-		// Excalibur: меч с Остротой 20. Случайные оружие, броня, щит и голова ему не выдаются.
+		// Excalibur: меч с Остротой 20 всегда. Броня, чары брони и щит — внутри tryClaim, как у обычного зомби.
 		if (!bastion && !spiky && ZombieExcalibur.tryClaim(zombie, spawnReason)) {
 			return;
 		}

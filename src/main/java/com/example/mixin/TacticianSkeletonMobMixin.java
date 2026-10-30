@@ -13,12 +13,22 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
 
-/** Сохранение, смена лука и меча, выпадение предмета со спины. */
+/** Сохранение, смена лука и меча, опыт за убийство, выпадение предмета со спины. */
 @Mixin(Mob.class)
 public class TacticianSkeletonMobMixin {
+
+	/** Своё число опыта. Общий множитель его не увеличивает: см. MobExperience. */
+	@Inject(method = "getBaseExperienceReward", at = @At("RETURN"), cancellable = true)
+	private void evolvingthreats$tacticianXp(ServerLevel level, CallbackInfoReturnable<Integer> cir) {
+		int xp = TacticianSkeleton.experienceReward((Mob) (Object) this);
+		if (xp >= 0) {
+			cir.setReturnValue(xp);
+		}
+	}
 
 	@Inject(method = "customServerAiStep", at = @At("RETURN"))
 	private void evolvingthreats$tacticianTick(ServerLevel level, CallbackInfo ci) {

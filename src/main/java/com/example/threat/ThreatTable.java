@@ -38,6 +38,9 @@ public final class ThreatTable {
 	/** Зомби-чародей. */
 	public static final int SORCERER_DAY = 40;
 
+	/** Зомби Excalibur: меч с Остротой 20. Шанс в {@code ZombieExcalibur}, от дня не растёт. */
+	public static final int EXCALIBUR_DAY = 40;
+
 	/**
 	 * Spiky: обычный зомби или скелет, один кусок брони колет на 7–8 сердец сквозь броню.
 	 * Шанс в {@code Spiky}, от дня не растёт.

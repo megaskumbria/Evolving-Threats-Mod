@@ -20,6 +20,7 @@ import com.example.skeleton.SkeletonPunchBow;
 import com.example.skeleton.HarmfulArrowSkeleton;
 import com.example.skeleton.SmallSkeleton;
 import com.example.skeleton.TacticianSkeleton;
+import com.example.skeleton.WitherSkeletonSword;
 import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.ritual.RitualBand;
 import com.example.threat.ThreatPack;
@@ -58,8 +59,11 @@ public class SkeletonMixin {
 
 		// Скелет-иссушитель и так сильный. Бафы и набор мода ему не выдаём.
 		// Спавнер на голове — отдельно: каждые 2 удара зовёт двоих таких же.
-		if (skeleton instanceof WitherSkeleton) {
-			SpawnerHeadMob.tryEquipWitherSkeleton(skeleton);
+		if (skeleton instanceof WitherSkeleton wither) {
+			// Носитель спавнера меч не меняет. Остальным в аду — незерит и чары.
+			if (!SpawnerHeadMob.tryEquipWitherSkeleton(wither)) {
+				WitherSkeletonSword.tryApply(wither);
+			}
 			return;
 		}
 

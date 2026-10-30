@@ -3,6 +3,8 @@ package com.example;
 import com.example.bastion.Bastion;
 import com.example.ritual.RitualBand;
 import com.example.skeleton.BasiliskSkeleton;
+import com.example.skeleton.TacticianSkeleton;
+import com.example.skeleton.WitherSkeletonSword;
 import com.example.zombie.ZombieExcalibur;
 import com.example.zombie.ZombieMjolnir;
 import com.example.zombie.ZombieSorcerer;
@@ -20,7 +22,8 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
  * Коровы, свиньи и жители сюда не входят.
  *
  * <p>Срабатывает в момент смерти, когда игра уже посчитала свой опыт.
- * Свой опыт не трогаем: Excalibur, Mjölnir, чародей, ритуал, василиск, Бастион.
+ * Свой опыт не трогаем: Excalibur, Mjölnir, чародей, ритуал, василиск, Бастион, скелет «700 IQ»,
+ * скелет-иссушитель.
  */
 public final class MobExperience {
 
@@ -70,6 +73,10 @@ public final class MobExperience {
 				return true;
 			}
 		}
-		return RitualBand.isRitual(mob) || BasiliskSkeleton.isBasilisk(mob) || Bastion.isBastion(mob);
+		return RitualBand.isRitual(mob)
+				|| BasiliskSkeleton.isBasilisk(mob)
+				|| Bastion.isBastion(mob)
+				|| TacticianSkeleton.experienceReward(mob) >= 0
+				|| WitherSkeletonSword.experienceReward(mob) >= 0;
 	}
 }

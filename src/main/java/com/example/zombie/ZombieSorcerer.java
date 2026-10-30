@@ -31,8 +31,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Редкий зомби в чёрной коже с незеритовой мотыгой.
  * Чары на вещи не получает. Мотыга при смерти не падает.
- * Раз в несколько секунд, если видит игрока, колдует один приём:
- * поджог, подброс вверх или рывок к себе.
+ * Раз в несколько секунд, если видит игрока, колдует один приём.
+ * Чаще всего подбрасывает вверх. Реже поджигает или тянет к себе.
  */
 public final class ZombieSorcerer {
 
@@ -42,17 +42,19 @@ public final class ZombieSorcerer {
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби окажется чародеем. 0.03 = 3%.
+	 * Шанс (0.0–1.0), что обычный зомби окажется чародеем. 0.001 = 0,1%, один из тысячи.
+	 * ФИКС: с 40-го дня (ThreatTable.SORCERER_DAY), от шкалы угрозы не растёт.
 	 * Утопленник, кадавр, зомби-житель, детёныш, надсмотрщик и рейд этот шанс не бросают.
-	 * Команда шанс не использует.
+	 * Команда шанс не использует. 0 = только команда.
 	 */
-	public static final float SPAWN_CHANCE = 0.03f;
+	public static final float SPAWN_CHANCE = 0.001f;
 
 	/**
-	 * Здоровье. 60 = 30 сердец. Обычный зомби — 20.
-	 * Случайные 20–40 из общей механики на чародея не действуют: здесь всегда это число.
+	 * Здоровье. 80 = 40 сердец. Обычный зомби в этом моде случайно 20–40.
+	 * На чародея тот бросок не действует: здесь всегда это число.
+	 * Меньше 1 игра почти сразу убивает.
 	 */
-	public static final float HEALTH = 60.0f;
+	public static final float HEALTH = 80.0f;
 
 	/**
 	 * Опыт за убийство. 15 — в три раза больше обычного зомби (у того 5).
@@ -80,12 +82,34 @@ public final class ZombieSorcerer {
 	public static final int FIRE_SECONDS = 6;
 
 	/**
-	 * Подброс вверх, в блоках. Оба края входят: может подкинуть и ровно на 8, и ровно на 25.
-	 * Считается без зелий. Прыгучесть поднимет выше, плавное падение — тоже.
-	 * 25 блоков падения бьют почти на всю жизнь (урон падения = высота минус 3).
+	 * Как часто какой приём. Это веса: сумма 100 значит подброс 70%, огонь 15%, рывок 15%.
+	 * Подброс — основной приём. 0 у веса = этого приёма нет.
+	 * Если игрок ближе {@link #PULL_MIN_BLOCKS}, рывок не выбирается,
+	 * и шансы подброса и огня делят оставшееся между собой.
 	 */
-	public static final int LAUNCH_MIN_BLOCKS = 8;
-	public static final int LAUNCH_MAX_BLOCKS = 25;
+	public static final int LAUNCH_WEIGHT = 70;
+	public static final int FIRE_WEIGHT = 15;
+	public static final int PULL_WEIGHT = 15;
+
+	/**
+	 * Обычный подброс, в блоках. Оба края входят: 25 и 30 тоже бывают, поровну между ними.
+	 * Считается без зелий. Прыгучесть поднимет выше, плавное падение — тоже.
+	 * Падение с 25 блоков бьёт почти на всю жизнь (урон падения = высота минус 3).
+	 */
+	public static final int LAUNCH_MIN_BLOCKS = 25;
+	public static final int LAUNCH_MAX_BLOCKS = 30;
+
+	/**
+	 * Редкий подброс, в блоках. 50 = заметно выше обычных 25–30.
+	 * Выпадает с шансом {@link #LAUNCH_RARE_CHANCE}, иначе высота из обычного диапазона.
+	 */
+	public static final int LAUNCH_RARE_BLOCKS = 50;
+
+	/**
+	 * Шанс (0.0–1.0) подбросить на {@link #LAUNCH_RARE_BLOCKS}, а не на 25–30.
+	 * 0.10 = 10%, примерно каждый десятый подброс. 0 = всегда 25–30. 1 = всегда на 50.
+	 */
+	public static final float LAUNCH_RARE_CHANCE = 0.10f;
 
 	/**
 	 * Сила рывка к чародею. 1.6 = заметно притягивает, но не телепортирует вплотную.
@@ -279,13 +303,9 @@ public final class ZombieSorcerer {
 	}
 
 	private static void cast(ServerLevel level, Zombie zombie, Player player) {
-		int spell = zombie.getRandom().nextInt(3);
-		if (spell == 2 && zombie.distanceTo(player) < PULL_MIN_BLOCKS) {
-			spell = zombie.getRandom().nextInt(2);
-		}
-		switch (spell) {
-			case 0 -> ignite(level, player);
-			case 1 -> launch(level, player, zombie);
+		switch (pickSpell(zombie, player)) {
+			case 0 -> launch(level, player, zombie);
+			case 1 -> ignite(level, player);
 			default -> pull(level, zombie, player);
 		}
 		level.playSound(
@@ -313,10 +333,29 @@ public final class ZombieSorcerer {
 				0.02);
 	}
 
+	/** 0 — подброс, 1 — огонь, 2 — рывок. Подброс выпадает чаще всех. */
+	private static int pickSpell(Zombie zombie, Player player) {
+		boolean allowPull = PULL_WEIGHT > 0 && zombie.distanceTo(player) >= PULL_MIN_BLOCKS;
+		int launch = Math.max(0, LAUNCH_WEIGHT);
+		int fire = Math.max(0, FIRE_WEIGHT);
+		int pull = allowPull ? Math.max(0, PULL_WEIGHT) : 0;
+		int total = launch + fire + pull;
+		if (total <= 0) {
+			return 0;
+		}
+		int roll = zombie.getRandom().nextInt(total);
+		if (roll < launch) {
+			return 0;
+		}
+		roll -= launch;
+		if (roll < fire) {
+			return 1;
+		}
+		return 2;
+	}
+
 	private static void launch(ServerLevel level, Player player, Zombie zombie) {
-		int min = Math.min(LAUNCH_MIN_BLOCKS, LAUNCH_MAX_BLOCKS);
-		int max = Math.max(LAUNCH_MIN_BLOCKS, LAUNCH_MAX_BLOCKS);
-		int blocks = min + zombie.getRandom().nextInt(max - min + 1);
+		int blocks = launchBlocks(zombie);
 		double vy = velocityForHeight(blocks);
 		Vec3 motion = player.getDeltaMovement();
 		player.setDeltaMovement(motion.x, vy, motion.z);
@@ -353,6 +392,16 @@ public final class ZombieSorcerer {
 				0.4,
 				0.4,
 				0.0);
+	}
+
+	/** Обычно 25–30 блоков поровну. Редко — ровно {@link #LAUNCH_RARE_BLOCKS}. */
+	private static int launchBlocks(Zombie zombie) {
+		if (LAUNCH_RARE_CHANCE > 0.0f && zombie.getRandom().nextFloat() < LAUNCH_RARE_CHANCE) {
+			return Math.max(0, LAUNCH_RARE_BLOCKS);
+		}
+		int min = Math.min(LAUNCH_MIN_BLOCKS, LAUNCH_MAX_BLOCKS);
+		int max = Math.max(LAUNCH_MIN_BLOCKS, LAUNCH_MAX_BLOCKS);
+		return min + zombie.getRandom().nextInt(max - min + 1);
 	}
 
 	/**

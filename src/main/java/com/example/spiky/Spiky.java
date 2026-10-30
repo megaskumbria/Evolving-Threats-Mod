@@ -13,6 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -201,10 +203,22 @@ public final class Spiky {
 		}
 		Holder<DamageType> type = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DAMAGE_TYPE);
 		spiking = true;
+		boolean landedOnPlayer;
 		try {
-			player.hurtServer(level, new DamageSource(type, spiky), damage);
+			landedOnPlayer = player.hurtServer(level, new DamageSource(type, spiky), damage);
 		} finally {
 			spiking = false;
+		}
+		// Обычные Шипы играют этот звон только на своём типе урона. У Spiky тип свой, поэтому зовём звук сами.
+		// Если укол не прошёл (игрок уже неуязвим), звука нет — как у обычных Шипов.
+		if (landedOnPlayer) {
+			level.playSound(
+					null,
+					player.getX(),
+					player.getY(),
+					player.getZ(),
+					SoundEvents.THORNS_HIT,
+					SoundSource.PLAYERS);
 		}
 	}
 

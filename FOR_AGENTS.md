@@ -77,6 +77,7 @@
 | Раздатчик на голове, залп стрел | `RandomDispenserSkull.java` | заметки нет; цель — `entity/ai/DispenserBarrageGoal.java` |
 | Спектральная стрела поднимает мобов | `skeleton/SpectralArrowHunt.java` | заметки нет |
 | Иссушитель со спавнером | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/иссушитель-со-спавнером.txt` |
+| Меч и опыт иссушителя | `skeleton/WitherSkeletonSword.java` | `mobs/skeletons/иссушитель-меч.txt` |
 | Капитан скелетов | `skeleton/SkeletonCaptain.java` | `mobs/skeletons/капитан-скелетов.txt` |
 | Василиск | `skeleton/BasiliskSkeleton.java` | `mobs/skeletons/василиск.txt` |
 | Скелет на костяной лошади | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/скелет-наездник.txt` |
@@ -118,6 +119,7 @@
 | Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java`, `siege/SiegeComposition.java` (фракции и доли мобов) | `mobs/raids/осада.txt` |
 | Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
 | Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/фантомы-слабость.txt` |
+| Слепота с укуса фантома | `phantom/PhantomBlindness.java` | `mobs/phantoms/фантомы-слепота.txt` |
 | Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |
 | Ракета разбойника | `illager/PillagerFirework.java` | `mobs/illagers/разбойник-фейерверк.txt` |
 | Алмазный топор поборника | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/поборник-алмазный-топор.txt` |

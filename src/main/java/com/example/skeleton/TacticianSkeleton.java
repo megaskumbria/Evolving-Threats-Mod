@@ -17,6 +17,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
@@ -58,11 +59,19 @@ public final class TacticianSkeleton {
 	public static final float SPAWN_CHANCE = 0.05f;
 
 	/**
-	 * Здоровье, оба края входят. У обычного скелета в этом моде 20–40.
-	 * 20 и 35 = от 10 до 17.5 сердец.
+	 * Здоровье, оба края входят. 50 и 50 = всегда 50 жизней (25 сердец).
+	 * У обычного скелета в этом моде случайно 20–40. Это число ставится после того броска.
+	 * Меньше 1 игра почти сразу убивает. Уже живущие скелеты своё старое здоровье сохраняют.
 	 */
-	public static final int HEALTH_MIN = 20;
-	public static final int HEALTH_MAX = 35;
+	public static final int HEALTH_MIN = 50;
+	public static final int HEALTH_MAX = 50;
+
+	/**
+	 * Сколько опыта падает при смерти. 30 = ровно 30, не сверху к обычному.
+	 * Общий множитель опыта (MobExperience.MULTIPLIER) это число не увеличивает.
+	 * 0 = опыта нет. Обычный скелет в этом моде даёт около 10, плюс добавка за вещи.
+	 */
+	public static final int XP_REWARD = 30;
 
 	/** Слабость на игроке после попадания, в секундах. Уровень I. */
 	public static final int WEAKNESS_SECONDS = 20;
@@ -326,6 +335,14 @@ public final class TacticianSkeleton {
 				Optional.of(ARROW_NAME)));
 		arrow.set(DataComponents.POTION_DURATION_SCALE, 1.0F);
 		return arrow;
+	}
+
+	/** Сколько опыта дать. -1 = это не «700 IQ», пусть решает игра. */
+	public static int experienceReward(Mob mob) {
+		if (!(mob instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
+			return -1;
+		}
+		return Math.max(0, XP_REWARD);
 	}
 
 	private static void rollHealth(AbstractSkeleton skeleton) {

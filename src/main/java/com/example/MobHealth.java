@@ -17,6 +17,9 @@ import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
  * Гнилой надсмотрщик потом ставит свои 100. Паучиха-матка — свои 40. Якорь рейда — свои 100.
  * Василиск потом ставит свои 100 (BasiliskSkeleton.MAX_HEALTH).
  * Бастион потом ставит свои 1000 (Bastion.MAX_HEALTH).
+ * Скелет «700 IQ» потом ставит свои 50 (TacticianSkeleton.HEALTH_MIN и HEALTH_MAX).
+ * Excalibur потом ставит свои 50 (ZombieExcalibur.MAX_HEALTH).
+ * Ритуальная стая потом ставит свои 50 (RitualBand.MAX_HEALTH).
  */
 public final class MobHealth {
 

@@ -63,6 +63,8 @@
 		"PiglinBruteHealthMixin",
 		"PhantomWeaknessMixin",
 		"PhantomWeaknessMobMixin",
+		"PhantomBlindnessMixin",
+		"PhantomBlindnessMobMixin",
 		"SlimePoisonMixin",
 		"MagmaCubeThreatMixin",
 		"MagmaCubeTickMixin",

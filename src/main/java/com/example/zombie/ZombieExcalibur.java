@@ -1,6 +1,11 @@
 package com.example.zombie;
 
+import com.example.MobEnchantments;
 import com.example.MobNames;
+import com.example.MobShields;
+import com.example.RandomArmor;
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieExcaliburEntity;
 import com.example.entity.ZombieOverseerEntity;
@@ -11,6 +16,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -28,8 +34,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Редкий именной зомби Excalibur.
- * В руке деревянный, каменный, медный, железный или алмазный меч с Остротой 20.
- * Меч не выпадает. Вместо него падает бирка с этим именем и больше опыта, чем у обычного зомби.
+ * В руке всегда деревянный, каменный, медный, железный или алмазный меч с Остротой 20.
+ * Броня и щит — как у обычного зомби. Меч не выпадает.
+ * Вместо него падает бирка с этим именем и свой опыт.
  *
  * <p>Острота 20 — это обычный удар, только сильнее. Отдельного «сокрушительного» приёма нет.
  * Игра добавляет 1 урон за первый уровень и ещё 0.5 за каждый следующий: 20 = 10.5 сверх меча.
@@ -46,10 +53,11 @@ public final class ZombieExcalibur {
 
 	/**
 	 * Шанс (0.0–1.0), что обычный зомби окажется Excalibur. 0.01 = 1%.
-	 * ФИКС: с первого дня, от шкалы угрозы и луны не зависит.
+	 * ФИКС: с 40-го дня (ThreatTable.EXCALIBUR_DAY), от шкалы угрозы и луны не зависит.
+	 * До этого дня таких нет. Уже живущий Excalibur никуда не девается.
 	 * Это стартовое число, его легко подкрутить. 0.002 = 0.2%, как у надсмотрщика. 0 = только команда.
 	 * Утопленник, кадавр, зомби-житель, детёныш, надсмотрщик и рейд этот шанс не бросают.
-	 * Команда шанс не использует.
+	 * Команда день и шанс не проверяет.
 	 */
 	public static final float SPAWN_CHANCE = 0.01f;
 
@@ -61,11 +69,17 @@ public final class ZombieExcalibur {
 	public static final int SHARPNESS_LEVEL = 20;
 
 	/**
-	 * Опыт за убийство. 20 — в четыре раза больше обычного зомби (у того 5).
-	 * Падает, только если зомби убил игрок: так устроена сама игра.
-	 * 0 = опыта нет. Это число вместо обычного, а не сверху.
+	 * Здоровье. 50 = 25 сердец. У обычного зомби в этом моде случайно 20–40.
+	 * Это число ставится после того броска и всегда одно и то же.
+	 * Меньше 1 игра почти сразу убивает. Уже живущие Excalibur старое здоровье сохраняют.
 	 */
-	public static final int XP_REWARD = 20;
+	public static final float MAX_HEALTH = 50.0f;
+
+	/**
+	 * Опыт за убийство. 30. Падает, только если зомби убил игрок: так устроена сама игра.
+	 * 0 = опыта нет. Это число вместо обычного, общий множитель (MobExperience.MULTIPLIER) его не увеличивает.
+	 */
+	public static final int XP_REWARD = 30;
 
 	/**
 	 * Сколько бирок падает всегда. 1 = одна бирка с именем Excalibur.
@@ -97,8 +111,9 @@ public final class ZombieExcalibur {
 	}
 
 	/**
-	 * Конец появления зомби. true = это Excalibur: случайный меч, щит, тотем,
-	 * броня мода и голова ему не выдаются. Зелья при появлении уже могли повеситься.
+	 * Конец появления зомби. true = это Excalibur: меч обязателен, броня и щит как у обычного.
+	 * Случайное оружие, тотем, тыква и спавнер на голову не выдаются.
+	 * Зелья при появлении уже могли повеситься.
 	 */
 	public static boolean tryClaim(Zombie zombie, EntitySpawnReason reason) {
 		if (!canBeExcalibur(zombie)) {
@@ -110,6 +125,10 @@ public final class ZombieExcalibur {
 			return true;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return false;
+		}
+		// С какого дня Excalibur вообще появляется (ThreatTable.EXCALIBUR_DAY). Шанс ниже от дня не меняется.
+		if (!ThreatScale.reached(zombie.level(), ThreatTable.EXCALIBUR_DAY)) {
 			return false;
 		}
 		if (zombie.getRandom().nextFloat() >= SPAWN_CHANCE) {
@@ -180,13 +199,35 @@ public final class ZombieExcalibur {
 	private static void equip(Zombie zombie) {
 		zombie.setCustomName(name());
 		MobNames.showOnlyWhenLookedAt(zombie);
-		// Имя уже не даёт ему исчезнуть. Чужую вещь не подбирает, иначе меч сменится.
+		// Чужую вещь не подбирает: иначе меч с Остротой 20 мог бы смениться.
 		zombie.setCanPickUpLoot(false);
-		zombie.setItemSlot(EquipmentSlot.MAINHAND, sword(zombie));
 		zombie.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-		// 0 = меч не падает, даже с Добычей.
+
+		// Та же броня, что у обычного зомби: куски, редкий полный комплект, чары на броне.
+		// Шанс растёт со шкалой угрозы, как у всех. Руки этот бросок не занимает.
+		// Чары на сам меч не бросаем: они стёрли бы Остроту 20.
+		RandomArmor.rollForZombie(zombie);
+		MobEnchantments.rollArmorForZombie(zombie);
+		// Щит во второй руке, с тем же шансом, что у обычного зомби. Если не выпал — рука пустая.
+		MobShields.tryEquip(zombie);
+
+		// Меч в самом конце, чтобы броня и щит его не заменили.
+		zombie.setItemSlot(EquipmentSlot.MAINHAND, sword(zombie));
+		// 0 = меч не падает, даже с Добычей. Броня и щит падают своим обычным шансом.
 		zombie.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
-		zombie.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
+		applyHealth(zombie);
+	}
+
+	private static void applyHealth(Zombie zombie) {
+		if (MAX_HEALTH < 1.0f) {
+			return;
+		}
+		var maxHealth = zombie.getAttribute(Attributes.MAX_HEALTH);
+		if (maxHealth == null) {
+			return;
+		}
+		maxHealth.setBaseValue(MAX_HEALTH);
+		zombie.setHealth(MAX_HEALTH);
 	}
 
 	private static ItemStack sword(Zombie zombie) {

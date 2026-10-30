@@ -18,9 +18,9 @@ public final class RandomDispenserSkull {
 
 	/**
 	 * Шанс (0.0–1.0), что у скелета на голове будет раздатчик, на 100-й день
-	 * (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.15 = 15%.
+	 * (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.02 = 2%.
 	 */
-	public static final float SKELETON_DISPENSER_HEAD_CHANCE = 0.15f;
+	public static final float SKELETON_DISPENSER_HEAD_CHANCE = 0.02f;
 
 	/** Минимальная пауза между залпами, секунды. */
 	public static final int BARRAGE_COOLDOWN_MIN_SECONDS = 15;

@@ -242,6 +242,28 @@ public final class MobEnchantments {
 		}
 	}
 
+	/**
+	 * Чары на меч в основной руке. Каменный и незеритовый тоже:
+	 * обычный список оружия мода незерит не включает.
+	 * {@code endChance} — шанс на 100-й день (0.70 = 70%).
+	 * В начале он равен {@link ThreatTable#WEAPON_ENCHANT_CHANCE_START} (1%).
+	 * Число чар и их уровни растут так же, как у меча зомби. Луна тоже влияет.
+	 * Если чары выпали, они заменяют те, что игра уже повесила на этот меч.
+	 */
+	public static void rollMainHandGrowing(Mob mob, float endChance) {
+		if (!ENABLED || endChance <= 0.0f) {
+			return;
+		}
+		float actual = ThreatScale.lerp(mob.level(), ThreatTable.WEAPON_ENCHANT_CHANCE_START, endChance);
+		ItemStack stack = mob.getMainHandItem();
+		if (stack.isEmpty() || mob.getRandom().nextFloat() >= actual) {
+			return;
+		}
+		if (enchant(mob, stack, mob.getRandom(), false, true)) {
+			mob.setItemSlot(EquipmentSlot.MAINHAND, stack);
+		}
+	}
+
 	/** Бросает шанс отдельно для каждого предмета в основной и второй руке. {@code growing} — как у брони. */
 	private static void rollForHeldItems(Mob mob, float chance, boolean growing) {
 		if (!ENABLED || chance <= 0.0f) {
