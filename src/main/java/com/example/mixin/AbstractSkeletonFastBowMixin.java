@@ -2,8 +2,10 @@ package com.example.mixin;
 
 import com.example.entity.BasiliskSkeletonEntity;
 import com.example.entity.FastBowSkeletonEntity;
+import com.example.entity.SniperSkeletonEntity;
 import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.FastBowSkeleton;
+import com.example.skeleton.SniperSkeleton;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import org.spongepowered.asm.mixin.Final;
@@ -29,7 +31,10 @@ public abstract class AbstractSkeletonFastBowMixin {
 
 	@Inject(method = "reassessWeaponGoal", at = @At("RETURN"))
 	private void evolvingthreats$applyFastBow(CallbackInfo ci) {
-		FastBowSkeleton.apply((AbstractSkeleton) (Object) this, bowGoal);
+		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
+		// Сначала быстрый лук, потом снайпер: дальность 30 не должна затирать 128.
+		FastBowSkeleton.apply(skeleton, bowGoal);
+		SniperSkeleton.apply(skeleton, bowGoal);
 	}
 
 	@ModifyArg(
@@ -43,6 +48,9 @@ public abstract class AbstractSkeletonFastBowMixin {
 	private float evolvingthreats$arrowSpeed(float speed) {
 		if (isBasilisk()) {
 			return BasiliskSkeleton.ARROW_SPEED;
+		}
+		if (isSniper()) {
+			return SniperSkeleton.ARROW_SPEED;
 		}
 		if (isFastBow()) {
 			return FastBowSkeleton.ARROW_SPEED;
@@ -61,10 +69,29 @@ public abstract class AbstractSkeletonFastBowMixin {
 		if (isBasilisk()) {
 			return BasiliskSkeleton.arrowArc();
 		}
+		if (isSniper()) {
+			return SniperSkeleton.ARROW_ARC;
+		}
 		if (isFastBow()) {
 			return FastBowSkeleton.arrowArc();
 		}
 		return arc;
+	}
+
+	/** Разброс. У снайпера свой: ванильный на 128 блоках промахивается. */
+	@ModifyArg(
+			method = "performRangedAttack",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/entity/projectile/Projectile;spawnProjectileUsingShoot(Lnet/minecraft/world/entity/projectile/Projectile;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;DDDFF)Lnet/minecraft/world/entity/projectile/Projectile;"
+			),
+			index = 7
+	)
+	private float evolvingthreats$sniperInaccuracy(float inaccuracy) {
+		if (isSniper()) {
+			return Math.max(0.0f, SniperSkeleton.INACCURACY);
+		}
+		return inaccuracy;
 	}
 
 	private boolean isBasilisk() {
@@ -75,5 +102,10 @@ public abstract class AbstractSkeletonFastBowMixin {
 	private boolean isFastBow() {
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
 		return skeleton instanceof FastBowSkeletonEntity data && data.evolvingthreats$isFastBow();
+	}
+
+	private boolean isSniper() {
+		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
+		return skeleton instanceof SniperSkeletonEntity data && data.evolvingthreats$isSniper();
 	}
 }

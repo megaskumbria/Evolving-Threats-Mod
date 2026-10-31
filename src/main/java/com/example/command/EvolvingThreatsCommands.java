@@ -26,6 +26,8 @@ import com.example.zombie.ZombieExcalibur;
 import com.example.zombie.ZombieMjolnir;
 import com.example.zombie.ZombieSorcerer;
 import com.example.ritual.RitualBand;
+import com.example.skeleton.RandomArrowSkeleton;
+import com.example.skeleton.SniperSkeleton;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.golem.DamagedGolem;
 import com.example.spawnerhead.SpawnerHeadMob;
@@ -91,6 +93,10 @@ public final class EvolvingThreatsCommands {
 								))))
 				.then(Commands.literal("tactician")
 						.executes(ctx -> spawnTactician(ctx.getSource())))
+				.then(Commands.literal("random_arrow")
+						.executes(ctx -> spawnRandomArrow(ctx.getSource())))
+				.then(Commands.literal("sniper")
+						.executes(ctx -> spawnSniper(ctx.getSource())))
 				.then(Commands.literal("patrol")
 						.executes(ctx -> spawnPatrol(ctx.getSource())))
 				.then(Commands.literal("alchemist")
@@ -250,6 +256,14 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("ettactician")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnTactician(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etarrows")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnRandomArrow(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etsniper")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnSniper(ctx.getSource())));
 
 		dispatcher.register(Commands.literal("etalchemist")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
@@ -625,6 +639,42 @@ public final class EvolvingThreatsCommands {
 		}
 		TacticianSkeleton.spawn(level, pos, lookAt);
 		source.sendSuccess(() -> Component.literal("Spawned 700 IQ skeleton"), true);
+		return 1;
+	}
+
+	private static int spawnRandomArrow(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(4.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		RandomArrowSkeleton.spawn(level, pos, lookAt);
+		source.sendSuccess(() -> Component.literal("Spawned random-arrow skeleton"), true);
+		return 1;
+	}
+
+	private static int spawnSniper(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(4.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		SniperSkeleton.spawn(level, pos, lookAt);
+		source.sendSuccess(() -> Component.literal("Spawned sniper skeleton"), true);
 		return 1;
 	}
 

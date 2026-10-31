@@ -18,7 +18,9 @@ import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SkeletonHorseman;
 import com.example.skeleton.SkeletonPunchBow;
 import com.example.skeleton.HarmfulArrowSkeleton;
+import com.example.skeleton.RandomArrowSkeleton;
 import com.example.skeleton.SmallSkeleton;
+import com.example.skeleton.SniperSkeleton;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.skeleton.WitherSkeletonSword;
 import com.example.spawnerhead.SpawnerHeadMob;
@@ -103,21 +105,41 @@ public class SkeletonMixin {
 			return;
 		}
 
-		// Маленький скелет быстрее и с малым здоровьем. Бастиону и Spiky это не выдаём.
-		if (!bastion && !spiky) {
+		// Снайпер раньше маленького и двух мечей: лук ему обязателен.
+		boolean sniper = !bastion && !spiky && SniperSkeleton.tryRoll(skeleton);
+		// Маленький скелет быстрее и с малым здоровьем. Бастиону, Spiky и снайперу это не выдаём.
+		if (!bastion && !spiky && !sniper) {
 			bastion = Bastion.tryRoll(skeleton, spawnReason);
 		}
-		if (!bastion && !spiky) {
+		if (!bastion && !spiky && !sniper) {
 			spiky = Spiky.tryRoll(skeleton, spawnReason);
 		}
-		boolean small = !bastion && !spiky && SmallSkeleton.tryRoll(skeleton);
-		boolean handsTaken = !small
-				&& (RandomWeapons.tryEquipDualMelee(skeleton, RandomWeapons.SKELETON_DUAL_MELEE_CHANCE)
-						|| MobTotem.tryEquip(skeleton));
+		boolean small = !sniper && !bastion && !spiky && SmallSkeleton.tryRoll(skeleton);
+		boolean dualMelee = !sniper && !small
+				&& RandomWeapons.tryEquipDualMelee(skeleton, RandomWeapons.SKELETON_DUAL_MELEE_CHANCE);
+		boolean totem = !sniper && !dualMelee && !small && MobTotem.tryEquip(skeleton);
+		boolean handsTaken = dualMelee || totem;
+		// Случайные стрелы: лук остаётся, стрелу с эффектом в руку не кладём.
+		// Два меча лук убирают — такой скелет этот шанс не бросает.
+		if (!sniper && !dualMelee && !bastion && !spiky) {
+			RandomArrowSkeleton.tryRoll(skeleton);
+		}
+		boolean randomArrows = RandomArrowSkeleton.isActive(skeleton);
 		// Два оружия ближнего боя убирают лук. Иначе тотем, стрела или меч занимают вторую руку.
-		if (!handsTaken && !HarmfulArrowSkeleton.tryEquip(skeleton)) {
+		if (!sniper && !handsTaken && !randomArrows && !HarmfulArrowSkeleton.tryEquip(skeleton)) {
 			RandomWeapons.rollSkeletonLoadout(skeleton);
 			MobShields.tryEquip(skeleton);
+		} else if (randomArrows && !totem && !dualMelee) {
+			RandomWeapons.rollSkeletonLoadout(skeleton);
+			if (skeleton.getOffhandItem().isEmpty()) {
+				MobShields.tryEquip(skeleton);
+			}
+		}
+		if (randomArrows) {
+			RandomArrowSkeleton.ensureBow(skeleton);
+		}
+		if (sniper) {
+			SniperSkeleton.equip(skeleton);
 		}
 		MobEnchantments.rollForSkeleton(skeleton);
 		// Откидывание V/VI поверх обычных чар. Капитан и «700 IQ» сюда не доходят.

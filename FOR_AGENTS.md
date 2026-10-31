@@ -55,6 +55,8 @@
 | Полный комплект брони | `RandomArmor.java` (`FULL_SET_CHANCE`) | `mobs/common/полный-комплект-брони.txt` |
 | Чары на оружии и броне | `MobEnchantments.java` | `mobs/common/чары-на-оружии.txt` |
 | Щиты | `MobShields.java` | `mobs/common/щиты.txt` |
+| Топор сбивает щит | `axe/AxeShieldDisable.java` | `mobs/common/топор-сбивает-щит.txt` |
+| Дальность взгляда | `sight/MobSight.java` | `mobs/common/дальность-взгляда.txt` |
 | Тотем бессмертия | `MobTotem.java` | `mobs/common/тотем-бессмертия.txt` |
 | Зелья при появлении | `MobPotionBuffs.java` | `mobs/common/бафы-зелий.txt` |
 | Случайное здоровье | `MobHealth.java` | `mobs/common/случайное-здоровье.txt` |
