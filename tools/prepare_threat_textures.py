@@ -1,16 +1,16 @@
 """
-Готовит картинки шкалы угрозы для игры из больших исходников (то, что нарисовала нейросеть).
+Builds in-game threat-scale images from large source art (e.g. AI-generated sheets).
 
-Что делает:
-  * вырезает рамку, заполнение, 8 фаз луны и 4 иконки-черепа;
-  * убирает белый фон (там, где нет настоящей прозрачности);
-  * уменьшает до игровых размеров и делает края чёткими (без полупрозрачной каймы);
-  * кладёт файлы в src/main/resources/assets/evolving-threats/textures/gui/sprites/threat/.
+What it does:
+  * crops the bar frame, fill, 8 moon phases, and 4 skull stage icons;
+  * removes white background where there is no real alpha;
+  * downscales to in-game sizes with crisp edges (no semi-transparent fringe);
+  * writes files to src/main/resources/assets/evolving-threats/textures/gui/sprites/threat/.
 
-Запуск (из корня проекта):  python tools/prepare_threat_textures.py
-Нужны Python 3 и пакеты pillow, numpy, scipy.
+Run from project root:  python tools/prepare_threat_textures.py
+Requires Python 3 and packages pillow, numpy, scipy.
 
-Исходники лежат в art/threat_hud/. Заменишь картинку там и запустишь скрипт снова — в игре обновится.
+Sources live in art/threat_hud/. Replace art there and run again to update in-game textures.
 """
 from pathlib import Path
 
@@ -24,35 +24,35 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "art" / "threat_hud"
 OUT = ROOT / "src" / "main" / "resources" / "assets" / "evolving-threats" / "textures" / "gui" / "sprites" / "threat"
 
-# Размер рамки шкалы в пикселях игры. Соотношение сторон исходника около 10.3 : 1.
+# Bar frame size in in-game pixels. Source aspect ratio is about 10.3 : 1.
 FRAME_SIZE = (128, 12)
 
-# Размер иконок (луна и черепа) в пикселях игры. 16 = как предметы в инвентаре.
+# Icon size (moon and skulls) in in-game pixels. 16 = same as inventory items.
 ICON_SIZE = 16
 
-# Запас вокруг иконки при вырезании, доля от её размера. Больше = иконка в кадре меньше.
+# Extra margin when cropping an icon, as a fraction of its size. Larger = smaller icon in frame.
 ICON_MARGIN = 0.06
 
-# Порог прозрачности: пиксели с прозрачностью выше становятся полностью видимыми, ниже — пропадают.
+# Alpha cutoff: pixels above become fully opaque, below become fully transparent.
 ALPHA_CUT = 128
 
-# Что считать белым фоном у картинок без прозрачности (минимальный из каналов R, G, B больше этого числа).
+# Treat as white background on images without alpha (min of R, G, B channels above this value).
 WHITE_LEVEL = 232
 
-# Убирать ли «zZZ» над спящим зомби (первый череп). True = только голова, она стоит ровно по центру.
+# Remove "zZZ" above the sleeping zombie (first skull). True = head only, centered in icon.
 REMOVE_SLEEP_LETTERS = True
 
-# С какой высоты (доля высоты иконки сверху) начинается «чистое» лицо, где букв нет. Нужно, чтобы измерить ширину головы.
+# From this height (fraction from top of icon) the face has no letters — used to measure head width.
 SLEEP_FACE_ROWS_FROM = 0.65
 
-# До какой высоты (доля высоты иконки сверху) нарисованы буквы. Всё выше этой линии справа от центра заменяется зеркалом левой стороны.
+# Letters end at this height (fraction from top). Above this line, right of center is mirrored from the left.
 SLEEP_LETTERS_BOTTOM = 0.53
 
 # =====================================================
 
 
 def to_small(img: Image.Image, size) -> Image.Image:
-    """Уменьшает RGBA с учётом прозрачности и делает края чёткими."""
+    """Downscale RGBA with alpha-aware resize and hard edges."""
     premult = img.convert("RGBa").resize(size, Image.Resampling.BOX).convert("RGBA")
     arr = np.array(premult)
     arr[..., 3] = np.where(arr[..., 3] >= ALPHA_CUT, 255, 0)
@@ -61,7 +61,7 @@ def to_small(img: Image.Image, size) -> Image.Image:
 
 
 def square_crop(img: Image.Image, box) -> Image.Image:
-    """Вырезает квадрат вокруг прямоугольника box = (x0, y0, x1, y1), чтобы не искажать пропорции."""
+    """Square crop around box = (x0, y0, x1, y1) so aspect ratio is not stretched."""
     x0, y0, x1, y1 = box
     side = int(max(x1 - x0, y1 - y0) * (1 + ICON_MARGIN * 2))
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
@@ -72,7 +72,7 @@ def square_crop(img: Image.Image, box) -> Image.Image:
 
 
 def remove_white_background(img: Image.Image) -> Image.Image:
-    """Белый фон, который соединён с краем картинки, делает прозрачным. Белое внутри обводки остаётся."""
+    """White connected to the image edge becomes transparent. White inside outlines stays."""
     rgb = np.array(img.convert("RGB")).astype(int)
     white = rgb.min(axis=2) > WHITE_LEVEL
     labels, count = ndimage.label(white)
@@ -84,7 +84,7 @@ def remove_white_background(img: Image.Image) -> Image.Image:
 
 
 def opaque_boxes(img: Image.Image, min_pixels: int, grow: int = 0):
-    """Находит отдельные картинки на листе. Возвращает рамки (x0, y0, x1, y1), отсортированные слева направо, сверху вниз."""
+    """Find separate sprites on a sheet. Returns boxes (x0, y0, x1, y1), sorted left-to-right, top-to-bottom."""
     alpha = np.array(img.convert("RGBA"))[..., 3] > ALPHA_CUT
     grown = ndimage.binary_dilation(alpha, iterations=grow) if grow else alpha
     labels, count = ndimage.label(grown)
@@ -103,7 +103,7 @@ def make_frame_and_fill():
     box = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
     frame_crop = frame_src.crop(box)
 
-    # Окно внутри рамки: прозрачная область, которая не касается края.
+    # Inner window: transparent region that does not touch the frame edge.
     sub = ~np.array(frame_crop)[..., 3].astype(bool) | (np.array(frame_crop)[..., 3] < 16)
     labels, count = ndimage.label(sub)
     hole = None
@@ -112,7 +112,7 @@ def make_frame_and_fill():
         touches = hy.min() == 0 or hx.min() == 0 or hy.max() == sub.shape[0] - 1 or hx.max() == sub.shape[1] - 1
         if not touches and (hole is None or len(hy) > hole[0]):
             hole = (len(hy), hx.min(), hy.min(), hx.max() + 1, hy.max() + 1)
-    assert hole, "не нашёл окно внутри рамки"
+    assert hole, "could not find inner window in bar frame"
 
     fw, fh = FRAME_SIZE
     sx = fw / frame_crop.width
@@ -121,7 +121,7 @@ def make_frame_and_fill():
     hx0, hy0 = round(hole[1] * sx), round(hole[2] * sy)
     hx1, hy1 = round(hole[3] * sx), round(hole[4] * sy)
     hole_w, hole_h = hx1 - hx0, hy1 - hy0
-    # В рамке окно должно быть прозрачным совсем.
+    # Hole in the frame must be fully transparent.
     arr = np.array(frame)
     arr[hy0:hy1, hx0:hx1] = 0
     Image.fromarray(arr, "RGBA").save(OUT / "bar_frame.png")
@@ -134,30 +134,30 @@ def make_frame_and_fill():
     arr = np.array(fill)
     arr[..., 3] = 255
     Image.fromarray(arr, "RGBA").save(OUT / "bar_fill.png")
-    print(f"рамка {fw}x{fh}, окно x={hx0} y={hy0} {hole_w}x{hole_h} (эти числа нужны в HUD)")
+    print(f"frame {fw}x{fh}, hole x={hx0} y={hy0} {hole_w}x{hole_h} (use these numbers in HUD code)")
 
 
 def make_moons():
     src = Image.open(SOURCE / "moon_phases.png").convert("RGBA")
-    boxes = sorted(opaque_boxes(src, min_pixels=2000), key=lambda b: b[1])  # сверху вниз
-    assert len(boxes) >= 8, f"нашёл {len(boxes)} лун, нужно хотя бы 8"
-    # Девятая луна на листе повторяет первую (круг замкнут). Берём только 8.
+    boxes = sorted(opaque_boxes(src, min_pixels=2000), key=lambda b: b[1])  # top to bottom
+    assert len(boxes) >= 8, f"found {len(boxes)} moons, need at least 8"
+    # Ninth moon on the sheet duplicates the first (closed cycle). Keep 8 only.
     for index, box in enumerate(boxes[:8]):
         to_small(square_crop(src, box), (ICON_SIZE, ICON_SIZE)).save(OUT / f"moon_{index}.png")
-    print("луны: 8 файлов moon_0..moon_7 (0 = полнолуние, 4 = новолуние)")
+    print("moons: 8 files moon_0..moon_7 (0 = full moon, 4 = new moon)")
 
 
 def remove_sleep_letters(img: Image.Image, box) -> Image.Image:
     """
-    Убирает «zZZ» над головой спящего зомби, чтобы голова стояла в центре иконки.
-    Буквы частично заходят на голову, поэтому всю правую верхнюю часть (над глазами) заменяем
-    зеркальной копией левой: голова симметрична. Глаза и рот внизу не трогаем.
+    Remove "zZZ" above the sleeping zombie head so the head sits centered in the icon.
+    Letters overlap the head, so the upper-right (above eyes) is replaced with a mirror
+    of the left side: the head is symmetric. Eyes and mouth at the bottom are untouched.
     """
     x0, y0, x1, y1 = box
     rgba = np.array(img.convert("RGBA"))
     alpha = rgba[..., 3] > ALPHA_CUT
 
-    # Ширина головы: смотрим на нижнюю часть иконки, где букв точно нет.
+    # Head width: use the lower part of the icon where there are no letters.
     face_rows = alpha[y0 + int((y1 - y0) * SLEEP_FACE_ROWS_FROM): y1]
     columns = np.where(face_rows.any(axis=0))[0]
     columns = columns[(columns >= x0) & (columns <= x1)]
@@ -180,14 +180,14 @@ def make_stages():
     src = remove_white_background(Image.open(SOURCE / "stages.png"))
     boxes = opaque_boxes(src, min_pixels=5000, grow=12)
     boxes = sorted(boxes, key=lambda b: b[0])
-    assert len(boxes) == 4, f"нашёл {len(boxes)} иконок, нужно 4"
+    assert len(boxes) == 4, f"found {len(boxes)} icons, need 4"
     if REMOVE_SLEEP_LETTERS:
         src = remove_sleep_letters(src, boxes[0])
-        # Рамка первой иконки теперь только по голове, поэтому иконка встанет по центру.
+        # First icon bounds are head-only so it centers in the square crop.
         boxes[0] = sorted(opaque_boxes(src, min_pixels=5000, grow=12), key=lambda b: b[0])[0]
     for index, box in enumerate(boxes):
         to_small(square_crop(src, box), (ICON_SIZE, ICON_SIZE)).save(OUT / f"stage_{index}.png")
-    print("иконки ступеней: stage_0..stage_3")
+    print("stage icons: stage_0..stage_3")
 
 
 if __name__ == "__main__":
@@ -195,4 +195,4 @@ if __name__ == "__main__":
     make_frame_and_fill()
     make_moons()
     make_stages()
-    print("готово:", OUT)
+    print("done:", OUT)

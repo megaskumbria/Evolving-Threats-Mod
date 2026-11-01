@@ -1,7 +1,7 @@
-﻿# Агенту нельзя читать эти папки: они огромные и это не код мода.
-# .gradle — исходники Minecraft после gradlew genSources.
-# build — результат сборки. run/logs — болтливый лог игры.
-# Краш-репорт в run/crash-reports по-прежнему можно открыть, если игра упала.
+﻿# Agents must not read these folders: they are huge and not mod source code.
+# .gradle — Minecraft sources after gradlew genSources.
+# build — build output. run/logs — noisy game logs.
+# Crash reports in run/crash-reports can still be opened if the game crashed.
 
 .gradle/
 build/

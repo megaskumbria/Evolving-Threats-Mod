@@ -63,7 +63,7 @@ REPLACEMENTS = [
     ("* ** ", "/** "),
 ]
 
-CYRILLIC = re.compile(r"[А-Яа-яЁё]")
+CYRILLIC = re.compile(r"[\u0400-\u04FF]")
 
 
 def fix_discard_corruption(content: str) -> str:
