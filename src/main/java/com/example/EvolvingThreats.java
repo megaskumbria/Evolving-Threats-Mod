@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.advancement.ModAdvancements;
 import com.example.command.EvolvingThreatsCommands;
 import com.example.golem.DamagedGolem;
 import com.example.illager.IllagerPatrolEvents;
@@ -39,6 +40,7 @@ public class EvolvingThreats implements ModInitializer {
 		IllagerPatrolEvents.register();
 		SiegeEvents.register();
 		ThreatEvents.register();
+		ModAdvancements.register();
 	}
 
 	public static @NotNull Identifier id(@NotNull String path) {

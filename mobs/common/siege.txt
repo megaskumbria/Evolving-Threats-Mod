@@ -155,4 +155,6 @@ Known Limitations
 • Mobs are conducted only in loaded chunks (approximately 8–10 chunks around the player).
 • Siege mobs do not receive a constant “do not disappear” label: far from the player, they can disappear themselves.
 • A player who has spent all night in Hell will not receive a siege: portals are closed only at the entrance.
-• There are no rewards for survival and achievements yet.
+• Dawn after a real siege night grants «До рассвета» to players alive in the overworld.
+  An illager mix also grants «Чужая осада». /siege stop does not grant either.
+  Code: advancement/ModAdvancements.java

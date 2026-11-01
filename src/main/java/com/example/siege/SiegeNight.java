@@ -1,5 +1,6 @@
 package com.example.siege;
 
+import com.example.advancement.ModAdvancements;
 import com.example.siege.SiegeComposition.Faction;
 import com.example.siege.SiegeComposition.Kind;
 import com.example.threat.ThreatScale;
@@ -355,12 +356,18 @@ public final class SiegeNight {
 
 	/*Ends the siege and schedules the next one through DAYS MIN-DAYS MAX days. */
 	private static void finish(ServerLevel level, SiegeData data, long clock, boolean announceDawn) {
+		// Real night ending at dawn. /siege stop and a peaceful skip pass announceDawn = false.
+		boolean survivedNight = announceDawn && data.phase == SiegeData.PHASE_NIGHT;
+		var faction = SiegeComposition.factionOf(data.shares);
 		data.phase = SiegeData.PHASE_IDLE;
 		data.shares = new float[0];
 		scheduleNext(level, data, Math.floorDiv(clock, TICKS_PER_DAY));
 		soundStartGameTime = -1L;
 		if (announceDawn) {
 			broadcast(level, DAWN_MESSAGES, DAWN_MESSAGES_EN);
+		}
+		if (survivedNight) {
+			ModAdvancements.onSiegeDawn(level, faction);
 		}
 	}
 

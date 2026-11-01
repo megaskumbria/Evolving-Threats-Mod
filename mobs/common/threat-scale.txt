@@ -144,3 +144,12 @@ Commands (cheats / OP):
   /etraid                           — raid anchor now
 To test moon phases, use /time add (phase follows world day).
 Compare before/after: day set 0 and day set 100, then spawn a dozen zombies and skeletons.
+
+ADVANCEMENTS
+------------
+Four advancements follow this scale. Granted when the stretch ends, same days as the skull
+on the bar, plus the day the bar fills:
+  day 25 — ordinary (first phase), day 60 — goal, day 80 — goal, day 100 — challenge.
+/evolvingthreats day set grants every phase the new day has reached. Setting the day
+backward does not take them away.
+Code: advancement/ModAdvancements.java

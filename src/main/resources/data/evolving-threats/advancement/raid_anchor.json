@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:golden_hoe"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.raid_anchor.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.raid_anchor.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/raid_anchor"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

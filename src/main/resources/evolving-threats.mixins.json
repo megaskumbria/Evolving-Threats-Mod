@@ -56,6 +56,7 @@
 		"AxeShieldDisableMixin",
 		"MobSightMixin",
 		"LivingEntityMobShieldMixin",
+		"LivingEntityAdvancementMixin",
 		"MobPotionBuffMixin",
 		"MobExperienceMixin",
 		"MobPotionBuffExtraMixin",

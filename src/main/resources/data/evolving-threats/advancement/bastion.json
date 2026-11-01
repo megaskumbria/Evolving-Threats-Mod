@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:obsidian"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.bastion.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.bastion.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/bastion"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

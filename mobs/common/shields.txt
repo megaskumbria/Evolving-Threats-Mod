@@ -17,6 +17,8 @@ HOW IT WORKS
    Shield block sound plays. Fall, lava, and void are not blocked.
 5. Drowned, piglins, overseer, and raid mobs do not get shield this way.
 6. Shield drops at DROP_CHANCE (~8.5%), like armor.
+7. The shield is marked (MobShields.MOB_SHIELD_TAG). Picking it up grants «Чужой герб».
+   The mark is not visible. Shields created before the mark was added do not count.
 
 
 SETTINGS (MobShields.java)

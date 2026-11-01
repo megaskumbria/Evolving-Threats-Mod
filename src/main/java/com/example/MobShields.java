@@ -14,9 +14,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.entity.BannerPatterns;
@@ -59,6 +61,13 @@ public final class MobShields {
 	 * 1.0 = the shield always falls.
 	 */
 	public static final float DROP_CHANCE = 0.085f;
+
+	/**
+	 * Hidden mark on a shield this mod put in a mob's off hand.
+	 * Picking that shield up grants an advancement. Do not rename the text:
+	 * shields already lying in a world would stop counting.
+	 */
+	public static final String MOB_SHIELD_TAG = "EvolvingThreatsMobShield";
 
 	// ========================================================================
 
@@ -116,8 +125,33 @@ public final class MobShields {
 	}
 
 	/** Shield: random base color and {@link #PATTERN LAYERS} random flag layers. */
+	/** True if this stack is a shield a mod mob was wearing (see {@link #MOB_SHIELD_TAG}). */
+	public static boolean isMobShield(ItemStack stack) {
+		if (stack.isEmpty() || !stack.is(Items.SHIELD)) {
+			return false;
+		}
+		return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+				.copyTag()
+				.getBooleanOr(MOB_SHIELD_TAG, false);
+	}
+
+	/** True if the player is carrying such a shield in the main inventory or the off hand. */
+	public static boolean carriesMobShield(Player player) {
+		if (isMobShield(player.getOffhandItem())) {
+			return true;
+		}
+		var inventory = player.getInventory();
+		for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+			if (isMobShield(inventory.getItem(slot))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static ItemStack createShield(Mob mob, RandomSource random) {
 		ItemStack shield = new ItemStack(Items.SHIELD);
+		CustomData.update(DataComponents.CUSTOM_DATA, shield, tag -> tag.putBoolean(MOB_SHIELD_TAG, true));
 		DyeColor[] colors = DyeColor.values();
 		shield.set(DataComponents.BASE_COLOR, colors[random.nextInt(colors.length)]);
 

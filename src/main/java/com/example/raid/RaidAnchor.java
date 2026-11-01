@@ -218,6 +218,28 @@ public final class RaidAnchor {
 		mob.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(HUNT_MAX_DISTANCE);
 	}
 
+	/**
+	 * True when at least one servant of this raid is still alive near the anchor.
+	 * The advancement requires this: killing the anchor after the servants are already
+	 * dead does not count. Only loaded mobs are found (same box as {@link #disbandRaidNear}).
+	 */
+	public static boolean hasLivingMinion(ServerLevel level, UUID raidId, Vec3 center) {
+		if (raidId == null) {
+			return false;
+		}
+		double boxSize = HUNT_MAX_DISTANCE + 48;
+		var box = new net.minecraft.world.phys.AABB(center, center).inflate(boxSize);
+		for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, box)) {
+			if (!entity.isAlive() || !(entity instanceof RaidParticipantEntity raid)) {
+				continue;
+			}
+			if (raid.evolvingthreats$isRaidMinion() && raidId.equals(raid.evolvingthreats$getRaidId())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** Called when an anchor dies: slowness on minions, GPS off, targets cleared. */
 	public static void disbandRaidNear(ServerLevel level, UUID raidId, Vec3 center) {
 		RaidRegistry.unregister(raidId);

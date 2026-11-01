@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:phase_3",
+  "display": {
+    "icon": {
+      "id": "minecraft:golden_helmet"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.phase_4.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.phase_4.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 500,
+    "loot": [
+      "evolving-threats:advancement/phase_4"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

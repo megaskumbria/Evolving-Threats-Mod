@@ -49,6 +49,7 @@ Paths in the table are under `src/main/java/com/example/`.
 |--------|------------|-------------|
 | Threat scale (day 0–100, moon, growing chances) | `threat/ThreatScale.java`, `threat/ThreatTable.java`, `ThreatData`/`ThreatEvents` | `mobs/common/threat-scale.txt`, `mobs.txt`, `idea.txt` |
 | Threat HUD | `src/client/.../ThreatHud.java`, `tools/prepare_threat_textures.py`, `art/threat_hud/` | — |
+| Advancements tab | `advancement/ModAdvancements.java` | icons and rewards in `data/evolving-threats/advancement`, item rewards in `data/evolving-threats/loot_table/advancement`, names in lang |
 | Random weapons / dual wield | `RandomWeapons.java` | `mobs/common/dual-wield.txt` |
 | Random / dyed leather armor | `RandomArmor.java` | `mobs/common/dyed-leather-armor.txt` |
 | Full armor set | `RandomArmor.java` (`FULL_SET_CHANCE`) | `mobs/common/full-armor-set.txt` |

@@ -1,10 +1,12 @@
 package com.example.mirror;
 
 import com.example.MobNames;
+import com.example.advancement.ModAdvancements;
 import com.example.entity.MirrorEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -106,6 +108,10 @@ public final class Mirror {
 				|| source.is(DamageTypeTags.IS_FIRE)
 				|| source.is(DamageTypes.THORNS)) {
 			return;
+		}
+		// Melee only, and the hit already landed. Arrows were rejected above.
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onMirrorMelee(serverPlayer);
 		}
 		reflecting = true;
 		try {

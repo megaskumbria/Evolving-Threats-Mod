@@ -1,0 +1,30 @@
+{
+  "parent": "evolving-threats:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:shield"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.mob_shield.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.mob_shield.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 25
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

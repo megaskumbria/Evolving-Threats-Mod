@@ -3,10 +3,14 @@ package com.example.client.threat;
 import com.example.EvolvingThreats;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatStartPayload;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import com.example.threat.ThreatTable;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -20,6 +24,9 @@ import net.minecraft.world.level.Level;
  * <p>Nothing comes from the server: the client counts the day and phase of the moon by itself according to the time of the world,
  * which the game already sends ({@link ThreatScale}). No signatures with the number of days — only pictures.
  * Pictures are in assets/evolving-threats/textures/gui/sprites/threat/ (makes tools/prepare_threat_textures.py).
+ *
+ * <p>The player can hide and show the pictures with a key (default H).
+ * Rebind it in Options → Controls → Evolving Threats. Hiding the pictures does not pause the scale.
  */
 public final class ThreatHud {
 
@@ -49,7 +56,20 @@ public final class ThreatHud {
 	/** Do not draw the scale while the debug screen (F3) is open: it occupies just the left top. */
 	public static final boolean HIDE_WHEN_DEBUG_OPEN = true;
 
+	/**
+	 * Default key that hides and shows the scale. 11 = H.
+	 * The player changes it in Options → Controls → Evolving Threats; that choice is remembered.
+	 * This number is used for a new options file, and when that row is reset.
+	 * Letters run A=4 … Z=29 (J=13, K=14). 0 = no key until the player binds one.
+	 */
+	public static final int DEFAULT_TOGGLE_KEY = InputConstants.KEY_H;
+
 	// ========================================================================
+
+	/** false after the player hides the scale. Starts visible every time the game launches. */
+	private static boolean shown = true;
+
+	private static KeyMapping toggleKey;
 
 	// Image sizes. Must match the files (tools/prepare_threat_textures.py writes them at startup).
 	private static final int ICON_SIZE = 16;
@@ -76,13 +96,31 @@ public final class ThreatHud {
 		if (!ENABLED) {
 			return;
 		}
+		// Category name on screen: key.category.evolving-threats.threat
+		KeyMapping.Category category = KeyMapping.Category.register(EvolvingThreats.id("threat"));
+		toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+				"key.evolving-threats.toggle_threat_hud",
+				InputConstants.Type.KEYBOARD,
+				DEFAULT_TOGGLE_KEY,
+				category));
+		ClientTickEvents.END_CLIENT_TICK.register(ThreatHud::onClientTick);
 		HudElementRegistry.addLast(EvolvingThreats.id("threat_bar"), ThreatHud::draw);
+	}
+
+	/** One press hides the scale, the next press shows it. Does nothing while a menu is open. */
+	private static void onClientTick(Minecraft client) {
+		while (toggleKey.consumeClick()) {
+			shown = !shown;
+		}
 	}
 
 	private static void draw(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Level level = minecraft.level;
 		if (level == null || minecraft.player == null) {
+			return;
+		}
+		if (!shown) {
 			return;
 		}
 		if (HIDE_WHEN_DEBUG_OPEN && minecraft.getDebugOverlay().showDebugScreen()) {

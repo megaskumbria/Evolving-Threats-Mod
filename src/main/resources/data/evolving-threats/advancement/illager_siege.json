@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:until_dawn",
+  "display": {
+    "icon": {
+      "id": "minecraft:crossbow"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.illager_siege.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.illager_siege.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/illager_siege"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}
