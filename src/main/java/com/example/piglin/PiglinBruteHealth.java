@@ -9,7 +9,7 @@ import net.minecraft.world.entity.monster.piglin.PiglinBrute;
  */
 public final class PiglinBruteHealth {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — снова 50, как в обычной игре. */
 	public static final boolean ENABLED = true;

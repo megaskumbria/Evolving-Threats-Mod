@@ -20,7 +20,7 @@ import net.minecraft.world.item.component.DyedItemColor;
  */
 public final class RandomArmor {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/**
 	 * Шанс (0.0–1.0) для КАЖДОГО слота брони у зомби на 100-й день (конец шкалы угрозы).
@@ -171,7 +171,7 @@ public final class RandomArmor {
 		return true;
 	}
 
-	/** РАСТЁТ: шанс слота между ThreatTable.ARMOR_PIECE_CHANCE_START (день 0) и {@code endChance} (день 100). */
+	/** GROWING: шанс слота между ThreatTable.ARMOR_PIECE_CHANCE_START (день 0) и {@code endChance} (день 100). */
 	private static float pieceChance(Mob mob, float endChance) {
 		return ThreatScale.lerp(mob.level(), ThreatTable.ARMOR_PIECE_CHANCE_START, endChance);
 	}

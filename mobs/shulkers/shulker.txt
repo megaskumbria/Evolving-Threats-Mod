@@ -26,7 +26,7 @@
 Молоко снимает левитацию, замедление и слабость.
 
 
-НАСТРОЙКИ (ShulkerThreats.java)
+SETTINGS (ShulkerThreats.java)
 -------------------------------
 ENABLED — false возвращает обычных шалкеров.
 SLOWNESS_CHANCE — 0.12 = 12% шалкеров с замедлением. 0 = нет.
@@ -66,7 +66,7 @@ TELEPORT_MIN_BLOCKS / TELEPORT_MAX_BLOCKS — дальность, 3 и 5 бло�
    Игрок в творческом режиме прочность не теряет.
 
 
-НАСТРОЙКИ (ShulkerShellDurability.java)
+SETTINGS (ShulkerShellDurability.java)
 ---------------------------------------
 ENABLED — false панцирь снова ничего не портит.
 HIT_CHANCE — 0.05 = 5% на удар. 0 = никогда. 1 = каждый удар по закрытому панцирю.

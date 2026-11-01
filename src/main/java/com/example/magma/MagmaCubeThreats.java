@@ -21,7 +21,7 @@ import net.minecraft.world.level.gamerules.GameRules;
  */
 public final class MagmaCubeThreats {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — куб снова как в обычной игре: без огня, магмы и перегрева, со своими цифрами. */
 	public static final boolean ENABLED = true;

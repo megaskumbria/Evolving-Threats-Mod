@@ -14,11 +14,11 @@ import net.minecraft.world.item.Items;
  */
 public final class RandomDispenserSkull {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/**
 	 * Шанс (0.0–1.0), что у скелета на голове будет раздатчик, на 100-й день
-	 * (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.02 = 2%.
+	 * (GROWING: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.02 = 2%.
 	 */
 	public static final float SKELETON_DISPENSER_HEAD_CHANCE = 0.02f;
 

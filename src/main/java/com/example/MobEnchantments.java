@@ -38,7 +38,7 @@ import java.util.List;
  */
 public final class MobEnchantments {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — мобы не получают чар (оружие по-прежнему выдаётся как раньше). */
 	public static final boolean ENABLED = true;
@@ -47,7 +47,7 @@ public final class MobEnchantments {
 	 * ВАЖНО про шансы ниже: это значения на 100-й день (КОНЕЦ шкалы угрозы).
 	 * В начале игры шанс намного меньше (ThreatTable.WEAPON_ENCHANT_CHANCE_START / ARMOR_ENCHANT_CHANCE_START)
 	 * и плавно растёт вместе со шкалой и луной. Так же растут число чар и их уровни.
-	 * Механики с меткой ФИКС (парящий инструмент, капитан, рейд, ритуалы) растут не должны: они зовут
+	 * Механики с меткой FIXED (парящий инструмент, капитан, рейд, ритуалы) растут не должны: они зовут
 	 * rollHeldWeapons / rollArmorPieces со своим шансом, и там остаются ваши прежние числа (COUNT_WEIGHTS и LEVEL_BIAS_FIXED).
 	 */
 
@@ -107,7 +107,7 @@ public final class MobEnchantments {
 	public static final double LEVEL_BIAS = -0.3;
 
 	/**
-	 * Тот же уклон для механик с меткой ФИКС (парящий инструмент, капитан, рейд, ритуальные группы):
+	 * Тот же уклон для механик с меткой FIXED (парящий инструмент, капитан, рейд, ритуальные группы):
 	 * они от шкалы не зависят, поэтому остаются на прежних 2.0. См. описание LEVEL_BIAS.
 	 */
 	public static final double LEVEL_BIAS_FIXED = 2.0;
@@ -207,13 +207,13 @@ public final class MobEnchantments {
 	/**
 	 * Шанс отдельно на каждый кусок брони. 0.45 = 45% на шлем, отдельно 45% на нагрудник и так далее.
 	 * 0 = броня без чар. 1 = зачарован каждый кусок.
-	 * Для механик с меткой ФИКС (капитан, рейд, ритуал): шанс и уровни от шкалы угрозы не зависят.
+	 * Для механик с меткой FIXED (капитан, рейд, ритуал): шанс и уровни от шкалы угрозы не зависят.
 	 */
 	public static void rollArmorPieces(Mob mob, float chancePerPiece) {
 		rollForArmor(mob, chancePerPiece, false);
 	}
 
-	/** Шанс отдельно на каждый предмет в руках. 0 = оружие без чар. От шкалы угрозы не зависит (метка ФИКС). */
+	/** Шанс отдельно на каждый предмет в руках. 0 = оружие без чар. От шкалы угрозы не зависит (метка FIXED). */
 	public static void rollHeldWeapons(Mob mob, float chancePerItem) {
 		rollForHeldItems(mob, chancePerItem, false);
 	}
@@ -221,7 +221,7 @@ public final class MobEnchantments {
 	/**
 	 * Бросает шанс отдельно для каждого куска брони. Особые «головы» (спавнер, тыква, раздатчик) не трогает.
 	 *
-	 * @param growing true — {@code chance} это значение на 100-й день, в начале игры оно меньше (РАСТЁТ)
+	 * @param growing true — {@code chance} это значение на 100-й день, в начале игры оно меньше (GROWING)
 	 */
 	private static void rollForArmor(Mob mob, float chance, boolean growing) {
 		if (!ENABLED || chance <= 0.0f) {
@@ -303,7 +303,7 @@ public final class MobEnchantments {
 			return false;
 		}
 
-		// РАСТЁТ: и число чар, и их уровни зависят от шкалы угрозы. ФИКС: прежние значения.
+		// GROWING: и число чар, и их уровни зависят от шкалы угрозы. FIXED: прежние значения.
 		int[] endCounts = armor ? ARMOR_COUNT_WEIGHTS : COUNT_WEIGHTS;
 		int wanted;
 		double levelBias;

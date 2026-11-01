@@ -27,7 +27,7 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
  */
 public final class MobExperience {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — опыт как в обычной игре. */
 	public static final boolean ENABLED = true;
@@ -35,7 +35,7 @@ public final class MobExperience {
 	/**
 	 * Во сколько раз больше опыта. 2 = вдвое: голый зомби даёт 10 вместо 5.
 	 * 1 = как без мода. 3 = втрое, голый даёт 15.
-	 * ФИКС: от дня и шкалы угрозы не растёт. Здоровье моба на это число не влияет.
+	 * FIXED: от дня и шкалы угрозы не растёт. Здоровье моба на это число не влияет.
 	 */
 	public static final int MULTIPLIER = 2;
 

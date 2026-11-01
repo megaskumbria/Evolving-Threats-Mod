@@ -19,7 +19,7 @@
 6. Щит падает с шансом DROP_CHANCE (около 8.5%), как броня.
 
 
-НАСТРОЙКИ (MobShields.java)
+SETTINGS (MobShields.java)
 ---------------------------
   ENABLED ............. true
   SPAWN_CHANCE ........ 0.25 — шанс щита (25%)

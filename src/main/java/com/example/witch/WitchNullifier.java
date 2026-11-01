@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 public final class WitchNullifier {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — такие ведьмы не появляются, и белое зелье ничего не снимает. */
 	public static final boolean ENABLED = true;

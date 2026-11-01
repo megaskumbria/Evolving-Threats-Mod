@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class PhantomThreats {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — укус и размер стаи как в обычной игре. */
 	public static final boolean ENABLED = true;

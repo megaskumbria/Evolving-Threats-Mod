@@ -22,7 +22,7 @@ import java.util.List;
  */
 public final class RavagerWallBreak {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — стены не пробивает, ходит как в обычной игре. */
 	public static final boolean ENABLED = true;

@@ -20,94 +20,94 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Обычный с виду крипер, но вокруг него всегда кружатся частицы зелья скорости.
- * По ним его узнают заранее: после рывка реагировать уже некогда.
- * Частицы — только картинка, само зелье не даётся и быстрее от них он не бежит.
- * Пока игрок далеко, скорость и шипение как у ванильного.
- * Где-то за 6–7 блоков маскировка срывается: он бежит как супербыстрый и шипит полсекунды.
- * Ника нет. Подрывником, метателем динамита и супербыстрым сразу не бывает.
- * Заряженным и ломателем щита быть может.
+ * Looks like a normal creeper, but speed potion particles always swirl around it.
+ * That is how you spot it early: after the burst there is no time to react.
+ * Particles are visual only — no real potion effect and no extra speed from them.
+ * While the player is far away, speed and fuse match vanilla.
+ * At about 6–7 blocks the disguise drops: it runs like the super-fast creeper and hisses for half a second.
+ * No custom name. Never sapper, dynamite thrower, or super-fast at spawn.
+ * Can still be charged or a shield-breaker.
  */
 public final class FeintCreeper {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие криперы не появляются, команда тоже не спавнит. */
+	/** Enable the mechanic. false — no feint creepers, command spawn disabled too. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный крипер окажется обманкой. 0.003 = 0,3%.
-	 * ФИКС: с первого дня, от шкалы угрозы и луны не зависит.
-	 * Реже супербыстрого (у того 3%). 0 = только команда. 1 = каждый крипер такой.
-	 * Команда этот шанс не бросает.
+	 * Chance (0.0–1.0) that a normal creeper is a feint. 0.003 = 0.3%.
+	 * FIXED: from day 0, does not scale with threat or moon.
+	 * Rarer than super-fast (that one is 3%). 0 = command only. 1 = every creeper.
+	 * Command does not roll this chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.003f;
 
 	/**
-	 * Ближний край зоны, где маскировка срывается. В блоках.
-	 * Каждый такой крипер один раз выбирает свою дистанцию между этим числом и TRIGGER_MAX.
-	 * 6 = рывок почти вплотную. Меньше 3 бессмысленно: обычный крипер и так начинает шипеть около 3 блоков.
+	 * Inner edge of the reveal zone, in blocks.
+	 * Each feint picks one distance between this and TRIGGER_MAX once.
+	 * 6 = burst almost in melee. Below 3 is pointless: vanilla already starts hissing around 3 blocks.
 	 */
 	public static final float TRIGGER_MIN = 6.0f;
 
 	/**
-	 * Дальний край зоны срыва. В блоках. 7 = как граница, на которой обычный крипер ещё не тушит шипение.
-	 * 6 и 7 вместе: «где-то за 6–7 блоков». Оба равны — дистанция всегда одна и та же.
+	 * Outer edge of the reveal zone, in blocks. 7 = like the range where vanilla still keeps hissing.
+	 * 6 and 7 together: “somewhere around 6–7 blocks”. Equal values = always the same distance.
 	 */
 	public static final float TRIGGER_MAX = 7.0f;
 
 	/**
-	 * Скорость после срыва. У обычного крипера 0.25 — спринт от него уходит.
-	 * 0.50 = как у супербыстрого: по прямой догоняет и спринт, и прыжки в спринте.
-	 * Меняй только здесь. Супербыстрый (FastCreeper.CHASE_SPEED) от этого числа не зависит.
+	 * Speed after reveal. Vanilla creeper is 0.25 — sprint outruns that.
+	 * 0.50 = same as super-fast: catches sprint and sprint-jumps on flat ground.
+	 * Change only here. Super-fast (FastCreeper.CHASE_SPEED) does not use this value.
 	 */
 	public static final double CHASE_SPEED = 0.50;
 
 	/**
-	 * Скорость, пока маскировка держится. 0.25 = обычный крипер.
-	 * Пока игрок дальше зоны срыва, обманка от него не отличается.
+	 * Speed while disguised. 0.25 = normal creeper.
+	 * While the player is outside the reveal zone, feint looks the same as vanilla.
 	 */
 	public static final double CALM_SPEED = 0.25;
 
 	/**
-	 * Сколько секунд шипит после срыва. 0.5 = полсекунды, как у супербыстрого.
-	 * Сила взрыва та же. За полсекунды отбежать почти не успеть.
-	 * 0 и меньше игра считает как один миг.
+	 * Hiss duration after reveal, in seconds. 0.5 = half a second, like super-fast.
+	 * Explosion power unchanged. Half a second is barely enough to run.
+	 * 0 or less counts as one tick in the game.
 	 */
 	public static final float FUSE_SECONDS = 0.5f;
 
 	/**
-	 * Сколько секунд шипит, пока притворяется обычным. 1.5 = ванильный крипер.
-	 * Огниво издалека, до срыва маскировки, даёт это длинное шипение.
+	 * Hiss length while pretending to be normal. 1.5 = vanilla creeper.
+	 * Flint and steel from far away, before reveal, uses this long fuse.
 	 */
 	public static final float CALM_FUSE_SECONDS = 1.5f;
 
 	/**
-	 * true — после первого срыва он уже не притворяется: быстрый и с коротким шипением до конца жизни,
-	 * даже если игрок отбежал. Отойти на шаг и снова сделать его медленным нельзя.
-	 * false — быстрый только пока игрок внутри зоны 6–7 блоков. Отошёл дальше и шипение погасло —
-	 * снова обычный, следующая встреча опять обманка.
+	 * true — after the first reveal it never disguises again: fast with short fuse for life,
+	 * even if the player runs away. Stepping back cannot make it slow again.
+	 * false — fast only while the player is inside the 6–7 block zone. Run away and hiss stops —
+	 * slow again; next meeting is another feint act.
 	 */
 	public static final boolean KEEP_BURST = true;
 
 	/**
-	 * Частицы зелья скорости вокруг обманки. true — видны всё время, и пока она ещё идёт медленно.
-	 * Так её можно узнать до рывка. false — снова неотличима от обычного крипера.
-	 * Это не зелье: скорость остаётся {@link #CALM_SPEED}, пока маскировка не сорвалась.
-	 * Отдельное зелье скорости при появлении (MobPotionBuffs) по-прежнему может ускорить рывок.
+	 * Speed potion particles around the feint. true — visible all the time, even while still slow.
+	 * Spot it before the burst. false — indistinguishable from a normal creeper.
+	 * Not a real potion: speed stays {@link #CALM_SPEED} until reveal.
+	 * Spawn potion buffs (MobPotionBuffs) can still speed up the burst separately.
 	 */
 	public static final boolean SPEED_PARTICLES = true;
 
 	/**
-	 * Как часто сыпать одну частицу, в тиках. У моба с выпитым зельем игра делает это
-	 * примерно раз в 4 тика — издалека почти не разглядеть. 2 = чуть гуще, обманку видно заранее.
-	 * 1 = каждый тик, облако плотнее. 0 и меньше — частиц нет, как при SPEED_PARTICLES = false.
+	 * How often to spawn one particle, in ticks. A mob with real speed potion does this about every 4 ticks —
+	 * hard to see from far away. 2 = slightly denser, feint visible early.
+	 * 1 = every tick, thicker cloud. 0 or less — no particles, same as SPEED_PARTICLES = false.
 	 */
 	public static final int SPEED_PARTICLE_EVERY_TICKS = 2;
 
 	// ========================================================================
 
-	/** Цвет и вид частицы — те же, что у выпитого зелья скорости. Считается один раз. */
+	/** Particle color/type — same as drank speed potion. Computed once. */
 	private static ParticleOptions speedParticle;
 
 	private FeintCreeper() {
@@ -119,7 +119,7 @@ public final class FeintCreeper {
 				&& data.evolvingthreats$isFeintCreeper();
 	}
 
-	/** Конец появления крипера. Командный спавн шанс не бросает: флаг ставят заранее. */
+	/** End of creeper spawn. Command spawn skips the roll: flag is set beforehand. */
 	public static void rollOnSpawn(Creeper creeper, EntitySpawnReason reason) {
 		if (!ENABLED || !(creeper instanceof FeintCreeperEntity data)) {
 			return;
@@ -128,7 +128,7 @@ public final class FeintCreeper {
 			ensureDistance(creeper);
 			return;
 		}
-		// Подрывник и метатель догоняют по-своему. Супербыстрый быстрый сразу, маскировки у него нет.
+		// Sapper and thrower chase their own way. Super-fast is fast immediately, no disguise.
 		if (creeper instanceof SapperCreeperEntity sapper && sapper.evolvingthreats$isSapperCreeper()) {
 			return;
 		}
@@ -149,10 +149,10 @@ public final class FeintCreeper {
 	}
 
 	/**
-	 * Каждый тик на сервере. Далеко — обычные скорость и шипение.
-	 * Игрок вошёл в зону — рывок и шипение полсекунды.
-	 * Шипение по-прежнему начинается вплотную (около 3 блоков), как у обычного крипера:
-	 * на 6–7 блоках взрыв ещё не достаёт, поэтому там только разгон.
+	 * Every server tick. Far away — normal speed and fuse.
+	 * Player enters the zone — burst and half-second fuse.
+	 * Hiss still starts up close (~3 blocks) like vanilla:
+	 * at 6–7 blocks the blast does not reach yet, so only the sprint happens there.
 	 */
 	public static void tick(Creeper creeper) {
 		if (!isFeint(creeper) || creeper.level().isClientSide()) {
@@ -174,7 +174,7 @@ public final class FeintCreeper {
 		spawnSpeedParticles(creeper);
 	}
 
-	/** Команда: обманка перед игроком. Пока до зоны далеко, идёт как обычный. null — механика выключена. */
+	/** Command: feint in front of the player. Far from the zone it walks like normal. null if disabled. */
 	public static @Nullable Creeper spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -205,8 +205,8 @@ public final class FeintCreeper {
 		if (KEEP_BURST) {
 			return data.evolvingthreats$isFeintRevealed();
 		}
-		// Без «запомнить рывок»: короткий запал держится, пока шипение не погасло,
-		// иначе отбежать на шаг во время шипения растянуло бы его обратно до 1,5 секунды.
+		// Without “remember burst”: short fuse while hissing,
+		// otherwise stepping back mid-hiss would stretch fuse back to 1.5s.
 		return close || (isHissing(creeper) && isShortFuse(creeper));
 	}
 
@@ -221,9 +221,9 @@ public final class FeintCreeper {
 	}
 
 	/**
-	 * Те же голубые завитки, что у зелья скорости. Зелье на крипера не вешается,
-	 * поэтому спокойная скорость 0.25 от частиц не меняется.
-	 * Видно примерно на 32 блока — дальше игра такие частицы не рисует.
+	 * Same blue swirls as speed potion. No effect on the creeper,
+	 * so calm speed 0.25 is unchanged by particles.
+	 * Visible to about 32 blocks — the game does not render these farther.
 	 */
 	private static void spawnSpeedParticles(Creeper creeper) {
 		if (!SPEED_PARTICLES || SPEED_PARTICLE_EVERY_TICKS <= 0 || !creeper.isAlive()) {
@@ -235,7 +235,7 @@ public final class FeintCreeper {
 		if (!(creeper.level() instanceof ServerLevel level)) {
 			return;
 		}
-		// count = 0: одна частица точно в этой точке, скорости 1,1,1 — как у зелья на мобе.
+		// count = 0: one particle at this spot, velocity 1,1,1 — like potion on a mob.
 		level.sendParticles(
 				speedParticle(),
 				creeper.getRandomX(0.5),
@@ -252,7 +252,7 @@ public final class FeintCreeper {
 
 	private static ParticleOptions speedParticle() {
 		if (speedParticle == null) {
-			// ambient = false: яркие частицы, как у выпитого зелья, а не тусклые от маяка.
+			// ambient = false: bright particles like drank potion, not beacon dim ones.
 			MobEffectInstance effect = new MobEffectInstance(MobEffects.SPEED, 1, 0, false, true, false);
 			speedParticle = MobEffects.SPEED.value().createParticleOptions(effect);
 		}
@@ -294,8 +294,8 @@ public final class FeintCreeper {
 	}
 
 	/**
-	 * Длина шипения. Если крипер уже шипит, оставшаяся доля времени сохраняется:
-	 * смена запала не взрывает его в тот же тик и не обнуляет шипение.
+	 * Fuse length. If already hissing, remaining fraction is kept:
+	 * changing max fuse does not explode same tick or reset hiss to zero.
 	 */
 	private static void setFuse(Creeper creeper, int ticks) {
 		if (!(creeper instanceof CreeperFuseAccessor fuse)) {
@@ -325,7 +325,7 @@ public final class FeintCreeper {
 				&& fuse.evolvingthreats$getMaxSwell() <= fuseTicks(FUSE_SECONDS);
 	}
 
-	/** Тики шипения. 20 тиков = 1 секунда. 0.5 секунды = 10 тиков. */
+	/** Fuse ticks. 20 ticks = 1 second. 0.5 seconds = 10 ticks. */
 	private static int fuseTicks(float seconds) {
 		return Math.max(1, Math.round(seconds * 20.0f));
 	}

@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class EndermanSwap {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — обмена и вытаскивания из воды нет. Обычный телепорт эндермена остаётся. */
 	public static final boolean ENABLED = true;

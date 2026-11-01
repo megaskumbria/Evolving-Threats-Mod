@@ -27,7 +27,7 @@ import java.util.Optional;
  */
 public final class WitchInvisibility {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — ведьма больше не пьёт невидимость. Уже выпитое до конца срока само спадёт. */
 	public static final boolean ENABLED = true;

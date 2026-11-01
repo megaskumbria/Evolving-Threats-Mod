@@ -1,73 +1,73 @@
-# Инструкция для AI-агентов (Cursor и др.)
+# Instructions for AI agents (Cursor, etc.)
 
-Проект: **Evolving Threats** — Fabric-мод для Minecraft.  
-Автор **учится** и хочет **сам менять баланс и поведение**, не разбираясь глубоко в Java.
+Project: **Evolving Threats** — Fabric mod for Minecraft.  
+The author is * * learning * * and wants to ** change the balance and behavior** himself, without understanding Java deeply.
 
-## Главное правило
+The principal rule:
 
-**Всегда оставляй пояснения в коде**, как в `src/main/java/com/example/RandomWeapons.java`:
+**Always leave explanations in the code** as in `src/main/java/com/example/RandomWeapons.java`:
 
-- блок **«НАСТРОЙКИ»** в начале класса с `public static final` и комментариями на русском;
-- что меняется, если увеличить/уменьшить число;
-- для шансов явно писать формат `0.0–1.0` и пример в процентах.
+- block **"SETTINGS"** at the beginning of the class with `public static final` and comments in Russian;
+- what changes if you increase/decrease the number;
+- for chances to explicitly write the format `0.0–1.0` and the example as a percentage.
 
-Агент **не должен** сливать всю логику в mixin без комментариев и без вынесенных констант.
+The agent ** should not ** merge all the logic in mixin without comments and without the constants taken out.
 
-## Новый моб или новая способность: ВСЕГДА спрашивай про шкалу угрозы
+## New mob or new ability: ALWAYS ask about the threat scale
 
-В моде есть шкала нарастающей сложности (`threat/ThreatScale.java`, описание для автора — `mobs/common/шкала-угрозы.txt`).
-Каждая механика относится к одному из четырёх типов, и **выбирает тип только автор**.
+In fashion, there is a scale of increasing complexity (`threat/ThreatScale.java`, description for the author — `mobs/common/threat-scale.txt`).
+Each mechanic belongs to one of four types, and ** only the author * * chooses the type.
 
-Когда придумываешь или добавляешь нового моба, способность, предмет мобу, шанс спавна или событие:
+When you invent or add a new mob, ability, mob item, spawn chance, or event:
 
 1. **Не решай сам**, как его привязать к шкале. Спроси автора (`AskQuestion`, по одному вопросу, по-русски, простым языком).
 2. Предложи варианты и **свою рекомендацию** с короткой причиной (что изменится в игре):
-   - **ФИКС** — шанс всегда такой, как записан в коде, от дней не зависит.
-   - **ФИКС + «С N-го дня»** — до дня N механики нет совсем, потом шанс фиксированный (пороги в `threat/ThreatTable.java`).
-   - **РАСТЁТ** — шанс плавно растёт от стартового значения в день 0 до значения в коде в день 100, на него влияет луна.
-   - **РАСТЁТ + «С N-го дня»** — комбинация: нет до дня N, потом растёт.
-3. Если выбрано РАСТЁТ — уточни стартовое значение (или предложи по умолчанию через `ThreatScale.dangerousChance`
+   - **FIXED** — шанс всегда такой, как записан в коде, от дней не зависит.
+   - **FIXED + «С N-го дня»** — до дня N механики нет совсем, потом шанс фиксированный (пороги в `threat/ThreatTable.java`).
+   - **GROWING** — шанс плавно растёт от стартового значения в день 0 до значения в коде в день 100, на него влияет луна.
+   - **GROWING + «С N-го дня»** — комбинация: нет до дня N, потом растёт.
+3. Если выбрано GROWING — уточни стартовое значение (или предложи по умолчанию через `ThreatScale.dangerousChance`
    / `growingChance` и `ThreatTable.DANGEROUS_START_RATIO`) и вынеси его в `ThreatTable` с комментарием.
 4. Если выбрано «С N-го дня» — добавь константу дня в `ThreatTable` и проверяй её через `ThreatScale.reached(level, ThreatTable.XXX_DAY)`.
 5. Если автор не знает ответа — возьми рекомендованный вариант, вынеси числа в именованные константы и **явно напиши в ответе, что это допущение**.
-6. После реализации обнови `mobs.txt` (метка ФИКС/РАСТЁТ у новой строки) и, если нужно, `mobs/common/шкала-угрозы.txt`.
+6. После реализации обнови `mobs.txt` (метка FIXED/GROWING у новой строки) и, если нужно, `mobs/common/threat-scale.txt`.
 
-Не оставляй новую механику «без метки»: по умолчанию шкалу не применяй молча, всегда уточняй.
+Do not leave the new mechanics "unmarked": by default, do not apply the scale silently, always clarify.
 
-## Куда смотреть
+Where do I look?
 
-Одна задача — одна строка таблицы ниже. Поведение одной сущности собрано разделами в одном файле папки (`mobs/zombies/zombie.txt` и так далее). Общее для многих мобов, осада и шкала угрозы — отдельные файлы в `mobs/common/`. В заметке строка «Код:» уже перечисляет миксины. Папку `mixin/` целиком не обходить.
+One task — one row of the table below. The behavior of one entity is collected by sections in one folder file (`mobs/zombies/zombie.txt` and so on). Common to many mobs, the siege and threat scale are separate files in `mobs/common/`. In the note, the "Code:" line already lists myxins. The `mixin/` folder is not completely bypassed.
 
-`entity/` и `entity/ai/` открывать только если класс механики ссылается на конкретный файл. `src/client` — только если задача про внешний вид.
+`entity/` and `entity/ai/` open only if the mechanics class refers to a specific file. `src/client` — only if the task is about appearance.
 
-Не читать `.gradle/`, `build/`, `run/logs/` (они в `.cursorignore`). `.\gradlew` не запускать и логи не вытаскивать, пока автор сам не попросил. Исходники Minecraft не открывать пачкой.
+Do not read `.gradle/`, `build/`, `run/logs/` (they are in `.cursorignore'). `.\gradlew` do not run and do not pull out the logs until the author himself asked. Do not open Minecraft sources in a pack.
 
-Пути в таблице — от `src/main/java/com/example/`.
+The paths in the table are from `src/main/java/com/example/`.
 
-### Общее для многих мобов
+### Common to many mobs
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
-| Шкала угрозы мира (день 0–100, луна, рост шансов) | `threat/ThreatScale.java` (формула; дни считаются от момента установки мода в мир — `ThreatData`/`ThreatEvents`), `threat/ThreatTable.java` (дни-пороги и стартовые значения) | `mobs/common/шкала-угрозы.txt` (описание для автора), `mobs.txt` (метки ФИКС/РАСТЁТ), `идея.txt` |
+| Шкала угрозы мира (день 0–100, луна, рост шансов) | `threat/ThreatScale.java` (формула; дни считаются от момента установки мода в мир — `ThreatData`/`ThreatEvents`), `threat/ThreatTable.java` (дни-пороги и стартовые значения) | `mobs/common/threat-scale.txt` (описание для автора), `mobs.txt` (метки FIXED/GROWING), `idea.txt` |
 | Шкала угрозы на экране (HUD) | `src/client/.../client/threat/ThreatHud.java`, картинки делает `tools/prepare_threat_textures.py` из `art/threat_hud/` | — |
-| Случайное оружие и два оружия | `RandomWeapons.java` | `mobs/common/два-оружия.txt` |
-| Случайная и крашеная кожаная броня | `RandomArmor.java` | `mobs/common/крашеная-кожаная-броня.txt` |
-| Полный комплект брони | `RandomArmor.java` (`FULL_SET_CHANCE`) | `mobs/common/полный-комплект-брони.txt` |
-| Чары на оружии и броне | `MobEnchantments.java` | `mobs/common/чары-на-оружии.txt` |
-| Щиты | `MobShields.java` | `mobs/common/щиты.txt` |
-| Топор сбивает щит | `axe/AxeShieldDisable.java` | `mobs/common/топор-сбивает-щит.txt` |
-| Дальность взгляда | `sight/MobSight.java` | `mobs/common/дальность-взгляда.txt` |
-| Тотем бессмертия | `MobTotem.java` | `mobs/common/тотем-бессмертия.txt` |
-| Зелья при появлении | `MobPotionBuffs.java` | `mobs/common/бафы-зелий.txt` |
-| Случайное здоровье | `MobHealth.java` | `mobs/common/случайное-здоровье.txt` |
-| Опыт за убийство усиленных | `MobExperience.java` | `mobs/common/опыт-за-убийство.txt` |
-| Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/парящий-инструмент.txt` |
+| Случайное оружие и два оружия | `RandomWeapons.java` | `mobs/common/dual-wield.txt` |
+| Случайная и крашеная кожаная броня | `RandomArmor.java` | `mobs/common/dyed-leather-armor.txt` |
+| Полный комплект брони | `RandomArmor.java` (`FULL_SET_CHANCE`) | `mobs/common/full-armor-set.txt` |
+| Чары на оружии и броне | `MobEnchantments.java` | `mobs/common/enchantments-on-gear.txt` |
+| Щиты | `MobShields.java` | `mobs/common/shields.txt` |
+| Топор сбивает щит | `axe/AxeShieldDisable.java` | `mobs/common/axe-disables-shield.txt` |
+| Дальность взгляда | `sight/MobSight.java` | `mobs/common/sight-range.txt` |
+| Тотем бессмертия | `MobTotem.java` | `mobs/common/totem-of-undying.txt` |
+| Зелья при появлении | `MobPotionBuffs.java` | `mobs/common/potion-buffs.txt` |
+| Случайное здоровье | `MobHealth.java` | `mobs/common/random-health.txt` |
+| Опыт за убийство усиленных | `MobExperience.java` | `mobs/common/kill-experience.txt` |
+| Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/floating-tool.txt` |
 | Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/golem.txt` |
-| Бастион (зомби или скелет) | `bastion/Bastion.java` | `mobs/common/бастион.txt` |
+| Бастион (зомби или скелет) | `bastion/Bastion.java` | `mobs/common/bastion.txt` |
 | Spiky (укол брони на 7–8 сердец) | `spiky/Spiky.java` | `mobs/common/spiky.txt` |
-| Зеркало (возврат удара) | `mirror/Mirror.java` | `mobs/common/зеркало.txt` |
+| Зеркало (возврат удара) | `mirror/Mirror.java` | `mobs/common/mirror.txt` |
 
-### Скелеты
+Skeletons
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
@@ -87,7 +87,7 @@
 | Скелет на костяной лошади | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ НАЕЗДНИК») |
 | Лук с Откидыванием V–VI | `skeleton/SkeletonPunchBow.java` | `mobs/skeletons/skeleton.txt` (раздел «ЛУК С ОТКИДЫВАНИЕМ V И VI») |
 
-### Зомби
+Zombie
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
@@ -106,7 +106,7 @@
 | Удочка утопленника | `drowned/DrownedFishing.java` | `mobs/zombies/zombie.txt` (раздел «УТОПЛЕННИК С УДОЧКОЙ») |
 | Зомби ворует вещь | `zombie/ZombieTheft.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ: ВОРУЕТ ВЕЩЬ ИЗ РУК») |
 
-### Криперы, пауки, ведьмы, рейд
+### Creepers, Spiders, Witches, Raid
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
@@ -119,8 +119,8 @@
 | Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/spider.txt` (раздел «ПАУКИ: ТКАЧ И МАТКА») |
 | Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/spider.txt` (раздел «ПАУКИ: РОЙ») |
 | Яд пещерного паука может убить | `spider/CaveSpiderPoison.java` | `mobs/spiders/spider.txt` (раздел «ПЕЩЕРНЫЙ ПАУК: ЯД СНОВА МОЖЕТ УБИТЬ») |
-| Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/common/рейдовый-якорь.txt` |
-| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java`, `siege/SiegeComposition.java` (фракции и доли мобов) | `mobs/common/осада.txt` |
+| Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/common/raid-anchor.txt` |
+| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java`, `siege/SiegeComposition.java` (фракции и доли мобов) | `mobs/common/siege.txt` |
 | Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/phantom.txt` (раздел «ФАНТОМЫ: УКУС И СТАЯ») |
 | Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/phantom.txt` (раздел «ФАНТОМЫ: СЛАБОСТЬ С УКУСА») |
 | Слепота с укуса фантома | `phantom/PhantomBlindness.java` | `mobs/phantoms/phantom.txt` (раздел «ФАНТОМЫ: СЛЕПОТА С УКУСА») |
@@ -143,20 +143,20 @@
 | Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/piglin.txt` (раздел «БРУТАЛЬНЫЙ ПИГЛИН: ПОРТИТ БРОНЮ») |
 | Здоровье брута | `piglin/PiglinBruteHealth.java` | `mobs/piglins/piglin.txt` (раздел «БРУТАЛЬНЫЙ ПИГЛИН: ЗДОРОВЬЕ») |
 
-Служебное, если задача не про моба: `EvolvingThreats.java` — вход мода, `command/EvolvingThreatsCommands.java` — тестовые команды, `идея.txt` — общий замысел. Новую механику класть в отдельный класс; mixin — только вызов 1–2 методов.
+Service if the task is not about mob: `EvolvingThreats.java` — mod input, `command/EvolvingThreatsCommands.java` — test commands, `idea.txt` — general idea. Put new mechanics in a separate class; mixin — only call 1–2 methods.
 
-## Комментарии
+Comments
 
-- Язык пояснений для автора: **русский**.
-- Код (имена классов, методов): **английский**.
-- Объяснять: mixins, `EntitySpawnReason`, сервер vs клиент (`src/main` vs `src/client`), если это влияет на правку.
+- Explanatory language for the creator: **Russian**.
+- Code (class names, methods): **English**.
+- Explain: mixins, `EntitySpawnReason`, server vs client (`src/main` vs` src/client `) if this affects the edit.
 
-## Сборка и тест
+## Assembly & Test
 
-- Разработка: `.\gradlew runClient` (перезапуск после изменений `.java`).
-- JAR для игроков: `.\gradlew build` → `build/libs/`.
+- Development: `.\gradlew runClient` (restart after changes` .java `).
+- Jar for players: `.\gradlew build` → `build/libs/`.
 
 ## Cursor
 
-Постоянные правила: `.cursor/rules/explain-code-for-author.mdc` и `.cursor/rules/ask-dont-assume.mdc`.  
-Тяжёлые папки закрыты в `.cursorignore`.
+Permanent rules: `.cursor/rules/explain-code-for-author.mdc` and `.cursor/rules/ask-dont-assume.mdc`.  
+Heavy folders are closed in `.cursorignore`.

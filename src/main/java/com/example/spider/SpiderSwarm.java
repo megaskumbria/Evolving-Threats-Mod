@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class SpiderSwarm {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — роёв нет, пауки появляются как раньше. */
 	public static final boolean ENABLED = true;

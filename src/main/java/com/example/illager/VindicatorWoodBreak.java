@@ -17,7 +17,7 @@ import net.minecraft.world.level.gamerules.GameRules;
  */
 public final class VindicatorWoodBreak {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — поборник дерево не рубит. Двери в рейде игра ломает по-своему. */
 	public static final boolean ENABLED = true;

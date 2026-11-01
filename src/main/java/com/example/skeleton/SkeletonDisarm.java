@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public final class SkeletonDisarm {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — стрела ничего из рук не выбивает. */
 	public static final boolean ENABLED = true;

@@ -16,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class PhantomBlindness {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — укус снова без слепоты, даже у уже помеченных фантомов. Слабость при этом остаётся. */
 	public static final boolean ENABLED = true;

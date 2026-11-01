@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
  */
 public final class VindicatorDiamondAxe {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — у всех поборников снова железный топор. */
 	public static final boolean ENABLED = true;

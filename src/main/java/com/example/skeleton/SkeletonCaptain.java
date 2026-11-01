@@ -52,7 +52,7 @@ import java.util.UUID;
  */
 public final class SkeletonCaptain {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — капитаны не появляются, команда тоже не спавнит отряд. */
 	public static final boolean ENABLED = true;

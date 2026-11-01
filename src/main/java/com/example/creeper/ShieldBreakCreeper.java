@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class ShieldBreakCreeper {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — такие криперы не появляются, команда тоже не делает ломателя. */
 	public static final boolean ENABLED = true;

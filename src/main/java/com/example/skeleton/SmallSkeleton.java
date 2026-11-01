@@ -14,7 +14,7 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
  */
 public final class SmallSkeleton {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — маленькие скелеты не появляются. Уже живущие остаются маленькими. */
 	public static final boolean ENABLED = true;

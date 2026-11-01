@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public final class PlayerGrudge {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить память об игроке для обычных зомби. */
 	public static final boolean ENABLED = true;

@@ -25,7 +25,7 @@ import java.util.List;
  */
 public final class PiglinBruteArmorHit {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — удар брута снова только обычный. */
 	public static final boolean ENABLED = true;

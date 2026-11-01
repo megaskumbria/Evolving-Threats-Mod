@@ -28,7 +28,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
  */
 public final class DrownedThreats {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — утопленник как в обычной игре. */
 	public static final boolean ENABLED = true;

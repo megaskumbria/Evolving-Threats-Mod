@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class BasiliskSkeleton {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — новые Василиски не появляются, команда тоже не спавнит. Уже живые остаются как есть. */
 	public static final boolean ENABLED = true;

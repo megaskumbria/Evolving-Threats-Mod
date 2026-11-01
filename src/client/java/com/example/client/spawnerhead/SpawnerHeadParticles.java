@@ -17,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class SpawnerHeadParticles {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — без частиц (спавнер на голове только визуально как предмет). */
 	public static final boolean ENABLED = true;

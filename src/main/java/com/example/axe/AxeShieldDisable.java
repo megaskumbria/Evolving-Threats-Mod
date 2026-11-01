@@ -20,7 +20,7 @@ import net.minecraft.world.item.Items;
  */
 public final class AxeShieldDisable {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — щит снова сбивает только то, что умеет сама игра. Деревянный топор в основной руке тоже. */
 	public static final boolean ENABLED = true;

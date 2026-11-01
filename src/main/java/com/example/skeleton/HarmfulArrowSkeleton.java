@@ -26,14 +26,14 @@ import java.util.Optional;
  */
 public final class HarmfulArrowSkeleton {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — такие скелеты не появляются. */
 	public static final boolean ENABLED = true;
 
 	/**
 	 * Шанс (0.0–1.0), что обычный скелет или странник появится с вредной стрелой, на 100-й день
-	 * (РАСТЁТ: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.20 = 20%.
+	 * (GROWING: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.20 = 20%.
 	 * Бросается раньше случайного меча и щита: если выпало, вторая рука занята стрелой.
 	 */
 	public static final float SPAWN_CHANCE = 0.20f;

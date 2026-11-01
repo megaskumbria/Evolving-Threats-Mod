@@ -2,7 +2,7 @@
 ==============================
 
 Тип: общая механика для зомби, скелетов и странников.
-Код: RandomArmor.java (блок «НАСТРОЙКИ» и метод dyeLeather).
+Код: RandomArmor.java (блок «SETTINGS» и метод dyeLeather).
 
 
 КАК РАБОТАЕТ
@@ -23,7 +23,7 @@
 Поставь LEATHER_USE_ONLY_DYE_COLORS = true — тогда будут только 16 чистых цветов красителей.
 
 
-НАСТРОЙКИ (RandomArmor.java)
+SETTINGS (RandomArmor.java)
 ----------------------------
   LEATHER_DYE_CHANCE ............... 0.50 — шанс, что моб в крашеной коже (на моба, не на кусок)
   LEATHER_PIECE_OWN_COLOR_CHANCE ... 0.25 — шанс отдельного куска получить свой цвет

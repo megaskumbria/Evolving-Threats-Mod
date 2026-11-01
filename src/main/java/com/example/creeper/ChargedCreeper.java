@@ -11,7 +11,7 @@ import net.minecraft.world.entity.monster.Creeper;
  */
 public final class ChargedCreeper {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — заряженные сами не появляются. Молния по-прежнему заряжает крипера. */
 	public static final boolean ENABLED = true;

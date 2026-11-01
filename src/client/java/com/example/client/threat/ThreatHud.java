@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
  */
 public final class ThreatHud {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — шкала на экране не показывается (на самой механике это не сказывается). */
 	public static final boolean ENABLED = true;

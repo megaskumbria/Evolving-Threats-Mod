@@ -8,7 +8,7 @@
      siege/SiegeData.java (что помнит мир), siege/SiegeEvents.java (подключение).
 Связки с игрой: mixin/SiegeMobMixin.java (цели и метка осады у мобов),
      mixin/EntityPortalSiegeMixin.java, spawn/NaturalMonsterSwap.java.
-     Настройки — в блоках «НАСТРОЙКИ».
+     Настройки — в блоках «SETTINGS».
 
 
 СУТЬ

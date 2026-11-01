@@ -12,7 +12,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
  */
 public final class MobSight {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — дальность снова как в обычной игре. Уже появившиеся мобы сами не откатываются. */
 	public static final boolean ENABLED = true;

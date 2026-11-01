@@ -18,7 +18,7 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 
-# ===================== НАСТРОЙКИ =====================
+# ===================== SETTINGS =====================
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "art" / "threat_hud"

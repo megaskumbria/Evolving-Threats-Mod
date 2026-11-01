@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class LightSeeking {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить поведение вообще. false — зомби игнорируют свет. */
 	public static final boolean ENABLED = true;

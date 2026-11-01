@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public final class ZombieTheft {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — удар ничего не забирает. */
 	public static final boolean ENABLED = true;

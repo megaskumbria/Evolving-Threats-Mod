@@ -23,7 +23,7 @@ import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
  */
 public final class MobHealth {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — у всех остаётся ванильное здоровье. */
 	public static final boolean ENABLED = true;
@@ -66,7 +66,7 @@ public final class MobHealth {
 		int min;
 		int max;
 		if (mob instanceof Zombie || mob instanceof Skeleton || mob instanceof Stray) {
-			// РАСТЁТ: потолок здоровья поднимается от ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START до MAX к 100-му дню.
+			// GROWING: потолок здоровья поднимается от ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START до MAX к 100-му дню.
 			min = ZOMBIE_SKELETON_MIN;
 			max = Math.round(ThreatScale.lerp(mob.level(), (float) ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START,
 					(float) ZOMBIE_SKELETON_MAX));

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class SapperCreeper {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — подрывники не появляются, команда тоже не делает подрывника. */
 	public static final boolean ENABLED = true;

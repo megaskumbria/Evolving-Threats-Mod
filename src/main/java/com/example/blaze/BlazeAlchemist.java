@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class BlazeAlchemist {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — алхимики не появляются, и шар не срезает стойкость. */
 	public static final boolean ENABLED = true;

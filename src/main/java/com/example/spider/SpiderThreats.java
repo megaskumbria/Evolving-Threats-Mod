@@ -32,7 +32,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class SpiderThreats {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику вообще. false — все пауки обычные. */
 	public static final boolean ENABLED = true;

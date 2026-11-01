@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Bastion {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — новые Бастионы не появляются, команда тоже не спавнит. Уже живые остаются как есть. */
 	public static final boolean ENABLED = true;

@@ -42,7 +42,7 @@ import java.util.UUID;
  */
 public final class SiegeNight {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — осад нет совсем. Уже идущая осада сразу заканчивается. */
 	public static final boolean ENABLED = true;

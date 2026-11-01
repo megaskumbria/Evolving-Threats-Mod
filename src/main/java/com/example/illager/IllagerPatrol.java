@@ -32,7 +32,7 @@ import java.util.WeakHashMap;
  */
 public final class IllagerPatrol {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — такие отряды не появляются. Уже вышедшие доходят до игрока как раньше. */
 	public static final boolean ENABLED = true;

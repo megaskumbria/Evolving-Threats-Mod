@@ -27,7 +27,7 @@ import java.util.List;
  */
 public final class PillagerFirework {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — разбойник всегда стреляет стрелой. */
 	public static final boolean ENABLED = true;

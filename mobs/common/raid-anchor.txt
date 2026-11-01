@@ -2,7 +2,7 @@
 ============================
 
 Тип: событие-рейд (1 якорь + 12–15 прислуг). Не отдельный тип сущности Minecraft.
-Код: raid/RaidAnchor.java, raid/RaidEliteLoadout.java — настройки в блоках «НАСТРОЙКИ».
+Код: raid/RaidAnchor.java, raid/RaidEliteLoadout.java — настройки в блоках «SETTINGS».
 
 
 СУТЬ

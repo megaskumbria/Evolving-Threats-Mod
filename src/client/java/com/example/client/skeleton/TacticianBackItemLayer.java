@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
  */
 public class TacticianBackItemLayer<S extends SkeletonRenderState> extends RenderLayer<S, SkeletonModel<S>> {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Сдвиг вправо, в блоках. 0 = по центру спины. Плюс — к правому плечу скелета. */
 	private static final float OFFSET_X = 0.12F;

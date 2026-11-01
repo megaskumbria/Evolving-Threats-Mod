@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 public final class WitchThrownPotions {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — ведьма снова кидает только яд, замедление, слабость и мгновенный урон. */
 	public static final boolean ENABLED = true;

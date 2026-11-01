@@ -36,7 +36,7 @@ import java.util.List;
  */
 public final class MobPotionBuffs {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — мобы появляются без этих зелий. */
 	public static final boolean ENABLED = true;
@@ -174,7 +174,7 @@ public final class MobPotionBuffs {
 
 	/** 0 = без эффекта. Чем правее индекс в {@link #COUNT_WEIGHTS}, тем больше эффектов. */
 	private static int rollCount(Mob mob) {
-		// РАСТЁТ: в начале игры почти у всех ноль зелий, веса плавно доходят до COUNT_WEIGHTS к 100-му дню.
+		// GROWING: в начале игры почти у всех ноль зелий, веса плавно доходят до COUNT_WEIGHTS к 100-му дню.
 		return ThreatScale.pickWeighted(mob.level(), mob.getRandom(), ThreatTable.POTION_COUNT_WEIGHTS_START, COUNT_WEIGHTS);
 	}
 

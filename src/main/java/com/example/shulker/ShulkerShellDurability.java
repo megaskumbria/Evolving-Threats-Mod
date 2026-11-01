@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public final class ShulkerShellDurability {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — панцирь больше не портит оружие. */
 	public static final boolean ENABLED = true;

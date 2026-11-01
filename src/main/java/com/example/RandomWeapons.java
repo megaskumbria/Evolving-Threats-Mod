@@ -27,7 +27,7 @@ import net.minecraft.world.item.enchantment.EnchantmentTarget;
  */
 public final class RandomWeapons {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Шанс (0.0–1.0), что зомби появится с оружием в руке. 0.40 = 40%. */
 	public static final float ZOMBIE_WEAPON_CHANCE = 0.40f;
@@ -96,7 +96,7 @@ public final class RandomWeapons {
 	public static void rollSkeletonLoadout(Mob mob) {
 		RandomSource random = mob.getRandom();
 		float roll = random.nextFloat();
-		// РАСТЁТ: оба шанса выше написаны для 100-го дня, в начале игры они меньше (ThreatTable.WEAPON_START_RATIO).
+		// GROWING: оба шанса выше написаны для 100-го дня, в начале игры они меньше (ThreatTable.WEAPON_START_RATIO).
 		float dualWield = growing(mob, SKELETON_DUAL_WIELD_CHANCE);
 		float meleeOnly = growing(mob, SKELETON_MELEE_ONLY_CHANCE);
 
@@ -222,7 +222,7 @@ public final class RandomWeapons {
 		return true;
 	}
 
-	/** РАСТЁТ: шанс от {@code endChance × WEAPON_START_RATIO} (день 0) до {@code endChance} (день 100). */
+	/** GROWING: шанс от {@code endChance × WEAPON_START_RATIO} (день 0) до {@code endChance} (день 100). */
 	private static float growing(Mob mob, float endChance) {
 		return ThreatScale.growingChance(mob.level(), endChance, ThreatTable.WEAPON_START_RATIO);
 	}

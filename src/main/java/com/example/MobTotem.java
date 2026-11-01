@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
  */
 public final class MobTotem {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — тотемы не выдаются. */
 	public static final boolean ENABLED = true;
@@ -53,7 +53,7 @@ public final class MobTotem {
 			return false;
 		}
 		RandomSource random = mob.getRandom();
-		// РАСТЁТ: SPAWN_CHANCE — шанс на 100-й день, в начале игры он меньше (ThreatTable.TOTEM_START_RATIO).
+		// GROWING: SPAWN_CHANCE — шанс на 100-й день, в начале игры он меньше (ThreatTable.TOTEM_START_RATIO).
 		if (random.nextFloat() >= ThreatScale.growingChance(mob.level(), SPAWN_CHANCE, ThreatTable.TOTEM_START_RATIO)) {
 			return false;
 		}

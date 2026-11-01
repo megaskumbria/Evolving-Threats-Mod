@@ -10,7 +10,7 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 
-	// Откуда Gradle скачивает Replay Mod (только для записи видео в dev-клиенте).
+	// Where does Gradle download Replay Mod (only for recording videos in the dev client).
 	exclusiveContent {
 		forRepository {
 			maven {
@@ -50,11 +50,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	// Replay Mod — только чтобы записывать ролики в ЭТОМ клиенте (gradlew runClient).
-	// clientRuntimeOnly = мод есть при запуске клиента, на сервер не ставится
-	// и НЕ попадает в jar вашего мода. Игрокам он не нужен.
-	// Версия 26.3-2.6.28 — под Minecraft 26.3. Если обновите игру, поменяйте номер здесь.
-	// Страница мода: https://modrinth.com/mod/replaymod
+	// Replay Mod — only to record videos in THIS client (gradlew runClient).
+	//clientRuntimeOnly = there is a mod when the client is started, it is not put on the server
+	// and does not fall into the jar of your mod. Players don't need it.
+	// Version 26.3-2.6.28 — for Minecraft 26.3. If you update the game, change the number here.
+	//Fashion page: https://modrinth.com/mod/replaymod
 	clientRuntimeOnly "maven.modrinth:replaymod:26.3-2.6.28"
 }
 

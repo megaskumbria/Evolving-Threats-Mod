@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class PhantomWeakness {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** false — укус снова только с уроном, слабость не вешается даже у уже помеченных фантомов. */
 	public static final boolean ENABLED = true;

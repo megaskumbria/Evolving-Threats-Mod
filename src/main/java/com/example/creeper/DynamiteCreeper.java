@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class DynamiteCreeper {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Включить механику. false — все криперы обычные, команда спавна тоже не делает метателя. */
 	public static final boolean ENABLED = true;

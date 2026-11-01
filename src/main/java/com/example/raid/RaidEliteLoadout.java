@@ -20,7 +20,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
  */
 public final class RaidEliteLoadout {
 
-	// ===================== НАСТРОЙКИ (меняй эти числа) =====================
+	// ===================== SETTINGS (меняй эти числа) =====================
 
 	/** Шанс (0.0–1.0) надеть каждый слот брони у прислуги рейда. 0.75 = 75% на слот. */
 	public static final float ARMOR_PIECE_CHANCE = 0.75f;
