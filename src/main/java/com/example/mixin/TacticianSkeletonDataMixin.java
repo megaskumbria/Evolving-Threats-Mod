@@ -11,14 +11,14 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.UUID;
 
-/** Пометка «700 IQ» и предмет на спине. Предмет синхронизируется, чтобы его было видно. */
+/** 700 IQ mark and object on the back. The object is synchronized to be seen. */
 @Mixin(AbstractSkeleton.class)
 public class TacticianSkeletonDataMixin implements TacticianSkeletonEntity {
 
 	static {
-		// Номер слота «на спине» надо занять сразу, как загружается скелет,
-		// раньше обычного скелета и странника. Если позже — номер совпадёт с их
-		// собственным, и мир упадёт, как только скелет попытается появиться.
+		// The slot number on the back should be taken as soon as the skeleton is loaded.
+		// before the usual skeleton and wanderer. If later, the number will match them.
+		// The world will fall as soon as the skeleton tries to appear.
 		if (TacticianSkeleton.BACK_ITEM == null) {
 			throw new IllegalStateException("back item");
 		}

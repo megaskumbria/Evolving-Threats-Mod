@@ -11,10 +11,10 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Один бросок на появление враждебного моба.
- * В обычном мире: сначала шанс парящего инструмента, сразу за ним — шанс повреждённого голема.
- * В аду: отдельный шанс незеритового инструмента, голема нет.
- * Команда, яйцо и спавнер сюда не попадают: это только естественный спавн.
+ * One roll per natural hostile spawn.
+ * Overworld: floating tool chance first, then damaged iron golem chance.
+ * Nether: separate netherite floating tool chance; no golem.
+ * Commands, spawn eggs, and spawners skip this — natural spawn only.
  */
 public final class NaturalMonsterSwap {
 
@@ -31,8 +31,8 @@ public final class NaturalMonsterSwap {
 		if (server.dimension() != Level.OVERWORLD) {
 			return original;
 		}
-		// Осада: в верхнем мире любой ночной монстр заменяется на моба из состава осады (по долям).
-		// Парящих инструментов и големов в эту ночь нет совсем.
+		// Siege: in the overworld any night monster is replaced by the current siege roster (by weight).
+		// No floating tools or golems during siege night.
 		if (SiegeNight.isWindowOpen(server)) {
 			return SiegeNight.swapForSiege(server, feet);
 		}
@@ -59,7 +59,7 @@ public final class NaturalMonsterSwap {
 		return original;
 	}
 
-	/** Ад: иногда парящий незерит вместо гаста, магмового куба и прочих монстров. Голема тут нет. */
+	/** Nether: sometimes a floating netherite tool instead of ghasts, magma cubes, etc. No golem here. */
 	private static EntityType<?> pickNether(ServerLevel server, EntityType<?> original) {
 		if (original == FloatingTool.TYPE || FloatingTool.TYPE == null) {
 			return original;

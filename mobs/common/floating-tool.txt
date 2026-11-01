@@ -1,77 +1,77 @@
-ПАРЯЩИЙ ИНСТРУМЕНТ
+Floating Instrument
 ==================
 
-Тип: отдельный летающий моб. Выглядит как меч, топор, лопата, кирка или мотыга.
-Код: tool/FloatingTool.java (настройки, полёт, удар, команда),
-     mixin/NaturalSpawnerFloatingToolMixin.java (подмена ночного спавна),
-     entity/ai/FloatingToolAttackGoal.java (пауза между ударами),
-     client/tool/FloatingToolRenderer.java (картинка: в покое крутится, в атаке смотрит на цель).
-Чары: MobEnchantments.java. Зелья: MobPotionBuffs.java.
-Какой предмет в обычном мире: RandomWeapons.java (без незерита).
-В аду предмет выбирает сам FloatingTool: незерит.
+Type: separate flying mob. It looks like a sword, axe, shovel, pickaxe or hoe.
+Code: tool/FloatingTool.java (settings, flight, impact, command)
+mixin/NaturalSpawnerFloatingToolMixin.java
+entity/ai/FloatingToolAttackGoal.java (pause between beats)
+client/tool/FloatingToolRenderer.java (picture: spins at rest, looks at the target in attack).
+Charm: MobEnchantments.java. Potion: MobPotionBuffs.java.
+What item in the ordinary world: RandomWeapons.java (without neserite).
+In hell, the subject is chosen by FloatingTool itself: Neserite.
 
 
-КАК РАБОТАЕТ
+How it works
 ------------
-1. В обычном мире появляется сам, там же, где зомби и скелеты: темно, не ближе 24 блоков до игрока.
-   Из каждых 100 таких появлений примерно 5 — этот инструмент (NATURAL_SPAWN_CHANCE = 0.05).
-   Бросок общий с повреждённым големом: следующий 0,2% — голем, не этот инструмент.
-   В Энде не появляется. Увидел игрока — летит к нему.
-2. В аду тоже появляется, в любое время, не только ночью. FIXED, 5% враждебных появлений
-   (NETHER_SPAWN_CHANCE). Вместо гаста, магмового куба и других монстров.
-   Спавнеры крепости и команда этот бросок не делают. /ettool в аду шанс не бросает,
-   но инструмент всё равно незеритовый, потому что он появился в аду.
-3. В обычном мире предмет случайный: дерево, камень, золото, медь, железо или алмаз.
-   Вид инструмента тоже случайный. Незерита нет.
-   В аду всегда незерит: меч, топор, лопата, кирка или мотыга, поровну.
-   На всех Заговор огня III. Других чар у адского нет.
-4. Летит к игроку и бьёт вплотную. Сквозь стены не проходит.
-   Пока гонится и бьёт, картинка не крутится вокруг своей оси — смотрит на цель.
-   Когда цели нет, снова крутится, как брошенная вещь.
-5. Урон берётся с предмета: мотыга слабая, алмазный меч сильный.
-   Плюс небольшой «кулак» BASE_ATTACK_DAMAGE.
-6. Здоровье зависит от материала: дерево и золото слабые, алмаз живучий, незерит ещё крепче.
-7. В обычном мире с шансом ENCHANT_CHANCE на предмете те же чары, что у оружия зомби.
-   Острота, отбрасывание и огненный аспект работают в ударе.
-   Эффективность, удача, шёлковое касание только на выпавшем предмете.
-   В аду чар из этого списка нет: только Заговор огня III.
-8. Зелья те же, что у зомби (MobPotionBuffs): от 0 до 5 эффектов, пока моб жив.
-   Сила бьёт больнее, регенерация лечит, огнестойкость тушит урон огня.
-   Невидимости нет: она прятала бы сам инструмент. Частицы другого зелья его выдают.
-   Скорость и прыжок почти не меняют полёт: в воздухе он летит со своей скоростью.
-9. Инструмент в бою не ломается. Иначе моб остался бы без картинки.
-10. После смерти предмет из обычного мира падает с шансом DROP_CHANCE, вместе с чарами.
-   Адский незерит не падает никогда. Добыча это не обходит: к нулевому шансу она ничего не прибавляет.
-11. В мирном режиме исчезает, как другие враждебные мобы.
+1. In the ordinary world, he appears in the same place where zombies and skeletons: dark, no closer than 24 blocks to the player.
+Out of every 100 such appearances, approximately 5 are this instrument (NATURAL SPAWN CHANCE = 0.05).
+The shot is common to a damaged golem: the next 0.2% is a golem, not this instrument.
+He doesn't appear in the End. He sees a player, he goes to him.
+2. He is in hell at any time, not just at night. FIXED, 5% hostile appearances
+(NETHER SPAWN CHANCE) Instead of gast, magma cube and other monsters.
+The spawners of the fortress and the team do not make this throw. /ettool in hell does not give a chance
+But it's still nonseritic, because it came from hell.
+3. In the ordinary world, the object is random: wood, stone, gold, copper, iron or diamond.
+The kind of instrument is also random. No Neserite.
+In hell it always does not matter: sword, axe, shovel, pickaxe or hoe, equally.
+All at Fire III Conspiracy. Hellish has no other charms.
+4. He flies to the player and hits hard. No way through walls.
+While chasing and hitting, the picture does not rotate around its axis - it looks at the target.
+When there is no goal, it spins again like an abandoned thing.
+5. Damage is taken from the object: the hoe is weak, the diamond sword is strong.
+Plus a small "fist" BASE ATTACK DAMAGE.
+6. Health depends on the material: wood and gold are weak, diamond is tenacious, it does not hold even stronger.
+7. In an ordinary world with the chance of ENCHANT CHANCE, the subject has the same charm as a zombie weapon.
+The sharpness, throwback and fiery aspect work in impact.
+Efficiency, luck, silk touch only on the fallen object.
+In hell, there is no enchantment from this list: only Conspiracy of Fire III.
+8. Potions are the same as zombies (MobPotionBuffs): 0 to 5 effects while the mob is alive.
+Strength hurts, regeneration heals, fire resistance extinguishes fire damage.
+There is no invisibility; it would hide the instrument itself. Particles of another potion give it away.
+Speed and jump almost do not change flight: in the air it flies at its own speed.
+9. The tool doesn't break in battle. Otherwise, the mob would be without a picture.
+10. After death, an object from the ordinary world falls with the chance of DROP CHANCE, along with the spell.
+Hellish Neserite never falls. Extraction does not bypass: it adds nothing to zero chance.
+11. In a peaceful regime disappears like other hostile mobs.
 
 
-КОМАНДА
+Team
 -------
   /ettool
   /evolvingthreats spawn tool
-Это проверка, не обычный спавн. Появляется в 6 блоках по взгляду и шанс 5% не бросает.
-Каждый вызов — новый случайный предмет. Нужны права оператора.
+This is a test, not a regular spawn. Appears in 6 blocks in view and does not throw a 5% chance.
+Each call is a new random object. We need operator rights.
 
 
 SETTINGS (FloatingTool.java)
 -----------------------------
-  NATURAL_SPAWN_CHANCE ........ 0.05 — 5% ночных враждебных мобов в обычном мире. 0 = только команда
-  NETHER_SPAWN_CHANCE .......... 0.05 — 5% монстров в аду. FIXED. 0 = в аду не появляются
-  NETHER_FIRE_ASPECT_LEVEL ..... 3 — Заговор огня III. 2 = обычный II
-  NETHER_DROP_CHANCE ........... 0 — адский инструмент не падает. Добыча не помогает
-  HITBOX_WIDTH / HITBOX_HEIGHT .. невидимое тело, по нему бьют
-  VISUAL_SCALE ................. крупность картинки, на урон не влияет
-  ATTACK_FACING_OFFSET ......... доворот картинки в атаке, градусы. 0 = на игрока. 90/180 если лезвие криво
-  BASE_ATTACK_DAMAGE ........... добавка к урону предмета. Не раздувай
-  HEALTH_WOOD_GOLD ............. 12 = 6 сердец
+NATURAL SPAWN CHANCE ..........0.05—5% of nighttime hostile mobs in the ordinary world. 0 = Team only
+0.05 - 5% of monsters in hell. FIXED. 0 = They don't appear in hell
+NETHER FIRE ASPECT LEVEL ..... 3 - Conspiracy of Fire III. 2 = ordinary II
+NETHER DROP CHANCE 0 - The hellish instrument does not fall. Mining doesn't help.
+HITBOX WIDTH / HITBOX HEIGHT - an invisible body, it is beaten
+VISUAL SCALE................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................... The size of the picture does not affect the damage
+ATTACK FACING OFFSET..............................the image in attack, degrees. 0 = per player. 90/180 if the blade is curved
+BASE ATTACK DAMAGE add to the damage. Don't bloat.
+HEALTH WOOD GOLD... 12 = 6 hearts
   HEALTH_STONE_COPPER .......... 16
   HEALTH_IRON .................. 20
   HEALTH_DIAMOND ............... 28
-  HEALTH_NETHERITE ............. 36 = 18 сердец, только адский инструмент
-  FLYING_SPEED / CHASE_SPEED ... быстрее летит
-  FOLLOW_RANGE ................. с какой дистанции видит игрока
-  ATTACK_COOLDOWN_TICKS ........ 20 = удар раз в секунду
+HEALTH NETHERITE............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................... 36 = 18 hearts, only a hellish instrument
+FLYING SPEED / CHASE SPEED Flying faster
+FOLLOW RANGE............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................... What distance does the player see?
+Attack cooldown ticks. 20 = once-second impact
   ENCHANT_CHANCE ............... 0.30 = 30%
-  DROP_CHANCE .................. 0.15 = 15%, 0 = не падает
-  EXPERIENCE_REWARD ............ 5 до множителя, с моба падает 10
-  AMBIENT_VOLUME ............... 0 = без звука стола зачарований
+DROP CHANCE 0.15 = 15%, 0 = does not fall
+EXPERIENCE REWARD........... 5 to multiplier, with mob falling 10
+AMBIENT VOLUME 0 = no sound of the enchanting table

@@ -1,151 +1,147 @@
-FIXED - Это значит, что шанс фиксированный и от сложности не меняется. Какой он есть сейчасв коде такой и остаётся
-GROWING - Это значит, что вероятность будет возрастать с увеличением сложности мира
+FIXED — chance stays as in code; does not scale with world difficulty.
+GROWING — chance rises as world difficulty increases.
 
-Опыт за убийство любого враждебного моба вдвое больше обычного. Голый обычно даёт 10 вместо 5. - FIXED
-- Редкий Mirror среди зомби, скелетов, скелетов-иссушителей, ифритов, пауков, пиглинов, брутов, эндерменов, чешуйниц, криперов и ведьм. Удар в упор возвращается игроку, дальше решает его броня. Шанс 0,3% - FIXED
+Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5. — FIXED
+- Rare Mirror on zombies, skeletons, wither skeletons, blazes, spiders, piglins, brutes, endermen, silverfish, creepers, and witches. Melee hit reflects damage to the player; armor applies. Chance 0.3% — FIXED
 
-1. Фантомы
-- Фантомов теперь может появляться больше. - FIXED
-- Фантомы наносят урон, как в первых версиях после их добавления в игру. - FIXED
-- Редкие фантомы могут накладывать слабость при атаке - FIXED
-- Редкие фантомы могут накладывать слепоту при атаке - FIXED
+1. Phantoms
+- More phantoms can spawn. — FIXED
+- Phantoms deal damage like early versions after they were added. — FIXED
+- Rare phantoms can apply Weakness on attack — FIXED
+- Rare phantoms can apply Blindness on attack — FIXED
 
-3. Блейзы
-- Особый шар блейза может снимать с игрока эффект огнестойкости. - FIXED
+3. Blazes
+- A special blaze fireball can remove Fire Resistance from the player. — FIXED
 
-4. Зомби
-- Получают случайное количество здоровья — от 20 до 40 HP. - GROWING
-- Могут появляться с различным оружием, бронёй, щитами и даже тотемами бессмертия. - GROWING
-- Удар топором, кроме деревянного, сбивает щит на 5 секунд, как у поборника. Топор может быть в любой руке - FIXED
-- Редко появляются в полном комплекте брони одного материала. В начале игры таких нет. - GROWING
-- Могут появляться с положительными эффектами зелий. - GROWING
-- Могут разрушать блоки. - С 40-ГО ДНЯ НАЧИНАЮТ ЛОМАТЬ БЛОКИ, СКОРОСТЬ РАЗРУШЕНИЙ НЕ МЕНЯТЬ 
-- Могут сбегаться на свет и уничтожать его источник. - С 40-ГО ДНЯ
-- С тыквой на голове приманивают к себе ближайших зомби. - GROWING
-- Могут появляться с динамитом в руках и взрывать препятствия. - GROWING
-- Могут появляться со спавнером на голове. Каждый второй удар по такому зомби призывает двух помощников. - GROWING
-- Может появиться зомби чародей, подбрасывающий, поджигающий и притягивающий к себе игрока - С 40-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может появиться зомби Excalibur с мечом на Остроту 20. Здоровье 50, опыт 30. Меч не выпадает, падает бирка. Броня и щит как у обычного зомби - С 40-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может появиться зомби Mjölnir с булавой на Отдачу 20. Молот выпадает очень редко, падает бирка и больше опыта. Может быть в случайной броне - FIXED
-- Может забрать предмет из рук игрока - FIXED
-- Может заспавнится мини-босс "Гнилой надсмотрщик", всегда следует за игроком где бы он не находился, может призывать помощь и наносит сокрушительный урон двумя топорами - С 60-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может появиться Бастион: 1000 HP, удар не откидывает, зелье скорости не действует, опыт 200. Броня, чары и ломание блоков как у обычного зомби - С 60-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может появиться Spiky: один кусок брони колет на 7–8 сердец сквозь броню и Защиту. Остальная броня как у обычного зомби. Шанс 0,2% - С 40-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может заспавнится мини-босс "Рейдовый якорь", имеет 12-15 хорошо экипированных прислуг. Пока якорь жив, прислуги слышат игрока - С 80-ГО, ДНЯ ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
+4. Zombies
+- Random health from 20 to 40 HP. — GROWING
+- Can spawn with random weapons, armor, shields, even totems. — GROWING
+- Non-wooden axe disables shield for 5 seconds like a vindicator; axe can be in either hand — FIXED
+- Rare full armor set of one material; none early in the game. — GROWING
+- Can spawn with positive potion effects. — GROWING
+- Can break blocks. — FROM DAY 40; DO NOT CHANGE BREAK SPEED
+- Can gather on light and destroy light sources. — FROM DAY 40
+- Jack-o’-lantern on head attracts nearby zombies. — GROWING
+- Can spawn with TNT and blast obstacles. — GROWING
+- Can spawn with spawner on head; every second hit summons two helpers. — GROWING
+- Sorcerer zombie: launch, fire, pull player — FROM DAY 40, FIXED CHANCE
+- Excalibur zombie: Sharpness 20 sword, 50 HP, 30 XP; sword never drops, name tag drops; armor/shield like normal — FROM DAY 40, FIXED CHANCE
+- Mjölnir zombie: Knockback 20 mace; mace drops very rarely, name tag and extra XP; random armor possible — FIXED
+- Can steal item from player hands — FIXED
+- Mini-boss “Rotten Overseer”: follows player everywhere, summons help, heavy dual-axe damage — FROM DAY 60, FIXED CHANCE
+- Bastion: 1000 HP, no knockback, Speed potion useless, 200 XP; armor/enchants/block break like normal zombie — FROM DAY 60, FIXED CHANCE
+- Spiky: one armor piece pierces 7–8 hearts through armor and Protection; rest like normal. 0.2% — FROM DAY 40, FIXED CHANCE
+- Mini-boss “Raid Anchor”: 12–15 well-equipped servants; while anchor lives, servants hear the player — FROM DAY 80, FIXED CHANCE
 
-5. Скелеты
-- Получают случайное количество здоровья — от 20 до 40 HP. - GROWING
-- Могут появляться с различным оружием, бронёй, щитами и даже тотемами бессмертия. - GROWING
-- Удар топором, кроме деревянного, сбивает щит на 5 секунд, как у поборника. Топор может быть в любой руке - FIXED
-- Редко появляются в полном комплекте брони одного материала. В начале игры таких нет. - GROWING
-- Могут появляться с положительными эффектами зелий. - GROWING
-- Могут появляться на лошадях. - FIXED
-- Могут использовать стрелы с вредными эффектами. - GROWING
-- Может появиться скелет, который стреляет по кругу десятью эффектами (поджог, слепота, яд, голод, замедление, слабость, иссушение, тошнота, левитация, мгновенный урон), без повтора одного эффекта. Стрелу в руке не держит. Броня, чары на луке и быстрый лук как у обычного. Шанс 1% - FIXED
-- Может появиться скелет-снайпер: стреляет с 128 блоков, лук всегда в руке, во второй руке обычное оружие. Броня и чары как у обычного. Урон стрелы 6 сердец до брони, скорость полёта его не увеличивает. Быстрый лук может ускорить натяжение. Шанс 1 из 500 - FIXED
-- Могут одновременно носить оружие ближнего боя и лук, выбирая подходящий тип атаки в зависимости от расстояния до игрока. - GROWING
-- Могут появляться с тыквой на голове и атаковать игрока огненными стрелами. - GROWING
-- Могут появляться с раздатчиком на голове и выпускать в игрока град стрел. - GROWING
-- Скелеты-детёныши теперь тоже могут появляться. - FIXED
-- Может появиться капитан скелетов с охраной. - С 60-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Скелеты могут появляться со спавнером на голове. Каждый второй удар по такому скелету призывает двух помощников. - GROWING
-- Может появиться тактический скелет, после попадания стрелы с вредными эффектами в игрока, несётся в лобовую атаку - GROWING
-- Могут нести зачарования сильнее ванильных, в луте не выпадают - С 20-ГО ДНЯ, GROWING
-- При попадании, есть шанс, что предмет в руках вылетит из рук - FIXED
-- Может заспавнится редкий скелет Василиск с невероятно сильным луком, бронёй, чёрным щитом и 100 HP - С 80-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может появиться Бастион: 1000 HP, удар не откидывает, зелье скорости не действует, опыт 200. Броня и чары как у обычного скелета - С 60-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может появиться Spiky: один кусок брони колет на 7–8 сердец сквозь броню и Защиту. Остальная броня как у обычного скелета. Шанс 0,2% - С 40-ГО ДНЯ, ВЕРОЯТНОСТЬ FIXEDИРОВАННАЯ
-- Может заспавнится скелет который стреляет в два раза быстрее - GROWING
+5. Skeletons
+- Random health 20–40 HP. — GROWING
+- Random weapons, armor, shields, totems. — GROWING
+- Non-wooden axe disables shield 5 seconds; either hand — FIXED
+- Rare full set one material; none early. — GROWING
+- Positive potion buffs on spawn. — GROWING
+- Can spawn on horses. — FIXED
+- Harmful effect arrows. — GROWING
+- Random-arrow skeleton: cycles ten effects (fire, blind, poison, hunger, slowness, weakness, wither, nausea, levitation, instant damage), no repeat; no arrow in hand; armor/enchants/fast bow like normal. 1% — FIXED
+- Sniper: shoots from 128 blocks, bow in main hand, melee in offhand; 6 hearts arrow damage before armor; fast bow speeds draw only. 1 in 500 — FIXED
+- Dual wield melee + bow by range. — GROWING
+- Jack-o’-lantern head + fire arrows. — GROWING
+- Dispenser on head, arrow barrage. — GROWING
+- Baby skeletons can spawn. — FIXED
+- Skeleton captain with escort — FROM DAY 60, FIXED CHANCE
+- Spawner on head; every second hit summons two — GROWING
+- Tactician: charges after harmful arrow hit — GROWING
+- Stronger-than-vanilla enchants, not in loot — FROM DAY 20, GROWING
+- Disarm on hit chance — FIXED
+- Rare Basilisk: extreme bow, armor, black shield, 100 HP — FROM DAY 80, FIXED CHANCE
+- Bastion like zombie variant — FROM DAY 60, FIXED CHANCE
+- Spiky like zombie variant — FROM DAY 40, FIXED CHANCE
+- Double fire rate skeleton — GROWING
 
-6. Скелеты-иссушители
-- Скелеты-иссушители могут появляться с положительными эффектами зелий. - GROWING
-- Скелеты-иссушители могут появляться со спавнером на голове. Каждый второй удар по такому мобу призывает двух помощников. - GROWING
-- В аду вместо каменного меча иногда незеритовый. В начале около 1,5%, к 100-му дню 15%. Меч не выпадает. Чары на каменном и незеритовом растут со шкалой. Опыт за убийство 25 - GROWING
+6. Wither skeletons
+- Positive potion buffs. — GROWING
+- Spawner on head; every second hit summons two — GROWING
+- In Nether sometimes netherite sword instead of stone; ~1.5% at start to 15% by day 100; sword never drops; enchants scale; 25 XP — GROWING
 
-7. Криперы
-- Криперы могут получать случайное количество здоровья — от 20 до 30 HP. - FIXED
-- Крипер может взорваться, даже если игрок спрятался в укрытие. - FIXED
-- Криперы могут бросать TNT в игрока. - FIXED
-- Криперы могут сломать щит игрока одним взрывом. - FIXED
-- Могут спавнится заряженными - FIXED
-- Может появиться супербыстрый крипер, от которого нельзя убежать. Шипит 0,5 секунды. — FIXED
-- Может появиться крипер-обманка: издалека как обычный, за 6–7 блоков ускоряется как супербыстрый и шипит 0,5 секунды. Ника нет. Шанс 0,3%. — FIXED
+7. Creepers
+- Random health 20–30 HP. — FIXED
+- Can explode even if player is in cover. — FIXED
+- Can throw TNT. — FIXED
+- Can break shield in one explosion. — FIXED
+- Can spawn charged — FIXED
+- Super-fast creeper, 0.5 s fuse, cannot outrun — FIXED
+- Feint creeper: looks normal, at 6–7 blocks speeds up like super-fast, 0.5 s fuse, no name tag. 0.3% — FIXED
 
-8. Пауки
-- Пауки могут получать случайное количество здоровья — от 16 до 30 HP. - FIXED
-- Некоторые пауки могут ставить паутину под игроком. - FIXED
-- Пауки могут появляться целыми роями. - FIXED
-- Может появиться паук-матка с повышенным запасом здоровья, сопровождаемый пещерными пауками. - FIXED
-- Укус пещерного паука снова может убить ядом. Легко — яда нет, нормально — 7 секунд, сложно — 15. Яд ведьмы и слизня не добивает. - FIXED
+8. Spiders
+- Random health 16–30 HP. — FIXED
+- Some place cobweb under player. — FIXED
+- Swarm spawns. — FIXED
+- Broodmother with cave spiders. — FIXED
+- Cave spider poison can kill again; Easy none, Normal 7 s, Hard 15 s; witch/slime poison cannot finish — FIXED
 
-9. Слизни
-- Могут отравлять игрока. Отравление зависит от размеров слизня - FIXED
+9. Slimes
+- Poison player; strength by slime size — FIXED
 
-10. Ведьмы
-- Редкая ведьма может бросить белое зелье и снять с игрока все эффекты - FIXED
-- Может выпить зелье невидимости если игрок слишком далеко - FIXED
-- Значительно расширен список зелий, которые она может применить в отношении игрока - FIXED
-- Может бросать туманные зелья - FIXED
+10. Witches
+- Rare nullifier throws white potion, clears all player effects — FIXED
+- Drinks invisibility if player too far — FIXED
+- Expanded potion list vs player — FIXED
+- Lingering potions — FIXED
 
-11. Поборники
-- Могут спавнится с алмазными топорами - FIXED
-- Могут быстро разрушать заборы и блоки из дерева - FIXED
+11. Vindicators
+- Diamond axes — FIXED
+- Fast wood/fence breaking — FIXED
 
-12. Досаждатели
-- Повышен наносимый урон - FIXED
-- Могут накладывать слабость при ударе - FIXED
+12. Vexes
+- Higher damage — FIXED
+- Weakness on hit — FIXED
 
-13. Утопленники
-- Могут нести трезубец с зачарованием на "Громовержец", при попадании в игрока производится удар молнии в 100% случаях даже без дождя - FIXED
-- Могут появляться с черепашьими шлемами с сопротивлением у урону - FIXED
-- В воде могут регенерировать здоровье, 2 HP раз в 3 секунды - FIXED
-- Могут спавниться с удочкой. Удочка только в руке, крючок не бросает. - FIXED
+13. Drowned
+- Trident with Channeling; lightning on hit even without rain — FIXED
+- Turtle helmet with Protection — FIXED
+- Regen 2 HP / 3 s in water — FIXED
+- Fishing rod in hand only, no cast — FIXED
 
-14. Разорители
-- Могут пробивать плотные стенки и конструкции - FIXED
-- 
+14. Ravagers
+- Break through dense walls — FIXED
 
-15. Шалкеры
-- Редкие шалкеры стреляют снарядами, накладывающими замедление - FIXED
-- Некоторые могут выпускать два снаряда с небольшим интервалом - FIXED
-- Шалкер может менять позицию на соседний блок чаще обычного - FIXED
-- Некоторые снаряды накладывают левитацию на более продолжительное время - FIXED
-- Редкий вариант при попадании снаряда телепортирует игрока на небольшое расстояние - FIXED
-- При ударе в панцирь, инструмент и оружие может потерять половину прочности - FIXED
-- 
+15. Shulkers
+- Rare slowness projectiles — FIXED
+- Some fire two projectiles — FIXED
+- Reposition to adjacent block more often — FIXED
+- Longer levitation projectiles — FIXED
+- Rare teleport player on hit — FIXED
+- Closed shell: half tool durability on hit — FIXED
 
-16. Разбойники
-- Могут зарядить арбалет фейерверком - FIXED
-- Могут нести зачарования высоких уровней на арбалете - GROWING
-- 
+16. Pillagers
+- Firework crossbow — FIXED
+- High-level crossbow enchants — GROWING
 
-17. Брутальный пиглин
-- Может одним ударом снести половину прочности любой брони с любыми чарами, при таком попадании накладывает головокружение на непродолжительное время - FIXED
-- Золотой топор сбивает щит на 5 секунд, как у поборника. Деревянный топор щит не сбивает - FIXED
-- Повышено количество здоровья, 60 вместо 50-ти - FIXED
+17. Piglin brute
+- One hit removes half armor durability any enchants; brief nausea — FIXED
+- Golden axe disables shield 5 s; wooden does not — FIXED
+- 60 HP instead of 50 — FIXED
 
-18. Магмовый куб
-- Может поджигать игрока - FIXED
-- Способен оставлять под собой блоки раскалённой магмы - FIXED
-- Повышен урон и здоровье - FIXED
-- Перегрев: специальная особенность, магмовыый куб может войти в агрессивную стадию, стать быстрее, и наносить значительно больше урона - FIXED
+18. Magma cube
+- Sets player on fire — FIXED
+- Leaves magma blocks — FIXED
+- More damage and health — FIXED
+- Overheat: faster, much more damage — FIXED
 
-19. Эндермен
-- Может поменять местами игрока и себя в момент схватки - FIXED
-- Чаще берёт блоки рядом и ставит их на землю - FIXED
+19. Enderman
+- Swap places with player in fight — FIXED
+- Takes and places blocks more often — FIXED
 
-9. Другие изменения:
-- Ночью к появившемуся зомби или скелету могут добавляться ещё 1–3 таких же (ThreatPack). - GROWING
-- Враждебные мобы, которые замечали игрока не дальше 16 блоков, теперь замечают с 32. Кто видел дальше, остаётся как был - FIXED
-- Большое количество мобов теперь может появляться с положительными эффектами зелий. - GROWING
-- В мире могут появляться летающие инструменты и оружия, они будут настроены враждебны - FIXED
-- В аду летающие инструменты незеритовые, с Заговором огня III, сами не выпадают - FIXED
-- Могут появляться враждебные железные големы, 0,2% ночных монстров - FIXED
-- Недалеко от базы могут появляться поборники, разбойники и даже разорители - FIXED
-- Могут появляться ритуальные группы со своими уникальными особенностями и умениями - FIXED
-- На ваши базы могут осуществляться осады, спать в такую ночь - нельзя - С 25-ГО ДНЯ
-- Осада бывает из нежити и тварей (зомби, скелеты, криперы, пауки, ведьмы, фантомы в случайных долях). Утопленников и слизней в осаде нет - С 25-ГО ДНЯ
-- Скелеты-иссушители в осаде возможны, только если кто-то уже был в Аду. Один визит на весь мир, дальше не сбрасывается - FIXED
-- Осада бывает иллагерской (разорители, разбойники, вызыватели, поборники в случайных долях), шанс 25% - С 40-ГО ДНЯ, FIXED
-- Фракции в одной осаде не смешиваются
-- 
+Other changes:
+- At night, 1–3 extra same-type mobs can join a spawned zombie/skeleton (ThreatPack). — GROWING
+- Mobs that noticed player within 16 blocks now notice at 32; longer range unchanged — FIXED
+- Many mobs spawn with potion buffs. — GROWING
+- Hostile floating tools/weapons — FIXED
+- In Nether: netherite floating tools, Fire Aspect III, never drop — FIXED
+- Hostile iron golems, 0.2% of night spawns — FIXED
+- Patrols near base: vindicators, pillagers, ravagers — FIXED
+- Ritual bands with unique abilities — FIXED
+- Sieges on bases; cannot sleep that night — FROM DAY 25
+- Undead siege mix (zombies, skeletons, creepers, spiders, witches, phantoms); no drowned/slimes — FROM DAY 25
+- Wither skeletons in siege only if someone visited Nether once per world — FIXED
+- Illager siege 25% from day 40 — FIXED
+- One faction per siege, never mixed

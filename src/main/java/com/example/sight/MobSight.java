@@ -5,28 +5,28 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 /**
- * Враждебные мобы, которые замечали игрока слишком близко, видят дальше.
- * Кто и так смотрит дальше — зомби, блейз, эндермен, надсмотрщик, осада — не урезается и не растягивается.
- * Стену это не пробивает: без прямой видимости цель по-прежнему не берётся.
- * С первого дня, от шкалы угрозы не растёт.
+ * Hostile mobs that normally notice the player only at short range get extended follow range.
+ * Mobs that already see far (zombie, blaze, enderman, warden, siege mobs) are not shortened or stretched.
+ * Walls still block line of sight: no direct visibility means no target.
+ * Active from day one; does not scale with the threat meter.
  */
 public final class MobSight {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — дальность снова как в обычной игре. Уже появившиеся мобы сами не откатываются. */
+	/** false — follow range is vanilla again. Already spawned mobs are not reverted. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Если моб замечает игрока не дальше этого числа блоков, дальность поднимается до {@link #SEE_BLOCKS}.
-	 * 16 = как у скелета, крипера, паука и ведьмы в обычной игре. Поборник и брут видят ещё ближе, с 12,
-	 * и тоже попадают сюда. Больше 16 не трогаем: зомби и так видит с 35.
+	 * If a mob's vanilla follow range is at most this many blocks, it is raised to {@link #SEE_BLOCKS}.
+	 * 16 = skeleton, creeper, spider, witch in vanilla. Vindicator and evoker see from 12 and qualify too.
+	 * Values above 16 are left alone: zombie already sees from 35.
 	 */
 	public static final double RAISE_IF_AT_MOST = 16.0;
 
 	/**
-	 * Новая дальность, блоки. 32 = вдвое дальше обычных 16.
-	 * 24 = чуть дальше. 48 = почти как блейз. Меньше {@link #RAISE_IF_AT_MOST} ничего не меняет.
+	 * New follow range in blocks. 32 = twice the usual 16.
+	 * 24 = slightly farther. 48 = almost blaze range. If less than {@link #RAISE_IF_AT_MOST}, nothing changes.
 	 */
 	public static final double SEE_BLOCKS = 32.0;
 
@@ -35,7 +35,7 @@ public final class MobSight {
 	private MobSight() {
 	}
 
-	/** Конец появления. Особые мобы потом ставят свою дальность сами, если она больше. */
+	/** End of spawn. Special mobs may set a higher range afterward. */
 	public static void raiseShortSight(Mob mob) {
 		if (!ENABLED || SEE_BLOCKS <= RAISE_IF_AT_MOST || mob.getType().getCategory() != MobCategory.MONSTER) {
 			return;

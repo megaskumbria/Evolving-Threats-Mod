@@ -1,26 +1,26 @@
-ПОЛНЫЙ КОМПЛЕКТ БРОНИ
+FULL ARMOR SET
 =====================
 
-Тип: обычный зомби, скелет и странник.
-Код: RandomArmor.java (FULL_SET_CHANCE и tryFullSet),
+Type: normal zombie, skeleton, and stray.
+Code: RandomArmor.java (FULL_SET_CHANCE and tryFullSet),
      threat/ThreatTable.java (FULL_ARMOR_SET_CHANCE_START).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. GROWING. В первый день шанса нет: полный алмазный сет в начале игры не появляется.
-   К 100-му дню шанс FULL_SET_CHANCE (2%). Луна чуть двигает его, как у остальной брони.
-2. Если выпало — все четыре вещи одного материала.
-   Кожа, золото, кольчуга, медь, железо и алмаз равновероятны.
-   К концу игры полный алмазный сет — примерно один моб из 300.
-3. Если не выпало — броня как раньше: каждый слот сам по себе, материалы вперемешку.
-4. Кожаный комплект может покраситься, как любая кожаная броня.
-5. Шлем такого моба не заменяется тыквой, спавнером или раздатчиком.
-   Именные мобы (Excalibur, Mjölnir, чародей, надсмотрщик, капитан, «700 IQ») этот бросок не делают.
-6. Кусок падает с тем же шансом, что обычная броня (около 8,5%). Весь сет целиком не выпадает.
+1. GROWING. On day one there is no chance: full diamond on day one does not appear.
+   By day 100 chance is FULL_SET_CHANCE (2%). Moon shifts it slightly like other armor.
+2. If it rolls — all four pieces same material.
+   Leather, gold, chain, copper, iron, and diamond equally likely.
+   By endgame full diamond set — roughly one mob in 300.
+3. If not — armor as before: each slot separate, mixed materials.
+4. Leather set may be dyed like any leather armor.
+5. Such a mob’s helmet is not replaced by pumpkin, spawner, or dispenser.
+   Named mobs (Excalibur, Mjölnir, sorcerer, overseer, captain, “700 IQ”) skip this roll.
+6. Each piece drops at the same chance as normal armor (~8.5%). Whole set does not drop as one item.
 
 
 SETTINGS
 ---------
-  RandomArmor.FULL_SET_CHANCE ................ 0.02 — 2% на 100-й день. 0 = выключить.
-  ThreatTable.FULL_ARMOR_SET_CHANCE_START .... 0 — шанс в первый день. 0.01 = 1% уже с начала.
+  RandomArmor.FULL_SET_CHANCE ................ 0.02 — 2% on day 100. 0 = off.
+  ThreatTable.FULL_ARMOR_SET_CHANCE_START .... 0 — chance on day one. 0.01 = 1% from start.

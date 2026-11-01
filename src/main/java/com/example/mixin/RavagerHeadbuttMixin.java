@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Разоритель получает цель «пробить стену головой».
- * Что ломается и какая пауза — {@link com.example.illager.RavagerWallBreak}.
+ The destroyer receives the goal of punching the wall with his head.
+ * What breaks and what pause - {@link com.example.illager.RavagerWallBreak}
  */
 @Mixin(Ravager.class)
 public class RavagerHeadbuttMixin {
@@ -17,7 +17,7 @@ public class RavagerHeadbuttMixin {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$headbuttWall(CallbackInfo ci) {
 		Ravager self = (Ravager) (Object) this;
-		// 3 — выше обычного укуса (4). Если путь есть, эта цель молчит и работает укус.
+		// 3 - higher than the usual bite (4). If there is a path, this target is silent and the bite works.
 		self.getGoalSelector().addGoal(3, new RavagerHeadbuttGoal(self));
 	}
 }

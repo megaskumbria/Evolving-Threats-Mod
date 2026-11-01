@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление и сохранение ведьмы-обнулителя.
- * finalizeSpawn и запись в мир объявлены у Mob, у Witch своих копий нет — поэтому mixin на Mob.
+ The emergence and preservation of the Zero Witch.
+ FinalizeSpawn and record in the world announced by Mob, Witch does not have its own copies - so mixin on Mob.
  */
 @Mixin(Mob.class)
 public class WitchNullifierMobMixin {

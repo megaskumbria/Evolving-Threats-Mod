@@ -1,8 +1,8 @@
 package com.example.entity;
 
 /**
- * Костяная лошадь, на которую мод посадил скелета.
- * Обычная лошадь из грозы этот флаг не получает.
+ Bone horse, on which the fashion put the skeleton.
+ An ordinary horse does not receive this flag from a thunderstorm.
  */
 public interface SkeletonHorsemanMount {
 

@@ -12,37 +12,37 @@ import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Дым и огонь над спавнером на голове — как у блока spawner в ванили (clientTick спawner).
- * Только клиент; на сервере ничего не шлём.
+ * Smoke and fire above the spawner on the head — like the spawner block in vanilla (clientTick spawner).
+ * Only the client; we don't send anything on the server.
  */
 public final class SpawnerHeadParticles {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — без частиц (спавнер на голове только визуально как предмет). */
+	/** false — no particles (spavner on the head only visually as an object). */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Частиц не рисуем, если игрок дальше (блоки). Как у спawner: эффект только рядом.
-	 * 16.0 — как ванильный mob spawner.
+	 * Do not draw particles if the player moves on (blocks). As in spawner: the effect is only nearby.
+	 * 16.0 — as a vanilla mob spawner.
 	 */
 	public static final double NEAR_PLAYER_RANGE = 16.0;
 
 	/**
-	 * Сколько «попыток» частиц за тик на одного моба (0–3). 1 ≈ как один тик спawner.
-	 * Больше — гуще дым, но чуть тяжелее для FPS при многих носителях.
+	 * How many "attempts" of particles per tick per one mob (0–3). 1 ≈ as one tick spawner.
+	 * More — thicker smoke, but slightly heavier for FPS with many carriers.
 	 */
 	public static final int PARTICLE_BURSTS_PER_TICK = 1;
 
-	/** Разброс частиц внутри «кубика» над головой (блоки). 0.5 ≈ как random внутри блока spawner. */
+	/** Scatter of particles inside the "cube" above the head (blocks). 0.5 ≈ as random inside the spawner block. */
 	public static final double HEAD_PARTICLE_SPREAD = 0.45;
 
-	/** Смещение центра эффекта вверх от ног моба (блоки). Подстрой, если частицы не над спавнером. */
+	/** Shifting the center of the effect upwards from the mob's legs (blocks). Adjust if the particles are not above the spavner. */
 	public static final double HEAD_CENTER_ABOVE_FEET = 1.55;
 
 	/**
-	 * То же для скелета-иссушителя: он выше обычного скелета.
-	 * 2.20 — дым у блока на голове, а не на груди.
+	 * The same for the skeleton-dryer: it is higher than a normal skeleton.
+	 * 2.20 — smoke at the block on the head, not on the chest.
 	 */
 	public static final double WITHER_HEAD_CENTER_ABOVE_FEET = 2.20;
 
@@ -82,7 +82,7 @@ public final class SpawnerHeadParticles {
 		}
 	}
 
-	/** Как {@code BaseSpawner} на клиенте: smoke + flame в случайной точке внутри куба. */
+	/** Like the {@code BaseSpawner} on the client: smoke + flame at a random point inside the cube. */
 	private static void emitSpawnerLikeBurst(ClientLevel level, Mob mob, RandomSource random) {
 		double baseX = mob.getX();
 		double aboveFeet = mob instanceof WitherSkeleton ? WITHER_HEAD_CENTER_ABOVE_FEET : HEAD_CENTER_ABOVE_FEET;

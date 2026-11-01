@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Обычный зомби помнит, что он чародей, и сколько ждать до следующего приёма.
- * Приёмы — {@link com.example.mixin.ZombieSorcererGoalMixin}.
- * Лишняя вещь — {@link ZombieSorcererLootMixin}.
+ * Marks a normal zombie as a sorcerer and stores spell cooldown.
+ * Spells — {@link com.example.mixin.ZombieSorcererGoalMixin}.
+ * Bonus drop — {@link ZombieSorcererLootMixin}.
  */
 @Mixin(Zombie.class)
 public class ZombieSorcererMixin implements ZombieSorcererEntity {

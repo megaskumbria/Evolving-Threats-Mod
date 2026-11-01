@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
- * Удар объявлен у общего куба, своей копии нет ни у слизня, ни у магмового куба.
- * Срабатывает только если удар снял здоровье: щит и мигание после удара ничего не дают.
- * Яд — только слизень. Огонь и усиленный урон — только магмовый куб.
+ The impact is declared at the common cube, neither the slug nor the magma cube has its copy.
+ It works only if the blow relieved health: the shield and blinking after the impact do not give anything.
+ The poison is just a slug. Fire and increased damage are just a magma cube.
  */
 @Mixin(AbstractCubeMob.class)
 public class SlimePoisonMixin {

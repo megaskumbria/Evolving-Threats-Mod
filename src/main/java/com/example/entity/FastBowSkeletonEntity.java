@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Скелет, который стреляет дальше и чаще. Реализация — mixin на скелета. */
+/*A skeleton that shoots farther and more often. Realization - mixin on the skeleton. */
 public interface FastBowSkeletonEntity {
 
 	boolean evolvingthreats$isFastBow();

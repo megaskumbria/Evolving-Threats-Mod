@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удваивает опыт любого враждебного моба. Игра зовёт этот метод при смерти.
- * У зомби свой такой же метод: он сначала считает опыт, потом вызывает этот.
- * Поэтому множитель стоит здесь, а не в каждом зомби отдельно.
+ Doubles the experience of any hostile mob. The game calls this method at death.
+ Zombies have their own method: first he counts the experience, then calls this.
+ Therefore, the multiplier is here, not in each zombie separately.
  */
 @Mixin(Mob.class)
 public class MobExperienceMixin {
@@ -21,13 +21,13 @@ public class MobExperienceMixin {
 	@Inject(method = "getBaseExperienceReward", at = @At("RETURN"), cancellable = true)
 	private void evolvingthreats$bonusXp(ServerLevel level, CallbackInfoReturnable<Integer> cir) {
 		Mob mob = (Mob) (Object) this;
-		// Своё число Бастиона. Иначе ниже его удвоил бы общий множитель.
+		// His Bastion number. Otherwise, the total multiplier would double below it.
 		int bastion = Bastion.experienceReward(mob);
 		if (bastion >= 0) {
 			cir.setReturnValue(bastion);
 			return;
 		}
-		// Своё число иссушителя. Иначе ниже его удвоил бы общий множитель.
+		// Your dryer number. Otherwise, the total multiplier would double below it.
 		int wither = WitherSkeletonSword.experienceReward(mob);
 		if (wither >= 0) {
 			cir.setReturnValue(wither);

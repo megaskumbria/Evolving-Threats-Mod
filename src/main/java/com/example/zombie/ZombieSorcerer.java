@@ -29,113 +29,113 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий зомби в чёрной коже с незеритовой мотыгой.
- * Чары на вещи не получает. Мотыга при смерти не падает.
- * Раз в несколько секунд, если видит игрока, колдует один приём.
- * Чаще всего подбрасывает вверх. Реже поджигает или тянет к себе.
+ * Rare zombie in black leather with a netherite hoe.
+ * Gets no mod enchants. Hoe never drops on death.
+ * Every few seconds, while it sees the player, casts one spell.
+ * Most often launch upward; less often ignite or pull toward itself.
  */
 public final class ZombieSorcerer {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — чародеи не появляются, команда тоже не спавнит. */
+	/** Enable mechanic. false — no sorcerers, command spawn disabled. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби окажется чародеем. 0.001 = 0,1%, один из тысячи.
-	 * FIXED: с 40-го дня (ThreatTable.SORCERER_DAY), от шкалы угрозы не растёт.
-	 * Утопленник, кадавр, зомби-житель, детёныш, надсмотрщик и рейд этот шанс не бросают.
-	 * Команда шанс не использует. 0 = только команда.
+	 * Chance (0.0–1.0) that a normal zombie becomes a sorcerer. 0.001 = 0.1%, one in a thousand.
+	 * FIXED from day 40 (ThreatTable.SORCERER_DAY); does not grow with threat scale.
+	 * Drowned, husk, zombie villager, baby, overseer, and raid skip this roll.
+	 * Command spawn skips the roll. 0 = command only.
 	 */
 	public static final float SPAWN_CHANCE = 0.001f;
 
 	/**
-	 * Здоровье. 80 = 40 сердец. Обычный зомби в этом моде случайно 20–40.
-	 * На чародея тот бросок не действует: здесь всегда это число.
-	 * Меньше 1 игра почти сразу убивает.
+	 * Health. 80 = 40 hearts. Normal mod zombies roll 20–40;
+	 * sorcerers always use this value instead.
+	 * Below 1 the game kills them almost instantly.
 	 */
 	public static final float HEALTH = 80.0f;
 
 	/**
-	 * Опыт за убийство. 15 — в три раза больше обычного зомби (у того 5).
-	 * Падает, только если зомби убил игрок: так устроена сама игра.
+	 * XP on kill. 15 — three times normal zombie (5).
+	 * Drops only if a player killed it (vanilla rule).
 	 */
 	public static final int XP_REWARD = 15;
 
 	/**
-	 * Как далеко (блоки) он колдует. 12 = игрок ещё не вплотную, но уже рядом.
-	 * Дальше чародей просто идёт, как обычный зомби. 0 = приёмов нет.
+	 * Spell range in blocks. 12 = player not melee range but close.
+	 * Beyond this the sorcerer walks like a normal zombie. 0 = no spells.
 	 */
 	public static final double SPELL_RANGE_BLOCKS = 12.0;
 
 	/**
-	 * Пауза между приёмами, секунды. 8 = следующий поджог, подброс или рывок не раньше чем через 8 секунд.
-	 * 0 = каждый тик, пока игрок в зоне: его будет подбрасывать без остановки.
-	 * Пока игрока не видно, пауза не тратится: первый приём случается, как только чародей его увидел.
+	 * Cooldown between spells, seconds. 8 = next ignite, launch, or pull not before 8 seconds.
+	 * 0 = every tick while player in range — endless launching.
+	 * Cooldown does not tick while target is not visible; first spell when line of sight returns.
 	 */
 	public static final int SPELL_COOLDOWN_SECONDS = 8;
 
 	/**
-	 * Сколько секунд горит игрок после приёма огня. 6 = шесть секунд.
-	 * Огнестойкость урон от огня снимает, как обычно. Щит этот приём не ловит.
+	 * Fire duration after ignite spell, seconds. 6 = six seconds.
+	 * Fire Resistance works as usual. Shield does not block this spell.
 	 */
 	public static final int FIRE_SECONDS = 6;
 
 	/**
-	 * Как часто какой приём. Это веса: сумма 100 значит подброс 70%, огонь 15%, рывок 15%.
-	 * Подброс — основной приём. 0 у веса = этого приёма нет.
-	 * Если игрок ближе {@link #PULL_MIN_BLOCKS}, рывок не выбирается,
-	 * и шансы подброса и огня делят оставшееся между собой.
+	 * Spell weights (sum 100 → launch 70%, fire 15%, pull 15%).
+	 * Launch is primary. Weight 0 = spell disabled.
+	 * If player is closer than {@link #PULL_MIN_BLOCKS}, pull is excluded
+	 * and launch/fire share the remaining weight.
 	 */
 	public static final int LAUNCH_WEIGHT = 70;
 	public static final int FIRE_WEIGHT = 15;
 	public static final int PULL_WEIGHT = 15;
 
 	/**
-	 * Обычный подброс, в блоках. Оба края входят: 25 и 30 тоже бывают, поровну между ними.
-	 * Считается без зелий. Прыгучесть поднимет выше, плавное падение — тоже.
-	 * Падение с 25 блоков бьёт почти на всю жизнь (урон падения = высота минус 3).
+	 * Normal launch height in blocks, inclusive. 25–30 equally likely.
+	 * No potions assumed. Jump Boost raises higher, Slow Falling too.
+	 * Falling from 25 blocks is near-lethal (fall damage = height − 3).
 	 */
 	public static final int LAUNCH_MIN_BLOCKS = 25;
 	public static final int LAUNCH_MAX_BLOCKS = 30;
 
 	/**
-	 * Редкий подброс, в блоках. 50 = заметно выше обычных 25–30.
-	 * Выпадает с шансом {@link #LAUNCH_RARE_CHANCE}, иначе высота из обычного диапазона.
+	 * Rare launch height in blocks. 50 = well above normal 25–30.
+	 * Rolled with {@link #LAUNCH_RARE_CHANCE}; otherwise normal range.
 	 */
 	public static final int LAUNCH_RARE_BLOCKS = 50;
 
 	/**
-	 * Шанс (0.0–1.0) подбросить на {@link #LAUNCH_RARE_BLOCKS}, а не на 25–30.
-	 * 0.10 = 10%, примерно каждый десятый подброс. 0 = всегда 25–30. 1 = всегда на 50.
+	 * Chance (0.0–1.0) to launch to {@link #LAUNCH_RARE_BLOCKS} instead of 25–30.
+	 * 0.10 = 10%, roughly every tenth launch. 0 = always 25–30. 1 = always 50.
 	 */
 	public static final float LAUNCH_RARE_CHANCE = 0.10f;
 
 	/**
-	 * Сила рывка к чародею. 1.6 = заметно притягивает, но не телепортирует вплотную.
-	 * Больше — игрок пролетает почти до зомби. 0 = рывок ничего не делает.
-	 * Сопротивление отбрасыванию этот рывок не ослабляет: это не удар.
+	 * Pull strength toward sorcerer. 1.6 = strong tug, not a teleport.
+	 * Higher — player slides almost to the zombie. 0 = pull does nothing.
+	 * Knockback resistance does not weaken this — it is not a melee hit.
 	 */
 	public static final double PULL_SPEED = 1.6;
 
 	/**
-	 * Ближе этого (блоки) рывок не выбирается: игрок и так рядом.
-	 * Тогда приём будет поджогом или подбросом. 2.5 = примерно дистанция удара.
+	 * Pull is not chosen closer than this (blocks) — player already in melee range.
+	 * Then ignite or launch is used. 2.5 ≈ strike distance.
 	 */
 	public static final double PULL_MIN_BLOCKS = 2.5;
 
 	/**
-	 * Шанс (0.0–1.0), что при смерти от игрока упадёт одна лишняя вещь. 1.0 = всегда.
-	 * 0 = только опыт, без сахара и остального. Если зомби сгорел или его взорвало — лишней вещи нет.
-	 * Вещь одна, случайная, шансы равные: сахар, золотая морковка, фуга (звезда фейерверка),
-	 * красный факел (редстоуновый) или один кусок чёрной кожи.
-	 * Надетая броня и мотыга сами не падают.
+	 * Chance (0.0–1.0) for one extra loot item when killed by a player. 1.0 = always.
+	 * 0 = XP only. Burned or exploded — no bonus drop.
+	 * One random item, equal weights: sugar, golden carrot, firework star,
+	 * redstone torch, or one black leather piece.
+	 * Worn armor and hoe never drop from this roll.
 	 */
 	public static final float BONUS_DROP_CHANCE = 1.0f;
 
 	// ========================================================================
 
-	/** Притяжение за тик, как у игрока в воздухе. От него считается скорость подброса. */
+	/** Gravity per tick, like airborne player. Used to compute launch velocity. */
 	private static final double GRAVITY_PER_TICK = 0.08;
 	private static final double VERTICAL_DRAG = 0.98;
 
@@ -153,7 +153,7 @@ public final class ZombieSorcerer {
 			Items.LEATHER_BOOTS
 	};
 
-	/** Сахар, золотая морковка, фуга, красный факел. Кожа считается отдельно, чтобы выпал один кусок. */
+	/** Sugar, golden carrot, firework star, redstone torch. Leather rolled separately as one piece. */
 	private static final Item[] BONUS_ITEMS = {
 			Items.SUGAR,
 			Items.GOLDEN_CARROT,
@@ -171,9 +171,9 @@ public final class ZombieSorcerer {
 	}
 
 	/**
-	 * Конец появления зомби. true = это чародей: случайное оружие, броня, чары,
-	 * щит, тотем, тыква и спавнер на голову ему не выдаём.
-	 * Зелья при появлении уже могли повеситься — как у обычного зомби.
+	 * End of zombie spawn. true = sorcerer: skip random weapon, armor, enchants,
+	 * shield, totem, pumpkin, and spawner head.
+	 * Potion buffs may already be applied like a normal zombie.
 	 */
 	public static boolean tryClaim(Zombie zombie, EntitySpawnReason reason) {
 		if (!canBeSorcerer(zombie)) {
@@ -187,7 +187,7 @@ public final class ZombieSorcerer {
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
 			return false;
 		}
-		// С какого дня чародеи вообще появляются (ThreatTable.SORCERER_DAY). Шанс ниже от дня не меняется.
+		// Sorcerers only from SORCERER_DAY; chance does not scale by day.
 		if (!ThreatScale.reached(zombie.level(), ThreatTable.SORCERER_DAY)) {
 			return false;
 		}
@@ -199,7 +199,7 @@ public final class ZombieSorcerer {
 		return true;
 	}
 
-	/** Сколько опыта дать. -1 = это не чародей, пусть решает игра. */
+	/** XP to award. -1 = not a sorcerer, let vanilla decide. */
 	public static int experienceReward(Zombie zombie) {
 		if (!isSorcerer(zombie)) {
 			return -1;
@@ -207,7 +207,7 @@ public final class ZombieSorcerer {
 		return Math.max(0, XP_REWARD);
 	}
 
-	/** Лишняя вещь при смерти. Мотыга сюда не входит. */
+	/** Bonus loot on death. Hoe is excluded. */
 	public static void dropBonus(Zombie zombie, ServerLevel level, boolean killedByPlayer) {
 		if (!isSorcerer(zombie) || !killedByPlayer || BONUS_DROP_CHANCE <= 0.0f) {
 			return;
@@ -218,7 +218,7 @@ public final class ZombieSorcerer {
 		zombie.spawnAtLocation(level, rollBonus(zombie));
 	}
 
-	/** Конец тика цели. Следит за паузой и колдует, когда игрок в зоне и его видно. */
+	/** End of target tick. Tracks cooldown and casts when player is in range with line of sight. */
 	public static void tick(Zombie zombie) {
 		if (!(zombie instanceof ZombieSorcererEntity data) || !data.evolvingthreats$isSorcerer()) {
 			return;
@@ -244,7 +244,7 @@ public final class ZombieSorcerer {
 		data.evolvingthreats$setSorcererCooldown(Math.max(0, SPELL_COOLDOWN_SECONDS) * 20);
 	}
 
-	/** Команда: чародей перед игроком. null — механика выключена. */
+	/** Command: sorcerer in front of player. null — mechanic disabled. */
 	public static @Nullable Zombie spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -333,7 +333,7 @@ public final class ZombieSorcerer {
 				0.02);
 	}
 
-	/** 0 — подброс, 1 — огонь, 2 — рывок. Подброс выпадает чаще всех. */
+	/** 0 = launch, 1 = fire, 2 = pull. Launch is most common. */
 	private static int pickSpell(Zombie zombie, Player player) {
 		boolean allowPull = PULL_WEIGHT > 0 && zombie.distanceTo(player) >= PULL_MIN_BLOCKS;
 		int launch = Math.max(0, LAUNCH_WEIGHT);
@@ -394,7 +394,7 @@ public final class ZombieSorcerer {
 				0.0);
 	}
 
-	/** Обычно 25–30 блоков поровну. Редко — ровно {@link #LAUNCH_RARE_BLOCKS}. */
+	/** Usually 25–30 equally. Rarely exactly {@link #LAUNCH_RARE_BLOCKS}. */
 	private static int launchBlocks(Zombie zombie) {
 		if (LAUNCH_RARE_CHANCE > 0.0f && zombie.getRandom().nextFloat() < LAUNCH_RARE_CHANCE) {
 			return Math.max(0, LAUNCH_RARE_BLOCKS);
@@ -405,8 +405,8 @@ public final class ZombieSorcerer {
 	}
 
 	/**
-	 * Скорость вверх, чтобы без зелий долететь примерно до нужной высоты.
-	 * Игра сначала двигает игрока, потом уменьшает скорость: минус 0.08 и умножить на 0.98.
+	 * Upward velocity to reach roughly the target height without potions.
+	 * Game moves the player, then applies −0.08 gravity and ×0.98 drag each tick.
 	 */
 	private static double velocityForHeight(double blocks) {
 		if (blocks <= 0.0) {

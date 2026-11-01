@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Попадание стрелы.
- * Обычный удар зовёт общий метод, когда здоровье уже снято.
- * В креативе здоровье не снимается, поэтому там проверка идёт с самого попадания.
- * Щит по-прежнему удар не пропускает. Числа — {@link SkeletonDisarm}.
+ * Arrow hit.
+ The usual stroke calls the general method when health is already removed.
+ In creative health is not removed, so there is a check from the very hit.
+ * Shield still holds out. The numbers are {@link SkeletonDisarm}.
  */
 @Mixin(AbstractArrow.class)
 public class SkeletonDisarmMixin {
@@ -27,8 +27,8 @@ public class SkeletonDisarmMixin {
 	}
 
 	/**
-	 * Креатив и наблюдатель не получают урон, и метод выше для них не вызывается.
-	 * Наблюдателя не трогаем. Щит в креативе тоже отбивает стрелу — руки остаются.
+	 The creative and the observer do not receive damage, and the method above is not called for them.
+	 We're not touching the observer. The shield in the creative also beats off the arrow - the hands remain.
 	 */
 	@Inject(method = "onHitEntity", at = @At("HEAD"))
 	private void evolvingthreats$disarmCreative(EntityHitResult hit, CallbackInfo ci) {

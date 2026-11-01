@@ -15,7 +15,7 @@ import net.minecraft.world.item.Items;
 import java.util.EnumSet;
 
 /**
- * Скелет с jack o'lantern: раз в кулдаун одна огненная стрела по цели (дополнительно к луку).
+ Skeleton with jack o'lantern: once in the cooldown one fire arrow on the target (in addition to the bow).
  */
 public class JackLanternFireShotGoal extends Goal {
 

@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Опыт, бирка и череп Василиска. Лук и незерит обнуляются до того, как игра их уронит.
- * Оба метода объявлены у Mob, у Skeleton своих копий нет.
+ Experience, tag and Basilisk's skull. Onions and Neserite reset before the game drops them.
+ Both methods are announced by Mob, Skeleton has no copies.
  */
 @Mixin(Mob.class)
 public class BasiliskLootMixin {

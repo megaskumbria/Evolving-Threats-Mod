@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Общий тик моба: отряд скелетов делится целью, капитан роняет свой лут.
- * Методы объявлены у Mob, у Skeleton своих копий нет.
+ Common mob tick: a squad of skeletons shares a target, the captain drops his loot.
+ Methods announced by Mob, Skeleton has no copies.
  */
 @Mixin(Mob.class)
 public class SkeletonSquadMobMixin {

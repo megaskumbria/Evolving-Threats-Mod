@@ -13,70 +13,70 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
 
 /**
- * Случайная броня по слотам. Каждый слот (шлем, нагрудник, штаны, ботинки)
- * бросается отдельно — поэтому бывает «алмазный нагрудник + кожаные штаны».
- * Отдельно есть редкий полный комплект одного материала: он растёт со шкалой угрозы.
- * Незеритовой брони здесь нет.
+ * Random slot armor. Each slot (helmet, breastplate, pants, shoes)
+ * is thrown separately - so there is a "diamond breastplate + leather pants".
+ Separately, there is a rare complete set of one material: it grows with a threat scale.
+ There's no nonseritic armor here.
  */
 public final class RandomArmor {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Шанс (0.0–1.0) для КАЖДОГО слота брони у зомби на 100-й день (конец шкалы угрозы).
-	 * 0.75 = 75% на шлем, 75% на нагрудник, и т.д. (независимо друг от друга).
-	 * В начале игры шанс меньше (ThreatTable.ARMOR_PIECE_CHANCE_START) и растёт вместе со шкалой и луной.
+	 * Chance (0.0–1.0) for EVERY Zombies Armor Slot on Day 100 (end of threat scale).
+	 0.75 = 75% on the helmet, 75% on the breastplate, etc. (regardless of each other).
+	 At the beginning of the game, the chance is smaller (ThreatTable.ARMOR PIECE CHANCE START) and increases with the scale and the moon.
 	 */
 	public static final float ZOMBIE_ARMOR_PIECE_CHANCE = 0.75f;
 
-	/** То же для обычного скелета и странника (конец шкалы). */
+	/*Same for normal skeleton and wanderer (end of scale). */
 	public static final float SKELETON_ARMOR_PIECE_CHANCE = 0.75f;
 
 	/**
-	 * Незеритовая броня при спавне не используется (только кожа…алмаз).
-	 * Константа для ясности; менять не нужно, пока не добавишь незерит в ARMOR_PIECES.
+	 Nonserite armor is not used for spawning (only leather ... diamond).
+	 Constant for clarity; do not change until you add Neserite to ARMOR PIECES.
 	 */
 	public static final boolean ALLOW_NETHERITE_ARMOR = false;
 
 	/**
-	 * Шанс (0.0–1.0) полного комплекта на 100-й день: шлем, нагрудник, штаны и ботинки одного материала.
-	 * 0.02 = 2% зомби или скелетов. В начале игры шанса нет (ThreatTable.FULL_ARMOR_SET_CHANCE_START = 0)
-	 * и он растёт вместе со шкалой и луной. 0 = таких мобов нет даже в конце.
-	 * Материал внутри комплекта — поровну: кожа, золото, кольчуга, медь, железо или алмаз.
-	 * Обычная броня кусками, если комплект не выпал, считается отдельно.
+	 * Chance (0.0-1.0) full set on the 100th day: helmet, breastplate, pants and shoes of the same material.
+	 0.02 = 2% zombies or skeletons At the beginning of the game there is no chance (ThreatTable.FULL ARMOR SET CHANCE START = 0)
+	 And it grows with the scale and the moon. 0 = no such mobs even at the end.
+	 * The material inside the kit - equally: leather, gold, mail, copper, iron or diamond.
+	 Ordinary armor in pieces, if the set did not fall out, is considered separately.
 	 */
 	public static final float FULL_SET_CHANCE = 0.02f;
 
 	/**
-	 * Шанс (0.0–1.0), что моб с кожаной бронёй будет в КРАШЕНОЙ кожаной броне. 0.50 = 50%.
-	 * Бросается один раз на моба, а не на каждый кусок: так форма получается цельной.
-	 * Красится только кожа (остальная броня в игре не красится). 0 = кожа всегда обычная коричневая.
+	 * Chance (0.0-1.0) that a mob with leather armor will be in dyed leather armor. 0.50 = 50%.
+	 Thrown once on the mob, not on each piece: so the shape is whole.
+	 Only the skin is painted (the rest of the armor in the game is not painted). 0 = The skin is always normal brown.
 	 */
 	public static final float LEATHER_DYE_CHANCE = 0.50f;
 
 	/**
-	 * Шанс (0.0–1.0), что отдельный кусок кожаной брони у красящегося моба получит СВОЙ цвет, а не общий.
-	 * 0.25 = примерно каждый четвёртый кусок в другом цвете. 0 = весь комплект строго одного цвета.
+	 * Chance (0.0–1.0) that a single piece of leather armor from a dyed mob will have its own color, rather than the total.
+	 0.25 = approximately one in four pieces in a different color. 0 = the entire set of strictly one color.
 	 */
 	public static final float LEATHER_PIECE_OWN_COLOR_CHANCE = 0.25f;
 
 	/**
-	 * Откуда брать цвет.
-	 * false = любой из 16 777 216 оттенков (полный диапазон; бывают тусклые серо-коричневые).
-	 * true  = только один из 16 цветов красителей Майнкрафта (чистые яркие цвета).
-	 * Если с полным диапазоном будет «грязно» — поставь true.
+	 Where to get the color.
+	 False = any of 16,777,216 shades (full range; dull gray-brown)
+	 True = only one of the 16 colors of Minecraft dyes (pure bright colors).
+	 If the full range is “dirty”, put true.
 	 */
 	public static final boolean LEATHER_USE_ONLY_DYE_COLORS = false;
 
 	/**
-	 * Шанс, что выпавший предмет брони будет снят с моба при смерти (как у ванильных мобов).
-	 * 0.085 ≈ 8.5%. Поставь 1.0f, если хочешь, чтобы броня падала всегда.
+	 * Chances that a fallen item of armor will be removed from the mob at death (like vanilla mobs).
+	 * 0.085 - 8.5%. Put on 1.0f if you want to keep your armor down.
 	 */
 	public static final float ARMOR_DROP_CHANCE = 0.085f;
 
 	// ========================================================================
 
-	/** Порядок: шлем, нагрудник, поножи, ботинки. Строки — материал (см. MATERIAL_WEIGHTS). */
+	/*Order: helmet, breastplate, knives, shoes. Lines are material (see MATERIAL WEIGHTS). */
 	private static final Item[][] ARMOR_PIECES = {
 		{ Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS },
 		{ Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS },
@@ -87,17 +87,17 @@ public final class RandomArmor {
 	};
 
 	/**
-	 * Веса материала на 100-й день (конец шкалы). В начале игры веса другие:
-	 * ThreatTable.ARMOR_MATERIAL_WEIGHTS_START. Между ними идёт плавный переход по шкале угрозы и луне.
-	 * Незерита нет: он только у Василиска.
+	 * Material weight at day 100 (end of scale) At the beginning of the game, the weights are different:
+	 ThreatTable. ARMOR MATERIAL WEIGHTS START. Between them is a smooth transition on the scale of threat and the moon.
+	 There is no Neserite: only Vasilisk has it.
 	 */
 	private static final int[] MATERIAL_WEIGHTS = {
-		10, // кожа
-		5, // золото
-		10, // кольчуга
-		8, // медь
-		32, // железо
-		35, // алмаз (35% от всей надетой брони на 100-й день)
+		10, // skin
+		5, // gold
+		10, // mail
+		8, // copper
+		32, // iron
+		35, // Diamond (35% of all armor worn on day 100)
 	};
 
 	private static final EquipmentSlot[] SLOTS = {
@@ -111,8 +111,8 @@ public final class RandomArmor {
 	}
 
 	/**
-	 * Это кусок брони из нашего списка (кожа…алмаз)? Нужен, чтобы чары не лезли на особые «головы»
-	 * (спавнер, тыква-маяк, раздатчик), которые лежат в том же слоте шлема.
+	 Is this a piece of armor from our list (skin...diamond)? It is necessary that the charms do not climb on special "heads"
+	 * (spawner, pumpkin beacon, dispenser), which lie in the same slot of the helmet.
 	 */
 	public static boolean isModArmor(ItemStack stack) {
 		if (stack.isEmpty()) {
@@ -130,7 +130,7 @@ public final class RandomArmor {
 	}
 
 	/**
-	 * Броня зомби. true = надет полный комплект: шлем не заменять тыквой или спавнером.
+	 * Zombie armor. True = worn full set: helmet not to replace pumpkin or spawner.
 	 */
 	public static boolean rollForZombie(Mob mob) {
 		if (tryFullSet(mob)) {
@@ -141,7 +141,7 @@ public final class RandomArmor {
 	}
 
 	/**
-	 * Броня скелета и странника. true = надет полный комплект: шлем не заменять.
+	 Armor of the skeleton and the wanderer. True = Wear the full set: the helmet does not replace.
 	 */
 	public static boolean rollForSkeleton(Mob mob) {
 		if (tryFullSet(mob)) {
@@ -152,8 +152,8 @@ public final class RandomArmor {
 	}
 
 	/**
-	 * Редкий цельный сет. true = все четыре слота заняты одним материалом,
-	 * обычный бросок по кускам делать не нужно.
+	 * Rare single set. true = all four slots are occupied by the same material
+	 * There is no need to make a regular throw on pieces.
 	 */
 	private static boolean tryFullSet(Mob mob) {
 		float chance = ThreatScale.lerp(mob.level(), ThreatTable.FULL_ARMOR_SET_CHANCE_START, FULL_SET_CHANCE);
@@ -171,15 +171,15 @@ public final class RandomArmor {
 		return true;
 	}
 
-	/** GROWING: шанс слота между ThreatTable.ARMOR_PIECE_CHANCE_START (день 0) и {@code endChance} (день 100). */
+	/*GROWING: Slot chance between ThreatTable. ARMOR PIECE CHANCE START (day 0) and {@code endChance} (day 100). */
 	private static float pieceChance(Mob mob, float endChance) {
 		return ThreatScale.lerp(mob.level(), ThreatTable.ARMOR_PIECE_CHANCE_START, endChance);
 	}
 
 	/**
-	 * Один случайный кусок в уже выбранный слот. Материал как у обычной брони моба (кожа…алмаз).
-	 * Spiky зовёт это, если колючий слот пустой: без куска брони колоть нечем.
-	 * Уже надетое в других слотах не трогает.
+	 One random piece in the already selected slot. Material as in ordinary armor moba (skin...diamond).
+	 Spiky calls it if the prickly slot is empty: without a piece of armor, there is nothing to prick.
+	 * What is already worn in other slots does not touch.
 	 */
 	public static void equipRandomPiece(Mob mob, EquipmentSlot slot) {
 		int slotIndex = -1;
@@ -199,8 +199,8 @@ public final class RandomArmor {
 	}
 
 	/**
-	 * Только шлем, с тем же шансом и теми же материалами, что слот шлема у обычного скелета.
-	 * Нагрудник, штаны и ботинки не трогает. Незерита в списке нет.
+	 Only a helmet, with the same chance and the same materials as a helmet slot on a normal skeleton.
+	 Breast, pants and shoes do not touch. Neserite's not on the list.
 	 */
 	public static void rollHelmet(Mob mob) {
 		RandomSource random = mob.getRandom();
@@ -233,8 +233,8 @@ public final class RandomArmor {
 	}
 
 	/**
-	 * Красит кожаные куски на мобе (включая те, что выдала игра): один общий цвет на комплект,
-	 * иногда отдельный кусок получает свой. Остальные материалы не трогает. Цвет остаётся и на выпавшей броне.
+	 Paints leather pieces on the mob (including the ones the game gave out): one common color per set,
+	 Sometimes a single piece gets its own. The rest of the material doesn't touch. The color remains on the fallen armor.
 	 */
 	private static void dyeLeather(Mob mob, RandomSource random) {
 		if (LEATHER_DYE_CHANCE <= 0.0f || random.nextFloat() >= LEATHER_DYE_CHANCE) {
@@ -252,7 +252,7 @@ public final class RandomArmor {
 		}
 	}
 
-	/** Это кожаный шлем/нагрудник/штаны/ботинки? (Первая строка списка ARMOR_PIECES — кожа.) */
+	/*Is it a leather helmet/breather/pants/shoes? (The first line of the ARMOR PIECES list is leather.) */
 	private static boolean isLeather(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
@@ -265,7 +265,7 @@ public final class RandomArmor {
 		return false;
 	}
 
-	/** Случайный цвет RGB: из 16 красителей или любой из 16 777 216 (см. LEATHER_USE_ONLY_DYE_COLORS). */
+	/*Random color RGB: from 16 dyes or any of 16,777,216 (see LEATHER USE ONLY DYE COLORS). */
 	private static int randomLeatherColor(RandomSource random) {
 		if (LEATHER_USE_ONLY_DYE_COLORS) {
 			DyeColor[] dyes = DyeColor.values();
@@ -274,7 +274,7 @@ public final class RandomArmor {
 		return random.nextInt(0x1000000);
 	}
 
-	/** Материал по весам, которые плавно меняются от начала шкалы угрозы к концу. */
+	/*Material by weights that change smoothly from the beginning of the threat scale to the end. */
 	private static int pickMaterialIndex(Mob mob, RandomSource random) {
 		return ThreatScale.pickWeighted(mob.level(), random, ThreatTable.ARMOR_MATERIAL_WEIGHTS_START, MATERIAL_WEIGHTS);
 	}

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Запись/чтение роли паука в сохранении (метод объявлен в Mob, поэтому mixin на Mob). */
+/*Record/read the role of the spider in conservation (the method announced in Mob, so mixin on Mob). */
 @Mixin(Mob.class)
 public class SpiderRoleSaveMixin {
 

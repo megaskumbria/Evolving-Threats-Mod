@@ -17,23 +17,23 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий крипер, который ведёт себя как обычный: подбегает и взрывается с обычным запалом и силой.
- * Если игрок закрылся щитом и взрыв в щит попал — щит уничтожается целиком, урон по игроку не проходит.
- * Прочность и зачарование «Прочность» щит не спасают: ломается всегда с одного такого взрыва.
- * Выглядит как ванильный крипер.
+ A rare cryper who behaves like a regular: runs up and explodes with the usual fuse and force.
+ If the player closed with a shield and the explosion hit the shield - the shield is destroyed completely, the damage to the player does not pass.
+ The strength and enchantment of the “Durability” shield does not spawn: it always breaks with one such explosion.
+ Looks like a vanilla cryper.
  */
 public final class ShieldBreakCreeper {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие криперы не появляются, команда тоже не делает ломателя. */
+	/** Turn on the mechanics. False - such crypers do not appear, the team does not make a scraper either. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) при спавне обычного крипера стать ломателем щита. 0.05 = 5%.
-	 * Как у подрывника и скелета с тыквой-маяком. Если уже выпал подрывник или метатель — этот шанс не бросается.
-	 * Заряженный крипер ломателем щита быть может.
-	 * Команда спавна шанс не использует.
+	 * Chance (0.0–1.0) when spawning an ordinary cryper to become a shield breaker. 0.05 = 5%.
+	 Like a bomber and a skeleton with a beacon pumpkin. If a bomber or a thrower has already fallen, this chance is not thrown.
+	 A loaded cryper with a shield scrapper could be.
+	 * The Spawn team does not take the chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.05f;
 
@@ -48,7 +48,7 @@ public final class ShieldBreakCreeper {
 				&& data.evolvingthreats$isShieldBreakCreeper();
 	}
 
-	/** Вызвать из finalizeSpawn. Командный спавн ставит флаг заранее. */
+	/** Call from finalizeSpawn. The team spawn puts the flag in advance. */
 	public static void rollOnSpawn(Creeper creeper, EntitySpawnReason reason) {
 		if (!ENABLED || !(creeper instanceof ShieldBreakCreeperEntity data)) {
 			return;
@@ -71,7 +71,7 @@ public final class ShieldBreakCreeper {
 		apply(creeper);
 	}
 
-	/** Команда: ломатель щита перед игроком. */
+	/** Team: Breaker of the shield in front of the player. */
 	public static Creeper spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		Creeper creeper = EntityTypes.CREEPER.create(level, EntitySpawnReason.COMMAND);
 		if (creeper == null) {
@@ -98,9 +98,9 @@ public final class ShieldBreakCreeper {
 	}
 
 	/**
-	 * Уничтожить щит в руке, которой игрок закрылся.
-	 * Урон взрыва сюда не добавляется: игра уже посчитала его заблокированным.
-	 * Если закрылся не щитом или взрыв в щит не попал — этот метод не вызывается.
+	 Destroy the shield in the hand with which the player closed.
+	 Explosion damage is not added here: the game has already considered it blocked.
+	 If the shield is not closed or the explosion in the shield is not hit - this method is not called.
 	 */
 	public static void breakBlockingShield(Player player) {
 		if (!(player.level() instanceof ServerLevel)) {

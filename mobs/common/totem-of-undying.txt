@@ -1,23 +1,23 @@
-ТОТЕМ БЕССМЕРТИЯ
+TOTEM OF UNDYING
 =================
 
-Тип: обычный зомби, кадавр, зомби-житель, скелет и странник.
-Код: MobTotem.java (шанс и выпадение),
-     mixin/ZombieMixin.java и mixin/SkeletonMixin.java (выдача до щита и стрелы).
+Type: normal zombie, husk, zombie villager, skeleton, and stray.
+Code: MobTotem.java (chance and drop),
+     mixin/ZombieMixin.java and mixin/SkeletonMixin.java (grant before shield and arrow).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (4%). Тотем лежит во второй руке.
-2. Смертельный удар не убивает: остаётся половина сердца, тотем сгорает.
-   Дальше моб получает регенерацию, поглощение урона и огнестойкость, как игрок.
-   Бездна и команда убийства тотем не останавливают.
-3. Вторая рука занята. Щит, вредная стрела и второй меч этому мобу не выдаются.
-   У скелета в основной руке остаётся лук. У зомби оружие в основной руке выдаётся как обычно.
-4. Если тотем не сработал, он падает с шансом около 8.5%. После срабатывания падать нечему.
-5. Не получают тотем: утопленник, зомбифицированный пиглин, гнилой надсмотрщик,
-   зомби и скелеты из рейда, скелет-иссушитель, болотный и пустынный скелеты,
-   маленький скелет, скелет «700 IQ».
+1. Chance SPAWN_CHANCE (4%). Totem sits in off hand.
+2. Lethal hit does not kill: half a heart left, totem burns.
+   Mob then gets regeneration, absorption, and fire resistance like a player.
+   Void and kill command are not stopped by totem.
+3. Off hand occupied. Shield, harmful arrow, and second sword are not granted.
+   Skeleton keeps bow in main hand. Zombie main-hand weapon as usual.
+4. If totem did not trigger, it drops ~8.5% chance. After trigger nothing to drop.
+5. No totem: drowned, zombified piglin, rotten overseer,
+   raid zombies and skeletons, wither skeleton, swamp and desert skeletons,
+   small skeleton, “700 IQ” skeleton.
 
 
 SETTINGS
@@ -25,4 +25,4 @@ SETTINGS
   MobTotem.java
     ENABLED .................... true
     SPAWN_CHANCE ............... 0.04 — 4%
-    DROP_CHANCE ................ 0.085 — выпадение, если тотем не сгорел
+    DROP_CHANCE ................ 0.085 — drop if totem did not burn

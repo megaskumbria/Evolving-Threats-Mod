@@ -1,52 +1,52 @@
-Осадам стоит сильнее зависеть от луны. Ты уже планируешь осады (SiegeData.nextSiegeDay). Можно сделать так: осады чаще выпадают на полнолуние и никогда не выпадают на новолуние. +++
+Sieges should depend more on the moon. You are already planning a siege (SiegeData.nextSiegeDay). You can do this: precipitation often falls on the full moon and never falls on the new moon. +++
 
 
-Ниже мои пожелания по изменениям, чтобы сразу ответить на часть вопросов.
+Below are my suggestions for changes to immediately answer some of the questions.
 
-Сперва разберём что происходит по усложнениям на основе твоей таблицы:
+First, let's analyze what is happening in terms of complications based on your table:
 
-Я хочу чтобы в мире, даже на минимальном уровне угрозы (0-10 дней) у моба был шанс появиться в 
-железной, кольчужной и даже в алмазной броне. Зачарованной или с эффектами.
-Просто шанс этого ничтожно мал, это всё равно что встретить алмазного зомби в ванильном майнкрафте
+I want that in the world, even at the minimum threat level (0-10 days), the mob has a chance to appear in 
+iron, chain mail and even diamond armor. Enchanted or with effects.
+Just the chance of this is negligible, it's like meeting a diamond zombie in a vanilla minecraft
 
-Это изначальный мой тейк, что касается дней. 
+This is my initial take on the days.
 
-0-10: Да, всё так, но броня и чары могут быть, могут быть рандом оружия в руках, но очень редко, приближённо к ванилле
-Я допускаю: деревянный топор, кирка, каменные инструменты и оружие в руках зомби может быть и не таким уж редким явлением
+0-10: Yes, that's right, but armor and charms can be, can be a random of weapons in hand, but very rarely, close to vanilla
+I admit: a wooden axe, pickaxe, stone tools and weapons in the hands of zombies may not be so rare
 
-10-25: Да, годится. Патрули могут уже здесь появляться
+10-25: Yes, it is. Patrols can already appear here
 
-Осады начинают случаться после 25-го дня. Я даже так скажу, первая осада на 25-м днем должна уже произойти, 
-но зомби разрушать блоки ещё не должны уметь, да, врагов будет много, но они не несут каких-то серьёзных вооружений и защиты. 
+Sieges begin to occur after the 25th day. I'll even say this, the first siege on the 25th day should have already happened, 
+but zombies should not be able to destroy blocks, yes, there will be a lot of enemies, but they do not carry any serious weapons and protection.
 
-25-40: Да, но повторюсь, не железо, чары, а просто шанс крепкой брони, чар и остального выше обычного. Големы могут спавнится уже здесь
+25-40: Yes, but I repeat, not iron, enchantment, but just a chance of strong armor, enchantment and the rest is higher than usual. Golems can spawn here
 
-40-60: Да, норм. 
+40-60: Yes, normal.
 
-60-80: Да, норм
+60-80: Yes, normal
 
-80-100: Да,чары здесь весьма высокие, броня крепкая, рейдового якоря, василиска я хочу положить именно сюда.
-Они очень сильные. 
+80-100: Yes, the charms here are very high, the armor is strong, the raid anchor, the basilisk I want to put here.
+They are very strong.
 
-Летающие инструменты могут спавнится в любой день, 0-100, повторюсь опять же, просто шанс встретить сильный алмазный чар меч близки нулю
+Flying tools can spawn any day, 0-100, I repeat again, just the chance to meet a strong diamond sword enchantment is close to zero
 
-Другое:
-У нас же от фазы луны все вероятности ещё должны считаться. Например с полнолунием шанс встретить зомби с чар железным топором (просто взял из головы)
-выше, даже на 0-10 дней. Я хочу чтобы ты понял, у нас градации появления сущностей будут строго распределын. А вот броня, чары, эффекты, оружия:
-возможны всегда, они должны грамотно высчитываться чтобы на 0-10 дней условно, игрок не встречал супер часто противников с крепкими чарами
-и алмазными сетами 
+Other:
+In our case, from the phase of the moon, all probabilities still have to be considered. For example, with a full moon, a chance to meet a zombie with an enchantment of an iron axe (just took it out of my head)
+higher, even by 0-10 days. I want you to understand that our gradations of the appearance of entities will be strictly distributed. And here are the armor, charms, effects, weapons:
+are always possible, they must be correctly calculated so that for 0-10 days conditionally, the player does not meet super often opponents with strong charms
+and diamond sets
 
-- Считать шкалу для каждого игрока отдельно не будем, она общая на весь мир. Если в мире 100 дней прошло, значит и шкала фулл для всех 
-- Добавить ступеньки за прогресс: первый вход в Незер, смерть Визера, убийство Дракона. - можно, но я пока не знаю как это реализовать
-ведь количество дней фикс, выходит вся логика с днями (40-60, 60-80) пойдёт по наклонной, только если кратковременно увеличивать. Лучше отложить эту идею 
+- We will not count the scale for each player separately, it is common to the whole world. If 100 days have passed in the world, then the full scale for all 
+- Add steps for progress: the first entrance to the Nether, the death of Wieser, the murder of the Dragon. - You can, but I do not yet know how to implement it
+after all, the number of days is fixed, all the logic with days (40-60, 60-80) will go in an inclined direction, only if you increase it for a short time. It is better to postpone this idea
 
-- По желанию добавить локальную составляющую, как в.. - не надо 
-- По желанию снижать уровень на 5–10% после смерти игрока - не нужно
+- If desired, add a local component, as in.. - do not 
+- If you want to reduce the level by 5–10% after the death of the player - no need
 
-- Сделать кривую не линейной. Да. Локал дификалти обычно падает на новолунии, но к следующему полнолунию сложность выше, чем была в 
-предыдущем полнолунии. Я бы хотел такую же систему у нас.
+- Make the curve non-linear. Yes. Differentty locale usually falls on the new moon, but by the next full moon the difficulty is higher than it was in the 
+the previous full moon. I would like to have the same system.
 
-Нам нужна супер грамотная математическая формула чтобы высчитывать вероятности 
+We need a super competent mathematical formula to calculate probabilities
 
-После вывода формулы, нужно будет определиться со всеми мобами что у нас есть. Нужно понять как распределить всё, что у нас есть в mobs.txt
+After deriving the formula, you will need to decide on all the mobs that we have. We need to understand how to distribute everything we have in mobs.txt
 

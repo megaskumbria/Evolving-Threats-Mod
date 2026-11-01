@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Память об игроке — приоритет 0 (выше атаки 3 и света 5).
+ * Remembers the player — priority 0 (above attack 3 and light-seek 5).
  */
 @Mixin(Zombie.class)
 public class ZombieGrudgeGoalsMixin {

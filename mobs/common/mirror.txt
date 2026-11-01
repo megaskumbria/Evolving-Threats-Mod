@@ -1,47 +1,47 @@
-ЗЕРКАЛО (Mirror)
+MIRROR
 ================
 
-Тип: редкая метка на обычном мобе. Не новый моб в меню.
-Код: mirror/Mirror.java (шанс, имя, возврат удара),
-     mixin/MirrorMixin.java (помнит метку),
-     mixin/MirrorHitMixin.java (момент, когда удар уже дошёл),
+Type: a rare tag on a normal mob. Not a new mob in the menu.
+Code: mirror/Mirror.java (chance, name, hit return),
+     mixin/MirrorMixin.java (remembers tag),
+     mixin/MirrorHitMixin.java (moment when hit has landed),
      mixin/ZombieMixin.java, mixin/SkeletonMixin.java, mixin/SpiderRoleMixin.java,
-     mixin/PiglinBruteHealthMixin.java, mixin/MobPotionBuffExtraMixin.java (шанс при появлении).
+     mixin/PiglinBruteHealthMixin.java, mixin/MobPotionBuffExtraMixin.java (chance on spawn).
 
 
-КТО
+WHO
 ---
-Обычный зомби, скелет, скелет-иссушитель, ифрит, паук, пиглин, брутальный пиглин,
-эндермен, чешуйница, крипер, ведьма.
-Не кадавр, не утопленник, не странник, не пещерный паук.
-Если у моба уже есть своё имя (Бастион, Spiky, Василиск, капитан, надсмотрщик и остальные),
-этот шанс не бросается.
+Normal zombie, skeleton, wither skeleton, blaze, spider, piglin, brutal piglin,
+enderman, silverfish, creeper, witch.
+Not husk, drowned, stray, cave spider.
+If the mob already has a custom name (Bastion, Spiky, Basilisk, captain, overseer, etc.),
+this chance is not rolled.
 
 
-КАК ДЕЙСТВУЕТ
+HOW IT ACTS
 -------------
-1. Над головой имя Mirror. Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-2. Удар в упор (рука, меч, топор и прочее ближнее) возвращается игроку.
-   Число то же, что игра насчитала до брони моба: острота, сила и критический удар уже внутри.
-   Дальше его режет броня и Защита игрока. Броня самого Mirror на этот ответ не влияет.
-3. Стрела, взрыв, огонь и шипы не возвращаются. Шипы на броне моба по-прежнему колют слабо и отдельно.
-4. Имя не даёт ему исчезнуть самому.
-5. Шанс 0,3% с первого дня. FIXED: луна и шкала его не меняют.
-   В ночь осады тоже может выпасть: это не отдельный мини-босс, а редкое свойство этих мобов.
+1. Name above head: Mirror. Visible only when crosshair is on it and within ~64 blocks.
+2. Melee hit (hand, sword, axe, etc.) returns to the player.
+   Same number vanilla computed before mob armor: Sharpness, Strength, crit already inside.
+   Then player armor and Protection reduce it. Mirror’s armor does not affect the return.
+3. Arrow, explosion, fire, and thorns are not returned. Thorns on mob armor still poke weakly separately.
+4. Name does not prevent despawn by itself.
+5. Chance 0.3% from day one. FIXED: moon and scale do not change it.
+   Can appear on siege night too: not a mini-boss, a rare trait on these mobs.
 
 
-КОМАНДА
+COMMAND
 -------
   /etmirror
   /etmirror skeleton | wither | blaze | spider | piglin | brute | enderman | silverfish | creeper | witch
   /evolvingthreats spawn mirror
-  /evolvingthreats spawn mirror <то же слово>
-Без слова — зомби. Появляется в 6 блоках по взгляду. Шанс не бросается.
-Нужны права оператора.
+  /evolvingthreats spawn mirror <same word>
+No word — zombie. Spawns 6 blocks along look. Does not roll chance.
+Operator rights required.
 
 
 SETTINGS (Mirror.java)
 -----------------------
   ENABLED .......... true
-  SPAWN_CHANCE ..... 0.003 — 0,3%
+  SPAWN_CHANCE ..... 0.003 — 0.3%
   NAME ............. Mirror

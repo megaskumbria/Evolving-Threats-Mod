@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 /**
- * Поле mob объявлено в TargetGoal, а не в HurtByTargetGoal.
- * @Shadow с дочернего класса его не видит и роняет запуск игры.
+ * The mob field is announced in TargetGoal, not HurtByTargetGoal.
+ * @Shadow from the child class does not see him and drops the launch of the game.
  */
 @Mixin(TargetGoal.class)
 public interface TargetGoalMobAccessor {

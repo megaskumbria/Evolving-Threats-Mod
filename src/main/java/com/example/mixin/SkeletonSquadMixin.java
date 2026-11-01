@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Обычный скелет помнит, капитан он или помощник, и кто ещё в отряде.
- * Запись в мир здесь, потому что сохранение есть у Skeleton, а не у общего предка.
+ An ordinary skeleton remembers whether he is a captain or an assistant, and who else is in the squad.
+ Record the world here, because the preservation is in Skeleton, not a common ancestor.
  */
 @Mixin(Skeleton.class)
 public class SkeletonSquadMixin implements SkeletonSquadMember {

@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Приём есть у всех зомби, но молчит, пока это не чародей.
- * Блоки он не ломает: это решает {@link com.example.digging.BlockBreaking#isBreaker}.
+ * Spell goal is registered on all zombies but only runs for sorcerers.
+ * Sorcerers do not break blocks: {@link com.example.digging.BlockBreaking#isBreaker} decides that.
  */
 @Mixin(Zombie.class)
 public class ZombieSorcererGoalMixin {

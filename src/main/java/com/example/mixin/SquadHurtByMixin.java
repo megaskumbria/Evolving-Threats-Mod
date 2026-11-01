@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * «Кто ударил — того и бить» у скелета. Если обидчик свой из отряда, цель не берём
- * и соседей на него не натравливаем.
+ “Who hits, and hits” at the skeleton. If the offender is from the squad, we do not take the goal.
+ And we don't incite our neighbors.
  *
- * Поле mob лежит в родителе TargetGoal. Читаем его через TargetGoalMobAccessor,
- * иначе игра падает при запуске: @Shadow это поле в HurtByTargetGoal не находит.
+ The mob field is in the parent of TargetGoal. Read it through TargetGoalMobAccessor.
+ * Otherwise, the game drops at launch: @Shadow does not find this field in HurtByTargetGoal.
  */
 @Mixin(HurtByTargetGoal.class)
 public class SquadHurtByMixin {

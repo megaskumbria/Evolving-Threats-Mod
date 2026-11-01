@@ -5,7 +5,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/** Флаг «заряжен» у крипера закрыт. Молния ставит его сама, из мода — через это поле. */
+/** Flag "charged" at the cryper closed. Lightning puts it itself, out of fashion - through this field. */
 @Mixin(Creeper.class)
 public interface CreeperPowerAccessor {
 

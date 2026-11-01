@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 /**
- * Ночной спавн фантомов. Игра уже решила, что игроку пора стая, и бросает её размер.
- * Здесь к этому броску добавляются лишние фантомы за дни без кровати.
- * Яйцо призыва и команда спавна сюда не попадают: это только бессонница.
+ The Phantom Night Spawn. The game has already decided that it is time for the player to pack, and throws its size.
+ Here, extra phantoms for days without a bed are added to this throw.
+ The draft egg and the spawn team do not fall here: it is only insomnia.
  */
 @Mixin(PhantomSpawner.class)
 public class PhantomSpawnerMixin {
 
-	/** Игрок, для которого прямо сейчас считается волна. Между игроками перезаписывается. */
+	/*A player for whom the wave is considered right now. It's re-recording between players. */
 	@Unique
 	private ServerPlayer evolvingthreats$sleepless;
 
@@ -37,9 +37,9 @@ public class PhantomSpawnerMixin {
 	}
 
 	/**
-	 * Бросок размера стаи. Игра потом прибавляет к нему 1, поэтому наружу уходит на 1 меньше.
-	 * Срез начинается с номера сложности: раньше в этом методе другие случайные числа
-	 * (пауза между попытками и место спавна), их не меняем.
+	 * Pack size throw. The game then adds 1 to it, so it goes out 1 less.
+	 Slice starts with difficulty number: earlier in this method other random numbers
+	 * (pause between attempts and place of spawn), they do not change.
 	 */
 	@Redirect(
 			method = "tick",
@@ -66,7 +66,7 @@ public class PhantomSpawnerMixin {
 		return grown - 1;
 	}
 
-	/** Номера сложности: 0 мирная, 1 лёгкая, 2 нормальная, 3 сложная. */
+	/*Difficulty numbers: 0 peaceful, 1 easy, 2 normal, 3 difficult. */
 	private static Difficulty difficultyById(int id) {
 		for (Difficulty difficulty : Difficulty.values()) {
 			if (difficulty.getId() == id) {

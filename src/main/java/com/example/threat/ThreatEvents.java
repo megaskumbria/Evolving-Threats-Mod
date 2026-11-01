@@ -9,11 +9,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Связка шкалы угрозы с игрой: запоминает момент установки мода в мир и сообщает его игрокам.
+ * Hooks the threat scale into the game: remembers when the mod was first applied to a world
+ * and tells clients that start time.
  *
- * <p>Когда мод видит мир впервые (новый мир или старый, куда мод только что добавили), он записывает
- * текущее время мира как «день 0». Дальше шкала считает дни от этого момента, поэтому в мире,
- * где уже прошло 24 дня, шкала всё равно начинается с нуля.
+ * <p>When the mod sees a world for the first time (new world or old world with the mod newly added),
+ * it stores the current world time as "day 0". The scale then counts days from that moment, so
+ * a world that is already on day 24 in vanilla still starts the scale at zero.
  */
 public final class ThreatEvents {
 
@@ -23,7 +24,7 @@ public final class ThreatEvents {
 	public static void register() {
 		PayloadTypeRegistry.clientboundPlay().register(ThreatStartPayload.TYPE, ThreatStartPayload.CODEC);
 
-		// Мир загружен: читаем сохранённый старт или ставим его впервые.
+		// World loaded: read saved start time or set it the first time.
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			ServerLevel overworld = server.overworld();
 			ThreatData data = ThreatData.get(overworld);
@@ -40,7 +41,7 @@ public final class ThreatEvents {
 	}
 
 	/**
-	 * Меняет момент старта (команда {@code /evolvingthreats day set}) и сразу сообщает всем игрокам.
+	 * Changes the start time ({@code /evolvingthreats day set}) and notifies all online players.
 	 */
 	public static void setStartClock(MinecraftServer server, long startClock) {
 		ThreatData data = ThreatData.get(server.overworld());

@@ -17,65 +17,65 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Скелет-снайпер. Стреляет с дальней дистанции, лук из рук не убирается.
- * Во второй руке обычное оружие моба. Броня и чары — как у обычного скелета.
- * Быстрый лук может выпасть отдельно: тогда он натягивает чаще, но дальность остаётся снайперской.
+ Skeleton sniper. Shoots from a long distance, the bow is not removed from the hands.
+ In the second hand is a common mob weapon. The armor and charms are like a normal skeleton.
+ A fast bow can fall separately: then it stretches more often, but the range remains sniper.
  */
 public final class SniperSkeleton {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — снайперы не появляются, команда тоже не спавнит. */
+	/** Turn on the mechanics. False - snipers do not appear, the team does not spawn. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет или странник будет снайпером.
-	 * 0.002 = 0,2%, один из пятисот.
-	 * FIXED: с первого дня, от шкалы угрозы и луны не растёт.
-	 * 0 = только команда.
+	 Chance (0.0-1.0) that an ordinary skeleton or wanderer will be a sniper.
+	 0.002 = 0.2%, one in five hundred.
+	 FIXED: From day one, the threat scale and the moon do not rise.
+	 * 0 = commands only.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
 	/**
-	 * С какого расстояния стреляет, в блоках. У обычного скелета 15, у дальнего лука 30.
-	 * 128 = восемь чанков. Если в мире мобы засыпают ближе, он не выстрелит, пока не подойдёшь.
+	 From what distance it shoots, in blocks. A normal skeleton has 15, a distant bow has 30.
+	 * 128 = eight chanks. If mobs fall asleep in the world, they won't shoot until you get there.
 	 */
 	public static final float ATTACK_RANGE_BLOCKS = 128.0f;
 
 	/**
-	 * Как далеко замечает игрока, в блоках. Должно быть больше дальности лука,
-	 * иначе он не видит цель, до которой мог бы дострелить. 140 = чуть дальше 128.
+	 How far the player notices, in blocks. Must be longer than the onion range,
+	 Otherwise, he does not see a target he could shoot at. 140 = just over 128.
 	 */
 	public static final double FOLLOW_RANGE = 140.0;
 
 	/**
-	 * Скорость стрелы. У обычного скелета 1.6, у дальнего лука 2.4.
-	 * 10 = долетает до 128 блоков примерно за секунду и не падает в землю по пути.
-	 * Прицел подстраивается сам. Если уменьшить слишком сильно, стрела не долетит и ляжет в землю.
+	 Arrow speed. Normal skeleton 1.6, far bow 2.4.
+	 10 = reaches 128 blocks in about a second and does not fall into the ground along the way.
+	 The sight adjusts itself. If you reduce too much, the arrow will not reach and fall into the ground.
 	 */
 	public static final float ARROW_SPEED = 10.0f;
 
 	/**
-	 * Куда по высоте тела целиться. 0.0 = ступни, 1.0 = макушка, 0.5 = середина.
-	 * Считается заново на каждый выстрел: одно и то же число задира на 128 блоках
-	 * поднимало стрелу над головой примерно с 48 до 112 блоков.
-	 * Выше 0.5 — ближе к голове. Ниже — в ноги.
+	 Where to aim for body height. 0.0 = feet, 1.0 = crown, 0.5 = middle.
+	 Counts again for each shot: the same number of bullies on 128 blocks
+	 He raised an arrow overhead from about 48 to 112 blocks.
+	 * Above 0.5 - closer to the head. Down to the feet.
 	 */
 	public static final double AIM_HEIGHT = 0.5;
 
 	/**
-	 * Разброс стрелы. У скелета на сложной сложности около 2: на 128 блоках это промах в несколько блоков.
-	 * 0.15 = попадает в тело на дальней дистанции. 0 = всегда в точку прицела.
-	 * 2 = как сложная сложность, на этой дальности почти всегда мимо.
+	 * Arrow scatter. The skeleton at a complex complexity of about 2: on 128 blocks is a miss in several blocks.
+	 * 0.15 = enters the body at a long distance. 0 = always point of sight.
+	 2 = as complex complexity, at this range almost always past.
 	 */
 	public static final float INACCURACY = 0.15f;
 
 	/**
-	 * Сколько сердец снимает попадание до брони, если на луке нет Силы.
-	 * 6 = шесть сердец. Скорость полёта это число не увеличивает:
-	 * быстрая стрела нужна, чтобы долететь, а не чтобы убивать с одного раза.
-	 * 1 = одно сердце. 0 = стрела не ранит. 10 = вся полоска голого игрока.
-	 * Сила на луке добавляет урон сверху, как у любой стрелы.
+	 How many hearts does it take to hit armor if there is no Force on the bow?
+	 6 = six hearts. The speed of the flight does not increase:
+	 A quick arrow is needed to fly, not to kill once.
+	 1 = one heart. 0 = no arrow hurts. 10 = all strip of naked player.
+	 The force on the bow adds damage from above, like any arrow.
 	 */
 	public static final double DAMAGE_HEARTS = 6.0;
 
@@ -85,24 +85,24 @@ public final class SniperSkeleton {
 	}
 
 	/**
-	 * Множитель урона для игры. Она считает удар как скорость полёта × это число.
-	 * Одно сердце — это 2 урона. Множитель меньше во столько раз, во сколько стрела быстрее,
-	 * чтобы получилось ровно {@link #DAMAGE_HEARTS} сердец, а не больше из-за скорости.
+	 * Damage multiplier for the game. It counts the impact as the speed of flight × this number.
+	 One heart is 2 damages. The multiplier is as much as the arrow is faster.
+	 * to get straight {@link #DAMAGE HEARTS} hearts, not more because of speed.
 	 */
 	public static double baseDamage() {
 		double damage = Math.max(0.0, DAMAGE_HEARTS) * 2.0;
 		return damage / Math.max(0.01, ARROW_SPEED);
 	}
 
-	/** Сопротивление воздуха у стрелы в самой игре. Менять не нужно: настоящая стрела летит с этим числом. */
+	/*Air resistance at the arrow in the game itself. There is no need to change: the real arrow flies with this number. */
 	private static final double ARROW_DRAG = 0.99;
 
-	/** Насколько стрела падает за один такт игры. Тоже число самой игры, не настройка прицела. */
+	/*How much the arrow falls in one stroke of the game. The same number of the game itself, not the setting of the sight. */
 	private static final double ARROW_GRAVITY = 0.05;
 
 	/**
-	 * Направление выстрела по вертикали. Игра потом выравнивает его и умножает на скорость.
-	 * Подбирается так, чтобы стрела пришла в {@link #AIM_HEIGHT} тела цели.
+	 Direction of shot vertically. The game then aligns it and multiplies it by speed.
+	 * Selected so that the arrow comes to {@link #AIM HEIGHT} target body.
 	 */
 	public static double launchDirectionY(AbstractSkeleton skeleton, LivingEntity target) {
 		double dx = target.getX() - skeleton.getX();
@@ -126,7 +126,7 @@ public final class SniperSkeleton {
 		return (low + high) * 0.5;
 	}
 
-	/** Высота стрелы в тот момент, когда она пролетает ровно над точкой на этом расстоянии. */
+	/*The height of the arrow at the moment when it flies exactly above a point at this distance. */
 	private static double arrowHeightAt(double distance, double directionY, double startY) {
 		double speed = Math.max(0.01f, ARROW_SPEED);
 		double length = Math.sqrt(distance * distance + directionY * directionY);
@@ -157,8 +157,8 @@ public final class SniperSkeleton {
 	}
 
 	/**
-	 * true — этот скелет снайпер. Дальше ему не выдаём два меча, тотем и вредную стрелу:
-	 * лук должен остаться, вторая рука занята обычным оружием.
+	 * True is that sniper skeleton. We do not give him two swords, a totem and a harmful arrow.
+	 The bow must remain, the second hand occupied by conventional weapons.
 	 */
 	public static boolean tryRoll(AbstractSkeleton skeleton) {
 		if (!ENABLED || !(skeleton instanceof SniperSkeletonEntity data)) {
@@ -167,7 +167,7 @@ public final class SniperSkeleton {
 		if (!(skeleton.level() instanceof ServerLevel)) {
 			return false;
 		}
-		// Команда ставит метку до появления. Шанс тогда не бросаем.
+		// The team puts the mark before it appears. Then we don't give up.
 		if (data.evolvingthreats$isSniper()) {
 			return true;
 		}
@@ -181,7 +181,7 @@ public final class SniperSkeleton {
 		return true;
 	}
 
-	/** Лук в основную руку, случайное оружие во вторую. Броню и чары вешает общий код скелета. */
+	/*Bow in the main hand, random weapon in the second. Armor and charm hang the common code of the skeleton. */
 	public static void equip(AbstractSkeleton skeleton) {
 		if (!isSniper(skeleton)) {
 			return;
@@ -193,8 +193,8 @@ public final class SniperSkeleton {
 	}
 
 	/**
-	 * Дальность взгляда и выстрела. Звать после быстрого лука: тот ставит свои 30 блоков,
-	 * здесь они снова становятся снайперскими. Паузу быстрого лука не трогаем.
+	 * Range of sight and shot. Call after the fast bow: he puts his 30 blocks,
+	 Here they become snipers again. We don't touch the quick onion pause.
 	 */
 	public static void apply(AbstractSkeleton skeleton, RangedBowAttackGoal<?> bowGoal) {
 		if (!isSniper(skeleton)) {
@@ -209,8 +209,8 @@ public final class SniperSkeleton {
 	}
 
 	/**
-	 * Команда: снайпер перед игроком, без случайного шанса.
-	 * Броня, чары и оружие во второй руке вешаются тем же кодом, что при обычном спавне.
+	 Team: Sniper in front of the player, with no chance.
+	 Armor, charms and weapons in the second hand are hung by the same code as in a regular spawn.
 	 */
 	public static void spawn(ServerLevel level, Vec3 pos, LivingEntity lookAt) {
 		if (!ENABLED) {

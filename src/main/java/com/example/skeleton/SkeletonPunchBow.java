@@ -21,49 +21,49 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Обычный скелет и странник иногда получают лук с Откидыванием V или VI.
- * В ванили максимум II, у капитана отдельно IV. Этот лук бьёт ещё дальше.
- * Такой лук игроку не падает: ни с шансом, ни с Добычей.
- * Откидывание I и II с обычных чар по-прежнему может выпасть.
+ * Normal skeletons and strays sometimes get a bow with Punch V or VI.
+ * Vanilla caps at II; the captain has IV separately. This bow knocks back farther still.
+ * Such bows never drop for the player — no chance, no Looting.
+ * Punch I–II from normal enchants can still drop as before.
  */
 public final class SkeletonPunchBow {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Включить выдачу лука. false — новые скелеты V и VI не получают.
-	 * Уже выданный лук всё равно не падает: проверка при смерти от этой галки не зависит.
+	 * Enable punch bows. false — new skeletons do not get V/VI.
+	 * Already given bows still never drop regardless of this flag.
 	 */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что у скелета или странника с луком будет Откидывание V или VI.
-	 * 0.12 = 12% на 100-й день (GROWING: в начале в 10 раз меньше). Совсем не выдаётся до дня
-	 * ThreatTable.STRONG_BOW_DAY (20-й). Бросается после обычных чар. Капитан, его помощники и «700 IQ» этот шанс не бросают.
-	 * 1.0 = такой лук у каждого, у кого лук остался. 0 = не выдавать.
+	 * Chance (0.0–1.0) for Punch V or VI on a bow skeleton or stray.
+	 * 0.12 = 12% on day 100 (GROWING: 10× lower at start). Disabled until
+	 * ThreatTable.STRONG_BOW_DAY (20). Rolled after normal enchants. Captain, escorts, and tactician skip this roll.
+	 * 1.0 = every bow skeleton. 0 = never grant.
 	 */
 	public static final float CHANCE = 0.12f;
 
-	/** Откидывание V. Сильнее капитанского IV: игрок улетает ещё дальше. */
+	/** Punch V. Stronger than captain IV — player flies farther. */
 	public static final int PUNCH_LEVEL_V = 5;
 
-	/** Откидывание VI. Реже, чем V, и бьёт ещё сильнее. */
+	/** Punch VI. Rarer than V and hits harder. */
 	public static final int PUNCH_LEVEL_VI = 6;
 
 	/**
-	 * Среди луков с сильным откидыванием: насколько часто V и насколько часто VI.
-	 * 3 и 1 = из таких луков 75% получают V, 25% получают VI.
-	 * Вес 0 у VI = всегда только V.
+	 * Among strong punch bows: weight for V vs VI.
+	 * 3 and 1 = 75% get V, 25% get VI.
+	 * VI weight 0 = always V.
 	 */
 	public static final int LEVEL_V_WEIGHT = 3;
 
-	/** См. LEVEL_V_WEIGHT. */
+	/** See LEVEL_V_WEIGHT. */
 	public static final int LEVEL_VI_WEIGHT = 1;
 
 	/**
-	 * Лук с Откидыванием этого уровня и выше никогда не падает.
-	 * 5 = не падают V и VI. Обычные I–II (максимум ванили) падают как раньше.
-	 * Поставь 1, если не должен падать вообще никакой лук с Откидыванием.
+	 * Bows with Punch at this level or higher never drop.
+	 * 5 = V and VI never drop. Normal I–II (vanilla max) drop as before.
+	 * Set 1 if no Punch bow should ever drop.
 	 */
 	public static final int MIN_LEVEL_THAT_NEVER_DROPS = 5;
 
@@ -75,9 +75,9 @@ public final class SkeletonPunchBow {
 	}
 
 	/**
-	 * Команда. Скелет появляется в указанной точке уже с этим луком, шанс не бросается.
-	 * level — {@link #PUNCH_LEVEL_V} или {@link #PUNCH_LEVEL_VI}.
-	 * false — скелета не удалось создать.
+	 * Command spawn at position with this bow — no chance roll.
+	 * level — {@link #PUNCH_LEVEL_V} or {@link #PUNCH_LEVEL_VI}.
+	 * false — could not create skeleton.
 	 */
 	public static boolean spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt, int punchLevel) {
 		AbstractSkeleton skeleton = EntityTypes.SKELETON.create(level, EntitySpawnReason.COMMAND);
@@ -105,7 +105,7 @@ public final class SkeletonPunchBow {
 		return true;
 	}
 
-	/** Кладёт лук с заданным Откидыванием в основную руку. Такой лук не падает. */
+	/** Puts a bow with the given Punch level in main hand. Never drops. */
 	private static void giveBow(AbstractSkeleton skeleton, int punchLevel) {
 		int level = punchLevel >= PUNCH_LEVEL_VI ? PUNCH_LEVEL_VI : PUNCH_LEVEL_V;
 		ItemStack bow = new ItemStack(Items.BOW);
@@ -123,15 +123,15 @@ public final class SkeletonPunchBow {
 	}
 
 	/**
-	 * Конец набора скелета. Если в руке лук и шанс выпал — дописывает Откидывание V или VI.
-	 * Остальные чары лука (Сила, Горящая стрела) остаются.
+	 * End of skeleton loadout. If holding a bow and roll succeeds — add Punch V or VI.
+	 * Other bow enchants (Power, Flame) remain.
 	 */
 	public static void tryApply(AbstractSkeleton skeleton) {
 		if (!ENABLED || CHANCE <= 0.0f) {
 			return;
 		}
-		// «Чары сильнее ванильных»: до ThreatTable.STRONG_BOW_DAY таких луков нет совсем,
-		// потом шанс растёт от начала к концу шкалы вместе с луной.
+		// "Stronger than vanilla enchants": none until STRONG_BOW_DAY,
+		// then chance grows from start to end of scale with moon.
 		if (!ThreatScale.reached(skeleton.level(), ThreatTable.STRONG_BOW_DAY)) {
 			return;
 		}
@@ -151,8 +151,8 @@ public final class SkeletonPunchBow {
 	}
 
 	/**
-	 * Перед тем как моб уронит вещи. Лук мог переехать из руки в руку во время боя,
-	 * поэтому смотрим обе руки в момент смерти, а не слот при спавне.
+	 * Before mob drops items. Bow may have moved hands during fight,
+	 * so check both hands at death, not only spawn slot.
 	 */
 	public static void preventDrop(Mob mob) {
 		var registry = mob.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);

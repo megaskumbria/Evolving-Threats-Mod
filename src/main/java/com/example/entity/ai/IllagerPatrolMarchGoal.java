@@ -9,9 +9,9 @@ import net.minecraft.world.entity.raid.Raider;
 import java.util.EnumSet;
 
 /**
- * Идёт в точку, где игрок стоял, когда отряд появился.
- * Точка не двигается за игроком. Если по дороге заметят его вблизи, дерутся как обычные мобы,
- * а когда потеряют из виду — снова идут в ту же точку.
+ Goes to the point where the player was standing when the squad arrived.
+ The point does not move behind the player. If they see him on the road, they fight like mobs.
+ When they lose sight, they go back to the same place.
  */
 public class IllagerPatrolMarchGoal extends Goal {
 

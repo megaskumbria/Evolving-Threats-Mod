@@ -5,9 +5,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Участник рейда «Рейдовый якорь»: якорь или прислуга (зомби/скелет).
- * Реализация — mixins на {@link net.minecraft.world.entity.monster.zombie.Zombie}
- * и {@link net.minecraft.world.entity.monster.skeleton.AbstractSkeleton}.
+ Participant of the raid "Raid anchor": anchor or servant (zombie / skeleton).
+ * Implementation - mixins at {@link net.minecraft.world.entity.monster.zombie.Zombie}
+ * and {@link net.minecraft.world.entity.monster.skeleton.AbstractSkeleton}.
  */
 public interface RaidParticipantEntity {
 
@@ -33,7 +33,7 @@ public interface RaidParticipantEntity {
 
 	void evolvingthreats$setRaidHuntTargetId(@Nullable UUID playerId);
 
-	/** Пока true — прислуги «видят» игрока через {@link com.example.entity.ai.RaidHuntGoal}. */
+	/** While true - the servants "see" the player via {@link com.example.entity.ai.RaidHuntGoal}. */
 	boolean evolvingthreats$isRaidGpsActive();
 
 	void evolvingthreats$setRaidGpsActive(boolean active);

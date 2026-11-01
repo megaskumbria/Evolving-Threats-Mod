@@ -5,8 +5,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
- * Приёмы чародея. Ходьбу и удар мотыгой не отменяет:
- * цель молчит, пока это не чародей.
+ The magician's techniques. Walking and kicking a hoe does not cancel:
+ The target is silent until it is a sorcerer.
  */
 public class ZombieSorcererSpellGoal extends Goal {
 

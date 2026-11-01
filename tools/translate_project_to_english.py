@@ -12,6 +12,7 @@ from deep_translator import MyMemoryTranslator
 ROOT = Path(__file__).resolve().parents[1]
 CYRILLIC = re.compile(r"[А-Яа-яЁё]")
 SKIP_DIRS = {".git", "build", ".gradle", "run", "out", "classes", "node_modules", ".cursor"}
+SKIP_NAMES = {"translate_log.txt", "translate_errors.txt", "translate_project_to_english.py"}
 TEXT_SUFFIXES = {
     ".java",
     ".md",
@@ -87,6 +88,7 @@ TERM_SUBS = [
     ("НАСТРОЙКИ", "SETTINGS"),
 ]
 
+MAX_CHARS = 480  # MyMemory limit is 500
 translator = MyMemoryTranslator(source="ru-RU", target="en-US")
 
 
@@ -94,20 +96,32 @@ def has_cyrillic(text: str) -> bool:
     return bool(CYRILLIC.search(text))
 
 
-def translate_once(text: str) -> str:
-    text = text.strip()
-    if not text or not has_cyrillic(text):
-        return text
+def _translate_chunk(chunk: str) -> str:
+    chunk = chunk.strip()
+    if not chunk or not has_cyrillic(chunk):
+        return chunk
+    if len(chunk) > MAX_CHARS:
+        mid = chunk.rfind(" ", 0, MAX_CHARS)
+        if mid < MAX_CHARS // 2:
+            mid = MAX_CHARS
+        return _translate_chunk(chunk[:mid]) + chunk[mid:]
     for attempt in range(6):
         try:
-            time.sleep(0.4)
-            out = translator.translate(text)
+            time.sleep(0.35)
+            out = translator.translate(chunk)
             if out:
                 return out
         except Exception as exc:
-            print(f"  retry {attempt + 1}: {exc}", file=sys.stderr)
-            time.sleep(1.5 * (attempt + 1))
-    return text
+            print(f"  retry {attempt + 1} ({len(chunk)} chars): {exc}", file=sys.stderr)
+            time.sleep(1.2 * (attempt + 1))
+    return chunk
+
+
+def translate_once(text: str) -> str:
+    if not text or not has_cyrillic(text):
+        return text
+    lines = text.split("\n")
+    return "\n".join(_translate_chunk(line) if has_cyrillic(line) else line for line in lines)
 
 
 def translate_line(line: str) -> str:
@@ -136,26 +150,12 @@ def apply_subs(text: str) -> str:
 
 
 def translate_prose_chunks(text: str) -> str:
-    """Translate large .txt/.md files in paragraph chunks."""
+    """Translate large .txt/.md files line-by-line (safe for API limits)."""
     if not has_cyrillic(text):
         return text
-    parts = re.split(r"(\n{2,})", text)
-    out: list[str] = []
-    buf = ""
-    for part in parts:
-        if re.fullmatch(r"\n{2,}", part):
-            if buf:
-                out.append(translate_once(buf))
-                buf = ""
-            out.append(part)
-            continue
-        buf += part
-        if len(buf) >= 380:
-            out.append(translate_once(buf))
-            buf = ""
-    if buf:
-        out.append(translate_once(buf))
-    return "".join(out)
+    return "\n".join(
+        translate_line(line) if has_cyrillic(line) else line for line in text.splitlines()
+    )
 
 
 def process_file(path: Path) -> bool:
@@ -165,7 +165,7 @@ def process_file(path: Path) -> bool:
         return False
     if not has_cyrillic(raw):
         return False
-    if path.suffix.lower() in {".txt", ".md"} and len(raw) > 2000:
+    if path.suffix.lower() in {".txt", ".md"} and len(raw) > 1500:
         text = apply_subs(translate_prose_chunks(raw))
     else:
         lines = raw.splitlines(keepends=True)
@@ -198,7 +198,7 @@ def iter_files() -> list[Path]:
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES:
             continue
-        if path.name == Path(__file__).name:
+        if path.name in SKIP_NAMES or path.name == Path(__file__).name:
             continue
         files.append(path)
     return sorted(files)
@@ -220,8 +220,6 @@ def main() -> None:
         ru_lang.unlink()
         print("removed ru_ru.json")
 
-    rename_files()
-
     # Path subs in all text files (including those without cyrillic)
     for path in iter_files():
         try:
@@ -232,7 +230,14 @@ def main() -> None:
         if subbed != text:
             path.write_text(subbed, encoding="utf-8", newline="\n")
 
-    files = [p for p in iter_files() if has_cyrillic(p.read_text(encoding="utf-8"))]
+    files = []
+    for p in iter_files():
+        try:
+            text = p.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        if has_cyrillic(text):
+            files.append(p)
     print(f"translating {len(files)} files...")
     done = 0
     for i, path in enumerate(files, 1):

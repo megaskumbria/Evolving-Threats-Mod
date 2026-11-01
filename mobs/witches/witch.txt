@@ -1,49 +1,49 @@
-ВЕДЬМА: НОВЫЕ ЗЕЛЬЯ И ТУМАН
+WITCH: NEW POTIONS AND FOG
 ============================
 
-Тип: бросок обычной ведьмы в игрока. Отдельный вид не появляется.
-Код: witch/WitchThrownPotions.java (список, шансы, секунды),
-     mixin/WitchThrownPotionMixin.java (подмена бутылки в момент броска).
+Type: vanilla witch throws at the player. No separate mob type spawns.
+Code: witch/WitchThrownPotions.java (list, chances, seconds),
+     mixin/WitchThrownPotionMixin.java (swap bottle at throw time).
 
-Союзникам в рейде по-прежнему лечение и регенерация.
-Белое зелье обнулителя остаётся взрывным и эффекты по-прежнему снимает.
-Пока ведьма пьёт сама, она ничего не кидает.
+Allies in a raid still get healing and regeneration.
+The nullifier white potion stays splash and still clears effects.
+While the witch is drinking, she throws nothing.
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Примерно каждый второй бросок в игрока — из нового списка, поровну:
-   замедление IV на 15–20 секунд,
-   слепота на 5–10 секунд,
-   иссушение I на 10 секунд,
-   голод I на 20–30 секунд,
-   тошнота на 8–12 секунд,
-   усталость I на 15–20 секунд,
-   левитация на 4–6 секунд.
-2. Остальные броски как раньше: далеко замедление, если ты здоровый — яд,
-   вплотную иногда слабость, иначе мгновенный урон.
-3. Около трети бросков в игрока — туманная бутылка. На месте попадания облако
-   примерно на 30 секунд, как у обычного туманного зелья. Пока стоишь в нём,
-   эффект вешается снова.
-   У яда, замедления, слабости и урона туман короче бутылки в четыре раза.
-   У новых эффектов секунды те, что в настройках.
-4. Взрывные брызги в упор длятся почти всё настроенное время.
-   С краю лужи время короче — так у любой взрывной бутылки.
-   Брызги и туман задевают всех, кто стоит рядом, не только игрока.
-5. Чтобы выключить одно зелье из нового списка, поставь его максимум секунд в 0.
+1. Roughly every other throw at the player comes from the new list, equal weight:
+   Slowness IV for 15–20 seconds,
+   Blindness for 5–10 seconds,
+   Wither I for 10 seconds,
+   Hunger I for 20–30 seconds,
+   Nausea for 8–12 seconds,
+   Mining Fatigue I for 15–20 seconds,
+   Levitation for 4–6 seconds.
+2. Other throws work as before: Slowness at range, poison if you are healthy,
+   Weakness sometimes up close, otherwise instant damage.
+3. About one third of throws at the player are fog bottles. On impact, a cloud
+   lasts about 30 seconds, like a normal lingering potion. While you stand in it,
+   the effect is reapplied.
+   For poison, slowness, weakness, and damage, fog lasts one quarter of the bottle time.
+   For new effects, seconds match the settings.
+4. Splash at point-blank lasts almost the full configured duration.
+   At the edge of the puddle, duration is shorter — same as any splash bottle.
+   Splashes and fog affect everyone nearby, not only the player.
+5. To disable one potion from the new list, set its maximum seconds to 0.
 
 
 SETTINGS (WitchThrownPotions.java)
 -----------------------------------
   ENABLED ...................... true
-  SPECIAL_CHANCE ............... 0.50 — доля новых эффектов (50%)
-  LINGERING_CHANCE ............. 0.35 — доля туманных бутылок (35%)
+  SPECIAL_CHANCE ............... 0.50 — share of new effects (50%)
+  LINGERING_CHANCE ............. 0.35 — share of fog bottles (35%)
   SLOWNESS_MIN_SECONDS ......... 15
   SLOWNESS_MAX_SECONDS ......... 20
-  SLOWNESS_AMPLIFIER ........... 3 — Замедление IV
+  SLOWNESS_AMPLIFIER ........... 3 — Slowness IV
   BLINDNESS_MIN_SECONDS ........ 5
   BLINDNESS_MAX_SECONDS ........ 10
-  WITHER_SECONDS ............... 10 — Иссушение I, около 2 сердец
+  WITHER_SECONDS ............... 10 — Wither I, about 2 hearts
   WITHER_AMPLIFIER ............. 0
   HUNGER_MIN_SECONDS ........... 20
   HUNGER_MAX_SECONDS ........... 30
@@ -51,115 +51,115 @@ SETTINGS (WitchThrownPotions.java)
   NAUSEA_MAX_SECONDS ........... 12
   FATIGUE_MIN_SECONDS .......... 15
   FATIGUE_MAX_SECONDS .......... 20
-  FATIGUE_AMPLIFIER ............ 0 — Усталость I. 1 почти останавливает копание
+  FATIGUE_AMPLIFIER ............ 0 — Mining Fatigue I. Level 1 nearly stops mining
   LEVITATION_MIN_SECONDS ....... 4
   LEVITATION_MAX_SECONDS ....... 6
-  VANILLA_LINGERING_SCALE ...... 0.25 — туман обычных зелий, четверть времени
+  VANILLA_LINGERING_SCALE ...... 0.25 — fog for vanilla potions, quarter duration
 
 
-ТЕСТ
+TEST
 ----
-1. Поставь SPECIAL_CHANCE = 1.0 и LINGERING_CHANCE = 0. Призови ведьму и отойди,
-   чтобы она кидала. Бутылки взрывные, эффекты из нового списка.
-2. Поставь LINGERING_CHANCE = 1.0. После попадания на земле остаётся цветной туман.
-3. Верни 0.50 и 0.35. Часть бросков снова яд, замедление, слабость или урон.
-4. /etwitch — белая бутылка по-прежнему взрывная и снимает эффекты.
+1. Set SPECIAL_CHANCE = 1.0 and LINGERING_CHANCE = 0. Summon a witch and back away
+   so she throws. Bottles are splash; effects come from the new list.
+2. Set LINGERING_CHANCE = 1.0. After a hit, colored fog remains on the ground.
+3. Restore 0.50 and 0.35. Some throws are poison, slowness, weakness, or damage again.
+4. /etwitch — white bottle is still splash and still clears effects.
 
 ==============================================================================================
 
-ВЕДЬМА: ЗЕЛЬЕ НЕВИДИМОСТИ
+WITCH: INVISIBILITY POTION
 ==========================
 
-Тип: обычная ведьма, в том числе ведьма-обнулитель. Отдельный вид не появляется.
-Код: witch/WitchInvisibility.java (шанс, пауза, длительность),
-     mixin/WitchInvisibilityMixin.java (момент, когда ведьма решает пить).
+Type: normal witch, including nullifier witch. No separate mob type spawns.
+Code: witch/WitchInvisibility.java (chance, pause, duration),
+     mixin/WitchInvisibilityMixin.java (moment when the witch decides to drink).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Пока у ведьмы есть цель, раз в 15 секунд шанс 10% отпить невидимость.
-   Первая проверка — сразу, как она кого-то выбрала.
-   Без цели секунды не идут: в хижине сама по себе она не исчезает.
-2. Глоток как у обычных зелий ведьмы: бутылка у рта, она замедляется, около полутора секунд.
-   Пока пьёт, ничего не кидает.
-3. После глотка её не видно 20 секунд. Броски и звуки остаются:
-   бутылку в полёте видно, шаги и голос слышно.
-   Частиц вокруг неё нет, иначе облачко выдавало бы место.
-4. Если она уже пьёт воду, огнестойкость или лечение, этот глоток допивает.
-   Невидимость начнётся следом, без нового броска шанса.
-   Если пила скорость — бутылка может смениться на невидимость.
-5. Пока невидимость висит, новую она не пьёт. Когда спала, отсчёт 15 секунд идёт заново.
-6. Если ведьма уже появилась невидимой из общих зелий при спавне, пить не будет:
-   тот эффект не кончается.
+1. While the witch has a target, every 15 seconds there is a 10% chance to drink invisibility.
+   First check happens as soon as she picks someone.
+   Without a target, the timer does not run: alone in her hut she does not vanish.
+2. Sip works like vanilla witch potions: bottle at mouth, she slows down, about one and a half seconds.
+   While drinking, she throws nothing.
+3. After the sip she is invisible for 20 seconds. Throws and sounds remain:
+   you see the bottle in flight, hear steps and voice.
+   No particles around her, or the cloud would give away her position.
+4. If she is already drinking water, fire resistance, or healing, she finishes that sip.
+   Invisibility starts right after, with no new chance roll.
+   If she was drinking speed, the bottle may switch to invisibility.
+5. While invisibility is active, she does not drink another. When it ends, the 15-second countdown restarts.
+6. If she already spawned invisible from general spawn potions, she will not drink:
+   that effect does not expire.
 
 
 SETTINGS (WitchInvisibility.java)
 ----------------------------------
-  ENABLED ...................... true — false выключает новые глотки
-  DRINK_CHANCE ................. 0.10 — шанс на проверке (10%). Было 35%
-  CHECK_SECONDS ................ 15 — как часто проверять в бою. Было 6 секунд
-  INVISIBILITY_SECONDS ......... 20 — сколько секунд её не видно. 180 = как полная бутылка
-  SHOW_PARTICLES ............... false — true включает частицы и ведьму легче найти
+  ENABLED ...................... true — false disables new sips
+  DRINK_CHANCE ................. 0.10 — chance per check (10%). Was 35%
+  CHECK_SECONDS ................ 15 — how often to check in combat. Was 6 seconds
+  INVISIBILITY_SECONDS ......... 20 — how long she stays invisible. 180 = full bottle
+  SHOW_PARTICLES ............... false — true enables particles and makes her easier to find
 
 
-ТЕСТ
+TEST
 ----
-1. Чтобы увидеть сразу, временно поставь DRINK_CHANCE = 1.0. После проверки верни 0.10.
-2. Призови ведьму и ударь её, стоя рядом. Она должна поднять бутылку, выпить и пропасть.
-3. Подожди: зелья она кидает и невидимой. Через 20 секунд её снова видно.
-4. Поставь ENABLED = false. Новые глотки пропадают, обычные зелья ведьмы остаются.
+1. To see it immediately, temporarily set DRINK_CHANCE = 1.0. After testing, restore 0.10.
+2. Summon a witch and hit her while standing close. She should raise a bottle, drink, and vanish.
+3. Wait: she still throws potions while invisible. After 20 seconds she is visible again.
+4. Set ENABLED = false. New sips stop; normal witch potions remain.
 
 ==============================================================================================
 
-ВЕДЬМА-ОБНУЛИТЕЛЬ
-=================
+NULLIFIER WITCH
+===============
 
-Тип: редкий вариант обычной ведьмы. Сама выглядит как ванильная.
-Код: witch/WitchNullifier.java (настройки, снятие эффектов, команда),
-     mixin/WitchNullifierMixin.java (флаг и пауза между белыми зельями),
-     mixin/WitchNullifierMobMixin.java (шанс при спавне и сохранение),
-     mixin/ThrownSplashPotionNullifyMixin.java (подмена бутылки на белую),
-     mixin/AbstractThrownPotionNullifyMixin.java (попадание снимает эффекты).
+Type: rare variant of a normal witch. Looks like vanilla.
+Code: witch/WitchNullifier.java (settings, effect removal, command),
+     mixin/WitchNullifierMixin.java (flag and pause between white potions),
+     mixin/WitchNullifierMobMixin.java (spawn chance and persistence),
+     mixin/ThrownSplashPotionNullifyMixin.java (swap bottle to white),
+     mixin/AbstractThrownPotionNullifyMixin.java (hit clears effects).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При спавне шанс SPAWN_CHANCE (15%). Хижина ведьмы, рейд и спаунер тоже бросают этот шанс.
-2. Ведьма по-прежнему пьёт зелья себе и кидает яд, замедление и урон.
-   Если пауза прошла, очередной бросок по игроку — белое взрывное зелье без своего эффекта.
-   Первый бросок по игроку паузы не ждёт.
-3. Игрок в брызгах теряет все значки эффектов сразу: зелья, золотое яблоко, луч маяка.
-   Яд, иссушение и слабость тоже спадают — зелье обнуляет всё, а не только полезное.
-   Если стоять в луче маяка, маяк выдаст эффект заново сам.
-4. Другие мобы в брызгах свои эффекты не теряют.
-   Союзникам в рейде ведьма по-прежнему кидает лечение, не белое зелье.
-5. Щит белое зелье не ловит: взрывные зелья в игре щитом не блокируются.
-6. Следующее белое зелье не раньше чем через 15 секунд.
-   Обычные броски в эту паузу идут как у обычной ведьмы.
-   Пока ведьма пьёт, она ничего не кидает — отойди и подожди пару секунд.
+1. On spawn, SPAWN_CHANCE (15%). Witch hut, raid, and spawner all use this chance.
+2. The witch still drinks potions for herself and throws poison, slowness, and damage.
+   If the cooldown has passed, the next throw at the player is a white splash potion with no effect of its own.
+   The first throw at the player does not wait for cooldown.
+3. A player in the splash loses all effect icons at once: potions, golden apple, beacon beam.
+   Poison, wither, and weakness drop too — the potion clears everything, not only buffs.
+   If you stand in a beacon beam, the beacon reapplies the effect on its own.
+4. Other mobs in the splash do not lose their effects.
+   Allies in a raid still get healing throws, not white potions.
+5. Shield does not block the white potion: splash potions are not blocked by shield in the game.
+6. The next white potion is not sooner than 15 seconds later.
+   Normal throws during that pause work like a regular witch.
+   While the witch is drinking, she throws nothing — step back and wait a couple of seconds.
 
 
-КОМАНДА
+COMMAND
 -------
   /etwitch
   /evolvingthreats spawn witch
-Ведьма появляется в 8 блоках по взгляду и сразу смотрит на тебя.
-Нужны права оператора, как у остальных команд мода.
+The witch spawns 8 blocks in front of where you look and immediately faces you.
+Requires operator permissions, like other mod commands.
 
 
 SETTINGS (WitchNullifier.java)
 -------------------------------
-  ENABLED ...................... true — false выключает и спавн, и снятие эффектов
-  SPAWN_CHANCE ................. 0.15 — шанс в мире (15%). Команда шанс не бросает
-  THROW_COOLDOWN_SECONDS ....... 15 — пауза между белыми зельями
-  POTION_COLOR ................. 0xF4F4F4 — цвет брызг, почти белый
-  SPLASH_RADIUS_BLOCKS ......... 4 — горизонталь брызг, как у обычного зелья
-  SPLASH_VERTICAL_BLOCKS ....... 2 — вверх и вниз, как у обычного зелья
+  ENABLED ...................... true — false disables both spawn and effect removal
+  SPAWN_CHANCE ................. 0.15 — world spawn chance (15%). Command does not roll chance
+  THROW_COOLDOWN_SECONDS ....... 15 — pause between white potions
+  POTION_COLOR ................. 0xF4F4F4 — splash color, almost white
+  SPLASH_RADIUS_BLOCKS ......... 4 — horizontal splash, same as normal potion
+  SPLASH_VERTICAL_BLOCKS ....... 2 — up and down, same as normal potion
 
 
-ТЕСТ
+TEST
 ----
-1. Выпей силу, скорость или огнестойкость. Можно повесить на себя и яд — он тоже спадёт.
-2. Введи /etwitch и отойди на несколько блоков, чтобы она начала кидать.
-3. Первая белая бутылка снимает все значки. Звук глотка — эффекты реально пропали.
-4. Следующие броски около 15 секунд — обычные (яд, замедление, урон). Потом снова белая.
+1. Drink strength, speed, or fire resistance. You can apply poison too — it will also clear.
+2. Run /etwitch and step back several blocks so she starts throwing.
+3. The first white bottle clears all icons. Gulp sound means effects really dropped.
+4. For about 15 seconds the next throws are normal (poison, slowness, damage). Then white again.

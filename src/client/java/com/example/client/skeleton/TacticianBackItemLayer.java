@@ -10,48 +10,48 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
 /**
- * Рисует лук или меч на спине. Модель скелета обычная, отдельная моделька не нужна.
- * Если предмет сидит криво — крути числа ниже и перезапусти игру.
+ * Draws a bow or sword on the back. The model of the skeleton is ordinary, a separate model is not needed.
+ * If the item sits crooked, spin the numbers below and restart the game.
  */
 public class TacticianBackItemLayer<S extends SkeletonRenderState> extends RenderLayer<S, SkeletonModel<S>> {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Сдвиг вправо, в блоках. 0 = по центру спины. Плюс — к правому плечу скелета. */
+	/** Shift to the right, in blocks. 0 = center of back. Plus — to the right shoulder of the skeleton. */
 	private static final float OFFSET_X = 0.12F;
 
 	/**
-	 * Сдвиг вниз по спине, в блоках. 0 = у шеи, 0.38 = чуть выше середины,
-	 * чтобы рукоять доставала до плеча. Больше — меч ниже, к поясу.
+	 * Shift down the back, in blocks. 0 = at the neck, 0.38 = just above the middle,
+	 * so that the handle reaches the shoulder. More — the sword is lower, to the belt.
 	 */
 	private static final float OFFSET_Y = 0.38F;
 
 	/**
-	 * Насколько предмет отходит от спины, в блоках. 0.22 = лежит снаружи, не внутри рёбер.
-	 * Если меч всё ещё в теле — увеличь. Если слишком далеко — уменьши.
+	 * As far as the object moves away from the back, in blocks. 0.22 = lies outside, not inside the ribs.
+	 * If the sword is still in the body, zoom in. If it's too far, reduce it.
 	 */
 	private static final float OFFSET_Z = 0.22F;
 
 	/**
-	 * Наклон на спине, в градусах.
-	 * 0 = меч поперёк, горизонтально.
-	 * -58 = рукоять к правому плечу, лезвие вниз.
-	 * Плюс (например 58) — наоборот: лезвие вверх, рукоять вниз.
+	 * Tilt on the back, in degrees.
+	 * 0 = sword across, horizontally.
+	 * -58 = handle to right shoulder, blade down.
+	 * Plus (for example, 58) — vice versa: blade up, handle down.
 	 */
 	private static final float ROT_Z = -58.0F;
 
-	/** Поворот вокруг вертикали, в градусах. 0 = лицом наружу. 180 = развернуть картинку. */
+	/** Rotate around vertical, in degrees. 0 = face out. 180 = rotate picture. */
 	private static final float ROT_Y = 0.0F;
 
 	/**
-	 * Поворот «плашмя», в градусах.
-	 * 0 = широкая сторона меча на спине. 90 = снова вбить ребром в тело.
+	 * Rotation "flat", in degrees.
+	 * 0 = wide side of the sword on the back. 90 = rib into the body again.
 	 */
 	private static final float ROT_X = 0.0F;
 
 	/**
-	 * Размер. Картинка «плашмя» уже меньше, чем предмет в руке.
-	 * 1.0 = обычный меч на спине. 0.7 = короче.
+	 * Size: The flat image is already smaller than the object in the hand.
+	 * 1.0 = normal sword on the back. 0.7 = shorter.
 	 */
 	private static final float SCALE = 1.0F;
 

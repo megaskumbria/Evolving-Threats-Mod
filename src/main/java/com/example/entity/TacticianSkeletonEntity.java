@@ -5,7 +5,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
-/** Скелет «700 IQ»: лук и меч меняются местами, второй предмет висит на спине. */
+/*700 IQ skeleton: the bow and sword are reversed, the second object hangs on the back. */
 public interface TacticianSkeletonEntity {
 
 	boolean evolvingthreats$isTactician();
@@ -20,7 +20,7 @@ public interface TacticianSkeletonEntity {
 
 	void evolvingthreats$setMarkedPlayer(@Nullable UUID playerId);
 
-	/** До какого игрового времени он ещё может быть с мечом. 0 — сейчас с луком. */
+	/*How long can he still play with a sword? 0 - now with onions. */
 	long evolvingthreats$getMeleeUntil();
 
 	void evolvingthreats$setMeleeUntil(long gameTime);

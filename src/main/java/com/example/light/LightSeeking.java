@@ -24,97 +24,97 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Зомби идут на яркий свет (факел, светокамень, фонарь…), если не видят игрока.
- * Логика поиска — здесь; поведение «идти / стоять / идти дальше» — в {@link com.example.entity.ai.LightSeekGoal}.
+ Zombies go to a bright light (torch, light stone, lantern...), if you do not see the player.
+ * Search logic is here; go/stand/go further behavior is at {@link com.example.entity.ai.LightSeekGoal}.
  *
- * Кто участвует: обычный зомби, хаск, зомби-житель.
- * Исключены: утопленник (в воде), зомби-пиглин (не верхний мир),
- * надсмотрщик и прислуга рейда (у них своя охота).
+ Who participates: ordinary zombie, husk, zombie villager.
+ Excluded: drowned (in water), zombie piglin (not the upper world),
+ The guard and the servants of the raid (they have their own hunt).
  */
 public final class LightSeeking {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить поведение вообще. false — зомби игнорируют свет. */
+	/** Include behavior altogether. False: Zombies ignore light. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Минимальная яркость источника (0–15), чтобы зомби его заметил.
-	 * 12 = факел (14), светокамень (15), фонарь (15), костёр (15), морской фонарь (15).
-	 * Светящийся лишайник (7) и свечи (до 12 при 4 свечах) — ниже/на границе.
-	 * Поставь 15, если нужны только самые яркие блоки.
+	 Minimum brightness of the source (0-15) for zombies to notice.
+	 * 12 = torch (14), light stone (15), lantern (15), fire (15), sea lamp (15).
+	 Glowing lichen (7) and candles (up to 12 at 4 candles) - below / at the border.
+	 Put 15 if you only need the brightest blocks.
 	 */
 	public static final int MIN_LIGHT_LEVEL = 12;
 
 	/**
-	 * Как далеко зомби «ищет» свет по горизонтали (блоки от своей позиции).
-	 * 60 = квадрат 121×121; по прямой до ~60 блоков, по диагонали до ~85.
-	 * Ближайший подходящий блок в этом объёме побеждает.
-	 * Больше радиус = тяжелее для сервера (много зомби без цели — не раздувай без нужды).
+	 How far a zombie "seeks" light horizontally (blocks from its position).
+	 60 = square 121×121; straight to ~60 blocks, diagonally to ~85.
+	 The nearest suitable block wins in this volume.
+	 * More radius = heavier for the server (many zombies without a target - don't inflate unnecessarily).
 	 */
 	public static final int SEARCH_RADIUS_HORIZONTAL = 60;
 
-	/** Вверх и вниз от ног зомби (блоки): ±16, итого 33 этажа по высоте. */
+	/*Up and down from the feet of zombies (blocks): ± 16, a total of 33 floors in height. */
 	public static final int SEARCH_RADIUS_VERTICAL = 16;
 
 	/**
-	 * Требовать прямую видимость до света (не через стены).
-	 * true — свет за стеной зомби не заметит (естественнее, меньше ложных путей).
-	 * false — идут на любой свет в радиусе, даже за стеной.
+	 Require direct visibility to light (not through walls).
+	 True - the light behind the wall zombies will not notice (of course, less false ways).
+	 False - go to any light in radius, even behind the wall.
 	 */
 	public static final boolean REQUIRE_LINE_OF_SIGHT = true;
 
-	/** Пауза между поисками света, когда ничего не нашли (тики; 20 тиков = 1 сек). */
+	/*A pause between searching for light when nothing is found (tics; 20 tics = 1 sec). */
 	public static final int SCAN_INTERVAL_TICKS = 40;
 
-	/** Скорость движения к свету (1.0 = как обычный шаг зомби). */
+	/*Speed of movement to light (1.0 = like a normal zombie step). */
 	public static final double MOVE_SPEED = 1.0;
 
-	/** Считать «пришёл», когда ближе этого расстояния до света (блоки). */
+	/*Consider "come" when closer to this distance to light (blocks). */
 	public static final double ARRIVE_DISTANCE = 2.5;
 
-	/** Сколько стоять у света (тики): 80 = 4 сек. */
+	/*How much to stand by the light (ticks): 80 = 4 seconds. */
 	public static final int WAIT_AT_LIGHT_TICKS = 4 * 20;
 
 	/**
-	 * Ломают ли зомби свет, к которому пришли (если не видят игрока).
-	 * Ломается любой свет, кроме лавы и светоягод; блоки из UNBREAKABLE_BLOCKS (бедрок, обсидиан) — нет.
-	 * Работает только если зомби вообще умеет ломать блоки (см. BlockBreaking.isBreaker).
+	 Do zombies break the light they came to (if they can’t see the player)?
+	 * Any light breaks except lava and light berries; blocks from UNBREAKABLE BLOCKS (hip, obsidian) do not.
+	 It only works if a zombie can break blocks at all (see BlockBreaking.isBreaker).
 	 */
 	public static final boolean BREAK_LIGHT = true;
 
-	// Скорость ломания света отдельной константы не имеет: она такая же, как у обычных блоков
-	// (BlockBreaking.SPEED_MULTIPLIER + твёрдость блока + инструмент в руке зомби).
-	// Факел/лампа с твёрдостью 0 ломаются сразу, светокамень — за пару секунд.
-	// Если зомби заметит игрока или жителя, пока ломает — бросит свет и пойдёт на цель.
+	// The breaking speed of light has no separate constant: it is the same as that of ordinary blocks.
+	// (BlockBreaking.SPEED MULTIPLIER + block hardness + tool in zombie hand)
+	// A torch/lamp with a hardness of 0 breaks immediately, a lightstone breaks in a couple of seconds.
+	// If a zombie spots a player or a resident while it breaks, it will throw lights and hit its target.
 
-	/** Сколько не возвращаться к уже посещённому свету (тики): 2400 = 2 минуты. */
+	/*How much do not return to the light already visited (tics): 2400 = 2 minutes. */
 	public static final int IGNORE_VISITED_LIGHT_TICKS = 2 * 60 * 20;
 
-	/** Макс. время одного похода к свету (тики), чтобы не застрять навсегда: 600 = 30 сек. */
+	/*Max. the time of one trip to the light (ticks) so as not to get stuck forever: 600 = 30 seconds. */
 	public static final int MAX_WALK_TICKS = 30 * 20;
 
 	/**
-	 * Жители важнее света: если зомби «чувствует» жителя рядом — он бросает свет
-	 * (не идёт к нему и не ломает) и идёт убивать/заражать жителя.
-	 * false — как раньше: зомби без цели в первую очередь идёт на свет.
+	 Residents are more important than light: if a zombie “feels” a resident nearby, he throws light
+	 * (does not go to him and does not break) and goes to kill / infect a resident.
+	 False - as before: a zombie without a goal first comes to light.
 	 */
 	public static final boolean VILLAGER_BEATS_LIGHT = true;
 
 	/**
-	 * Как далеко (блоки по горизонтали) зомби чувствует жителя. Сквозь стены тоже.
-	 * 40 = чуть дальше ванильных 35. Не ставь больше SEARCH_RADIUS_HORIZONTAL — смысла нет.
-	 * Больше число = зомби «видят» деревню издалека и чаще бросают свет ради неё.
+	 How far (blocks horizontally) the zombie feels. Through the walls too.
+	 * 40 = just beyond the vanilla 35. Don't play SEARCH RADIUS HORIZONTAL anymore.
+	 * More number = zombies "see" the village from afar and often throw light for it.
 	 */
 	public static final double VILLAGER_SENSE_RADIUS = 40.0;
 
 	/**
-	 * Как далеко вверх/вниз (блоки) зомби чувствует жителя.
-	 * В ваниле только ±4 — поэтому житель на втором этаже или в подвале зомби «не замечал» и он шёл ломать факел.
+	 How far up/down (blocks) the zombie feels.
+	 In the vanilla only ± 4 - so the resident on the second floor or in the basement of the zombie "did not notice" and he went to break the torch.
 	 */
 	public static final double VILLAGER_SENSE_VERTICAL = 16.0;
 
-	/** Как часто (тики) зомби по пути к свету/у света проверяет, не появился ли рядом житель: 10 = полсекунды. */
+	/*How often (ticks) zombies on the way to the light / light checks whether there was a resident nearby: 10 = half a second. */
 	public static final int VILLAGER_RECHECK_TICKS = 10;
 
 	// ========================================================================
@@ -122,12 +122,12 @@ public final class LightSeeking {
 	private LightSeeking() {
 	}
 
-	/** Может ли этот зомби вообще искать свет. */
+	/*Could this zombie ever look for light? */
 	public static boolean isEligible(Zombie zombie) {
 		if (!ENABLED) {
 			return false;
 		}
-		// С какого дня зомби вообще бегут на свет (ThreatTable.LIGHT_SEEK_DAY).
+		// From what day do zombies ever run into the light (ThreatTable.LIGHT SEEK DAY)?
 		if (!ThreatScale.reached(zombie.level(), ThreatTable.LIGHT_SEEK_DAY)) {
 			return false;
 		}
@@ -140,7 +140,7 @@ public final class LightSeeking {
 		if (zombie instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
 			return false;
 		}
-		// Маяк с jack o'lantern сам светит — не идёт гасить факелы.
+		// The lighthouse with the jack o'lantern itself shines - does not go to extinguish the torches.
 		if (JackLanternBeacon.skipsLightSeeking(zombie)) {
 			return false;
 		}
@@ -148,9 +148,9 @@ public final class LightSeeking {
 	}
 
 	/**
-	 * Если рядом есть живой житель (или странствующий торговец — как в ваниле) — сделать его целью зомби.
-	 * Возвращает true, если цель назначена (значит, свет сейчас не интересен).
-	 * Дальше зомби сам идёт к жителю обычной атакой (а двери/блоки на пути ломает BreakToTargetGoal).
+	 If there is a live resident nearby (or an itinerant merchant, as in vanilla), make him a zombie target.
+	 Returns true if the target is assigned (means the light is not interesting right now).
+	 Next, the zombie himself goes to the resident with a regular attack (and the doors / blocks on the way break BreakToTargetGoal).
 	 */
 	public static boolean targetNearbyVillager(Zombie zombie) {
 		if (!VILLAGER_BEATS_LIGHT) {
@@ -173,7 +173,7 @@ public final class LightSeeking {
 		return true;
 	}
 
-	/** Блок — подходящий источник света? Лава, светоягоды (пещерные лозы) — всегда нет. */
+	/*Is the block a suitable light source? Lava, light berries (cave vines) - always not. */
 	public static boolean isAttractiveLight(BlockState state) {
 		if (state.getLightEmission() < MIN_LIGHT_LEVEL) {
 			return false;
@@ -184,11 +184,11 @@ public final class LightSeeking {
 		if (state.is(Blocks.LAVA_CAULDRON)) {
 			return false;
 		}
-		// Светоягоды на лозах (яркость 14) — природный свет пещер, не «факел игрока».
+		// Light berries on vines (brightness 14) are the natural light of caves, not the “player torch”.
 		return !state.is(Blocks.CAVE_VINES) && !state.is(Blocks.CAVE_VINES_PLANT);
 	}
 
-	/** Ближайший подходящий свет вокруг зомби или null. {@code isIgnored} — уже посещённые позиции. */
+	/*The nearest suitable light is around a zombie or null. {@code isIgnored} - positions already visited. */
 	@Nullable
 	public static BlockPos findNearestLight(Zombie zombie, java.util.function.Predicate<BlockPos> isIgnored) {
 		Level level = zombie.level();
@@ -203,7 +203,7 @@ public final class LightSeeking {
 		for (int dx = -rh; dx <= rh; dx++) {
 			for (int dz = -rh; dz <= rh; dz++) {
 				cursor.set(origin.getX() + dx, origin.getY(), origin.getZ() + dz);
-				// Не трогаем незагруженные чанки (иначе сервер начнёт их грузить).
+				// Do not touch unloaded chunks (otherwise the server will start loading them).
 				if (!level.hasChunk(SectionPos.blockToSectionCoord(cursor.getX()), SectionPos.blockToSectionCoord(cursor.getZ()))) {
 					continue;
 				}
@@ -232,7 +232,7 @@ public final class LightSeeking {
 		return best;
 	}
 
-	/** Луч от глаз зомби до центра блока света: не перекрыт другим блоком. */
+	/*Beam from the eyes of zombies to the center of the light block: not blocked by another block. */
 	private static boolean canSee(Zombie zombie, BlockPos lightPos) {
 		Vec3 from = zombie.getEyePosition();
 		Vec3 to = Vec3.atCenterOf(lightPos);

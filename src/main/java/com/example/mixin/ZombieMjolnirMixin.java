@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Обычный зомби помнит, что он Mjölnir, и после загрузки мира не теряет это.
- * Бирка и редкий молот — {@link ZombieMjolnirLootMixin}. Молот и имя выдаёт {@link ZombieMjolnir}.
+ * Marks a normal zombie as Mjölnir and persists that after world reload.
+ * Name tag and rare hammer drop — {@link ZombieMjolnirLootMixin}. Hammer and name — {@link ZombieMjolnir}.
  */
 @Mixin(Zombie.class)
 public class ZombieMjolnirMixin implements ZombieMjolnirEntity {

@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Защита от NPE в 26.3: на «нечётных» тиках SpearUseGoal.tick() вызывается без проверки цели.
- * Поле mob — generic Monster, не Mob; для доступа используем @Accessor, не @Shadow.
+ NPE Protection 26.3: On odd tics, SpearUseGoal.tick() is called without target verification.
+ * Mob field is generic Monster, not Mob; we use @Accessor, not @Shadow for access.
  */
 @Mixin(SpearUseGoal.class)
 public abstract class SpearUseGoalMixin {

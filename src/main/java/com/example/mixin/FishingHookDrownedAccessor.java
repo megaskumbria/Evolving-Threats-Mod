@@ -5,7 +5,7 @@ import net.minecraft.world.entity.projectile.FishingHook;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-/** Крючок умеет запоминать, кого зацепил, но метод закрыт. */
+/*The hook is able to remember who it caught, but the method is closed. */
 @Mixin(FishingHook.class)
 public interface FishingHookDrownedAccessor {
 

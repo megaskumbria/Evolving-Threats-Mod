@@ -39,102 +39,102 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий скелет Basilisk. Игра его не добавляет: это обычный скелет в незерите
- * с луком и чёрным щитом. Лук уносит игрока очень далеко и поджигает.
- * Лук, щит и броня не падают. С него всегда падает бирка с его именем.
+ A rare Basilisk skeleton. The game does not add it: it is an ordinary skeleton in Neserite.
+ With a bow and a black shield. The bow takes the player very far and sets fire to it.
+ Bow, shield and armor don't fall. He always gets his name tag dropped.
  */
 public final class BasiliskSkeleton {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — новые Василиски не появляются, команда тоже не спавнит. Уже живые остаются как есть. */
+	/*False - new Basiliskis do not appear, the team does not spawn either. The living remain as they are. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет при появлении станет Василиском.
-	 * 0.002 = 0.2%, реже капитана (у того 0.6%). Команда этот шанс не бросает.
-	 * Спаунер скелетов тоже бросает этот шанс. Призванная подмога и /summon — нет.
+	 * Chance (0.0-1.0) that a normal skeleton will become a Basilisk.
+	 0.002 = 0.2%, less than the captain (0.6%). The team doesn't give up that chance.
+	 Skeleton spawner also throws this chance. Called for help and /summon - No.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
-	/** Имя над головой и текст на бирке. По-английски, как у капитана. */
+	/** Display name and text on the name tag. English, like a captain. */
 	public static final String NAME = "Basilisk";
 
 	/**
-	 * Здоровье. У обычного скелета 20 (10 сердец), случайный бросок мода (20–40) ему не оставляем:
-	 * это число ставится после того броска и всегда одно и то же.
-	 * 100 = 50 сердец. Меньше 1 игра почти сразу убивает.
+	 Health. In an ordinary skeleton of 20 (10 hearts), a random fashion throw (20-40) is not left to him:
+	 This number is placed after that throw and is always the same.
+	 * 100 = 50 hearts. Less than 1 game kills almost immediately.
 	 */
 	public static final float MAX_HEALTH = 100.0f;
 
 	/**
-	 * Сколько опыта падает при смерти. 100. Обычный скелет даёт 5.
-	 * 0 = опыта нет. Это число вместо обычного, а не сверху.
+	 How much experience falls at death. 100. A normal skeleton makes 5.
+	 * 0 = no experience. This is a number instead of the usual, not the top.
 	 */
 	public static final int XP_REWARD = 100;
 
 	/**
-	 * Сколько бирок с именем Basilisk падает всегда. 1 = одна.
-	 * 0 = бирку не ронять. На лук и броню это не влияет: они не падают.
+	 How many tags with the name Basilisk always fall. 1 = one.
+	 * 0 = do not drop the name tag. This does not affect the bow and armor: they do not fall.
 	 */
 	public static final int NAME_TAG_COUNT = 1;
 
 	/**
-	 * Шанс (0.0–1.0) дополнительно выронить череп скелета.
-	 * 0.025 = 2.5%, как череп скелета-иссушителя. 0 = черепа нет. 1 = падает всегда.
+	 * Chance (0.0-1.0) to drop the skeleton skull.
+	 0.025 = 2.5%, like the skull of an exhumerator skeleton. 0 = no skull. 1 = falls always.
 	 */
 	public static final float SKULL_DROP_CHANCE = 0.025f;
 
-	/** Горящая стрела. 1 = есть. 0 = стрела не поджигает. */
+	/** Burning arrow. 1 = there. 0 = the arrow doesn't burn. */
 	public static final int BOW_FLAME_LEVEL = 1;
 
-	/** Сила на луке. 5 = V, ванильный потолок. */
+	/*Strength on the bow. 5 = V, vanilla ceiling. */
 	public static final int BOW_POWER_LEVEL = 5;
 
 	/**
-	 * Откидывание на луке. У ванильного лука потолок II, у капитана IV, у редкого лука мода VI.
-	 * 20 = XX. Игрока уносит намного дальше, чем Откидывание VI.
+	 * Onion reclining. Vanilla bow has a ceiling II, Captain IV, and a rare bow has a mod VI.
+	 * 20 = XX. The player takes a lot further than Retraction VI.
 	 */
 	public static final int BOW_PUNCH_LEVEL = 20;
 
 	/**
-	 * Как далеко замечает игрока и не теряет его, в блоках.
-	 * У обычного скелета около 16. 64 = в четыре раза дальше: видит через всё поле, если нет стены.
-	 * Стену это не пробивает. Капитан ищет сквозь стены на 128, здесь только прямая видимость.
+	 How far the player notices and does not lose it, in blocks.
+	 A normal skeleton has about 16. 64 = four times farther: sees through the whole field if there is no wall.
+	 It doesn't break through the wall. Captain's looking through the walls at 128, only direct view.
 	 */
 	public static final double SIGHT_BLOCKS = 64.0;
 
 	/**
-	 * На каком расстоянии останавливается и стреляет, в блоках.
-	 * У обычного скелета 15. 48 = начинает обстрел издалека, не подходит вплотную.
-	 * Должно быть не больше {@link #SIGHT_BLOCKS}, иначе он не видит точку, с которой мог бы стрелять.
+	 At what distance he stops and shoots, in blocks.
+	 A normal skeleton has 15. 48 = starts firing from afar, does not fit closely.
+	 * Must be no more {@link #SIGHT BLOCKS} otherwise he can't see the point from which he could shoot.
 	 */
 	public static final float ATTACK_RANGE_BLOCKS = 48.0f;
 
 	/**
-	 * Сколько попаданий в щит нужно, чтобы он разлетелся целиком.
-	 * 4 = четвёртая закрытая стрела Василиска ломает щит.
-	 * «Прочность» на щите это число не растягивает: считается каждое попадание, которое щит отбил.
-	 * Промах и удар мимо щита не считаются. 0 = щит не ломает. 1 = с первого попадания.
+	 How many hits to the shield it takes to fly completely.
+	 4 = the fourth closed arrow of Basilisk breaks the shield.
+	 "Durability" on the shield, this number does not stretch: every hit that the shield recaptured is considered.
+	 *Missing and hitting the shield are not considered. 0 = shield doesn't break. 1 = from the first hit.
 	 */
 	public static final int SHIELD_HITS_TO_BREAK = 4;
 
 	/**
-	 * Скорость стрелы. У обычного скелета 1.6, у дальнего быстрого лука 2.4.
-	 * 3.2 = чтобы стрела долетала до дальней дистанции, а не падала по пути.
-	 * Прицел подстраивается сам: быстрее стрела — меньше задирается вверх.
+	 Arrow speed. A normal skeleton has 1.6, a long-range fast bow has 2.4.
+	 * 3.2 = so that the arrow reaches a distance rather than falling along the way.
+	 The sight adjusts itself: faster than the arrow - less lifted up.
 	 */
 	public static final float ARROW_SPEED = 3.2f;
 
-	/** Скорость стрелы у обычного скелета. От неё считается прицел. */
+	/*The speed of the arrow in a normal skeleton. It counts as a sight. */
 	private static final float VANILLA_ARROW_SPEED = 1.6f;
 
-	/** Насколько обычный скелет задирает стрелу вверх. */
+	/*How much a normal skeleton lifts the arrow up. */
 	private static final float VANILLA_ARC = 0.2f;
 
 	// ========================================================================
 
-	/** Сколько стрел этот щит уже отбил. Лежит на самом щите, не на игроке. */
+	/*How many arrows has this shield already repulsed? It's on the shield, not the player. */
 	private static final String SHIELD_HITS_KEY = "EvolvingThreatsBasiliskShieldHits";
 
 	private static final EquipmentSlot[] ARMOR = {
@@ -149,8 +149,8 @@ public final class BasiliskSkeleton {
 	}
 
 	/**
-	 * Насколько задирать стрелу. Считается из {@link #ARROW_SPEED}.
-	 * При 1.6 получается 0.2, как у обычного скелета.
+	 How hard to pick up an arrow. Counting from {@link #ARROW SPEED}.
+	 1.6 is 0.2, like a normal skeleton.
 	 */
 	public static float arrowArc() {
 		if (ARROW_SPEED <= 0.01f) {
@@ -159,7 +159,7 @@ public final class BasiliskSkeleton {
 		return (float) (VANILLA_ARC * Math.pow(VANILLA_ARROW_SPEED / ARROW_SPEED, 1.25));
 	}
 
-	/** true = это Василиск, обычный набор мода ему не нужен. */
+	/** true = it is Basilisk, the usual set of fashions he does not need. */
 	public static boolean tryClaim(AbstractSkeleton skeleton, EntitySpawnReason reason) {
 		if (!ENABLED || !(skeleton instanceof Skeleton) || !(skeleton instanceof BasiliskSkeletonEntity data)) {
 			return false;
@@ -171,14 +171,14 @@ public final class BasiliskSkeleton {
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
 			return false;
 		}
-		// В ночь осады мини-боссы не появляются.
+		// On the night of the siege, mini-bosses don't show up.
 		if (SiegeNight.isWindowOpen(skeleton.level())) {
 			return false;
 		}
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
 			return false;
 		}
-		// С какого дня Василиски вообще появляются (ThreatTable.BASILISK_DAY). Шанс ниже от дня не меняется.
+		// From what day do Basiliskis even appear (ThreatTable.BASILISK DAY)? The chance lower from the day does not change.
 		if (!ThreatScale.reached(skeleton.level(), ThreatTable.BASILISK_DAY)) {
 			return false;
 		}
@@ -191,8 +191,8 @@ public final class BasiliskSkeleton {
 	}
 
 	/**
-	 * Команда. Появляется уже одетым, шанс не бросается.
-	 * false — выключен или скелета не удалось создать.
+	 * Team. Appears dressed, there is no chance.
+	 False - turned off or the skeleton could not be created.
 	 */
 	public static boolean spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
@@ -219,7 +219,7 @@ public final class BasiliskSkeleton {
 		return true;
 	}
 
-	/** Дальность взгляда и выстрела. Вызывать после того, как игра заново выбрала «стрелять из лука». */
+	/** Range of sight and shot. Call after the game has re-chosen to shoot with a bow. */
 	public static void applyBow(AbstractSkeleton skeleton, RangedBowAttackGoal<?> bowGoal) {
 		if (!isBasilisk(skeleton)) {
 			return;
@@ -228,7 +228,7 @@ public final class BasiliskSkeleton {
 		((RangedBowAttackGoalAccessor) bowGoal).evolvingthreats$setAttackRadiusSqr(ATTACK_RANGE_BLOCKS * ATTACK_RANGE_BLOCKS);
 	}
 
-	/** Сколько опыта дать. -1 = это не Василиск, пусть решает игра. */
+	/*How much experience to give. -1 = not Basilisk, let the game decide. */
 	public static int experienceReward(Mob mob) {
 		if (!isBasilisk(mob)) {
 			return -1;
@@ -236,7 +236,7 @@ public final class BasiliskSkeleton {
 		return Math.max(0, XP_REWARD);
 	}
 
-	/** Бирка с именем и редкий череп. Лук и незерит сюда не входят. */
+	/*Name tag and rare skull. Onions and non-zerite don't come in here. */
 	public static void dropBonus(Mob mob, ServerLevel level) {
 		if (!isBasilisk(mob)) {
 			return;
@@ -252,8 +252,8 @@ public final class BasiliskSkeleton {
 	}
 
 	/**
-	 * Щит уже отбил эту стрелу. Четвёртая такая стрела уничтожает его целиком.
-	 * Стрела другого скелета сюда не попадает.
+	 The shield has already repulsed that arrow. The fourth arrow destroys him completely.
+	 The arrow of another skeleton does not fall here.
 	 */
 	public static void onShieldBlock(Player player, DamageSource source) {
 		if (SHIELD_HITS_TO_BREAK <= 0 || !(player.level() instanceof ServerLevel)) {
@@ -281,7 +281,7 @@ public final class BasiliskSkeleton {
 		CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putInt(SHIELD_HITS_KEY, hits));
 	}
 
-	/** Перед выпадением вещей. Иначе Добыча может уронить лук или незерит. */
+	/** Before things fall out. Otherwise, prey can drop onions or nonzerite. */
 	public static void preventDrop(Mob mob) {
 		if (!isBasilisk(mob)) {
 			return;
@@ -304,9 +304,9 @@ public final class BasiliskSkeleton {
 		enchant(skeleton, bow, Enchantments.POWER, BOW_POWER_LEVEL);
 		enchant(skeleton, bow, Enchantments.PUNCH, BOW_PUNCH_LEVEL);
 		skeleton.setItemSlot(EquipmentSlot.MAINHAND, bow);
-		// Чёрный щит без узора флага: только цвет основы. Другой цвет — DyeColor, например RED.
-		// Удар по нему с шансом MobShields.BLOCK_CHANCE (сейчас 10%) гасится целиком, как у обычного щита мода.
-		// Щит не падает: шанс выпадения второй руки ниже стоит в 0.
+		// Black shield without flag pattern: base color only. Another color is DyeColor, like RED.
+		// The blow on it with the chance of MobShields.BLOCK CHANCE (now 10%) is extinguished entirely, like a conventional fashion shield.
+		// Shield does not fall: the chance of losing the second hand is lower than 0.
 		ItemStack shield = new ItemStack(Items.SHIELD);
 		shield.set(DataComponents.BASE_COLOR, DyeColor.BLACK);
 		skeleton.setItemSlot(EquipmentSlot.OFFHAND, shield);

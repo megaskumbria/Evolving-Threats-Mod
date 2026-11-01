@@ -18,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление шалкера, запись редких свойств и тик.
- * Выстрел и попадание снаряда — отдельные mixin. Числа — {@link ShulkerThreats}.
+ The appearance of the shalker, the recording of rare properties and tick.
+ Shooting and hitting a projectile are separate mixins. Numbers - {@link ShulkerThreats}.
  */
 @Mixin(Shulker.class)
 public class ShulkerThreatMixin implements ShulkerVariant {

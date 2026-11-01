@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Бирка Excalibur. Выпадение вещей объявлено у Mob, у Zombie своей копии нет.
- * Меч не роняется отдельно: шанс выпадения руки стоит 0 при выдаче меча.
+ * Excalibur name tag. Loot hooks live on Mob; Zombie has no separate override.
+ * The sword does not drop separately: hand drop chance is set to 0 when the sword is given.
  */
 @Mixin(net.minecraft.world.entity.Mob.class)
 public class ZombieExcaliburLootMixin {

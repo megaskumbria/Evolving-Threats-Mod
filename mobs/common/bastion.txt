@@ -1,56 +1,56 @@
-БАСТИОН
+BASTION
 =======
 
-Тип: редкий обычный зомби или обычный скелет. Не новый моб в меню.
-Код: bastion/Bastion.java (шанс, здоровье, удар не сдвигает),
-     mixin/BastionMixin.java (помнит, что он Бастион, и не берёт зелье скорости),
-     mixin/ZombieMixin.java и mixin/SkeletonMixin.java (шанс при появлении).
+Type: a rare ordinary zombie or ordinary skeleton. Not a new mob in the menu.
+Code: bastion/Bastion.java (chance, health, knockback immunity),
+     mixin/BastionMixin.java (remembers it is a Bastion, skips Speed potion),
+     mixin/ZombieMixin.java and mixin/SkeletonMixin.java (chance on spawn).
 
-Надсмотрщик, якорь, чародей, Excalibur, Mjölnir, динамит, ритуал,
-Василиск, капитан, Spiky и «700 IQ» им не становятся. Маленький скелет тоже нет.
+Overseer, raid anchor, sorcerer, Excalibur, Mjölnir, dynamite, ritual,
+Basilisk, captain, Spiky, and “700 IQ” do not become Bastions. Small skeleton — no.
 
 
-КАК ВЫГЛЯДИТ
+HOW IT LOOKS
 ------------
-Над головой имя Bastion. Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-Здоровье 1000 (500 сердец). Случайные 20–40 ему не остаются.
-Броня, чары, оружие, щит, зелья и голова — как у обычного зомби или скелета.
-Шаг как у взрослого ванильного зомби или скелета. Отдельной скорости нет.
+Name above head: Bastion. Visible only when crosshair is on it and it is within ~64 blocks.
+Health 1000 (500 hearts). Random 20–40 does not apply.
+Armor, enchants, weapon, shield, potions, and head — like a normal zombie or skeleton.
+Walk speed like adult vanilla zombie or skeleton. No separate speed boost.
 
 
-КАК ДЕЙСТВУЕТ
--------------
-1. Удар, стрела с Откидыванием и взрыв его не сдвигают.
-2. Зелье «Скорость» не вешается: ни при появлении, ни из бутылки, ни от маяка тыквы.
-   Замедление, сила и прыгучесть работают.
-3. Зомби ломает блоки как обычный зомби (с 40-го дня, тем же правилом).
-4. Имя не даёт ему исчезнуть самому.
-5. Опыт за убийство — 200. Броня и оружие сверху не добавляют, общий множитель ×2 это число не увеличивает.
+HOW IT ACTS
+-----------
+1. Hits, Punch arrows, and explosions do not move it.
+2. Speed potion is not applied: not on spawn, not from bottles, not from jack-o’-lantern beacon.
+   Slowness, Strength, and Jump Boost still work.
+3. Zombie breaks blocks like a normal zombie (from day 40, same rule).
+4. The name does not prevent despawn by itself.
+5. Kill XP — 200. Extra armor/weapon does not add; global ×2 multiplier does not apply to this number.
 
 
-КОГО НЕТ
---------
-Детёныш, кадавр, утопленник, зомби-житель, странник, болотный и пустынный скелет.
-В ночь осады не появляется. Призванная подмога и /summon шанс не бросают.
-Спаунер бросает.
+WHO IS EXCLUDED
+---------------
+Baby, husk, drowned, zombie villager, stray, swamp and desert skeleton.
+Does not appear on siege night. Summoned reinforcements and /summon do not roll chance.
+Spawners do roll.
 
 
-КОМАНДА
+COMMAND
 -------
-  /etbastion                 — зомби
-  /etbastion skeleton        — скелет
+  /etbastion                 — zombie
+  /etbastion skeleton        — skeleton
   /evolvingthreats spawn bastion
   /evolvingthreats spawn bastion skeleton
-Появляется в 6 блоках по взгляду. Шанс не бросается.
-Нужны права оператора.
+Spawns 6 blocks along look direction. Does not roll spawn chance.
+Operator rights required.
 
 
 SETTINGS (Bastion.java)
 ------------------------
   ENABLED ..................... true
-  SPAWN_CHANCE ................ 0.002 — 0.2% у обычного зомби и отдельно у скелета
+  SPAWN_CHANCE ................ 0.002 — 0.2% for normal zombie and separately for skeleton
   NAME ........................ Bastion
   MAX_HEALTH .................. 1000
-  XP_REWARD ................... 200 — опыт за убийство. 0 = опыта нет
-  KNOCKBACK_RESISTANCE ........ 1.0 — не сдвигает. 0 = как обычный
-  День ........................ ThreatTable.BASTION_DAY = 60. Шанс от дня не растёт.
+  XP_REWARD ................... 200 — XP on kill. 0 = no XP
+  KNOCKBACK_RESISTANCE ........ 1.0 — immovable. 0 = normal
+  Day ........................ ThreatTable.BASTION_DAY = 60. Chance does not grow with day.

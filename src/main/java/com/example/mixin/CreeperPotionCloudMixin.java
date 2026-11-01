@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 /**
- * Крипер с зельем при взрыве оставляет туман и копирует в него эффекты с себя.
- * Бесконечный баф мода здесь подменяется на короткое время, пока туман собирается.
+ Cryper with a potion during the explosion leaves a fog and copies the effects of himself into it.
+ The endless buff fashion here is replaced for a short time while the fog gathers.
  */
 @Mixin(Creeper.class)
 public class CreeperPotionCloudMixin {

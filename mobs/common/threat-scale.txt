@@ -1,146 +1,146 @@
-ШКАЛА УГРОЗЫ (постепенное усложнение мира)
+THREAT SCALE (world difficulty over time)
 ==========================================
 
-Тип: общая система, не отдельный моб. Одна шкала на весь мир, одинаковая для всех игроков.
-Код: threat/ThreatScale.java (формула и настройки), threat/ThreatTable.java (дни и стартовые значения),
-     threat/ThreatData.java + ThreatEvents.java (запоминает момент установки мода),
-     client/threat/ThreatHud.java (шкала на экране).
-Метки FIXED / GROWING и «С N-го дня» взяты из mobs.txt.
+Type: global system, not a separate mob. One scale per world, shared by all players.
+Code: threat/ThreatScale.java (formula and settings), threat/ThreatTable.java (day thresholds and start values),
+     threat/ThreatData.java + ThreatEvents.java (remembers when the mod was first loaded),
+     client/threat/ThreatHud.java (on-screen bar).
+FIXED / GROWING labels and “from day N” come from mobs.txt.
 
 
-СУТЬ
+SUMMARY
 ----
-• Мир «молодой» → мобы слабые. За 100 игровых дней они плавно становятся опаснее:
-  чаще броня и оружие получше, сильнее чары, больше зелий, чаще особые способности.
-• Некоторые мобы и события вообще не появляются до определённого дня (ступеньки).
-• Луна подкручивает опасность по ночам: полнолуние сильнее, новолуние слабее.
+• A “young” world → weak mobs. Over 100 in-game days they smoothly become more dangerous:
+  better armor and weapons, stronger enchantments, more potions, more special abilities.
+• Some mobs and events do not appear until a certain day (steps).
+• The moon tweaks danger at night: full moon stronger, new moon weaker.
 
 
-КАК СЧИТАЕТСЯ ДЕНЬ
-------------------
-• Дни считаются с момента, когда мод ВПЕРВЫЕ загрузил этот мир. Если ты поставил мод в мир,
-  где уже прошло 24 дня, шкала всё равно стартует с нуля.
-• Сон ускоряет счёт: проспал ночь — шкала продвинулась, мир «постарел».
-• 1 день = 24000 тиков = 20 минут реального времени. 100 дней ≈ 33 часа без сна.
-• Момент старта хранится в папке мира и не сбрасывается перезапуском игры.
+HOW DAYS ARE COUNTED
+--------------------
+• Days count from when the mod FIRST loaded this world. If you add the mod to a world
+  that already had 24 days, the scale still starts at zero.
+• Sleep speeds the count: skip a night and the scale advances — the world “ages”.
+• 1 day = 24000 ticks = 20 minutes real time. 100 days ≈ 33 hours without sleeping.
+• The start moment is stored in the world folder and survives game restarts.
 
 
-КАК GROWING УГРОЗА
------------------
-Шаг 1. Прогресс: t = день / 100 (не больше 1).
-Шаг 2. Кривая: Θ = t в степени 1.5. Первые дни почти ноль, ближе к концу растёт быстрее.
-Шаг 3. Луна меняет Θ:
-        Θ_eff = Θ × (0.7 … 1.2 по фазе луны) + небольшая добавка на полнолуние в начале игры.
-        Результат Θ_eff от 0 (всё как в день 0) до 1 (всё как «максимум»).
-Шаг 4. Каждая механика с меткой GROWING берёт значение между «стартом» и «концом»:
-        значение = старт + (конец − старт) × Θ_eff.
-        «Конец» — это то число, которое стоит в коде мобов (его не трогали, кроме чар и брони, см. ниже).
+HOW GROWING THREAT WORKS
+------------------------
+Step 1. Progress: t = day / 100 (capped at 1).
+Step 2. Curve: Θ = t^1.5. Almost flat early, faster near the end.
+Step 3. Moon adjusts Θ:
+        Θ_eff = Θ × (0.7 … 1.2 by moon phase) + a small full-moon bonus early in the game.
+        Θ_eff ranges from 0 (day 0) to 1 (“maximum”).
+Step 4. Each GROWING mechanic interpolates between “start” and “end”:
+        value = start + (end − start) × Θ_eff.
+        “End” is the number in the mob class (unchanged except enchant/armor scaling, see below).
 
-Примерные значения Θ_eff (полнолуние / новолуние):
-  день 10  — 0.09 / 0.02       день 60  — 0.58 / 0.33
-  день 20  — 0.15 / 0.06       день 80  — 0.87 / 0.50
-  день 40  — 0.34 / 0.18       день 100 — 1.00 / 0.70
-  Каждое следующее полнолуние выше предыдущего, новолуние чуть откатывает назад.
-  После 100-го дня полнолуние даёт 1.0, новолуние — 0.7 (шкала дальше не растёт).
+Rough Θ_eff (full moon / new moon):
+  day 10  — 0.09 / 0.02       day 60  — 0.58 / 0.33
+  day 20  — 0.15 / 0.06       day 80  — 0.87 / 0.50
+  day 40  — 0.34 / 0.18       day 100 — 1.00 / 0.70
+  Each full moon is higher than the last; new moon rolls back slightly.
+  After day 100, full moon gives 1.0, new moon 0.7 (scale stops growing).
 
-Луна считается по дню самого мира (как в небе), весь день с утра до утра.
-Фазы: 0 полнолуние, 4 новолуние (так же в иконках HUD: moon_0 … moon_7).
-
-
-ЧТО ВКЛЮЧАЕТСЯ С КАКОГО ДНЯ (FIXED + день, луна не влияет)
------------------------------------------------------------
-  20-й день ... скелеты с луком Откидывание V–VI (чары сильнее ванильных)
-  25-й день ... первая осада; дальше каждые 10–15 дней, чаще в ночи около полнолуния,
-                в новолуние осад не бывает.
-                Утопленников и слизней в осаде нет.
-                Иссушители в осаде — не с дня, а после того как кто-то побывал в Аду
-  40-й день ... зомби ломают блоки, бегут на свет и ломают его, появляется зомби-чародей;
-                Excalibur (зомби с мечом на Остроту 20, шанс 1%);
-                осада может быть иллагерской (разорители, разбойники, вызыватели, поборники), шанс 25%;
-                Spiky (зомби или скелет, шанс 0,2%): один кусок брони колет на 7–8 сердец сквозь броню
-  60-й день ... Гнилой надсмотрщик, капитан скелетов, Бастион (зомби или скелет, шанс 0.2%)
-  80-й день ... скелет Василиск, Рейдовый якорь (появляется сам, 0,1% на зомби ночью на
-                поверхности, не чаще раза в 5 дней)
-Шанс этих механик от дня не растёт: с нужного дня он такой, какой записан в классе моба.
-Все числа дней — в threat/ThreatTable.java.
+Moon uses the world’s day (same as the sky), whole day from dawn to dawn.
+Phases: 0 full moon, 4 new moon (same as HUD icons: moon_0 … moon_7).
 
 
-ЧТО GROWING (старт в день 0 → конец в день 100)
------------------------------------------------
-Здоровье зомби и скелетов ........ максимум 20 → 40 (минимум всегда 20)
-Кусок брони (каждый слот) ........ 8% → 75%
-Материал брони (кожа/золото/кольчуга/медь/железо/алмаз), веса:
-    60 / 20 / 9 / 6 / 4.7 / 0.3  →  10 / 5 / 10 / 8 / 32 / 35  (алмаз 35% от брони, незерита нет)
-Оружие в руках зомби ............. 10% → 40%  (старт = 25% от максимума, и так для всех шансов оружия)
-Материал оружия (дерево/камень/золото/медь/железо/алмаз), веса:
+WHAT TURNS ON FROM WHICH DAY (FIXED + day; moon does not matter)
+----------------------------------------------------------------
+  Day 20 ... skeletons with Punch bow enchantments V–VI (stronger than vanilla)
+  Day 25 ... first siege; then every 10–15 days, more often on nights near full moon,
+             no sieges on new moon.
+             No drowned or slimes in sieges.
+             Wither skeletons in sieges — not by day, but after someone has visited the Nether
+  Day 40 ... zombies break blocks, run to light and break it, zombie sorcerer appears;
+             Excalibur zombie (Sharpness 20 sword, 1% chance);
+             illager siege possible (ravagers, pillagers, evokers, vindicators), 25% chance;
+             Spiky (zombie or skeleton, 0.2% chance): one armor piece deals 7–8 hearts through armor
+  Day 60 ... Rotten overseer, skeleton captain, Bastion (zombie or skeleton, 0.2% chance)
+  Day 80 ... Basilisk skeleton, Raid anchor (natural spawn, 0.1% on surface zombie at night,
+             not more than once per 5 days)
+These mechanics’ chances do not grow with day: from the threshold they use the class constants.
+All day numbers live in threat/ThreatTable.java.
+
+
+WHAT IS GROWING (start day 0 → end day 100)
+-------------------------------------------
+Zombie and skeleton health ........ max 20 → 40 (minimum always 20)
+One armor piece (each slot) ....... 8% → 75%
+Armor material weights (leather/gold/chain/copper/iron/diamond):
+    60 / 20 / 9 / 6 / 4.7 / 0.3  →  10 / 5 / 10 / 8 / 32 / 35  (diamond 35% of armor rolls; no netherite)
+Weapon in zombie hands ............ 10% → 40%  (start = 25% of max; same pattern for all weapon chances)
+Weapon material weights (wood/stone/gold/copper/iron/diamond):
     50 / 30 / 10 / 6 / 3.7 / 0.3  →  30 / 25 / 10 / 10 / 15 / 10
-Щит .............................. 2.5% → 25%
-Тотем бессмертия ................. 0.2% → 4%
-Чары на оружии ................... 1% → 70%
-Чары на броне .................... 1% → 65%
-Количество чар на оружии ......... в основном 1 → до 5 (веса 85/11/3/1/0 → 55/28/12/4/1)
-Сила чар (смещение уровней) ...... почти всегда низкие уровни → на максимуме высокие даже чаще низких (3.0 → -0.3, острота V ≈ 26%)
-Больше мобов ночью ............... к появившемуся ночью зомби/скелету добавляется 1–3 таких же:
-    шанс 0% → 40% (ThreatPack.java; не в осаду, не днём)
-Зелья-бафы на старте ............. почти ни одного (96/3/1/0/0/0) → 50/24/13/7/4/2
-Особые способности (старт = 10% от максимума):
-    зомби-динамит 4%, маяк-тыква 1%, спавнер на голове 0.5% (и иссушители 0.5%),
-    вредные стрелы 20%, быстрый лук 15%, тактический скелет 5%,
-    раздатчик на голове у скелета 2%, Откидывание 12% (с 20-го дня),
-    незеритовый меч иссушителя в аду 15% (каменный остаётся у остальных, незерит не выпадает)
-    — числа здесь «конец», в день 0 каждое в 10 раз меньше.
-Чары на мече иссушителя .......... те же, что «чары на оружии» выше: 1% → 70%, сила тоже растёт.
-                                   Каменный меч и незеритовый. Вне ада и у носителя спавнера чар мода нет.
+Shield ............................ 2.5% → 25%
+Totem of undying .................. 0.2% → 4%
+Weapon enchantments ............... 1% → 70%
+Armor enchantments ................ 1% → 65%
+Enchant count on weapons .......... mostly 1 → up to 5 (weights 85/11/3/1/0 → 55/28/12/4/1)
+Enchant level strength ............ mostly low → at max, high levels more common than low (3.0 → -0.3, Sharpness V ≈ 26%)
+Extra night spawns ................ 0–3 extra zombies/skeletons on night spawn:
+    chance 0% → 40% (ThreatPack.java; not in siege, not daytime)
+Spawn potion buffs ................ almost none (96/3/1/0/0/0) → 50/24/13/7/4/2
+Special abilities (start = 10% of max):
+    TNT zombie 4%, jack-o-lantern beacon 1%, spawner on head 0.5% (and wither skeletons 0.5%),
+    harmful arrows 20%, fast bow 15%, tactician skeleton 5%,
+    dispenser on skeleton head 2%, Punch 12% (from day 20),
+    netherite wither skeleton sword in Nether 15% (stone for the rest; netherite does not drop)
+    — numbers here are “end”; on day 0 each is 10× lower.
+Wither skeleton sword enchants ..... same as “weapon enchants” above: 1% → 70%, strength grows too.
+                                   Stone and netherite swords. Outside Nether and spawner-head carriers: no mod enchants.
 
-Исключения: плавающие инструменты, капитан, рейдовые прислуги и ритуальные стаи
-используют фиксированные чары и броню (метка FIXED), от шкалы не зависят.
-
-
-ЧТО НЕ МЕНЯЕТСЯ (FIXED)
-----------------------
-Фантомы, криперы, пауки, слизни, ведьмы, поборники, досаждатели, утопленники, разорители,
-шалкеры, брутальный пиглин, магмовый куб, эндермен, патрули, враждебные големы, парящие
-инструменты, ритуальные группы. Они работают с дня 0 как раньше.
-Зеркало (Mirror): 0,3% с дня 0, луна не влияет. Подробности в mirror.txt.
-Скелет со случайными стрелами: 1% с дня 0, луна не влияет. Подробности в mobs/skeletons/skeleton.txt, раздел «СКЕЛЕТ СО СЛУЧАЙНЫМИ СТРЕЛАМИ».
-Скелет-снайпер: 1 из 500 с дня 0, луна не влияет. Подробности в mobs/skeletons/skeleton.txt, раздел «СКЕЛЕТ-СНАЙПЕР».
-Дальность взгляда: кто замечал игрока не дальше 16 блоков, замечает с 32. От дней не растёт.
-Подробности в sight-range.txt.
-Крипер-обманка: 0,3% с дня 0, луна не влияет. Подробности в mobs/creepers/creeper.txt, раздел «КРИПЕР-ОБМАНКА».
-Яд пещерного паука может убить с дня 0, без шанса. Яд ведьмы и слизня останавливается на половине сердца.
-Подробности в mobs/spiders/spider.txt, раздел «ПЕЩЕРНЫЙ ПАУК: ЯД СНОВА МОЖЕТ УБИТЬ».
+Exceptions: floating tools, captain, raid servants, and ritual packs
+use FIXED enchants and armor (not scaled by the threat table).
 
 
-ШКАЛА НА ЭКРАНЕ
----------------
-Левый верхний угол: луна текущего дня слева → полоска «день / 100» → череп справа.
-Череп: 0–24 день спящий зомби, 25–59 зомби в шлеме, 60–79 череп с красными глазами, 80+ в короне.
-Размер, отступы и выключатели — вверху client/threat/ThreatHud.java.
-Скрывается, пока открыт экран отладки (F3).
+WHAT DOES NOT CHANGE (FIXED)
+----------------------------
+Phantoms, creepers, spiders, slimes, witches, vindicators, pillagers, drowned, ravagers,
+shulkers, piglin brute, magma cube, enderman, patrols, hostile golems, floating tools,
+ritual groups. They work from day 0 as before.
+Mirror: 0.3% from day 0, moon ignored. See mirror.txt.
+Random-arrow skeleton: 1% from day 0, moon ignored. See mobs/skeletons/skeleton.txt, section “RANDOM-ARROW SKELETON”.
+Sniper skeleton: 1 in 500 from day 0, moon ignored. See mobs/skeletons/skeleton.txt, section “SNIPER SKELETON”.
+Sight range: mobs that noticed the player only within 16 blocks now notice at 32. Does not grow with days.
+See sight-range.txt.
+Feint creeper: 0.3% from day 0, moon ignored. See mobs/creepers/creeper.txt, section “FEINT CREEPER”.
+Cave spider poison can kill from day 0, no chance roll. Witch and slime poison stops at half a heart.
+See mobs/spiders/spider.txt, section “CAVE SPIDER: LETHAL POISON AGAIN”.
 
 
-КАК ЭТО ПОДКРУТИТЬ
-------------------
-Сложнее / легче в целом:
-  threat/ThreatScale.java → DAYS_TO_MAX (за сколько дней шкала доходит до максимума, сейчас 100),
-  CURVE_POWER (1.5; больше — медленнее старт), MOON_NEW_FACTOR / MOON_FULL_FACTOR (влияние луны).
-Выключить шкалу совсем: ThreatScale.ENABLED = false (все шансы равны максимуму, все дни открыты).
-Сдвинуть день включения механики: threat/ThreatTable.java (все пороги дней в одном месте).
-Стартовые значения (с чего всё начинается): тоже ThreatTable.java.
-Максимумы («конец шкалы»): в классах самих механик (RandomArmor, RandomWeapons, MobEnchantments и т.д.).
-Естественный якорь: raid/RaidAnchorNatural.java (SPAWN_CHANCE, MIN_DAYS_BETWEEN, ENABLED).
-Осады: siege/SiegeNight.java.
-Spiky: spiky/Spiky.java (сердца укола — HEARTS_MIN / HEARTS_MAX).
+ON-SCREEN BAR
+-------------
+Top left: today’s moon icon → “day / 100” bar → skull on the right.
+Skull: days 0–24 sleeping zombie, 25–59 helmet zombie, 60–79 red-eyed skull, 80+ crowned.
+Size, padding, toggles — top of client/threat/ThreatHud.java.
+Hidden while the debug screen (F3) is open.
 
 
-ТЕСТ В ИГРЕ
+HOW TO TUNE
 -----------
-Команды (читы / OP):
-  /evolvingthreats day              — показать день шкалы, день мира, фазу луны, прогресс и Θ
-  /evolvingthreats day set <N>      — сделать вид, что прошло N дней (время мира и луна не меняются)
-  /evolvingthreats day set 0        — начать шкалу заново
-  /time set night                   — ночь, чтобы быстрее проверять спавн
-  /evolvingthreats siege in <N>     — осада через N дней
-  /etraid                           — Рейдовый якорь прямо сейчас
-Чтобы проверить луну, меняй время обычной командой /time add (фаза идёт по дню мира).
-Сравнить «до и после»: day set 0 и day set 100, затем призвать десяток зомби и скелетов.
+Overall harder / easier:
+  threat/ThreatScale.java → DAYS_TO_MAX (days until max scale, now 100),
+  CURVE_POWER (1.5; higher = slower start), MOON_NEW_FACTOR / MOON_FULL_FACTOR (moon influence).
+Disable the scale entirely: ThreatScale.ENABLED = false (all chances at max, all days unlocked).
+Move when a mechanic unlocks: threat/ThreatTable.java (all day thresholds in one place).
+Start values (where GROWING begins): also ThreatTable.java.
+Maximums (“end of scale”): in each mechanic’s class (RandomArmor, RandomWeapons, MobEnchantments, etc.).
+Natural raid anchor: raid/RaidAnchorNatural.java (SPAWN_CHANCE, MIN_DAYS_BETWEEN, ENABLED).
+Sieges: siege/SiegeNight.java.
+Spiky: spiky/Spiky.java (pierce hearts — HEARTS_MIN / HEARTS_MAX).
+
+
+IN-GAME TEST
+------------
+Commands (cheats / OP):
+  /evolvingthreats day              — show scale day, world day, moon phase, progress and Θ
+  /evolvingthreats day set <N>      — pretend N scale days passed (world time and moon unchanged)
+  /evolvingthreats day set 0        — restart the scale
+  /time set night                   — night for faster spawn checks
+  /evolvingthreats siege in <N>     — siege in N days
+  /etraid                           — raid anchor now
+To test moon phases, use /time add (phase follows world day).
+Compare before/after: day set 0 and day set 100, then spawn a dozen zombies and skeletons.

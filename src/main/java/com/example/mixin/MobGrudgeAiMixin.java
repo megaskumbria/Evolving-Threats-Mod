@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * serverAiStep объявлен в Mob, не в Zombie — mixin вешаем на Mob, срабатывает только для зомби.
+ ServerAiStep announced in Mob, not in Zombie - mixin hang on Mob, works only for zombies.
  */
 @Mixin(Mob.class)
 public abstract class MobGrudgeAiMixin {

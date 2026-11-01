@@ -4,8 +4,8 @@ import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Участник отряда, который идёт в запомненную точку, а не за игроком.
- * Реализация — mixin на всех рейдеров (разбойник, поборник, разоритель).
+ A member of the squad who goes to a memorable point, not after the player.
+ Implementation - mixin on all raiders (robber, champion, destroyer).
  */
 public interface IllagerPatrolMember {
 

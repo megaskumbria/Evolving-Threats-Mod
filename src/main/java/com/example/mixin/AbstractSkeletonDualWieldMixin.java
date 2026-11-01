@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * В ванили скелет включает либо стрельбу, либо ближний бой.
- * Для «лук + меч» после стандартной логики добавляем ещё цель ближнего боя.
+ In vanilla, the skeleton includes either shooting or close combat.
+ For "bow + sword" after the standard logic add another goal of melee.
  */
 @Mixin(AbstractSkeleton.class)
 public abstract class AbstractSkeletonDualWieldMixin {
@@ -25,7 +25,7 @@ public abstract class AbstractSkeletonDualWieldMixin {
 	private void evolvingthreats$addMeleeForDualWield(CallbackInfo ci) {
 		AbstractSkeleton self = (AbstractSkeleton) (Object) this;
 		if (RandomWeapons.isDualWieldArcher(self)) {
-			// goalSelector объявлен в классе Mob — берём через getter, а не @Shadow.
+			// GoalSelector is announced in the Mob class – take it through getter, not @Shadow.
 			self.getGoalSelector().addGoal(WEAPON_GOAL_PRIORITY, meleeGoal);
 		}
 	}

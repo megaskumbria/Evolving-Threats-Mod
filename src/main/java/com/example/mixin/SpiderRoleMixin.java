@@ -18,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Паук: хранит роль (ткач/матка), бросает шанс при появлении (включая рой) и подключает цель «паутина под ноги».
- * Сохранение роли в мире — {@link SpiderRoleSaveMixin}.
+ Spider: Stores the role (weaver / uterus), throws a chance when it appears (including a swarm) and connects the target of the “web under the feet”.
+ * Keeping a role in the world — @link SpiderRoleSaveMixin.
  */
 @Mixin(Spider.class)
 public class SpiderRoleMixin implements SpiderRoleEntity {
@@ -47,7 +47,7 @@ public class SpiderRoleMixin implements SpiderRoleEntity {
 		Spider spider = (Spider) (Object) this;
 		SpiderThreats.rollOnSpawn(spider, level, spawnReason);
 		MobPotionBuffs.tryApply(spider);
-		// Пещерный паук сюда тоже заходит, но шанс у него не бросается: в списке только обычный паук.
+		// The cave spider also comes here, but he has no chance: only an ordinary spider is on the list.
 		Mirror.tryRoll(spider, spawnReason);
 	}
 

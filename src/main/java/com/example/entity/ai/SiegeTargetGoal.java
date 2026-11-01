@@ -9,13 +9,13 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import java.util.EnumSet;
 
 /**
- * Держит игрока целью у моба осады.
+ * Keeps the player a target at the siege mob.
  *
- * Вешается на выбор цели (targetSelector), приоритет 0 — выше, чем «ближайший игрок» самой игры.
- * Иначе игра каждый тик забывает игрока: его не видно с 50–70 блоков, и моб стоит на месте.
- * Пока цель держится здесь, обычная драка и стрельба сами включаются, когда моб подойдёт близко.
+ TargetSelector: Priority 0 is higher than the closest player of the game.
+ Otherwise, the game every tick forgets the player: it is not visible from 50-70 blocks, and the mob stands still.
+ As long as the target is held here, the usual fight and shooting themselves kick in when the mob comes close.
  *
- * На обычных мобов не действует: срабатывает только с меткой осады и только пока идёт осада.
+ It does not work on ordinary mobs: it works only with a siege mark and only while the siege is underway.
  */
 public class SiegeTargetGoal extends Goal {
 

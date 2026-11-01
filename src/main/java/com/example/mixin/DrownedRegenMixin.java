@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Лечение утопленника. Тик объявлен у зомби, своего у утопленника нет.
- * На суше и у обычного зомби ничего не происходит.
+ Drowning treatment. Tick declared zombies, drowned does not.
+ On land and in ordinary zombies nothing happens.
  */
 @Mixin(Zombie.class)
 public class DrownedRegenMixin {

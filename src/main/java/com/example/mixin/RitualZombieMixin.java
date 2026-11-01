@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
 
-/** Зомби помнит, что он из ритуальной стаи. Запись в мир объявлена у Zombie. */
+/*The zombie remembers he's from a ritual pack. Entry into the world announced at Zombie. */
 @Mixin(Zombie.class)
 public class RitualZombieMixin implements RitualMember {
 

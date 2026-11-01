@@ -7,8 +7,8 @@ import net.minecraft.client.renderer.entity.state.IronGolemRenderState;
 import net.minecraft.resources.Identifier;
 
 /**
- * Тот же голем, что у игры, но текстура с чёрными глазами.
- * Трещины рисует ванильный слой поверх: чем выше CRACK_LEVEL, тем они сильнее.
+ * Same golem as the game, but texture with black eyes.
+ * The cracks paint the vanilla layer on top: the higher the CRACK_LEVEL, the stronger they are.
  */
 public class DamagedGolemRenderer extends IronGolemRenderer {
 

@@ -19,18 +19,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Связка осады для всех мобов сразу. Два места:
+ Bundle of siege for all mobs at once. Two seats:
  *
- * 1) Создание моба. Крипер, паук, ведьма, фантом, разбойник, поборник, вызыватель
- *    и разоритель получают те же цели, что зомби и скелеты: держать игрока целью и идти к нему.
- *    Какому мобу что нужно — решает {@link SiegeComposition#aiModeOf}. Зомби и скелеты сюда не попадают,
- *    у них своя связка (ZombieRaidGoalsMixin, AbstractSkeletonRaidGoalsMixin).
- *    Цели молчат, пока у моба нет метки осады, так что обычные мобы не меняются.
+ * (1) Making a mob. Creeper, spider, witch, phantom, robber, champion, summoner
+ And the destroyer gets the same goals as zombies and skeletons: keep the player a target and go to him.
+ * Which mob needs to be decided by {@link SiegeComposition#aiModeOf}. Zombies and skeletons don't get in here.
+ They have their own bundle (ZombieRaidGoalsMixin, AbstractSkeletonRaidGoalsMixin).
+ Targets are silent until the mob has a siege mark, so the usual mobs do not change.
  *
- * 2) Появление моба (finalizeSpawn). С предупреждения и до рассвета каждый моб, что появился сам
- *    (ночной спавн игры) и входит в состав этой осады, получает метку осады и идёт к игроку.
- *    Появились они командой, спавнером, яйцом или как помощники — не трогаем: это не осада.
- *    Подмена обычных монстров на мобов осады — в NaturalMonsterSwap.
+ * (2) The appearance of the mob (finalizeSpawn). From the warning until dawn, every mob that appeared
+ * (Night Spawn game) and is part of this siege, receives the mark of the siege and goes to the player.
+ They appeared as a team, a spawner, an egg or as assistants - we do not touch: this is not a siege.
+ Substituting ordinary monsters for mobs of siege - in NaturalMonsterSwap.
  */
 @Mixin(Mob.class)
 public class SiegeMobMixin {

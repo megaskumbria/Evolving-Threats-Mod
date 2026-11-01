@@ -38,53 +38,53 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Скелет «700 IQ». Особый тип, не смесь остальных.
- * Стреляет одной и той же стрелой. Попал — достаёт меч и бежит.
- * Когда эффекты с игрока спадают, снова берёт лук.
- * Меч, который сейчас не в руке, виден на спине.
+ 700 IQ skeleton. A special type, not a mixture of the others.
+ Shoots with the same arrow. Got him, pulls out his sword and runs.
+ When the effects of the player subside, he takes the bow again.
+ The sword that is not in the hand is visible on the back.
  */
 public final class TacticianSkeleton {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие скелеты не появляются. Уже живущие остаются как есть. */
+	/** Turn on the mechanics. False - these skeletons do not appear. Those already living remain as they are. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет или странник будет этим типом.
-	 * 0.05 = 5% на 100-й день (GROWING: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO).
-	 * Реже маленького и дальнего: этот сильнее в бою.
-	 * 0 = таких скелетов не будет.
+	 Chance (0.0–1.0) that an ordinary skeleton or wanderer will be this type.
+	 0.05 = 5% on day 100 (GROWING: 10 times less at the beginning of the game, see ThreatTable.DANGEROUS_START_RATIO).
+	 Less than small and far: this one is stronger in battle.
+	 * 0 = There will be no such skeletons.
 	 */
 	public static final float SPAWN_CHANCE = 0.05f;
 
 	/**
-	 * Здоровье, оба края входят. 50 и 50 = всегда 50 жизней (25 сердец).
-	 * У обычного скелета в этом моде случайно 20–40. Это число ставится после того броска.
-	 * Меньше 1 игра почти сразу убивает. Уже живущие скелеты своё старое здоровье сохраняют.
+	 Health, both edges coming in. 50 and 50 = always 50 lives (25 hearts).
+	 In the usual skeleton in this mod by chance 20-40. That number is put after that throw.
+	 Less than 1 game kills almost immediately. Already living skeletons retain their old health.
 	 */
 	public static final int HEALTH_MIN = 50;
 	public static final int HEALTH_MAX = 50;
 
 	/**
-	 * Сколько опыта падает при смерти. 30 = ровно 30, не сверху к обычному.
-	 * Общий множитель опыта (MobExperience.MULTIPLIER) это число не увеличивает.
-	 * 0 = опыта нет. Обычный скелет в этом моде даёт около 10, плюс добавка за вещи.
+	 How much experience falls at death. 30 = exactly 30, not top to normal.
+	 MobExperience.MULTIPLIER does not increase this number.
+	 * 0 = no experience. A typical skeleton in this mod gives about 10, plus an extra for things.
 	 */
 	public static final int XP_REWARD = 30;
 
-	/** Слабость на игроке после попадания, в секундах. Уровень I. */
+	/*Weakness on the player after hitting, in seconds. Level I. */
 	public static final int WEAKNESS_SECONDS = 20;
 
-	/** Замедление после попадания, в секундах. Уровень I. */
+	/*Slowdown after hit, in seconds. Level I. */
 	public static final int SLOWNESS_SECONDS = 20;
 
-	/** Слепота после попадания, в секундах. Короче остальных: почти без обзора, но не на весь бой. */
+	/*Blindness after hit, in seconds. In short: almost without review, but not for the whole fight. */
 	public static final int BLINDNESS_SECONDS = 5;
 
 	/**
-	 * Мечи за спиной: дерево, камень, золото, медь, железо, алмаз. Незерита нет.
-	 * Веса такие же, как у случайного оружия мобов. Сумма 100: дерево 30% … алмаз 10%.
+	 Swords behind: wood, stone, gold, copper, iron, diamond. No Neserite.
+	 The weights are the same as those of random mob weapons. Amount of 100: wood 30% diamond 10%.
 	 */
 	private static final Item[] SWORDS = {
 			Items.WOODEN_SWORD,
@@ -99,14 +99,14 @@ public final class TacticianSkeleton {
 
 	// ========================================================================
 
-	/** Имя на стреле, чтобы отличить её от любой другой стрелы со зельем. */
+	/*Name on the arrow to distinguish it from any other arrow with a potion. */
 	public static final String ARROW_NAME = "tactician";
 
 	/**
-	 * Слот «предмет на спине». У обычного скелета пустой, у этого — лук или меч.
-	 * Номер слота занимается в {@code TacticianSkeletonDataMixin} сразу при загрузке скелета.
-	 * Не переноси это поле в метод, который вызывается при спавне: номер совпадёт
-	 * с номером самого скелета, и мир упадёт.
+	 * Item on the back slot. An ordinary skeleton is empty, this one has a bow or a sword.
+	 * The slot number is engaged in {@code TacticianSkeletonDataMixin} immediately when the skeleton is loaded.
+	 Do not transfer this field to the method that is called during the spawn: the number will match
+	 * with the number of the skeleton itself, and the world will fall.
 	 */
 	public static final EntityDataAccessor<ItemStack> BACK_ITEM = SynchedEntityData.defineId(
 			AbstractSkeleton.class, EntityDataSerializers.ITEM_STACK);
@@ -115,8 +115,8 @@ public final class TacticianSkeleton {
 	}
 
 	/**
-	 * true — этот скелет стал «700 IQ». Дальше ему не нужны маленький рост, тотем,
-	 * два оружия, вредная стрела, щит, броня и дальний лук.
+	 * True - this skeleton became "700 IQ". Then he doesn't need a little stature, a totem.
+	 Two weapons, a harmful arrow, shield, armor and a distant bow.
 	 */
 	public static boolean tryRoll(AbstractSkeleton skeleton) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f || !(skeleton instanceof TacticianSkeletonEntity data)) {
@@ -125,7 +125,7 @@ public final class TacticianSkeleton {
 		if (!(skeleton.level() instanceof ServerLevel)) {
 			return false;
 		}
-		// Команда ставит метку до появления. Тогда шанс не бросаем — сразу выдаём лук и меч.
+		// The team puts the mark before it appears. Then we do not give up the chance - immediately give out the bow and sword.
 		if (data.evolvingthreats$isTactician()) {
 			equip(skeleton, data);
 			return true;
@@ -138,8 +138,8 @@ public final class TacticianSkeleton {
 	}
 
 	/**
-	 * Команда: этот скелет перед игроком, без случайного шанса.
-	 * Смотрит на того, кто позвал, и сразу с луком. Меч на спине.
+	 Team: This skeleton is in front of the player, with no chance.
+	 He looks at the one who called, and immediately with the bow. Sword on your back.
 	 */
 	public static void spawn(ServerLevel level, Vec3 pos, LivingEntity lookAt) {
 		AbstractSkeleton skeleton = EntityTypes.SKELETON.create(level, EntitySpawnReason.COMMAND);
@@ -168,7 +168,7 @@ public final class TacticianSkeleton {
 		return (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0f;
 	}
 
-	/** Попал нашей стрелой в игрока. Меч достанется в ближайший тик, не посреди выстрела. */
+	/*He hit a player with our arrow. The sword will reach the nearest tick, not in the middle of the shot. */
 	public static void onArrowHit(AbstractSkeleton skeleton, Player player) {
 		if (!(skeleton instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
 			return;
@@ -180,7 +180,7 @@ public final class TacticianSkeleton {
 		data.evolvingthreats$setMeleeUntil(skeleton.level().getGameTime() + meleeTicks());
 	}
 
-	/** Каждый тик на сервере: меч, пока эффекты на игроке, иначе лук. */
+	/*Each tick on the server: a sword, while the effects are on the player, otherwise a bow. */
 	public static void serverTick(AbstractSkeleton skeleton) {
 		if (!(skeleton instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
 			return;
@@ -206,8 +206,8 @@ public final class TacticianSkeleton {
 	}
 
 	/**
-	 * true — цель ближнего боя не выключать, даже если игрок за углом.
-	 * Иначе после попадания скелет останавливается, как только путь оборвался.
+	 True - the goal of melee is not to turn off, even if the player is around the corner.
+	 Otherwise, after hitting the skeleton stops as soon as the path is broken.
 	 */
 	public static boolean isChasingMarked(LivingEntity mob) {
 		if (!(mob instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
@@ -221,7 +221,7 @@ public final class TacticianSkeleton {
 		return marked != null && target != null && target.isAlive() && marked.equals(target.getUUID());
 	}
 
-	/** Выпустить особую стрелу вместо обычной. false — это не он или сейчас в руке меч. */
+	/*• Release a special arrow instead of the usual one. False is not him, or the sword is in his hand. */
 	public static boolean shoot(AbstractSkeleton skeleton, LivingEntity target, float power) {
 		if (!(skeleton instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
 			return false;
@@ -243,7 +243,7 @@ public final class TacticianSkeleton {
 		return true;
 	}
 
-	/** Меч или лук со спины падает с тем же шансом, что и броня. Предмет в руке роняет сама игра. */
+	/*A sword or bow from the back falls at the same chance as armor. The object in the hand drops the game itself. */
 	public static void dropBackItem(AbstractSkeleton skeleton, ServerLevel level) {
 		if (!(skeleton instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
 			return;
@@ -264,7 +264,7 @@ public final class TacticianSkeleton {
 		skeleton.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
 		skeleton.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
 
-		// Сначала меч в руку, чтобы чары оружия повесились на него, а не на лук.
+		// First, the sword in the hand, so that the spell of weapons hangs on him, not on the bow.
 		skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pickSword(skeleton.getRandom())));
 		MobEnchantments.rollForSkeleton(skeleton);
 		data.evolvingthreats$setBackItem(skeleton.getMainHandItem().copy());
@@ -309,14 +309,14 @@ public final class TacticianSkeleton {
 		return player != null && player.isAlive() ? player : null;
 	}
 
-	/** Пока на игроке осталось хотя бы одно из трёх — скелет с мечом. Молоко снимает все сразу. */
+	/*As long as the player remains at least one of the three - a skeleton with a sword. Milk takes everything off. */
 	private static boolean hasAnyDebuff(Player player) {
 		return player.hasEffect(MobEffects.WEAKNESS)
 				|| player.hasEffect(MobEffects.SLOWNESS)
 				|| player.hasEffect(MobEffects.BLINDNESS);
 	}
 
-	/** Сколько тиков держать меч, если эффекты не сняли раньше. Это самое долгое из трёх. */
+	/*How many tics to hold the sword if the effects have not been removed before? This is the longest of the three. */
 	private static int meleeTicks() {
 		int seconds = Math.max(WEAKNESS_SECONDS, Math.max(SLOWNESS_SECONDS, BLINDNESS_SECONDS));
 		return Math.max(1, seconds) * 20;
@@ -337,7 +337,7 @@ public final class TacticianSkeleton {
 		return arrow;
 	}
 
-	/** Сколько опыта дать. -1 = это не «700 IQ», пусть решает игра. */
+	/*How much experience to give. -1 is not 700 IQ, let the game decide. */
 	public static int experienceReward(Mob mob) {
 		if (!(mob instanceof TacticianSkeletonEntity data) || !data.evolvingthreats$isTactician()) {
 			return -1;

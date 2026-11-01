@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удар моба считает только основную руку. Здесь к нему прибавляется оружие из второй.
- * Срабатывает в момент удара, один раз на замах.
+ Mob strike counts only the main arm. Here, a weapon from the second is added to it.
+ It works at the moment of impact, once in a swing.
  */
 @Mixin(Mob.class)
 public class MobDualMeleeMixin {

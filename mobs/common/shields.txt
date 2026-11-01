@@ -1,30 +1,29 @@
-ЩИТЫ У ЗОМБИ И СКЕЛЕТОВ
+SHIELDS ON ZOMBIES AND SKELETONS
 =======================
 
-Тип: общая механика для обычных зомби, скелетов и странников.
-Код: MobShields.java (настройки, узор, шанс блока),
-     mixin/ZombieMixin.java и mixin/SkeletonMixin.java (выдача при появлении),
-     mixin/LivingEntityMobShieldMixin.java (момент удара).
+Type: shared mechanic for normal zombies, skeletons, and strays.
+Code: MobShields.java (settings, pattern, block chance),
+     mixin/ZombieMixin.java and mixin/SkeletonMixin.java (grant on spawn),
+     mixin/LivingEntityMobShieldMixin.java (hit moment).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При появлении шанс SPAWN_CHANCE (25%) получить щит во вторую руку.
-2. Если вторая рука уже занята (у скелета меч рядом с луком) — щита нет, оружие не забирается.
-3. На щите случайный цвет основы и 6 слоёв узора флага. Узоров в игре десятки, у каждого 16 цветов,
-   слоёв шесть — разных щитов миллионы. Рисунок виден на щите в руке и сохраняется, если щит выпал.
-4. Удар существа или снаряда по такому мобу с шансом BLOCK_CHANCE (10%) полностью гасится.
-   Слышен звук блока щитом. Падение, лава и пустота щитом не гасятся.
-5. Утопленники, пиглины, надсмотрщик и мобы рейда щит этим способом не получают.
-6. Щит падает с шансом DROP_CHANCE (около 8.5%), как броня.
+1. On spawn chance SPAWN_CHANCE (25%) to get shield in off hand.
+2. If off hand is taken (skeleton sword beside bow) — no shield, weapon is not removed.
+3. Random base color and 6 flag pattern layers on shield. Many patterns, 16 colors each,
+   six layers — millions of shields. Pattern visible in hand and kept if shield drops.
+4. Melee or projectile hit on such mob has BLOCK_CHANCE (10%) to be fully negated.
+   Shield block sound plays. Fall, lava, and void are not blocked.
+5. Drowned, piglins, overseer, and raid mobs do not get shield this way.
+6. Shield drops at DROP_CHANCE (~8.5%), like armor.
 
 
 SETTINGS (MobShields.java)
 ---------------------------
   ENABLED ............. true
-  SPAWN_CHANCE ........ 0.25 — шанс щита (25%)
-  BLOCK_CHANCE ........ 0.10 — шанс погасить удар (10%)
-  PATTERN_LAYERS ...... 6 — слоёв узора. 0 = только цвет
-  DROP_CHANCE ......... 0.085 — шанс выпадения
-
+  SPAWN_CHANCE ........ 0.25 — shield chance (25%)
+  BLOCK_CHANCE ........ 0.10 — negate hit chance (10%)
+  PATTERN_LAYERS ...... 6 — pattern layers. 0 = color only
+  DROP_CHANCE ......... 0.085 — drop chance
 

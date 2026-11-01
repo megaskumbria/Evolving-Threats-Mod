@@ -22,8 +22,8 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * После того как игра выставила обычную стрельбу, дальний скелет получает свою дальность и паузу.
- * Скорость стрелы в ванили всегда 1.6 — здесь она выше, чтобы долетать.
+ After the game has set the usual shooting, the distant skeleton gets its range and pause.
+ The speed of the arrow in the vanilla is always 1.6 - here it is higher to fly.
  */
 @Mixin(AbstractSkeleton.class)
 public abstract class AbstractSkeletonFastBowMixin {
@@ -35,7 +35,7 @@ public abstract class AbstractSkeletonFastBowMixin {
 	@Inject(method = "reassessWeaponGoal", at = @At("RETURN"))
 	private void evolvingthreats$applyFastBow(CallbackInfo ci) {
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
-		// Сначала быстрый лук, потом снайпер: дальность 30 не должна затирать 128.
+		// First fast bow, then sniper: range 30 should not wipe 128.
 		FastBowSkeleton.apply(skeleton, bowGoal);
 		SniperSkeleton.apply(skeleton, bowGoal);
 	}
@@ -62,10 +62,10 @@ public abstract class AbstractSkeletonFastBowMixin {
 	}
 
 	/**
-	 * Надбавка вверх у обычного скелета: в исходниках это 0.2, но игра хранит его
-	 * длинным числом, потому что умножает на расстояние.
-	 * Это число менять нельзя — иначе мод не запустится. Прицел быстрого лука
-	 * считается в {@link FastBowSkeleton#arrowArc()} из скорости стрелы.
+	 The premium up for a normal skeleton: in the source it is 0.2, but the game stores it
+	 A long number because it multiplies by distance.
+	 This number cannot be changed - otherwise the mod will not start. Fast bow sight
+	 * counts in {@link FastBowSkeleton#arrowArc()} from arrow speed.
 	 */
 	@ModifyConstant(method = "performRangedAttack", constant = @Constant(doubleValue = 0.20000000298023224))
 	private double evolvingthreats$arrowArc(double arc) {
@@ -79,8 +79,8 @@ public abstract class AbstractSkeletonFastBowMixin {
 	}
 
 	/**
-	 * Прицел снайпера. Одно число задира на дальней дистанции поднимает стрелу над головой,
-	 * поэтому направление считается заново под текущее расстояние.
+	 Sniper sight. One bully number at a distance raises an arrow over his head.
+	 * Therefore, the direction is counted again at the current distance.
 	 */
 	@ModifyArg(
 			method = "performRangedAttack",
@@ -102,7 +102,7 @@ public abstract class AbstractSkeletonFastBowMixin {
 		return SniperSkeleton.launchDirectionY(skeleton, target);
 	}
 
-	/** Урон не растёт от скорости полёта: иначе быстрая стрела убивает даже в незерите. */
+	/*Damage does not increase with the speed of flight: otherwise, a fast arrow kills even in nezerite. */
 	@ModifyArg(
 			method = "performRangedAttack",
 			at = @At(
@@ -118,7 +118,7 @@ public abstract class AbstractSkeletonFastBowMixin {
 		return projectile;
 	}
 
-	/** Разброс. У снайпера свой: ванильный на 128 блоках промахивается. */
+	/** Scatter. The sniper has his own: vanilla on 128 blocks misses. */
 	@ModifyArg(
 			method = "performRangedAttack",
 			at = @At(

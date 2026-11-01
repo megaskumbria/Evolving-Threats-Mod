@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Супербыстрый крипер: спринт игрока его не обгоняет. */
+/** Super-fast creeper: player sprint cannot outrun it. */
 public interface FastCreeperEntity {
 
 	boolean evolvingthreats$isFastCreeper();

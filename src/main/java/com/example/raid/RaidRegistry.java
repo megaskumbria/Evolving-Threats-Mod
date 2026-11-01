@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Связь raidId → entity id якоря (для проверки «якорь ещё жив»). */
+/** Maps raidId to anchor entity id (to check whether the anchor is still alive). */
 public final class RaidRegistry {
 
 	private static final Map<UUID, Integer> ANCHOR_ENTITY_BY_RAID = new ConcurrentHashMap<>();

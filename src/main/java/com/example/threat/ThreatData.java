@@ -9,18 +9,18 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 /**
- * Что мир помнит о шкале угрозы: с какого момента она считает дни.
- * Лежит в папке мира (data/evolving-threats/threat.dat). Настроек здесь нет.
+ * Persisted threat-scale state: the world time when day counting began.
+ * Stored under the world folder (data/evolving-threats/threat.dat). No tunables here.
  *
- * <p>Момент ставится один раз, когда мод впервые загрузил этот мир. Время тут «часы мира»:
- * общий счётчик тиков, который не обнуляется каждый день (24000 тиков = 1 день).
+ * <p>Set once when the mod first loads this world. Time is "world clock" ticks:
+ * the global counter that does not reset each day (24000 ticks = 1 day).
  */
 public final class ThreatData extends SavedData {
 
-	/** Уже ли поставлен момент старта. false — мод видит этот мир впервые. */
+	/** Whether the start time was set. false — mod is seeing this world for the first time. */
 	public boolean initialized;
 
-	/** Часы мира в момент старта шкалы. Может быть отрицательным (после команды day set). */
+	/** World clock at threat-scale start. May be negative (after day set command). */
 	public long startClock;
 
 	public static final Codec<ThreatData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -43,7 +43,7 @@ public final class ThreatData extends SavedData {
 		this.startClock = startClock;
 	}
 
-	/** Данные хранятся один раз на весь мир, в верхнем мире. Можно передать любой мир сервера. */
+	/** One copy per world in the overworld save. Any server dimension level works. */
 	public static ThreatData get(ServerLevel anyLevel) {
 		return anyLevel.getServer().overworld().getDataStorage().computeIfAbsent(TYPE);
 	}

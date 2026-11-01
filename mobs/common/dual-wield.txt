@@ -1,30 +1,30 @@
-ДВА ОРУЖИЯ В РУКАХ
+TWO WEAPONS IN HANDS
 ===================
 
-Тип: обычный зомби, кадавр, зомби-житель, скелет и странник.
-Код: RandomWeapons.java (шанс и урон второй руки),
-     mixin/MobDualMeleeMixin.java (прибавка в момент удара),
-     mixin/ZombieMixin.java и mixin/SkeletonMixin.java (выдача при появлении).
+Type: normal zombie, husk, zombie villager, skeleton, and stray.
+Code: RandomWeapons.java (chance and off-hand damage),
+     mixin/MobDualMeleeMixin.java (bonus at hit moment),
+     mixin/ZombieMixin.java and mixin/SkeletonMixin.java (grant on spawn).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс 20% (ZOMBIE_DUAL_MELEE_CHANCE и SKELETON_DUAL_MELEE_CHANCE).
-   В каждой руке своё случайное оружие: меч, топор, кирка, лопата или мотыга.
-   Может совпасть (меч и меч) или быть разным (топор и кирка).
-2. Удар = сила моба + урон оружия в основной руке + урон оружия во второй.
-   Вторая рука сама по себе в игре урона не даёт, поэтому он прибавляется отдельно.
-   Острота с обеих рук входит в этот удар. Огненный аспект со второй руки тоже поджигает.
-   Оружие во второй руке изнашивается от ударов.
-3. Если выпали два оружия, щит, тотем и вредная стрела не выдаются: руки заняты.
-   У скелета лук убирается, он дерётся только вблизи.
-4. Не получают случайные два оружия: утопленник, зомби из рейда, гнилой надсмотрщик,
-   скелет-иссушитель, болотный и пустынный скелеты, маленький скелет, скелет «700 IQ».
-   У надсмотрщика свои два алмазных топора, и второй тоже входит в удар.
+1. Chance 20% (ZOMBIE_DUAL_MELEE_CHANCE and SKELETON_DUAL_MELEE_CHANCE).
+   Each hand gets its own random weapon: sword, axe, pickaxe, shovel, or hoe.
+   They may match (sword and sword) or differ (axe and pickaxe).
+2. Hit = mob strength + main-hand weapon damage + off-hand weapon damage.
+   Off hand alone does not deal damage in vanilla, so it is added separately.
+   Sharpness from both hands counts. Fire Aspect from off hand also ignites.
+   Off-hand weapon wears from hits.
+3. If two weapons rolled, shield, totem, and harmful arrow are not granted: hands are full.
+   Skeleton drops bow; fights only in melee.
+4. Do not get random dual weapons: drowned, raid zombie, rotten overseer,
+   wither skeleton, swamp and desert skeletons, small skeleton, “700 IQ” skeleton.
+   Overseer has its own two diamond axes; off hand counts in the hit too.
 
 
 SETTINGS
 ---------
   RandomWeapons.java
-    ZOMBIE_DUAL_MELEE_CHANCE ...... 0.20 — 20% у зомби
-    SKELETON_DUAL_MELEE_CHANCE .... 0.20 — 20% у скелета и странника
+    ZOMBIE_DUAL_MELEE_CHANCE ...... 0.20 — 20% for zombies
+    SKELETON_DUAL_MELEE_CHANCE .... 0.20 — 20% for skeleton and stray

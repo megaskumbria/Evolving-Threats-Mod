@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Стая с головой игрока снова берёт цель до того, как цели ИИ успеют её сбросить.
- * Точки те же, что у памяти обычного зомби: иначе за стеной цель пропадает.
- * В конце шага стая пиглина тушится: солнце поджигает зомби уже после целей.
+ The pack with the head of the player takes the target again before the AI targets have time to reset it.
+ The points are the same as the memory of ordinary zombies: otherwise, the goal disappears behind the wall.
+ At the end of the step, the pack of piglin is extinguished: the sun sets the zombies on fire after the goals.
  */
 @Mixin(Mob.class)
 public abstract class RitualHuntMixin {

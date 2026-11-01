@@ -17,37 +17,37 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий блейз. В залпе из трёх шаров первый (когда перезарядка прошла) — алхимический.
- * С виду это обычный огненный шар: тот же огонь, урон и поджог.
- * Дополнительно, если огненная стойкость длиннее порога, она укорачивается до этого порога.
- * Уровень зелья остаётся. Между особыми выстрелами блейз стреляет такими же обычными шарами.
+ Rare blaze. In a volley of three balls, the first (when the recharge has passed) is alchemical.
+ In appearance it is an ordinary fireball: the same fire, damage and arson.
+ In addition, if the fire resistance is longer than the threshold, it is shortened to this threshold.
+ * Potion levels remain. Between special shots, the Blaze shoots the same ordinary balls.
  */
 public final class BlazeAlchemist {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — алхимики не появляются, и шар не срезает стойкость. */
+	/** Turn on the mechanics. False - alchemists do not appear, and the ball does not cut the resistance. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный блейз при появлении окажется алхимиком. 0.04 = 4%.
-	 * Спаунер крепости тоже бросает этот шанс. Команда спавна шанс не использует.
+	 Chance (0.0–1.0) that a common blaze will appear as an alchemist. 0.04 = 4%.
+	 Spawner of the fortress also throws this chance. Spawn team doesn't take chances.
 	 */
 	public static final float SPAWN_CHANCE = 0.04f;
 
 	/**
-	 * Сколько секунд огненной стойкости остаётся после попадания.
-	 * 20 = с 8 минут станет 20 секунд. Если стойкости уже меньше или ровно столько — не трогает
-	 * и заново не обновляет. Бесконечная стойкость (команда) тоже срезается до этого числа.
+	 How many seconds of fire resistance remain after hitting.
+	 * 20 = 8 minutes is 20 seconds. If there is less resistance or just as much resistance, do not touch it.
+	 * and doesn't update again. Infinite perseverance (team) is also cut down to this number.
 	 */
 	public static final int FIRE_RESISTANCE_LEFT_SECONDS = 20;
 
 	/**
-	 * Пауза между шарами, которые срезают стойкость, секунды.
-	 * 20 = следующий такой шар не раньше чем через 20 секунд.
-	 * Залп блейза сам по себе примерно раз в 9 секунд, так что срез выходит около каждого третьего залпа.
-	 * Меньше 1 — стойкость срежут и соседние шары того же залпа (между ними 0.3 сек).
-	 * 0 = каждый шар этого блейза срезает стойкость.
+	 A pause between balls that cut resistance, seconds.
+	 20 = the next such ball not earlier than 20 seconds.
+	 A volley of the Blaze itself is about once every 9 seconds, so that the cut comes out about every third volley.
+	 Less than 1 - the resistance will be cut and neighboring balls of the same volley (between them 0.3 seconds).
+	 * 0 = each ball of this blaze cuts the resistance.
 	 */
 	public static final int SHOT_COOLDOWN_SECONDS = 20;
 
@@ -62,7 +62,7 @@ public final class BlazeAlchemist {
 				&& data.evolvingthreats$isAlchemist();
 	}
 
-	/** Конец серверного тика блейза. Убавляет паузу до следующего шара со срезом стойкости. */
+	/*End of the Blaze server tick. Reduces the pause to the next ball with a cut of resistance. */
 	public static void tickCooldown(Blaze blaze) {
 		if (!(blaze instanceof AlchemistBlazeEntity data) || !data.evolvingthreats$isAlchemist()) {
 			return;
@@ -74,9 +74,9 @@ public final class BlazeAlchemist {
 	}
 
 	/**
-	 * Вызвать, когда блейз только что создал маленький огненный шар.
-	 * true — этот шар ещё и срежет стойкость, пауза начинается заново.
-	 * Вид шара не меняется: это тот же огненный заряд, что у обычного блейза.
+	 Call when the Blaze has just created a small fireball.
+	 * True - this ball will also cut resistance, the pause begins again.
+	 The appearance of the ball does not change: it is the same fire charge as the usual Blaze.
 	 */
 	public static boolean claimShot(Blaze blaze) {
 		if (!isAlchemist(blaze) || !(blaze instanceof AlchemistBlazeEntity data)) {
@@ -90,8 +90,8 @@ public final class BlazeAlchemist {
 	}
 
 	/**
-	 * Попадание алхимического шара. Урон и поджог делает сам огненный шар.
-	 * Здесь только срез стойкости. Щит спереди срез ловит.
+	 * Alchemical ball hit. The fireball itself does the damage and arson.
+	 * There's just a bit of resistance. Shield in front catches a cut.
 	 */
 	public static void onHitEntity(SmallFireball ball, Entity target) {
 		if (!(ball.level() instanceof ServerLevel level)) {
@@ -115,7 +115,7 @@ public final class BlazeAlchemist {
 		shortenFireResistance(living, ball.getOwner());
 	}
 
-	/** Вызвать из finalizeSpawn. Командный спавн ставит флаг заранее. */
+	/** Call from finalizeSpawn. The team spawn puts the flag in advance. */
 	public static void rollOnSpawn(Blaze blaze, EntitySpawnReason reason) {
 		if (!ENABLED || !(blaze instanceof AlchemistBlazeEntity data)) {
 			return;
@@ -132,7 +132,7 @@ public final class BlazeAlchemist {
 		data.evolvingthreats$setAlchemist(true);
 	}
 
-	/** Команда: алхимик перед игроком. null — механика выключена. */
+	/*Team: Alchemist in front of player. null - the mechanics are off. */
 	public static @Nullable Blaze spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -176,7 +176,7 @@ public final class BlazeAlchemist {
 				current.showIcon()), source);
 	}
 
-	/** Щит смотрит на шар — попадание не срезает стойкость. */
+	/*The shield looks at the ball - the hit does not cut the resistance. */
 	private static boolean blockedByShield(LivingEntity target, SmallFireball ball) {
 		if (!target.isBlocking()) {
 			return false;

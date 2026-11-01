@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление брутального пиглина. Игра уже поставила ему 50 здоровья.
- * Здесь полоска становится той, что в {@link PiglinBruteHealth}.
+ The appearance of brutal piglin. The game has already put him in 50 health.
+ * Here the strip becomes the one in {@link PiglinBruteHealth}.
  */
 @Mixin(PiglinBrute.class)
 public class PiglinBruteHealthMixin {

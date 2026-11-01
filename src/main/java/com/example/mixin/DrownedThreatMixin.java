@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление утопленника: черепаший шлем и чары на трезубец, который уже выдала игра.
- * Сам трезубец мод не создаёт. Если игра успела повесить свои чары, они заменяются.
- * Числа — {@link DrownedThreats}.
+ The appearance of the drowned: a turtle helmet and charms on the trident, which has already given the game.
+ The trident itself does not create fashion. If the game has managed to hang its charms, they are replaced.
+ * Numbers - {@link DrownedThreats}.
  */
 @Mixin(Drowned.class)
 public class DrownedThreatMixin {

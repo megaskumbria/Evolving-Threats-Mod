@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Игра спрашивает это число, когда удар уже попал в поднятый щит.
- * У топора в основной руке оно 5 секунд. Здесь то же для второй руки
- * и ноль для деревянного топора у зомби, скелета и брута.
+ The game asks for this number when the hit has already hit the raised shield.
+ The axe in the main hand has 5 seconds. Same here for the second hand.
+ * and zero for a wooden axe in zombies, skeleton and brute.
  */
 @Mixin(LivingEntity.class)
 public class AxeShieldDisableMixin {

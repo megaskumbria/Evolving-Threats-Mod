@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Крипер-подрывник: взрывает опору под игроком или стену, если дойти нельзя. */
+/*Kreeper-subversive: blows up a support under the player or a wall if you cannot walk. */
 public interface SapperCreeperEntity {
 
 	boolean evolvingthreats$isSapperCreeper();

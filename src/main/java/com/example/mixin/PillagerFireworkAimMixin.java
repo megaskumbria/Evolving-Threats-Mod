@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Выстрел из арбалета уже посчитан игрой, с дугой как у стрелы.
- * Для ракеты разбойника дуга убирается в {@link PillagerFirework#correctAim}.
+ The crossbow shot has already been counted as a game, with an arc like an arrow.
+ * For a robber's rocket, the arc is removed in {@link PillagerFirework#correctAim}.
  */
 @Mixin(CrossbowItem.class)
 public class PillagerFireworkAimMixin {

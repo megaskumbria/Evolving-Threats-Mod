@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/** Дальность стрельбы в ванили задана один раз и закрыта. Здесь её можно сменить. */
+/*The range of shooting in vanilla is set once and closed. You can change it here. */
 @Mixin(RangedBowAttackGoal.class)
 public interface RangedBowAttackGoalAccessor {
 

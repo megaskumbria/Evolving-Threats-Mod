@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.UUID;
 
 /**
- * Сохранение данных рейда на скелете-прислуге.
- * {@code addAdditionalSaveData} есть только у {@link Skeleton}, не у {@link net.minecraft.world.entity.monster.skeleton.AbstractSkeleton}.
+ * Preservation of raid data on skeleton servants.
+ * {@code addAdditionalSaveData} is available only from {@link Skeleton}, not from {@link net.minecraft.world.entity.monster.skeleton.AbstractSkeleton}.
  */
 @Mixin(Skeleton.class)
 public class SkeletonRaidSaveMixin {

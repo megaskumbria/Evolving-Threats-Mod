@@ -32,59 +32,59 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Зомби с динамитом вместо меча.
- * Блоки не ломает. Если до игрока нет прохода или здоровья меньше порога —
- * роняет под ноги обычный подожжённый динамит.
+ * Zombie holding TNT instead of a sword.
+ * Does not break blocks. If the path to the player is blocked or health is below the threshold,
+ * drops lit TNT at its feet (vanilla primed TNT).
  */
 public final class TntZombie {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие зомби не появляются, команда тоже не спавнит. */
+	/** Enable the mechanic. false — no TNT zombies spawn; command spawn is disabled too. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби при появлении возьмёт динамит.
-	 * 0.04 = 4% на 100-й день (GROWING: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO).
-	 * Утопленник, зомби-пиглин, надсмотрщик и рейд этот шанс не бросают.
-	 * Команда шанс не использует.
+	 * Chance (0.0–1.0) that a normal zombie spawns with TNT.
+	 * 0.04 = 4% on day 100 (GROWING: 10× lower at game start; see ThreatTable.DANGEROUS_START_RATIO).
+	 * Drowned, zombified piglin, overseer, and raid zombies never roll this.
+	 * Command spawn ignores the chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.04f;
 
 	/**
-	 * Бросать динамит, если здоровья меньше этого числа.
-	 * 3 = меньше трёх единиц здоровья (полтора сердца). 6 = меньше трёх сердец.
-	 * Ровно 3 — ещё не бросает. 0 = из-за здоровья не бросает никогда.
+	 * Drop TNT when health is below this value.
+	 * 3 = below 3 health (1.5 hearts). 6 = below 3 hearts.
+	 * Exactly 3 health does not trigger. 0 = never drop because of health.
 	 */
 	public static final float LOW_HEALTH = 3.0f;
 
 	/**
-	 * Как далеко (блоки) ещё считать, что путь к игроку «заблокирован».
-	 * 32 = как у копания. Дальше зомби просто не видит дорогу и динамит не роняет.
+	 * How far (blocks) to still treat the path to the player as "blocked".
+	 * 32 = same as block breaking. Beyond that the zombie does not drop TNT.
 	 */
 	public static final double PATH_CHECK_BLOCKS = 32.0;
 
 	/**
-	 * Как часто проверять путь, тики. 10 = раз в полсекунды.
-	 * Чаще — точнее, но тяжелее для игры. Реже — дольше стоит у стены перед броском.
+	 * How often to check the path, in ticks. 10 = twice per second.
+	 * More often = more accurate but heavier on the server. Less often = longer wait at a wall before dropping.
 	 */
 	public static final int PATH_CHECK_INTERVAL_TICKS = 10;
 
 	/**
-	 * Пауза между динамитами, секунды. 4 = один за раз, как раз пока горит запал.
-	 * 0 = каждый тик, пока условие держится: под ногами появится пачка динамита.
+	 * Cooldown between TNT drops, in seconds. 4 = one at a time, roughly while the fuse burns.
+	 * 0 = every tick while the condition holds — a stack of TNT under the feet.
 	 */
 	public static final int THROW_COOLDOWN_SECONDS = 4;
 
 	/**
-	 * Запал, тики (20 тиков = 1 секунда). 80 = 4 секунды, как у обычного подожжённого динамита.
-	 * Взрыв по силе тоже обычный: блоки ломает, если это не запрещено правилом игры.
+	 * Fuse length in ticks (20 ticks = 1 second). 80 = 4 seconds, like vanilla primed TNT.
+	 * Explosion power is normal vanilla; blocks break unless the world rules forbid it.
 	 */
 	public static final int FUSE_TICKS = 80;
 
 	/**
-	 * Шанс (0.0–1.0), что динамит из руки упадёт при смерти. 0.085 ≈ 8.5%, как прочая экипировка.
-	 * 0 = из руки не падает. Взрыв под ногами этот предмет часто всё равно уничтожает.
+	 * Chance (0.0–1.0) that TNT in hand drops on death. 0.085 ≈ 8.5%, like other mob gear.
+	 * 0 = never from hand. TNT placed at the feet often destroys the item anyway.
 	 */
 	public static final float TNT_DROP_CHANCE = 0.085f;
 
@@ -100,8 +100,8 @@ public final class TntZombie {
 	}
 
 	/**
-	 * Конец появления зомби. true = это зомби с динамитом: меч, щит и тотем ему не выдаём.
-	 * Броня и зелья мода остаются.
+	 * End of zombie spawn. true = TNT zombie: no sword, shield, or totem.
+	 * Mod armor and potion buffs still apply.
 	 */
 	public static boolean tryClaim(Zombie zombie, EntitySpawnReason reason) {
 		if (!canBeTntZombie(zombie)) {
@@ -123,7 +123,7 @@ public final class TntZombie {
 		return true;
 	}
 
-	/** Команда: зомби с динамитом перед игроком. null — механика выключена. */
+	/** Command: TNT zombie in front of the player. null — mechanic disabled. */
 	public static @Nullable Zombie spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -149,7 +149,7 @@ public final class TntZombie {
 		return zombie;
 	}
 
-	/** Конец тика цели. Следит за паузой и роняет динамит, когда пора. */
+	/** End-of-tick on the mob. Handles cooldown and drops TNT when appropriate. */
 	public static void tick(Zombie zombie) {
 		if (!(zombie instanceof TntZombieEntity data) || !data.evolvingthreats$isTntZombie()) {
 			return;
@@ -172,8 +172,8 @@ public final class TntZombie {
 	}
 
 	/**
-	 * Путь к игроку не находится и впереди есть блок.
-	 * Игрок уже в зоне удара или просто далеко — это не «заблокирован».
+	 * No path to the player and a solid block ahead.
+	 * Player in melee range or very far away does not count as "blocked".
 	 */
 	public static boolean isPathBlocked(Zombie zombie) {
 		Player player = chasePlayer(zombie);
@@ -227,7 +227,7 @@ public final class TntZombie {
 		return PlayerGrudge.resolveGrudgePlayer(zombie);
 	}
 
-	/** Блок с толщей прямо перед зомби (ноги или голова) или пол, если игрок сильно ниже. */
+	/** Solid block in front of the zombie (feet or head), or floor when the player is much lower. */
 	private static boolean hasObstacleInFront(Zombie zombie, LivingEntity target) {
 		Level level = zombie.level();
 		BlockPos feet = zombie.blockPosition();

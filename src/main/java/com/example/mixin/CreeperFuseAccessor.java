@@ -4,7 +4,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/** Длина шипения крипера закрыта. У обычного крипера 30 тиков, это 1,5 секунды. */
+/** Creeper fuse length is hidden. Vanilla creeper uses 30 ticks, 1.5 seconds. */
 @Mixin(Creeper.class)
 public interface CreeperFuseAccessor {
 
@@ -14,7 +14,7 @@ public interface CreeperFuseAccessor {
 	@Accessor("maxSwell")
 	void evolvingthreats$setMaxSwell(int ticks);
 
-	/** Сколько тиков шипение уже идёт. 0 — крипер ещё не шипит. */
+	/** How many ticks the fuse has been running. 0 — creeper is not hissing yet. */
 	@Accessor("swell")
 	int evolvingthreats$getSwell();
 

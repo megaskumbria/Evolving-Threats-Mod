@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** После смерти стаи крипера — небольшой взрыв. Лут к этому моменту уже выпал. */
+/*After the death of a pack of cryper - a small explosion. Loot had already fallen by this point. */
 @Mixin(LivingEntity.class)
 public class RitualDeathMixin {
 

@@ -15,26 +15,26 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * «Память об игроке»: зомби заметил или получил урон от игрока — продолжает охоту,
- * даже если ваниль сбросила цель (игрок спрятался за блоками / под землёй).
- * Пока память активна, зомби не идёт на факелы ({@link com.example.entity.ai.LightSeekGoal}).
+ "Memory of the player": the zombie noticed or suffered damage from the player - continues the hunt,
+ * even if vanilla dropped the target (the player hid behind the blocks/underground).
+ * While memory is active, zombies don't go to torches ({@link com.example.entity.ai.LightSeekGoal}).
  *
- * Надсмотрщик, рейд и ритуальная стая используют свою охоту — для них память не нужна.
+ Overseers, raiders and ritual packs use their hunting - they do not need memory.
  */
 public final class PlayerGrudge {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить память об игроке для обычных зомби. */
+	/*Enable player memory for ordinary zombies. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * На какой дистанции (блоки) зомби ещё помнит игрока и держит цель.
-	 * Дальше — забывает (как «ушёл слишком далеко»). Совпадает с радиусом копания по умолчанию.
+	 At what distance (blocks) the zombie still remembers the player and holds the goal.
+	 Then he forgets (as if he had gone too far). Coincides with the default digging radius.
 	 */
 	public static final double GRUDGE_MAX_DISTANCE = 32.0;
 
-	/** Максимум времени охоты без повторного контакта (тики): 6000 = 5 минут. 0 = без лимита по времени. */
+	/*Maximum hunting time without repeated contact (tics): 6000 = 5 minutes. 0 = no time limit. */
 	public static final int GRUDGE_TIMEOUT_TICKS = 5 * 60 * 20;
 
 	// ========================================================================
@@ -61,15 +61,15 @@ public final class PlayerGrudge {
 		return zombie instanceof ZombieGrudgeEntity;
 	}
 
-	/** Есть ли активная охота (игрок в радиусе, память не сброшена). */
+	/*Is there an active hunt (player within range, memory not reset) */
 	public static boolean isPursuingPlayer(Zombie zombie) {
 		return resolveGrudgePlayer(zombie) != null;
 	}
 
 	/**
-	 * Вернуть игрока в {@code setTarget} из памяти. Вызывается перед тиком goalSelector.
-	 * В 26.3 на «нечётных» тиках AI цели крутятся без проверки canContinueToUse — если цель
-	 * null, {@code SpearUseGoal} (копьё) падает с NPE. Поэтому синхронизация здесь обязательна.
+	 Return the player to @code setTarget from memory. Called before the goalSelector tick.
+	 In 26.3 on “odd” tics AI targets rotate without checking canContinueToUse – if the target
+	 * null, {@code SpearUseGoal} (spear) falls off NPE. Therefore, synchronization is mandatory.
 	 */
 	public static void syncTarget(Zombie zombie) {
 		if (!isEligible(zombie)) {
@@ -84,7 +84,7 @@ public final class PlayerGrudge {
 		}
 	}
 
-	/** Запомнить игрока (вызывается, когда зомби получил его в цель или ударил). */
+	/*Remember the player (called when a zombie hits or hits him) */
 	public static void rememberPlayer(Zombie zombie, Player player) {
 		if (!isEligible(zombie) || !(zombie instanceof ZombieGrudgeEntity grudge)) {
 			return;

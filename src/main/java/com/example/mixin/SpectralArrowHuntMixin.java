@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Спектральная стрела только что наложила подсветку.
- * Если её выпустил скелет и попал в игрока — рядом поднимается охота.
- * Стрела игрока толпу не будит.
+ The spectral arrow just put a light on.
+ If it was released by a skeleton and hit a player, a hunt goes up next to it.
+ The player's arrow does not wake the crowd.
  */
 @Mixin(SpectralArrow.class)
 public class SpectralArrowHuntMixin {

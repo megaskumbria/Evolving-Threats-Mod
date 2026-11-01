@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Игра спрашивает у сущности «можешь ли ты сейчас пройти через портал», пока та стоит в портале.
- * Во время осады игроку в верхнем мире отвечаем «нет»: портал в Ад или Энд не срабатывает.
- * Решает {@link SiegeNight#blocksPortal}: только игроки верхнего мира, и только пока идёт осада.
- * Мобы и предметы, а также игроки в Аду и Энде не затронуты.
+ The game asks the entity “can you now go through the portal” while it is in the portal.
+ During a siege, the player in the upper world says no: the portal to Hell or End does not work.
+ * Decides {@link SiegeNight#blocksPortal}: Upper world players only, and only while the siege is on.
+ Mobs and items, as well as players in Hell and End are not affected.
  */
 @Mixin(Entity.class)
 public class EntityPortalSiegeMixin {

@@ -3,12 +3,12 @@ package com.example;
 import net.minecraft.world.entity.Mob;
 
 /**
- * Именные мобы не показывают имя всегда.
- * Игра сама рисует его, когда центральный прицел наведён на моба
- * и до него не больше примерно 64 блоков. Дальше имя скрыто, даже если целиться точно.
- * Это правило самой игры, отдельного числа в моде нет.
- * Вызвать после выдачи имени и ещё раз при загрузке мира:
- * иначе уже живущий моб останется с именем, которое видно издалека.
+ * Named mobs do not always show their name tag.
+ * Vanilla draws it when the crosshair is on the mob and it is within about 64 blocks.
+ * Farther away the name stays hidden even if you aim precisely.
+ * That limit is vanilla rules; this mod does not tune a separate distance.
+ * Call after setting a custom name and again on world load,
+ * or an existing mob may keep a name visible from far away.
  */
 public final class MobNames {
 

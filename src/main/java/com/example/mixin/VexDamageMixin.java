@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удар досаждателя. Срабатывает в момент, когда он касается цели.
- * Удары других мобов здесь не меняются.
+ * Blow from the molester. It works when it touches the target.
+ Blows of other mobs do not change here.
  */
 @Mixin(Mob.class)
 public class VexDamageMixin {
@@ -36,7 +36,7 @@ public class VexDamageMixin {
 	}
 
 	/**
-	 * Слабость только если удар уже прошёл. Отбитый щитом и попавший в мигание удар её не вешает.
+	 Weakness only if the blow has already passed. A shielded and blinked blow does not hang it.
 	 */
 	@Inject(method = "doHurtTarget", at = @At("RETURN"))
 	private void evolvingthreats$vexWeakness(ServerLevel level, Entity target, CallbackInfoReturnable<Boolean> cir) {

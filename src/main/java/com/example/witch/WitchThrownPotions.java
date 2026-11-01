@@ -23,83 +23,83 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Бросок ведьмы в игрока.
- * Часть бутылок — новые эффекты. Часть обычных и новых остаётся в воздухе туманом.
- * Лечение союзника в рейде и белое зелье обнулителя сюда не попадают.
- * Пока ведьма пьёт сама, броска нет: игра его и так не делает.
+ A witch's throw at a player.
+ Part of the bottles - new effects. Some of the usual and new remains in the air fog.
+ Ally treatment in the raid and white potion nullifier do not fall here.
+ As long as the witch drinks herself, there is no throw: the game does not make it.
  */
 public final class WitchThrownPotions {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — ведьма снова кидает только яд, замедление, слабость и мгновенный урон. */
+	/** False - the witch throws only poison, slowing down, weakness and instant damage. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что бросок в игрока будет из нового списка, а не обычным.
-	 * 0.50 = 50%, примерно каждый второй. 0 = новых эффектов нет. 1 = обычные в игрока не летят.
+	 * Chance (0.0–1.0) that a throw at a player will be from a new list rather than a regular one.
+	 0.50 = 50%, approximately one in two. 0 = no new effects. 1 = ordinary players do not fly.
 	 */
 	public static final float SPECIAL_CHANCE = 0.50f;
 
 	/**
-	 * Шанс (0.0–1.0), что бутылка туманная: на месте попадания остаётся облако.
-	 * 0.35 = 35%. Касается и новых эффектов, и обычных яда, замедления, слабости и урона.
-	 * 0 = только взрывные брызги. 1 = каждый бросок в игрока оставляет туман.
-	 * Белое зелье обнулителя всегда взрывное: туман эффекты не снимает.
+	 * Chance (0.0–1.0) that the bottle is foggy: a cloud remains at the place of impact.
+	 * 0.35 = 35%. It concerns both new effects and ordinary poison, slowdown, weakness and damage.
+	 * 0 = explosive spray only. 1 = each throw at the player leaves a fog.
+	 White potion nullifier always explosive: fog effects do not remove.
 	 */
 	public static final float LINGERING_CHANCE = 0.35f;
 
 	/**
-	 * Замедление IV, секунды. Случайное число от минимума до максимума включительно.
-	 * 15 и 20 = от 15 до 20 секунд. IV почти не даёт идти.
-	 * 0 в максимуме выключает это зелье. Сила: 3 = IV, 0 было бы обычное замедление.
+	 Slowdown IV, seconds. Random number from minimum to maximum inclusive.
+	 * 15 and 20 = 15 to 20 seconds. IV hardly lets you walk.
+	 * 0 at maximum turns off this potion. Force: 3 = IV, 0 would be a normal deceleration.
 	 */
 	public static final int SLOWNESS_MIN_SECONDS = 15;
 	public static final int SLOWNESS_MAX_SECONDS = 20;
 	public static final int SLOWNESS_AMPLIFIER = 3;
 
-	/** Слепота, секунды. 5 и 10 = от 5 до 10. Экран темнеет, ведьму плохо видно. */
+	/** Blind, seconds. 5 and 10 = 5 to 10. The screen gets dark, the witch can't see well. */
 	public static final int BLINDNESS_MIN_SECONDS = 5;
 	public static final int BLINDNESS_MAX_SECONDS = 10;
 
 	/**
-	 * Иссушение I, секунды. 10 = десять секунд.
-	 * Снимает 1 здоровье примерно раз в 2 секунды, за 10 секунд это около 2 сердец чёрного урона.
-	 * 1 = Иссушение II, тикает вдвое чаще. 0 = иссушения нет.
+	 Drying I, seconds. 10 = ten seconds.
+	 Removes 1 health about once every 2 seconds, in 10 seconds it is about 2 hearts of black damage.
+	 1 = Drying II, ticking twice as often. 0 = no drying.
 	 */
 	public static final int WITHER_SECONDS = 10;
 	public static final int WITHER_AMPLIFIER = 0;
 
 	/**
-	 * Голод I, секунды. 20 и 30 = от 20 до 30.
-	 * За бой заметно сажает сытость. Не минуты: ведьма кидает часто, длинный голод не отпускал бы.
+	 Hunger I, seconds. 20 and 30 = 20 to 30.
+	 * For the fight noticeably puts satiety. Not minutes: the witch throws often, long hunger would not let go.
 	 */
 	public static final int HUNGER_MIN_SECONDS = 20;
 	public static final int HUNGER_MAX_SECONDS = 30;
 
-	/** Тошнота, секунды. 8 и 12 = экран качает недолго. Урона почти нет. */
+	/** Nausea, seconds. 8 and 12 = the screen does not last long. There's almost no damage. */
 	public static final int NAUSEA_MIN_SECONDS = 8;
 	public static final int NAUSEA_MAX_SECONDS = 12;
 
 	/**
-	 * Усталость I, секунды. 15 и 20 = копать примерно втрое медленнее.
-	 * 1 в силе = Усталость II, блоки почти не ломаются. 2 = как луч древнего стража.
+	 Fatigue I, seconds. 15 and 20 = dig about three times slower.
+	 1 in strength = Fatigue II, the blocks hardly break. 2 = as the ray of the ancient guard.
 	 */
 	public static final int FATIGUE_MIN_SECONDS = 15;
 	public static final int FATIGUE_MAX_SECONDS = 20;
 	public static final int FATIGUE_AMPLIFIER = 0;
 
 	/**
-	 * Левитация, секунды. 4 и 6 = короткий подъём и падение.
-	 * 8 секунд поднимают примерно на 8 блоков, как долгая стрела скелета. Здесь короче.
+	 Levitation, seconds. 4 and 6 = short rise and fall.
+	 8 seconds is lifted by about 8 blocks, like a long arrow of the skeleton. It's shorter.
 	 */
 	public static final int LEVITATION_MIN_SECONDS = 4;
 	public static final int LEVITATION_MAX_SECONDS = 6;
 
 	/**
-	 * Во сколько раз короче эффект у туманной бутылки с обычным зельем (яд, замедление, слабость).
-	 * 0.25 = четверть, как у туманного зелья в обычной игре.
-	 * Новые эффекты этот множитель не режет: у них секунды сверху.
+	 How much shorter is the effect of a foggy bottle with an ordinary potion (poison, slowdown, weakness).
+	 0.25 = a quarter, like a foggy potion in a normal game.
+	 New effects this multiplier does not cut: they have seconds on top.
 	 */
 	public static final float VANILLA_LINGERING_SCALE = 0.25f;
 
@@ -109,8 +109,8 @@ public final class WitchThrownPotions {
 	}
 
 	/**
-	 * Подмена бутылки в момент броска.
-	 * Если менять нечего, уходит та, которую ведьма уже выбрала.
+	 Replacement of the bottle at the time of throwing.
+	 If there is nothing to change, the one that the witch has already chosen leaves.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Projectile launch(
@@ -137,7 +137,7 @@ public final class WitchThrownPotions {
 		if (!ENABLED || !(source instanceof Witch witch) || !(witch.getTarget() instanceof Player)) {
 			return null;
 		}
-		// Белая бутылка уже назначена. Её подменит свой код, туман ей не нужен.
+		// The white bottle is already assigned. She'll change her code, she doesn't need fog.
 		if (witch instanceof NullifierWitchEntity data && data.evolvingthreats$isNullifyArmed()) {
 			return null;
 		}
@@ -178,7 +178,7 @@ public final class WitchThrownPotions {
 		return stack;
 	}
 
-	/** Обычные яд, замедление, слабость и урон, но бутылка туманная. */
+	/** Ordinary poison, slowdown, weakness and damage, but the bottle is foggy. */
 	private static ItemStack lingeringVanilla(ItemStack splash) {
 		ItemStack stack = new ItemStack(Items.LINGERING_POTION);
 		PotionContents contents = splash.get(DataComponents.POTION_CONTENTS);
@@ -201,7 +201,7 @@ public final class WitchThrownPotions {
 		return list;
 	}
 
-	/** Максимум 0 или меньше — этого зелья в списке нет. */
+	/** A maximum of 0 or less – this potion is not on the list. */
 	private static void add(List<Brew> list, Holder<MobEffect> effect, int minSeconds, int maxSeconds, int amplifier) {
 		if (Math.max(minSeconds, maxSeconds) <= 0) {
 			return;

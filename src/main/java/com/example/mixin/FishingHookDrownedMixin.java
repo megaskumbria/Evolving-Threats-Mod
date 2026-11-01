@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Обычный крючок живёт только у игрока и сразу пропадает, если его бросил моб.
- * У утопленника с удочкой полёт и подтягивание считает {@link DrownedFishing}.
+ The usual hook lives only in the player and immediately disappears if the mob threw him.
+ * A drowned man with a fishing rod has a flight and pull-up count {@link DrownedFishing}.
  */
 @Mixin(FishingHook.class)
 public class FishingHookDrownedMixin {
@@ -22,8 +22,8 @@ public class FishingHookDrownedMixin {
 			return;
 		}
 		if (hook.level().isClientSide()) {
-			// Позицию уже сгладил общий тик. Здесь только не даём крючку пропасть:
-			// обычная удочка живёт лишь у игрока.
+			// The position has already smoothed the overall tick. Just keep the hook open.
+			// The usual fishing rod lives only with the player.
 			ci.cancel();
 			return;
 		}

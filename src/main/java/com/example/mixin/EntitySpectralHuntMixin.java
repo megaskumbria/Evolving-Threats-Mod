@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Удаление существа объявлено не у моба, а у общего класса существа.
- * Когда моб из охоты исчезает, его убирают из списка, чтобы тот не копился.
+ Removal of the creature is declared not in the mob, but in the general class of the creature.
+ When the mob disappears from the hunt, it is removed from the list so that it does not accumulate.
  */
 @Mixin(Entity.class)
 public class EntitySpectralHuntMixin {

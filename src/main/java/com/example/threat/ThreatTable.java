@@ -1,142 +1,141 @@
 package com.example.threat;
 
 /**
- * Единая таблица шкалы угрозы: с какого дня что включается и с каких значений всё начинается.
- * Правь здесь, не открывая классы мобов. Метки FIXED/GROWING взяты из mobs.txt.
+ * Single threat-scale table: which day turns what on, and starting values at day 0.
+ * Edit here without opening mob classes. FIXED/GROWING tags come from mobs.txt.
  *
- * <p>Как читать:
+ * <p>How to read:
  * <ul>
- *   <li><b>«С N-го дня»</b> — до этого дня механики нет совсем, с него шанс ровно такой, как в классе моба
- *       (там он подписан «FIXED»). Луна на это не влияет.</li>
- *   <li><b>«Стартовое значение»</b> — шанс в самом начале мира (день 0). К 100-му дню он растёт до числа
- *       в классе моба (там оно теперь называется «конец шкалы»). По дороге шанс меняет луна
- *       (см. {@link ThreatScale}).</li>
+ *   <li><b>"From day N"</b> — mechanic is off before N; from N onward chance is exactly as in the mob class
+ *       (marked FIXED there). Moon does not affect these.</li>
+ *   <li><b>"Start value"</b> — chance at world day 0. By day 100 it reaches the number in the mob class
+ *       (now labeled "end of scale"). Along the way, moon shifts the chance (see {@link ThreatScale}).</li>
  * </ul>
  */
 public final class ThreatTable {
 
-	// ===================== С КАКОГО ДНЯ ВКЛЮЧАЕТСЯ (ступеньки) =====================
+	// ===================== FROM-DAY THRESHOLDS =====================
 
-	/** Первая осада. Через сколько дней дальше — в {@code SiegeNight}. */
+	/** First siege. Gap until the next — in {@code SiegeNight}. */
 	public static final int SIEGE_FIRST_DAY = 25;
 
 	/**
-	 * С этого дня осада может быть «иллагерской» (разорители, разбойники, вызыватели, поборники).
-	 * До него все осады из нежити и тварей. Шанс иллагерской осады — в {@code SiegeComposition}.
+	 * From this day a siege may be illager-themed (vindicators, pillagers, evokers, ravagers).
+	 * Before that, all sieges are undead and monsters. Illager siege chance — in {@code SiegeComposition}.
 	 */
 	public static final int SIEGE_ILLAGER_DAY = 40;
 
-	/** Скелеты с луком Откидывание V–VI («чары сильнее ванильных»). До этого дня таких нет. */
+	/** Skeletons with Punch bow enchant V–VI ("stronger than vanilla"). None before this day. */
 	public static final int STRONG_BOW_DAY = 20;
 
-	/** Зомби бегут на свет и ломают его. */
+	/** Zombies seek light and break it. */
 	public static final int LIGHT_SEEK_DAY = 40;
 
-	/** Зомби ломают блоки к игроку. Скорость разрушения от дня не зависит. Осадные зомби тоже с этого дня. */
+	/** Zombies break blocks toward the player. Break speed does not scale by day. Siege zombies too from this day. */
 	public static final int BLOCK_BREAK_DAY = 40;
 
-	/** Зомби-чародей. */
+	/** Zombie sorcerer. */
 	public static final int SORCERER_DAY = 40;
 
-	/** Зомби Excalibur: меч с Остротой 20. Шанс в {@code ZombieExcalibur}, от дня не растёт. */
+	/** Zombie Excalibur: sword with Sharpness 20. Chance in {@code ZombieExcalibur}, does not grow by day. */
 	public static final int EXCALIBUR_DAY = 40;
 
 	/**
-	 * Spiky: обычный зомби или скелет, один кусок брони колет на 7–8 сердец сквозь броню.
-	 * Шанс в {@code Spiky}, от дня не растёт.
+	 * Spiky: normal zombie or skeleton, one armor piece deals 7–8 hearts through armor.
+	 * Chance in {@code Spiky}, does not grow by day.
 	 */
 	public static final int SPIKY_DAY = 40;
 
-	/** Гнилой надсмотрщик. */
+	/** Rotten overseer. */
 	public static final int OVERSEER_DAY = 60;
 
-	/** Капитан скелетов с охраной. */
+	/** Skeleton captain with escort. */
 	public static final int SKELETON_CAPTAIN_DAY = 60;
 
-	/** Бастион: обычный зомби или скелет с большим запасом здоровья. Шанс в {@code Bastion}, от дня не растёт. */
+	/** Bastion: normal zombie or skeleton with high health pool. Chance in {@code Bastion}, FIXED by day. */
 	public static final int BASTION_DAY = 60;
 
-	/** Рейдовый якорь: с этого дня он может появиться сам (шанс и пауза — в RaidAnchorNatural). */
+	/** Raid anchor: from this day it can spawn naturally (chance and cooldown in RaidAnchorNatural). */
 	public static final int RAID_ANCHOR_DAY = 80;
 
-	/** Скелет Василиск. */
+	/** Basilisk skeleton. */
 	public static final int BASILISK_DAY = 80;
 
-	// ===================== СТАРТОВЫЕ ЗНАЧЕНИЯ (день 0) =====================
+	// ===================== DAY-0 START VALUES =====================
 
 	/**
-	 * «Опасные способности» (спавнер на голове, тактик, быстрый лук, динамит, тыква, раздатчик, вредные стрелы,
-	 * лук Откидывание): в начале шанс = максимум × это число. 0.10 = в 10 раз меньше максимума.
-	 * 0 = в начале игры способности не появляются совсем.
+	 * "Dangerous abilities" (spawner head, tactician, fast bow, TNT, pumpkin, dispenser, harmful arrows,
+	 * punch bow): at start, chance = max × this ratio. 0.10 = one tenth of max at day 100.
+	 * 0 = no dangerous abilities at game start.
 	 */
 	public static final float DANGEROUS_START_RATIO = 0.10f;
 
-	/** Любое оружие в руках: в начале шанс = максимум × это число. 0.25 = в четыре раза реже максимума. */
+	/** Any weapon in hand: at start, chance = max × this ratio. 0.25 = one quarter of max. */
 	public static final float WEAPON_START_RATIO = 0.25f;
 
-	/** Щит: в начале шанс = максимум × это число. 0.10 = в десять раз реже. */
+	/** Shield: at start, chance = max × this ratio. 0.10 = one tenth of max. */
 	public static final float SHIELD_START_RATIO = 0.10f;
 
-	/** Тотем бессмертия: в начале шанс = максимум × это число. 0.05 = в двадцать раз реже. */
+	/** Totem of undying: at start, chance = max × this ratio. 0.05 = one twentieth of max. */
 	public static final float TOTEM_START_RATIO = 0.05f;
 
-	/** Шанс надеть кусок брони (на каждый слот) в начале игры. 0.08 = 8%. Конец шкалы — в {@code RandomArmor}. */
+	/** Per-slot armor piece chance at game start. 0.08 = 8%. End of scale — in {@code RandomArmor}. */
 	public static final float ARMOR_PIECE_CHANCE_START = 0.08f;
 
 	/**
-	 * Шанс полного комплекта брони в начале игры. 0 = в первый день такого моба нет.
-	 * Конец шкалы — {@code RandomArmor.FULL_SET_CHANCE}. Растёт вместе со шкалой и луной.
+	 * Full armor set chance at game start. 0 = no full-set mobs on day one.
+	 * End of scale — {@code RandomArmor.FULL_SET_CHANCE}. Grows with scale and moon.
 	 */
 	public static final float FULL_ARMOR_SET_CHANCE_START = 0.0f;
 
-	/** Шанс чар на оружии в руках в начале игры. 0.01 = 1%. Конец шкалы — в {@code MobEnchantments}. */
+	/** Main-hand weapon enchant chance at game start. 0.01 = 1%. End — in {@code MobEnchantments}. */
 	public static final float WEAPON_ENCHANT_CHANCE_START = 0.01f;
 
-	/** Шанс чар на куске брони в начале игры. 0.01 = 1%. */
+	/** Armor piece enchant chance at game start. 0.01 = 1%. */
 	public static final float ARMOR_ENCHANT_CHANCE_START = 0.01f;
 
 	/**
-	 * Насколько уровень чары тяготеет к низким значениям в начале игры. 3.0 = высокие уровни почти не выпадают.
-	 * 0.0 = все уровни равновероятны, меньше нуля — высокие даже чаще. Конец шкалы — в {@code MobEnchantments}.
+	 * How much enchant level rolls favor low values at start. 3.0 = high levels almost never roll.
+	 * 0.0 = all levels equally likely; below 0 — high levels more common. End — in {@code MobEnchantments}.
 	 */
 	public static final double ENCHANT_LEVEL_BIAS_START = 3.0;
 
-	/** Сколько чар на оружии в начале игры (вес: одна, две, три, четыре, пять). Конец — {@code COUNT_WEIGHTS}. */
+	/** Weapon enchant count weights at start (one, two, three, four, five enchants). End — {@code COUNT_WEIGHTS}. */
 	public static final double[] ENCHANT_COUNT_WEIGHTS_START = { 85, 11, 3, 1, 0 };
 
-	/** Сколько чар на одном куске брони в начале игры (вес: одна, две, три, четыре). */
+	/** Armor enchant count weights at start (one, two, three, four). */
 	public static final double[] ARMOR_ENCHANT_COUNT_WEIGHTS_START = { 90, 8, 2, 0 };
 
 	/**
-	 * Сколько зелий-бафов сразу в начале игры (вес: ни одного, одно, два, три, четыре, пять).
-	 * Конец шкалы — {@code MobPotionBuffs.COUNT_WEIGHTS}.
+	 * Potion buff count weights at start (none, one, two, three, four, five).
+	 * End — {@code MobPotionBuffs.COUNT_WEIGHTS}.
 	 */
 	public static final double[] POTION_COUNT_WEIGHTS_START = { 96, 3, 1, 0, 0, 0 };
 
 	/**
-	 * Веса материала брони в начале игры: кожа, золото, кольчуга, медь, железо, алмаз.
-	 * Алмаз 0.3 из 100 ≈ как «алмазный зомби в ванильной игре». Конец шкалы — {@code RandomArmor.MATERIAL_WEIGHTS}.
+	 * Armor material weights at start: leather, gold, chain, copper, iron, diamond.
+	 * Diamond 0.3 of 100 ≈ vanilla diamond zombie rarity. End — {@code RandomArmor.MATERIAL_WEIGHTS}.
 	 */
 	public static final double[] ARMOR_MATERIAL_WEIGHTS_START = { 60, 20, 9, 6, 4.7, 0.3 };
 
 	/**
-	 * Веса материала оружия в начале игры: дерево, камень, золото, медь, железо, алмаз.
-	 * Дерево и камень в руках зомби не такая уж редкость. Конец шкалы — {@code RandomWeapons.MATERIAL_WEIGHTS}.
+	 * Weapon material weights at start: wood, stone, gold, copper, iron, diamond.
+	 * Wood and stone in zombie hands are not that rare early. End — {@code RandomWeapons.MATERIAL_WEIGHTS}.
 	 */
 	public static final double[] WEAPON_MATERIAL_WEIGHTS_START = { 50, 30, 10, 6, 3.7, 0.3 };
 
 	/**
-	 * Максимум здоровья зомби и скелета в начале игры. Минимум всегда 20 (как в ванили),
-	 * максимум плавно растёт до {@code MobHealth.ZOMBIE_SKELETON_MAX} к 100-му дню.
+	 * Zombie and skeleton max health at game start. Minimum always 20 (vanilla);
+	 * maximum smoothly rises to {@code MobHealth.ZOMBIE_SKELETON_MAX} by day 100.
 	 */
 	public static final int ZOMBIE_SKELETON_HEALTH_MAX_START = 20;
 
-	// ===================== ИКОНКА НА ШКАЛЕ =====================
+	// ===================== HUD ICON STAGES =====================
 
 	/**
-	 * С какого дня показывается каждый череп справа от шкалы (4 числа, по возрастанию):
-	 * 0 — спящий зомби, затем зомби в шлеме, череп с красными глазами, череп в короне.
-	 * По умолчанию пороги взяты из важных вех: первая осада, капитан и надсмотрщик, Василиск и якорь.
+	 * Day when each skull icon appears right of the bar (4 values, ascending):
+	 * 0 — sleeping zombie, then helmet zombie, red-eye skull, crowned skull.
+	 * Defaults tie to milestones: first siege, captain and overseer, basilisk and anchor.
 	 */
 	public static final int[] STAGE_ICON_FROM_DAY = { 0, SIEGE_FIRST_DAY, SKELETON_CAPTAIN_DAY, BASILISK_DAY };
 

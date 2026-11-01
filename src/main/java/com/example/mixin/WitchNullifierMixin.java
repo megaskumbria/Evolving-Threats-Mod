@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Ведьма хранит флаг «обнулитель» и паузу между белыми зельями.
- * Шанс при появлении и запись в мир — {@link WitchNullifierMobMixin}.
- * Сама бутылка — {@link ThrownSplashPotionNullifyMixin}.
+ The witch keeps the flag "zero" and a pause between white potions.
+ * Chance to appear and record in the world - {@link WitchNullifierMobMixin}
+ * The bottle itself — @link ThrownSplashPotionNullifyMixin.
  */
 @Mixin(Witch.class)
 public class WitchNullifierMixin implements NullifierWitchEntity {

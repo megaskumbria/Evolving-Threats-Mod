@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * После обычной стрельбы Василиск получает дальнюю дистанцию.
- * Скорость стрелы и прицел — в {@link AbstractSkeletonFastBowMixin}, там же, где у дальнего лука.
+ After the usual shooting, Vasilisk gets a long distance.
+ * Arrow speed and sight at {@link AbstractSkeletonFastBowMixin}, same as the far bow.
  */
 @Mixin(AbstractSkeleton.class)
 public abstract class BasiliskBowMixin {

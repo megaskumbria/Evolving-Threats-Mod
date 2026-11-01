@@ -16,22 +16,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Зомби без цели идёт к ближайшему яркому свету, стоит там и идёт дальше.
- * Как только появляется цель (игрок), ванильная атака (приоритет выше) перебивает эту цель.
- * Жители важнее света: если рядом есть житель, зомби берёт его в цель (см. LightSeeking.VILLAGER_BEATS_LIGHT).
+ A zombie without a target goes to the nearest bright light, stands there and goes on.
+ As soon as the target (player) appears, the vanilla attack (priority above) interrupts that target.
+ Residents are more important than light: if there is a resident nearby, a zombie takes him to the target (see LightSeeking.VILLAGER BEATS LIGHT).
  */
 public class LightSeekGoal extends Goal {
 
 	private final Zombie zombie;
 
-	/** Посещённые позиции света → игровое время, до которого их игнорируем. */
+	/*Visited positions of light → game time until which they are ignored. */
 	private final Map<BlockPos, Long> ignoredUntil = new HashMap<>();
 
 	private BlockPos lightPos;
 	private long nextScanGameTime;
 	private int walkTicks;
 	private int waitTicks;
-	/** Сколько света уже «сломано» (0.0–1.0, 1.0 = блок разрушен). */
+	/*How much light has already been broken (0.0–1.0, 1.0 = block destroyed). */
 	private float breakProgress;
 	private boolean arrived;
 	private boolean finished;
@@ -46,7 +46,7 @@ public class LightSeekGoal extends Goal {
 		if (!LightSeeking.isEligible(zombie) || zombie.isPassenger()) {
 			return false;
 		}
-		// Игрок в цели или в «памяти» — свет не интересен.
+		// A player in goal or memory is not interested in light.
 		if (zombie.getTarget() != null || PlayerGrudge.isPursuingPlayer(zombie)) {
 			return false;
 		}
@@ -54,11 +54,11 @@ public class LightSeekGoal extends Goal {
 		if (now < nextScanGameTime) {
 			return false;
 		}
-		// Житель рядом важнее света: делаем его целью и свет не трогаем.
+		// A resident is more important than light: we make it a target and do not touch the light.
 		if (LightSeeking.targetNearbyVillager(zombie)) {
 			return false;
 		}
-		// Случайный сдвиг, чтобы все зомби не сканировали в один и тот же тик.
+		// Random shift so that all zombies are not scanned in the same tick.
 		nextScanGameTime = now + LightSeeking.SCAN_INTERVAL_TICKS + zombie.getRandom().nextInt(20);
 
 		cleanupIgnored(now);
@@ -83,11 +83,11 @@ public class LightSeekGoal extends Goal {
 		breakProgress = 0.0f;
 		arrived = false;
 		finished = false;
-		// reachRange 2: достаточно подойти вплотную — свет может висеть в стене или на потолке.
+		// reachRange 2: It is enough to come close - the light can hang in the wall or on the ceiling.
 		boolean ok = zombie.getNavigation().moveTo(
 				lightPos.getX() + 0.5, lightPos.getY(), lightPos.getZ() + 0.5, 2, LightSeeking.MOVE_SPEED);
 		if (!ok) {
-			// Пути нет — запоминаем, чтобы не пытаться снова сразу.
+			// There is no way – remember, so as not to try again at once.
 			markVisited();
 			finished = true;
 		}
@@ -98,13 +98,13 @@ public class LightSeekGoal extends Goal {
 		if (finished || lightPos == null) {
 			return;
 		}
-		// Пока идёт к свету или ломает его — периодически проверяем, не появился ли житель.
-		// Нашёл → цель назначена, цель «свет» завершается (canContinueToUse увидит target != null), трещины убираются в stop().
+		// While it goes to the light or breaks it, we periodically check whether a resident has appeared.
+		// Found → target assigned, target “light” is completed (canContinueToUse will see target!= null), cracks are removed in stop().
 		if (zombie.tickCount % LightSeeking.VILLAGER_RECHECK_TICKS == 0 && LightSeeking.targetNearbyVillager(zombie)) {
 			finished = true;
 			return;
 		}
-		// Свет убрали (сломали факел) — идти больше некуда.
+		// The light was removed (broken torch) - there is nowhere else to go.
 		if (!LightSeeking.isAttractiveLight(zombie.level().getBlockState(lightPos))) {
 			markVisited();
 			finished = true;
@@ -113,7 +113,7 @@ public class LightSeekGoal extends Goal {
 
 		double distSqr = zombie.distanceToSqr(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5);
 		double arrive = LightSeeking.ARRIVE_DISTANCE;
-		// «Пришёл»: подошёл близко, либо путь кончился, но рукой до света дотянуться можно (свет на потолке).
+		// “I came”: came close, or the path ended, but you can reach the light with your hand (light on the ceiling).
 		double eyeDistSqr = zombie.getEyePosition().distanceToSqr(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5);
 		boolean inReach = eyeDistSqr <= BlockBreaking.REACH * BlockBreaking.REACH;
 		if (!arrived && (distSqr <= arrive * arrive || (zombie.getNavigation().isDone() && inReach))) {
@@ -129,8 +129,8 @@ public class LightSeekGoal extends Goal {
 					&& BlockBreaking.canBreak(zombie.level(), lightPos, lightState);
 
 			if (willBreak) {
-				// Ломаем по тем же правилам, что и обычные блоки (BlockBreaking.progressPerTick):
-				// зависит от твёрдости блока и инструмента в руке зомби. На блоке растут трещины.
+				// We break the same rules as regular blocks (BlockBreaking.progressPerTick):
+				// It depends on the hardness of the block and the tool in the hand of the zombies. Cracks are growing on the block.
 				zombie.getLookControl().setLookAt(Vec3.atCenterOf(lightPos));
 				breakProgress += BlockBreaking.progressPerTick(zombie, zombie.level(), lightPos, lightState);
 				if (breakProgress >= 1.0f) {
@@ -157,7 +157,7 @@ public class LightSeekGoal extends Goal {
 
 		walkTicks++;
 		if (walkTicks >= LightSeeking.MAX_WALK_TICKS || zombie.getNavigation().isDone()) {
-			// Не дошёл (застрял / путь закончился) — считаем визит, идём дальше.
+			// Not reached (stuck / the path is over) - consider the visit, go on.
 			markVisited();
 			finished = true;
 		}
@@ -171,7 +171,7 @@ public class LightSeekGoal extends Goal {
 		finished = false;
 	}
 
-	/** Убрать трещины с блока света (зомби бросил его или уже сломал). */
+	/*Remove cracks from the light block (zombie dropped it or has already broken it). */
 	private void clearCracks() {
 		if (lightPos != null) {
 			zombie.level().destroyBlockProgress(zombie.getId(), lightPos, -1);

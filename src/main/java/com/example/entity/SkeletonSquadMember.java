@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Капитан скелетов или его помощник. Реализация — mixin на обычного скелета.
- * Скелет-иссушитель и странник сюда не входят.
+ Captain of the skeletons or his assistant. Realization - mixin on a normal skeleton.
+ Skeleton exhumerator and wanderer are not included here.
  */
 public interface SkeletonSquadMember {
 
-	/** 0 = обычный скелет, 1 = капитан, 2 = помощник. */
+	/*0 = ordinary skeleton, 1 = captain, 2 = assistant. */
 	int evolvingthreats$getSquadRole();
 
 	void evolvingthreats$setSquadRole(int role);
@@ -25,7 +25,7 @@ public interface SkeletonSquadMember {
 
 	void evolvingthreats$setSquadMembers(List<UUID> members);
 
-	/** Игрок, за которым капитан идёт сам. У помощника пусто. */
+	/*A player the captain follows himself. The assistant's empty. */
 	@Nullable
 	UUID evolvingthreats$getHuntTargetId();
 

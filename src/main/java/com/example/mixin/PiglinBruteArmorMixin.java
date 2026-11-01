@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Конец удара любого моба. Дальше смотрим только брутального пиглина и только удар,
- * который уже снял здоровье. Шанс и порча брони — {@link PiglinBruteArmorHit}.
+ End of impact of any mob. Then we look only at the brutal piglin and only the punch.
+ * who has already taken his health off. Chance and damage to the armor - {@link PiglinBruteArmorHit}.
  */
 @Mixin(Mob.class)
 public class PiglinBruteArmorMixin {

@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 /**
- * Удар по шалкеру. Если панцирь закрыт, стрела урон не наносит, но удар всё равно был.
- * Порча оружия — {@link ShulkerShellDurability}.
+ Hit the shalker. If the shell is closed, the arrow does not damage, but the blow was still there.
+ * Gun damage — @link ShulkerShellDurability.
  */
 @Mixin(Shulker.class)
 public abstract class ShulkerShellMixin {

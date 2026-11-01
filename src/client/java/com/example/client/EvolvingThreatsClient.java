@@ -13,9 +13,9 @@ public class EvolvingThreatsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		SpawnerHeadParticles.register();
-		// Шкала угрозы в левом верхнем углу экрана.
+		// Threat scale in the upper left corner of the screen.
 		ThreatHud.register();
-		// Картинка парящего инструмента. Без этой строки моб невидимый.
+		// A picture of a floating instrument. Without this line, the mob is invisible.
 		EntityRenderers.register(FloatingTool.TYPE, FloatingToolRenderer::new);
 		EntityRenderers.register(DamagedGolem.TYPE, DamagedGolemRenderer::new);
 	}

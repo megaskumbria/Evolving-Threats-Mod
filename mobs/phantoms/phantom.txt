@@ -1,145 +1,144 @@
-ФАНТОМЫ: УКУС И СТАЯ
+PHANTOMS: BITE AND FLOCK
 ====================
 
-Тип: обычные фантомы бессонницы (не новый моб).
-Код: phantom/PhantomThreats.java (урон, прибавка за дни без сна, потолок стаи),
-     mixin/PhantomBiteMixin.java (подмена урона в момент укуса),
-     mixin/PhantomSpawnerMixin.java (подмена размера волны).
+Type: vanilla insomnia phantoms (not a new mob).
+Code: phantom/PhantomThreats.java (damage, extra days without sleep, flock cap),
+     mixin/PhantomBiteMixin.java (damage at bite),
+     mixin/PhantomSpawnerMixin.java (wave size).
 
-Кто кусает больнее: любой фантом, в том числе из яйца и команды.
-Кто приходит большей стаей: только ночной спавн от бессонницы.
-Яйцо призыва по-прежнему даёт одного.
+Who bites harder: any phantom, including from spawn egg and commands.
+Who arrives in a bigger flock: only night spawn from insomnia.
+Spawn egg still gives one phantom.
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Укус без брони: лёгкая 3 HP (1,5 сердца), нормальная 6 HP (3 сердца),
-   сложная 9 HP (4,5 сердца). В обычной игре это 2 / 2 / 3.
-   Броня и щит режут удар как обычно. Зелье силы на фантоме добавляется сверху.
-2. Первые три игровых дня без кровати стая обычная:
-   лёгкая 1–2, нормальная 1–3, сложная 1–4.
-3. Дальше за каждые 2 лишних дня без сна в волну добавляется 1 фантом.
-   5-й день +1, 7-й +2, 9-й +3.
-4. Потолок волны: лёгкая 3, нормальная 5, сложная 6.
-   На сложной потолок набирается к 13-му дню без сна: тогда каждая волна из 6.
-5. Волна по-прежнему раз в 1–2 минуты, отдельно на каждого, кто не спит.
-   Кровать или смерть обнуляет счётчик, и стая снова обычного размера.
+1. Unarmored bite: Easy 3 HP (1.5 hearts), Normal 6 HP (3 hearts),
+   Hard 9 HP (4.5 hearts). In vanilla that is 2 / 2 / 3.
+   Armor and shield reduce damage as usual. Strength potion on the phantom adds on top.
+2. For the first three in-game days without a bed, flock size is normal:
+   Easy 1–2, Normal 1–3, Hard 1–4.
+3. After that, each 2 extra days without sleep adds 1 phantom to the wave.
+   Day 5 +1, day 7 +2, day 9 +3.
+4. Wave cap: Easy 3, Normal 5, Hard 6.
+   On Hard the cap is reached by day 13 without sleep: then every wave is 6.
+5. Wave still every 1–2 minutes, per player who has not slept.
+   Bed or death resets the counter and flock size returns to normal.
 
 
 SETTINGS (PhantomThreats.java)
 -------------------------------
-  ENABLED ...................... true — вкл/выкл и укус, и рост стаи
-  EASY_BITE_HP ................. 3 — укус на лёгкой, в единицах здоровья (2 = 1 сердце)
-  NORMAL_BITE_HP ............... 6 — укус на нормальной
-  HARD_BITE_HP ................. 9 — укус на сложной
-  CALM_DAYS .................... 3 — сколько дней без сна стая ещё обычная
-  DAYS_PER_EXTRA_PHANTOM ....... 2 — за сколько лишних дней +1 фантом
-  EASY_FLOCK_CAP ............... 3 — потолок волны на лёгкой
-  NORMAL_FLOCK_CAP ............. 5 — потолок на нормальной
-  HARD_FLOCK_CAP ............... 6 — потолок на сложной
+  ENABLED ...................... true — toggles bite and flock growth
+  EASY_BITE_HP ................. 3 — Easy bite in health units (2 = 1 heart)
+  NORMAL_BITE_HP ............... 6 — Normal bite
+  HARD_BITE_HP ................. 9 — Hard bite
+  CALM_DAYS .................... 3 — days without sleep before flock grows
+  DAYS_PER_EXTRA_PHANTOM ....... 2 — extra days per +1 phantom
+  EASY_FLOCK_CAP ............... 3 — Easy wave cap
+  NORMAL_FLOCK_CAP ............. 5 — Normal cap
+  HARD_FLOCK_CAP ............... 6 — Hard cap
 
 
-ТЕСТ
+TEST
 ----
-1. Сложность нормальная. Не спать 3 игровых дня, выйти ночью под открытое небо
-   выше уровня моря. Волна 1–3 фантома, укус снимает 3 сердца без брони.
-2. Подождать до 5-го дня без кровати. В волне на одного фантома больше.
-3. Лечь в кровать. Следующая ночь снова с обычной стаей, пока снова не накопится бессонница.
+1. Normal difficulty. Do not sleep for 3 in-game days, go outside at night above sea level.
+   Wave 1–3 phantoms; bite removes 3 hearts with no armor.
+2. Wait until day 5 without a bed. Wave has one extra phantom.
+3. Sleep in a bed. Next night flock is normal again until insomnia builds up.
 
 ==============================================================================================
 
-ФАНТОМЫ: СЛАБОСТЬ С УКУСА
+PHANTOMS: WEAKNESS ON BITE
 =========================
 
-Тип: часть обычных фантомов (не новый моб и не отдельный вид).
-Код: phantom/PhantomWeakness.java (шанс, длительность, сила),
-     mixin/PhantomWeaknessMixin.java (пометка на фантоме),
-     mixin/PhantomWeaknessMobMixin.java (бросок при появлении, запись в мир, момент укуса).
+Type: part of normal phantoms (not a new mob or separate species).
+Code: phantom/PhantomWeakness.java (chance, duration, amplifier),
+     mixin/PhantomWeaknessMixin.java (mark on phantom),
+     mixin/PhantomWeaknessMobMixin.java (roll on spawn, save, on bite).
 
-Кто может вешать слабость: примерно каждый третий фантом.
-Ночная стая, яйцо призыва и команда спавна бросают этот шанс.
-Уже помеченный фантом остаётся таким после перезахода в мир.
+Who can apply weakness: about every third phantom.
+Night flock, spawn egg, and spawn command use this roll.
+A marked phantom stays marked after rejoining the world.
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. При появлении у фантома 30% шанс уметь вешать слабость.
-   Остальные фантомы слабость не вешают никогда.
-2. Укус, который снял здоровье, даёт игроку Слабость I на 10 секунд.
-   Удары вблизи слабее на 4 здоровья (2 сердца).
-3. Щит, который отбил укус, и короткое мигание после удара новый эффект не дают.
-4. Повторный укус обновляет время, если слабость уже короче.
-   Более долгая слабость этим укусом не укорачивается.
-5. Молоко снимает слабость сразу.
-6. Удар по другому мобу слабость не вешает. Только по игроку.
-7. Урон укуса от этой механики не меняется: он по-прежнему из «укус и стая».
+1. On spawn, 30% chance the phantom can apply weakness.
+   Other phantoms never apply weakness.
+2. A bite that dealt damage gives the player Weakness I for 10 seconds.
+   Melee hits deal 4 less damage (2 hearts).
+3. Shield block and post-hit invulnerability do not apply a new effect.
+4. A repeat bite refreshes duration if weakness remaining is shorter.
+   A longer weakness is not shortened by this bite.
+5. Milk removes weakness immediately.
+6. Hitting another mob does not apply weakness. Players only.
+7. Bite damage is unchanged by this mechanic (still from “bite and flock”).
 
 
 SETTINGS (PhantomWeakness.java)
 --------------------------------
-  ENABLED ...................... true — вкл/выкл слабость
-  SPAWN_CHANCE ................. 0.30 — доля фантомов, которые умеют (30%)
-  WEAKNESS_SECONDS ............. 10 — сколько секунд длится
-  AMPLIFIER .................... 0 — Слабость I (1 = Слабость II)
+  ENABLED ...................... true — toggle weakness
+  SPAWN_CHANCE ................. 0.30 — share of phantoms that can (30%)
+  WEAKNESS_SECONDS ............. 10 — duration in seconds
+  AMPLIFIER .................... 0 — Weakness I (1 = Weakness II)
 
 
-ТЕСТ
+TEST
 ----
-1. Чтобы проверить сразу, временно поставь SPAWN_CHANCE = 1.0.
-   Тогда слабость вешает каждый фантом. После проверки верни 0.30.
-2. Призови фантома и дай ему укусить без щита. Должна появиться Слабость I на 10 секунд.
-3. Закройся щитом. Отбитый укус слабость не даёт.
-4. Верни SPAWN_CHANCE = 0.30 и призови несколько фантомов.
-   Слабость будет примерно у каждого третьего.
+1. To test quickly, set SPAWN_CHANCE = 1.0 temporarily.
+   Every phantom applies weakness. Restore 0.30 after testing.
+2. Summon a phantom and let it bite without a shield. Weakness I for 10 seconds.
+3. Block with a shield. Blocked bite does not apply weakness.
+4. Set SPAWN_CHANCE = 0.30 and summon several phantoms.
+   Weakness on about every third.
 
 ==============================================================================================
 
-ФАНТОМЫ: СЛЕПОТА С УКУСА
+PHANTOMS: BLINDNESS ON BITE
 ========================
 
-Тип: часть обычных фантомов (не новый моб и не отдельный вид).
-Код: phantom/PhantomBlindness.java (шанс и длительность),
-     mixin/PhantomBlindnessMixin.java (пометка на фантоме),
-     mixin/PhantomBlindnessMobMixin.java (бросок при появлении, запись в мир, момент укуса).
+Type: part of normal phantoms (not a new mob or separate species).
+Code: phantom/PhantomBlindness.java (chance and duration),
+     mixin/PhantomBlindnessMixin.java (mark on phantom),
+     mixin/PhantomBlindnessMobMixin.java (roll on spawn, save, on bite).
 
-Кто может вешать слепоту: примерно каждый пятый фантом.
-Бросок отдельный от слабости: один фантом может уметь и то и другое, только одно или ничего.
-Ночная стая, яйцо призыва и команда спавна бросают этот шанс.
-Уже помеченный фантом остаётся таким после перезахода в мир.
-Шанс не растёт с днями (FIXED).
+Who can apply blindness: about every fifth phantom.
+Roll is separate from weakness: one phantom may have both, only one, or neither.
+Night flock, spawn egg, and spawn command use this roll.
+A marked phantom stays marked after rejoining the world.
+Chance does not grow with days (FIXED).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. При появлении у фантома 20% шанс уметь вешать слепоту.
-   Остальные фантомы слепоту не вешают никогда.
-2. Укус, который снял здоровье, даёт игроку слепоту на случайные 7–12 секунд.
-   Экран темнеет, фантома плохо видно.
-3. Щит, который отбил укус, и короткое мигание после удара новый эффект не дают.
-4. Повторный укус обновляет время, если слепота уже короче.
-   Более долгая слепота этим укусом не укорачивается.
-5. Молоко снимает слепоту сразу.
-6. Удар по другому мобу слепоту не вешает. Только по игроку.
-7. Урон укуса от этой механики не меняется: он по-прежнему из «укус и стая».
-   Слабость, если фантом умеет и её, вешается как раньше.
+1. On spawn, 20% chance the phantom can apply blindness.
+   Other phantoms never apply blindness.
+2. A bite that dealt damage gives random blindness for 7–12 seconds.
+   Screen darkens; the phantom is hard to see.
+3. Shield block and post-hit invulnerability do not apply a new effect.
+4. A repeat bite refreshes duration if blindness remaining is shorter.
+   Longer blindness is not shortened by this bite.
+5. Milk removes blindness immediately.
+6. Hitting another mob does not apply blindness. Players only.
+7. Bite damage unchanged (still from “bite and flock”).
+   Weakness, if the phantom has it, still applies as before.
 
 
 SETTINGS (PhantomBlindness.java)
 ---------------------------------
-  ENABLED ...................... true — вкл/выкл слепоту
-  SPAWN_CHANCE ................. 0.20 — доля фантомов, которые умеют (20%)
-  BLINDNESS_MIN_SECONDS ........ 7 — короткая слепота, секунды
-  BLINDNESS_MAX_SECONDS ........ 12 — длинная слепота, секунды
-  Оба числа 0 выключают эффект. Если перепутать местами, игра всё равно
-  берёт меньшее и большее.
+  ENABLED ...................... true — toggle blindness
+  SPAWN_CHANCE ................. 0.20 — share of phantoms that can (20%)
+  BLINDNESS_MIN_SECONDS ........ 7 — shortest blindness, seconds
+  BLINDNESS_MAX_SECONDS ........ 12 — longest blindness, seconds
+  Both 0 disables the effect. If min/max are swapped, the game still uses
+  the lower and higher values.
 
 
-ТЕСТ
+TEST
 ----
-1. Чтобы проверить сразу, временно поставь SPAWN_CHANCE = 1.0.
-   Тогда слепоту вешает каждый фантом. После проверки верни 0.20.
-2. Призови фантома и дай ему укусить без щита. Должна появиться слепота
-   на время от 7 до 12 секунд.
-3. Закройся щитом. Отбитый укус слепоту не даёт.
-4. Верни SPAWN_CHANCE = 0.20 и призови несколько фантомов.
-   Слепота будет примерно у каждого пятого. Слабость по-прежнему примерно у каждого третьего.
+1. To test quickly, set SPAWN_CHANCE = 1.0 temporarily.
+   Every phantom applies blindness. Restore 0.20 after testing.
+2. Summon a phantom and let it bite without a shield. Blindness 7–12 seconds.
+3. Block with a shield. Blocked bite does not apply blindness.
+4. Set SPAWN_CHANCE = 0.20 and summon several phantoms.
+   Blindness on about every fifth. Weakness still about every third.

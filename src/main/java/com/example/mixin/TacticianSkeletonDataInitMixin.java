@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Слот «предмет на спине» есть у всех скелетов. У обычного он пустой. */
+/** All skeletons have an object on their back. Normal has it empty. */
 @Mixin(LivingEntity.class)
 public class TacticianSkeletonDataInitMixin {
 

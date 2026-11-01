@@ -10,17 +10,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Глоток невидимости в начале тика ведьмы.
- * Игра потом сама допивает бутылку и вешает эффект. Пока идёт глоток, бросок не начинается.
+ A gulp of invisibility at the beginning of the witch's tick.
+ The game then finishes the bottle and hangs the effect. When the sip comes, the throw doesn't start.
  */
 @Mixin(Witch.class)
 public class WitchInvisibilityMixin {
 
-	/** Сколько тиков ещё держать бутылку у рта. Поле игры, само в мир не пишется. */
+	/*How many tics do I have to keep the bottle at my mouth? The field of play is not written into the world. */
 	@Shadow
 	private int usingTime;
 
-	/** Тики до следующей проверки. Меньше нуля — шанс уже выпал, ждём свободный глоток. */
+	/** Ticks until the next check. Less than zero, the chance has already fallen, waiting for a free sip. */
 	@Unique
 	private int evolvingthreats$invisibilityCheck;
 

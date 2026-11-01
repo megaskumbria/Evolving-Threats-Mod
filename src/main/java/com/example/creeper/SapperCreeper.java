@@ -15,75 +15,75 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий крипер, который взрывает то, на чём стоит игрок.
- * Сила взрыва и шипение как у обычного крипера (1.5 сек).
- * Если до игрока нет пути и его не видно (стена, закрытый дом) — подходит как можно ближе,
- * ждёт {@link #WALL_DELAY_MIN_SECONDS}–{@link #WALL_DELAY_MAX_SECONDS} и взрывается у стены.
- * В чистом поле шипение гаснет, если отойти, как у обычного крипера.
- * Игрока помнит {@link #MEMORY_SECONDS} секунд, даже если тот скрылся из виду.
+ A rare cryper that blows up what a player is standing on.
+ The force of the explosion and hiss like a regular cryper (1.5 seconds).
+ If there is no way to the player and he is not visible (wall, closed house) - comes as close as possible,
+ * waits {@link #WALL DELAY MIN SECONDS}-{@link #WALL DELAY MAX SECONDS} and explodes against the wall.
+ In a clean field, the hiss goes out if you move away, like a regular cryper.
+ * The player remembers {@link #MEMORY SECONDS} seconds, even if he is out of sight.
  */
 public final class SapperCreeper {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — подрывники не появляются, команда тоже не делает подрывника. */
+	/** Turn on the mechanics. False: Bombers don’t show up, the team doesn’t make a bomber either. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) при спавне обычного крипера стать подрывником. 0.05 = 5%.
-	 * Метатель динамита на этого крипера уже не выпадет. Заряженный крипер подрывником быть может.
-	 * Команда спавна шанс не использует.
+	 Chance (0.0-1.0) at spawning of a regular cryper to become a bomber. 0.05 = 5%.
+	 The dynamite thrower will not fall on this cryper. A loaded cryper could be a bomber.
+	 * The Spawn team does not take the chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.05f;
 
 	/**
-	 * Горизонтально ближе этого (блоки) к колонне под игроком — сразу подрыв.
-	 * 2.2 ≈ вплотную к башне или к клетке, на которой стоит игрок.
+	 Horizontally closer to this (blocks) to the column under the player - immediately undermining.
+	 2.2 Close to the tower or cage on which the player is standing.
 	 */
 	public static final double DETONATE_HORIZONTAL = 2.2;
 
 	/**
-	 * Игрок выше крипера минимум на столько блоков — это башня/лестница/пол,
-	 * подрыв у основания, даже если наверх пути нет.
+	 A player above the cryper by at least as many blocks is a tower/staircase/floor.
+	 • Destruction at the base, even if there is no way up.
 	 */
 	public static final int ELEVATED_BLOCKS = 2;
 
 	/**
-	 * Насколько близко (блоки, по клеткам) путь должен подойти к цели, чтобы считать «дойти можно».
-	 * 0 = надо встать ровно в клетку игрока: в чистом поле это часто «пути нет», и после удара крипер взрывался.
-	 * 2 = достаточно подойти вплотную, как в бою.
+	 How close (blocks, cells) the path must come to the goal in order to count “you can get there.”
+	 * 0 = you need to stand exactly in the player's cage: in a clean field it is often "no way", and after the impact the cryper exploded.
+	 2 = suffice to approach closely, as in battle.
 	 */
 	public static final int PATH_REACH_BLOCKS = 2;
 
-	/** Сколько ждать у стены перед взрывом, секунды (случайное число между ними). */
+	/*How long to wait at the wall before the explosion, seconds (random number between them). */
 	public static final int WALL_DELAY_MIN_SECONDS = 8;
 	public static final int WALL_DELAY_MAX_SECONDS = 10;
 
 	/**
-	 * Считать, что крипер упёрся в стену и стоит, если за {@link #STUCK_CHECK_TICKS} тиков
-	 * он сдвинулся меньше, чем на столько блоков.
+	 * Consider that the cryper hit the wall and is worth it if {@link #STUCK CHECK TICKS} tics
+	 It has moved by fewer than so many blocks.
 	 */
 	public static final double STUCK_MOVE_BLOCKS = 0.6;
 
-	/** Окно проверки «застрял», тики. 20 = 1 секунда. */
+	/** The checkout window is stuck, ticks. 20 = 1 second. */
 	public static final int STUCK_CHECK_TICKS = 20;
 
 	/**
-	 * Сколько секунд помнит игрока после того, как перестал его видеть (забежал в дом и закрылся).
-	 * За это время успевает дойти до стены, выждать 8–10 секунд и взорваться.
+	 How many seconds does the player remember after he stopped seeing him (run into the house and closed).
+	 During this time manages to reach the wall, wait 8-10 seconds and explode.
 	 */
 	public static final int MEMORY_SECONDS = 90;
 
-	/** Дальше этого (блоки) от запомненного игрока подрывник сдаётся. */
+	/*Next to that (blocks) from the remembered player, the bomber surrenders. */
 	public static final double CHASE_MAX_DISTANCE = 40.0;
 
-	/** Как далеко видит игрока. */
+	/*How far the player can see. */
 	public static final double FOLLOW_RANGE = 32.0;
 
-	/** Скорость бега к опоре (1.0 = обычный шаг крипера). */
+	/*Speed of running to support (1.0 = usual step of the cryper). */
 	public static final double MOVE_SPEED = 1.1;
 
-	/** Как часто заново проверять «есть ли путь», тики. 10 = 0.5 сек. */
+	/*How often to re-check "is there a way", ticks. 10 = 0.5 sec. */
 	public static final int PATH_CHECK_TICKS = 10;
 
 	// ========================================================================
@@ -97,7 +97,7 @@ public final class SapperCreeper {
 				&& data.evolvingthreats$isSapperCreeper();
 	}
 
-	/** Вызвать из finalizeSpawn. Командный спавн ставит флаг заранее. */
+	/** Call from finalizeSpawn. The team spawn puts the flag in advance. */
 	public static void rollOnSpawn(Creeper creeper, EntitySpawnReason reason) {
 		if (!ENABLED || !(creeper instanceof SapperCreeperEntity data)) {
 			return;
@@ -117,7 +117,7 @@ public final class SapperCreeper {
 		apply(creeper);
 	}
 
-	/** Команда: подрывник перед игроком. */
+	/*Team: The bomber in front of the player. */
 	public static Creeper spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		Creeper creeper = EntityTypes.CREEPER.create(level, EntitySpawnReason.COMMAND);
 		if (creeper == null) {
@@ -147,7 +147,7 @@ public final class SapperCreeper {
 		}
 	}
 
-	/** Клетка пола под ногами игрока — то, что нужно взорвать. */
+	/*The cage under the feet of the player is what needs to be blown up. */
 	public static BlockPos supportUnder(LivingEntity target) {
 		return target.blockPosition().below();
 	}
@@ -162,7 +162,7 @@ public final class SapperCreeper {
 		return path != null && path.canReach();
 	}
 
-	/** Между крипером и игроком нет стены: удар и отход в чистом поле, а не дом. */
+	/*There is no wall between the cryper and the player: kick and retreat in a clean field, not a house. */
 	public static boolean canSee(Creeper creeper, LivingEntity target) {
 		return creeper.hasLineOfSight(target);
 	}
@@ -177,14 +177,14 @@ public final class SapperCreeper {
 		return target.getY() >= creeper.getY() + ELEVATED_BLOCKS;
 	}
 
-	/** Случайная пауза у стены, тики. */
+	/** Accidental pause at the wall, ticks. */
 	public static int randomWallDelayTicks(Creeper creeper) {
 		int min = WALL_DELAY_MIN_SECONDS * 20;
 		int max = WALL_DELAY_MAX_SECONDS * 20;
 		return max <= min ? min : creeper.getRandom().nextIntBetweenInclusive(min, max);
 	}
 
-	/** Поджечь запал: обычное шипение 1.5 сек и взрыв обычной силы. Повторный вызов ничего не делает. */
+	/*Fire the fuse: the usual hiss of 1.5 seconds and an explosion of normal force. A second call does nothing. */
 	public static void detonate(Creeper creeper) {
 		if (!creeper.isIgnited()) {
 			creeper.ignite();

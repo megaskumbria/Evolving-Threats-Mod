@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
 
-/** Сохранение, смена лука и меча, опыт за убийство, выпадение предмета со спины. */
+/*Preservation, change of bow and sword, experience for killing, loss of an object from the back. */
 @Mixin(Mob.class)
 public class TacticianSkeletonMobMixin {
 
-	/** Своё число опыта. Общий множитель его не увеличивает: см. MobExperience. */
+	/*Your number of experiences. The total multiplier does not increase it: see MobExperience. */
 	@Inject(method = "getBaseExperienceReward", at = @At("RETURN"), cancellable = true)
 	private void evolvingthreats$tacticianXp(ServerLevel level, CallbackInfoReturnable<Integer> cir) {
 		int xp = TacticianSkeleton.experienceReward((Mob) (Object) this);

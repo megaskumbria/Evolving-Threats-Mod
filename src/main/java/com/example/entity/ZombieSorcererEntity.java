@@ -1,13 +1,13 @@
 package com.example.entity;
 
-/** Зомби-чародей. Реализация — mixin на Zombie. */
+/*Zombie wizard. The implementation is mixin on Zombie. */
 public interface ZombieSorcererEntity {
 
 	boolean evolvingthreats$isSorcerer();
 
 	void evolvingthreats$setSorcerer(boolean sorcerer);
 
-	/** Тики до следующего приёма. 0 = можно колдовать. */
+	/*Ticks until the next appointment. 0 = you can do magic. */
 	int evolvingthreats$getSorcererCooldown();
 
 	void evolvingthreats$setSorcererCooldown(int ticks);

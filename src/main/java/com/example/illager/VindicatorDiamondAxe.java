@@ -6,21 +6,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * Часть поборников появляется с алмазным топором вместо железного.
- * Особняк, патруль, рейд, яйцо и команда спавна — один и тот же бросок.
- * Чары, которые игра или мод уже повесили на железный топор, переходят на алмазный.
+ Some of the champions appear with a diamond axe instead of an iron one.
+ Mansion, patrol, raid, egg and team spawn - the same throw.
+ The charms that a game or a mod has already hung on an iron axe pass to a diamond one.
  */
 public final class VindicatorDiamondAxe {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — у всех поборников снова железный топор. */
+	/*False – all the champions again have an iron axe. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что топор в руке станет алмазным. 0.25 = 25%, примерно каждый четвёртый.
-	 * Бросается один раз, когда топор только выдали: и в особняке, и в патруле, и в рейде.
-	 * 0 = алмазных нет. 1 = алмазный у каждого поборника.
+	 Chance (0.0-1.0) that the axe in the hand will become diamond. 0.25 = 25%, about one in four.
+	 It is thrown once when the axe was only issued: in the mansion, in the patrol, and in the raid.
+	 * 0 = no diamonds. 1 = diamond for each champion.
 	 */
 	public static final float CHANCE = 0.25f;
 
@@ -30,8 +30,8 @@ public final class VindicatorDiamondAxe {
 	}
 
 	/**
-	 * Вызвать, когда железный топор уже лежит в руке.
-	 * В рейде это после чар рейда. Вне рейда — до чар, их вешает игра следом.
+	 Call when the iron axe is already in your hand.
+	 In the raid it's after the spell of the raid. Outside the raid - to the charm, they hang the game next.
 	 */
 	public static void tryReplace(Vindicator vindicator) {
 		if (!ENABLED || CHANCE <= 0.0f) {

@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Цель «уронить динамит» есть у всех зомби, но молчит, пока это не зомби с динамитом.
- * Ломать блоки она не умеет: это решает {@link com.example.digging.BlockBreaking#isBreaker}.
+ The goal of “dropping dynamite” is for all zombies, but is silent until it is a zombie with dynamite.
+ * She doesn't know how to break blocks: it decides {@link com.example.digging.BlockBreaking#isBreaker}.
  */
 @Mixin(Zombie.class)
 public class TntZombieGoalMixin {

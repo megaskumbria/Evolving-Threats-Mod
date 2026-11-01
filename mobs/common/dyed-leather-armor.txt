@@ -1,30 +1,30 @@
-КРАШЕНАЯ КОЖАНАЯ БРОНЯ У МОБОВ
+DYED LEATHER ARMOR ON MOBS
 ==============================
 
-Тип: общая механика для зомби, скелетов и странников.
-Код: RandomArmor.java (блок «SETTINGS» и метод dyeLeather).
+Type: shared mechanic for zombies, skeletons, and strays.
+Code: RandomArmor.java (“SETTINGS” block and dyeLeather method).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Моб получает броню (как раньше). Если среди кусков есть кожаные, один раз на моба бросается шанс покраски
-   (LEATHER_DYE_CHANCE, по умолчанию 50%).
-2. Если выпало — выбирается один цвет на весь комплект. Каждый кожаный кусок с шансом 25%
-   (LEATHER_PIECE_OWN_COLOR_CHANCE) получает свой собственный цвет.
-3. Цвет — любой из 16 777 216 оттенков (случайные красный, зелёный, синий).
-   Красится только кожа; железо, алмаз и т.д. в игре не красятся.
-4. Цвет сохраняется на выпавшей броне.
-5. Чары на броне (MobEnchantments) цвет не меняют, оба эффекта могут быть на одном куске.
+1. Mob gets armor (as before). If any piece is leather, one roll per mob for dyeing
+   (LEATHER_DYE_CHANCE, default 50%).
+2. If it succeeds — one color for the whole set. Each leather piece has 25% chance
+   (LEATHER_PIECE_OWN_COLOR_CHANCE) to get its own color.
+3. Color — any of 16,777,216 shades (random red, green, blue).
+   Only leather is dyed; iron, diamond, etc. are not dyed in-game.
+4. Color is kept on dropped armor.
+5. Armor enchants (MobEnchantments) do not change color; both can be on one piece.
 
 
-ЕСЛИ ВЫШЛО «ГРЯЗНО»
--------------------
-Среди 16,7 млн случайных цветов много тусклых серо-коричневых.
-Поставь LEATHER_USE_ONLY_DYE_COLORS = true — тогда будут только 16 чистых цветов красителей.
+IF COLORS LOOK “MUDDY”
+----------------------
+Among 16.7M random colors many are dull gray-brown.
+Set LEATHER_USE_ONLY_DYE_COLORS = true — then only 16 clean dye colors.
 
 
 SETTINGS (RandomArmor.java)
 ----------------------------
-  LEATHER_DYE_CHANCE ............... 0.50 — шанс, что моб в крашеной коже (на моба, не на кусок)
-  LEATHER_PIECE_OWN_COLOR_CHANCE ... 0.25 — шанс отдельного куска получить свой цвет
-  LEATHER_USE_ONLY_DYE_COLORS ...... false — true = только 16 цветов красителей
+  LEATHER_DYE_CHANCE ............... 0.50 — chance mob wears dyed leather (per mob, not per piece)
+  LEATHER_PIECE_OWN_COLOR_CHANCE ... 0.25 — chance one piece gets its own color
+  LEATHER_USE_ONLY_DYE_COLORS ...... false — true = only 16 dye colors

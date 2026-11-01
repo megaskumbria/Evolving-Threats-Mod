@@ -16,10 +16,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 
 /**
- * Рисует парящий инструмент готовой моделью предмета.
- * Пока никого не атакует — крутится и чуть покачивается, как брошенная вещь.
- * Пока атакует — смотрит на цель и вокруг своей оси не крутится.
- * Размер — {@link FloatingTool#VISUAL_SCALE}, доворот — {@link FloatingTool#ATTACK_FACING_OFFSET}.
+ * Draws a floating tool with a finished item model.
+ * While no one is attacking, it spins and swings a little like an abandoned thing.
+ * While attacking, he looks at the target and does not rotate around his axis.
+ * Size — {@link FloatingTool#VISUAL_SCALE}, gate — {@link FloatingTool#ATTACK_FACING_OFFSET}.
  */
 public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingToolRenderer.State> {
 
@@ -40,7 +40,7 @@ public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingT
 	@Override
 	public void extractRenderState(FloatingTool entity, State state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
-		// GROUND — объёмная модель, как у предмета на земле. Чары дают блик сами.
+		// GROUND — three-dimensional model, like an object on the ground. The enchantments give the glare themselves.
 		this.itemModelResolver.updateForNonLiving(
 				state.item,
 				entity.getMainHandItem(),
@@ -48,7 +48,7 @@ public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingT
 				entity
 		);
 		state.attacking = entity.isAttacking();
-		// Куда смотрит моб. В атаке картинка берёт этот угол вместо кручения.
+		// Where the mobile is looking. In the attack, the picture takes this angle instead of twisting.
 		state.facingYaw = entity.getYRot(partialTicks);
 	}
 
@@ -61,7 +61,7 @@ public class FloatingToolRenderer extends EntityRenderer<FloatingTool, FloatingT
 			float scale = FloatingTool.VISUAL_SCALE;
 			poseStack.scale(scale, scale, scale);
 			if (state.attacking) {
-				// 180 — как у обычных мобов: «лицо» модели смотрит туда же, куда yRot.
+				// 180 — like ordinary mobs: the "face" of the model looks the same as yRot.
 				poseStack.rotateDegrees(Axis.YP, 180.0f - state.facingYaw + FloatingTool.ATTACK_FACING_OFFSET);
 			} else {
 				poseStack.rotate(Axis.YP, ItemEntity.getSpin(state.ageInTicks, 0.0f));

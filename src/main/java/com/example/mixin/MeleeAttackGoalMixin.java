@@ -16,9 +16,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * У dual-wield скелета ванильная melee-цель включается, если есть путь к игроку (бег с 20 блоков).
- * Дальше лука — melee не включается (стреляет). Вплотную лук гасится mixin'ом лука;
- * здесь разрешаем подойти и ударить, иначе скелет «замирает» между 4–5 блоками.
+ In a dual-wield skeleton, a vanilla melee target is turned on if there is a path to the player (running from 20 blocks).
+ Next to the bow - melee does not turn on (shooting). Close onions are extinguished by mixin' onions;
+ Here you are allowed to come and hit, otherwise the skeleton “freezes” between 4-5 blocks.
  */
 @Mixin(MeleeAttackGoal.class)
 public class MeleeAttackGoalMixin {
@@ -28,7 +28,7 @@ public class MeleeAttackGoalMixin {
 
 	@Inject(method = "canUse", at = @At("RETURN"), cancellable = true)
 	private void evolvingthreats$tacticianKeepsChasing(CallbackInfoReturnable<Boolean> cir) {
-		// «700 IQ» после попадания бежит на игрока, даже если тот за углом.
+		// A 700 IQ hits the player, even if he is around the corner.
 		if (TacticianSkeleton.isChasingMarked(mob)) {
 			cir.setReturnValue(true);
 		}
@@ -46,8 +46,8 @@ public class MeleeAttackGoalMixin {
 		if (!Boolean.TRUE.equals(cir.getReturnValue())) {
 			return;
 		}
-		// Зомби ломает стену: обычная атака видит обрывок пути до стены и уводила бы его от блока.
-		// Ударить, если игрок уже рядом, по-прежнему можно.
+		// A zombie breaks a wall: a conventional attack sees a snippet of path to the wall and would lead it away from the block.
+		// If the player is already there, you can still hit.
 		if (mob instanceof Zombie zombie && BreakToTargetGoal.isDigging(zombie)) {
 			LivingEntity target = zombie.getTarget();
 			if (target == null || !BlockBreaking.shouldPreferMeleeOverDig(zombie, target)) {
@@ -70,7 +70,7 @@ public class MeleeAttackGoalMixin {
 		if (mob.isWithinMeleeAttackRange(target)) {
 			return;
 		}
-		// Лук уже «выключен» вплотную — иначе скелет стоит без лука и без удара.
+		// The onion is already "off" closely - otherwise the skeleton stands without a bow and without a blow.
 		if (RandomWeapons.shouldSuppressBow(skeleton, target, false)) {
 			return;
 		}

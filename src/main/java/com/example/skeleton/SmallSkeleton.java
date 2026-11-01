@@ -5,56 +5,56 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 
 /**
- * Редкий маленький скелет: ниже ростом, быстрее, с меньшим здоровьем.
- * Лук у него обычный. Дальний лук, тотем и два оружия ближнего боя остаются взрослым.
- * На солнце горит так же, как обычный скелет: отдельного правила для этого нет.
+ * Rare small skeleton: shorter, faster, less health.
+ * Bow is normal. Longbow, totem, and dual melee stay adult-only.
+ * Burns in sunlight like a normal skeleton; no separate rule here.
  *
- * Рост — атрибут SCALE. Игра сама уменьшает и модель, и зону, по которой в него попадают.
- * Здоровье ставится здесь уже после общего броска 20–40, поэтому у маленького остаётся свой диапазон.
+ * Size uses the SCALE attribute. The game shrinks model and hitbox together.
+ * Health is set here after the global 20–40 roll, so small skeletons keep their own range.
  */
 public final class SmallSkeleton {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — маленькие скелеты не появляются. Уже живущие остаются маленькими. */
+	/** Enable mechanic. false — no new small skeletons. Existing ones stay small. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет или странник появится маленьким.
-	 * 0.10 = 10%. 0 = таких скелетов не будет.
+	 * Chance (0.0–1.0) that a normal skeleton or stray spawns small.
+	 * 0.10 = 10%. 0 = none.
 	 */
 	public static final float SPAWN_CHANCE = 0.10f;
 
 	/**
-	 * Рост: 1.0 = как обычный скелет, 0.5 = вдвое меньше (как детёныш в игре).
-	 * Меньше 0.5 — в него совсем трудно попасть. Больше 0.7 — уже почти взрослый.
+	 * Scale: 1.0 = normal skeleton, 0.5 = half height (like a baby mob).
+	 * Below 0.5 — very hard to hit. Above 0.7 — almost adult-sized.
 	 */
 	public static final double SCALE = 0.5;
 
 	/**
-	 * Во сколько раз быстрее обычного скелета. 1.5 = на 50% быстрее, как детёныш зомби.
-	 * 1.0 = та же скорость, что у взрослого. 2.0 = вдвое быстрее.
+	 * Movement speed multiplier vs normal skeleton. 1.5 = 50% faster, like baby zombies.
+	 * 1.0 = adult speed. 2.0 = twice as fast.
 	 */
 	public static final double SPEED_MULTIPLIER = 1.5;
 
 	/**
-	 * Здоровье маленького скелета, оба края входят.
-	 * У взрослого в этом моде 20–40. 10 и 16 = от 5 до 8 сердец.
+	 * Small skeleton health, inclusive range.
+	 * Adults in this mod use 20–40. 10–16 = 5 to 8 hearts.
 	 */
 	public static final int HEALTH_MIN = 10;
 	public static final int HEALTH_MAX = 16;
 
 	// ========================================================================
 
-	/** Скорость обычного скелета в игре. Множитель считается от неё. */
+	/** Vanilla skeleton movement speed. Multiplier applies to this base. */
 	private static final double VANILLA_MOVEMENT_SPEED = 0.25;
 
 	private SmallSkeleton() {
 	}
 
 	/**
-	 * Бросить шанс и, если выпало, уменьшить скелета.
-	 * true — этот скелет маленький: дальний лук, тотем и два оружия ему не выдавать.
+	 * Roll spawn chance and shrink the skeleton if it succeeds.
+	 * true — this skeleton is small: do not give longbow, totem, or dual melee.
 	 */
 	public static boolean tryRoll(AbstractSkeleton skeleton) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f || !(skeleton.level() instanceof ServerLevel)) {

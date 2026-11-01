@@ -30,26 +30,26 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Редкий мини-босс: «Гнилой надсмотрщик».
- * Настройки и выдача экипировки — здесь; ИИ — в {@code Overseer*Goal}.
+ Rare mini-boss: "Rotten overseer."
+ * Settings and equipment are here; AI is at {@code Overseer*Goal}.
  */
 public final class ZombieOverseer {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Шанс при спавне обычного зомби стать надсмотрщиком. 0.002 = 0.2% (было 0.6%, слишком часто). */
+	/*A chance at the spawn of an ordinary zombie to become a guard. 0.002 = 0.2% (was 0.6%, too often). */
 	public static final float SPAWN_CHANCE = 0.002f;
 
-	/** Здоровье. 100 = 50 сердец. Случайные 20–40 обычного зомби ему не остаются. */
+	/*Health. 100 = 50 hearts. The random 20-40 zombies do not remain. */
 	public static final float MAX_HEALTH = 100.0f;
 
-	/** Радиус, в котором держит/ищет цель (блоки). */
+	/*The radius in which it holds/seeks the target(s). */
 	public static final double FOLLOW_RANGE = 112.0;
 
-	/** Дальше этого — охота сбрасывается (блоки). */
+	/*Next, the hunt is dropped (blocks). */
 	public static final double HUNT_ABANDON_DISTANCE = 128.0;
 
-	/** Сколько тиков (20/сек) охотиться, если игрок всё время слишком далеко — 2 минуты. */
+	/*How many tics (20/s) to hunt if the player is too far away all the time – 2 minutes */
 	public static final int HUNT_TIMEOUT_TICKS = 20 * 60 * 2;
 
 	public static final double SUMMON_PLAYER_MAX_DISTANCE = 96.0;
@@ -57,30 +57,30 @@ public final class ZombieOverseer {
 	public static final int SUMMON_COOLDOWN_TICKS = 25 * 20;
 
 	/**
-	 * Если рядом нет свободного места и зомби не появились, пауза короче.
-	 * 100 тиков = 5 секунд. Иначе он ждал бы полные 25 секунд у стены впустую.
-	 * 20 тиков = 1 секунда.
+	 If there is no free space and zombies did not appear, the pause is shorter.
+	 * 100 tics = 5 seconds. Otherwise, he would have waited a full 25 seconds against the wall for nothing.
+	 * 20 ticks = 1 second.
 	 */
 	public static final int SUMMON_FAIL_COOLDOWN_TICKS = 100;
 
 	public static final int SUMMON_ZOMBIES_PER_CAST = 2;
 
 	/**
-	 * Как далеко от надсмотрщика искать место для помощника, в блоках.
-	 * 1.5 и 4.0 = от полутора до четырёх блоков в сторону.
+	 How far from the overseer to look for a place for an assistant, in blocks.
+	 1.5 and 4.0 = one and a half to four blocks to the side.
 	 */
 	public static final double SUMMON_RADIUS_MIN = 1.5;
 	public static final double SUMMON_RADIUS_MAX = 4.0;
 
 	/**
-	 * Сколько случайных точек вокруг перебрать, прежде чем отказаться.
-	 * 12 хватает в коридоре. Больше — дольше ищет, если вокруг тесно.
+	 How many random spots to go around before refusing.
+	 12 in the hallway. It takes longer to find out if it’s too crowded.
 	 */
 	public static final int SUMMON_SPOT_TRIES = 12;
 
 	/**
-	 * На сколько блоков вверх и вниз от ног надсмотрщика ещё смотреть пол.
-	 * 4 = не ставит зомби в потолок и не роняет в яму глубже четырёх блоков.
+	 How many blocks up and down from the overseer's feet still look at the floor?
+	 4 = does not put zombies in the ceiling and does not drop into a hole deeper than four blocks.
 	 */
 	public static final int SUMMON_VERTICAL_STEPS = 4;
 
@@ -90,7 +90,7 @@ public final class ZombieOverseer {
 
 	public static final int MAIN_AXE_SHARPNESS = 3;
 
-	/** Острота топора во второй руке. Она прибавляется к удару вместе с уроном самого топора. */
+	/*Axe sharpness in the second hand. It adds to the impact along with the damage to the axe itself. */
 	public static final int OFFHAND_AXE_SHARPNESS = 2;
 
 	// ========================================================================
@@ -107,7 +107,7 @@ public final class ZombieOverseer {
 		if (overseer.evolvingthreats$isOverseer()) {
 			return false;
 		}
-		// С какого дня надсмотрщики вообще появляются (ThreatTable.OVERSEER_DAY). Шанс ниже от дня не меняется.
+		// From what day do overseers even appear (ThreatTable.OVERSEER DAY)? The chance lower from the day does not change.
 		if (!ThreatScale.reached(level, ThreatTable.OVERSEER_DAY)) {
 			return false;
 		}
@@ -126,9 +126,9 @@ public final class ZombieOverseer {
 	}
 
 	/**
-	 * Спавн надсмотрщика командой / яйцом (100% мини-босс, без рандом-лута).
+	 Spawn overseer command/egg (100% mini-boss, no random loot).
 	 *
-	 * @param hunter игрок-цель; если null — ближайший в радиусе охоты
+	 * @param hunter player-target; if null is the closest in hunting radius
 	 */
 	public static Zombie spawnOverseer(ServerLevel level, Vec3 pos, @Nullable ServerPlayer hunter) {
 		Zombie zombie = EntityTypes.ZOMBIE.create(level, EntitySpawnReason.COMMAND);
@@ -181,9 +181,9 @@ public final class ZombieOverseer {
 	}
 
 	/**
-	 * Уже живущий надсмотрщик при загрузке мира.
-	 * Если запас меньше {@link #MAX_HEALTH}, поднимает его.
-	 * Сколько сердец уже сняли — столько и остаётся снятым.
+	 An already living overseer at loading the world.
+	 * If the stock is less {@link #MAX HEALTH}, picks it up.
+	 How many hearts have already been removed – so much remains removed.
 	 */
 	public static void raiseStoredHealth(Zombie zombie) {
 		var maxHealth = zombie.getAttribute(Attributes.MAX_HEALTH);
@@ -238,7 +238,7 @@ public final class ZombieOverseer {
 				.orElse(null);
 	}
 
-	/** Считает призванных зомби рядом с тем же target (для лимита слуг). */
+	/*Counts conscripted zombies next to the same target (for servant limit). */
 	public static void refreshServantCount(Zombie overseer, ServerLevel level) {
 		if (!(overseer instanceof ZombieOverseerEntity data) || !data.evolvingthreats$isOverseer()) {
 			return;

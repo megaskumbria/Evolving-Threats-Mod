@@ -5,8 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Данные мини-босса «Гнилой надсмотрщик» на обычном зомби.
- * Реализация — {@link com.example.mixin.ZombieOverseerDataMixin}.
+ Data mini-boss "Rotten Overseer" on the usual zombie.
+ * Implementation - {@link com.example.mixin.ZombieOverseerDataMixin}.
  */
 public interface ZombieOverseerEntity {
 

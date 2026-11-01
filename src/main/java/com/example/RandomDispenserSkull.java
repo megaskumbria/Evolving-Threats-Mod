@@ -9,44 +9,44 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * Скелет с раздатчиком на голове — редкий вариант с залпом стрел по таймеру.
- * Совместим с бронёй, dual-wield и т.д.; раздатчик занимает слот HEAD (перекрывает шлем).
+ A skeleton with a spreader on the head is a rare option with a volley of arrows on a timer.
+ Compatible with armor, dual-wield, etc.; the distributor occupies the HEAD slot (overlapping the helmet).
  */
 public final class RandomDispenserSkull {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Шанс (0.0–1.0), что у скелета на голове будет раздатчик, на 100-й день
-	 * (GROWING: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.02 = 2%.
+	 * Chance (0.0–1.0) that the skeleton will have a dispenser on its head on day 100
+	 * (GROWING: 10 times smaller at the beginning of the game, see ThreatTable.DANGEROUS_START_RATIO). 0.02 = 2%.
 	 */
 	public static final float SKELETON_DISPENSER_HEAD_CHANCE = 0.02f;
 
-	/** Минимальная пауза между залпами, секунды. */
+	/*Minimal pause between volleys, seconds. */
 	public static final int BARRAGE_COOLDOWN_MIN_SECONDS = 15;
 
-	/** Максимальная пауза между залпами, секунды. */
+	/*Maximum pause between volleys, seconds. */
 	public static final int BARRAGE_COOLDOWN_MAX_SECONDS = 20;
 
-	/** Сколько стрел выпускается за один залп. */
+	/*How many arrows are fired in one volley? */
 	public static final int BARRAGE_ARROW_COUNT = 14;
 
-	/** Каждые N тиков (20 тиков = 1 сек) выпускается очередная стрела в залпе. 2 = ~7 стр/сек. */
+	/*Each N tics (20 tics = 1 sec) is released another arrow in the volley. 2 = ~7 page/sec. */
 	public static final int BARRAGE_SHOOT_INTERVAL_TICKS = 2;
 
-	/** Длительность фазы залпа (тиков). Если стрелы кончились раньше — фаза всё равно может идти до конца. */
+	/** Duration of the volley(s) phase. If the arrows ran out earlier, the phase can still go to the end. */
 	public static final int BARRAGE_PHASE_TICKS = 40;
 
-	/** Скорость стрел (чем больше — тем быстрее летят). */
+	/*Speed of arrows (the more - the faster they fly). */
 	public static final float BARRAGE_ARROW_VELOCITY = 1.35f;
 
 	/**
-	 * Разброс (как у ванильного лука): чем больше — тем менее точно.
-	 * 12–18 — «дофига стрел, но не снайпер».
+	 Dispersion (like vanilla onions): the more - the less accurate.
+	 12-18: “A lot of arrows, but not a sniper.”
 	 */
 	public static final float BARRAGE_INACCURACY = 14.0f;
 
-	/** Шанс дропа раздатчика с головы при смерти. */
+	/** Chance of a dispenser drop from the head at death. */
 	public static final float DISPENSER_HEAD_DROP_CHANCE = 0.085f;
 
 	// ========================================================================

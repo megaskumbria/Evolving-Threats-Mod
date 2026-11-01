@@ -8,9 +8,9 @@ import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import java.util.EnumSet;
 
 /**
- * Помощник держится рядом с капитаном.
- * В бою поводок длиннее: можно добежать до игрока, но не уйти в другую сторону карты.
- * Капитан сам ни за кем не ходит — он точка, вокруг которой стоит отряд.
+ * The assistant holds close to the captain.
+ In battle, the leash is longer: you can run to the player, but do not go to the other side of the card.
+ The captain himself does not follow anyone - he is the point around which the squad stands.
  */
 public class SkeletonSquadLeashGoal extends Goal {
 

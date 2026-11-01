@@ -9,23 +9,23 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Стрела скелета иногда выбивает вещи из рук игрока.
- * Летит вперёд, как выброс кнопкой Q, и пару секунд её нельзя подобрать.
- * Броня и остальной инвентарь не трогаются.
+ * Skeleton arrows sometimes knock items out of the player's hands.
+ * Items fly forward like a Q drop and cannot be picked up for a couple of seconds.
+ * Armor and the rest of the inventory are untouched.
  */
 public final class SkeletonDisarm {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — стрела ничего из рук не выбивает. */
+	/** false — arrows never disarm. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что попавшая стрела выбьет руки.
-	 * 0.05 = 5%, примерно каждая двадцатая стрела, которая сняла здоровье.
-	 * 0.02 почти не заметно за бой. 0.15 выбивает слишком часто.
-	 * 0 = никогда. 1 = каждая такая стрела.
-	 * Один бросок на попадание: либо ничего, либо обе занятые руки сразу.
+	 * Chance (0.0–1.0) that a hitting arrow disarms the hands.
+	 * 0.05 = 5%, roughly every twentieth arrow that dealt damage.
+	 * 0.02 is barely noticeable in a fight. 0.15 is too often.
+	 * 0 = never. 1 = every such arrow.
+	 * One roll per hit: either nothing or both occupied hands at once.
 	 */
 	public static final float DISARM_CHANCE = 0.05f;
 
@@ -35,9 +35,9 @@ public final class SkeletonDisarm {
 	}
 
 	/**
-	 * Стрела уже сняла здоровье, либо игрок в креативе и её удар туда не доходит.
-	 * Щит, который отбил выстрел, и мигание после удара сюда не попадают.
-	 * Стрелы игрока и других мобов не считаются: стрелок должен быть скелетом, странником или болотным.
+	 * Arrow already dealt damage, or the player is in creative and damage did not apply.
+	 * Shield blocks and post-hit invulnerability frames do not reach here.
+	 * Player and other mob arrows do not count: shooter must be skeleton, stray, or bogged.
 	 */
 	public static void onArrowHit(AbstractArrow arrow, Player player) {
 		if (!ENABLED || DISARM_CHANCE <= 0.0f || !player.isAlive()) {
@@ -56,7 +56,7 @@ public final class SkeletonDisarm {
 		throwHand(player, InteractionHand.OFF_HAND);
 	}
 
-	/** Вся стопка из руки летит вперёд. Пустая рука ничего не роняет. */
+	/** Full stack from the hand flies forward. Empty hand drops nothing. */
 	private static void throwHand(Player player, InteractionHand hand) {
 		ItemStack held = player.getItemInHand(hand);
 		if (held.isEmpty()) {

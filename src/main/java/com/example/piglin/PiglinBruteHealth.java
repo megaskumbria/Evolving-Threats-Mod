@@ -4,19 +4,19 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 
 /**
- * Здоровье брутального пиглина. В обычной игре у него 50.
- * Обычный пиглин и зомби-пиглин остаются со своим здоровьем.
+ * Brute piglin max health. Vanilla uses 50.
+ * Normal piglins and zombified piglins keep their vanilla health.
  */
 public final class PiglinBruteHealth {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — снова 50, как в обычной игре. */
+	/** false — back to vanilla 50. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Максимальное здоровье при появлении. 60 = 30 сердец. В обычной игре 50 (25 сердец).
-	 * Полоска сразу полная. Уже живущий брут это число не получает, пока не появится заново.
+	 * Max health on spawn. 60 = 30 hearts. Vanilla is 50 (25 hearts).
+	 * Bar is full immediately. Brutes already alive keep old health until they respawn.
 	 */
 	public static final double MAX_HEALTH = 60.0;
 
@@ -25,7 +25,7 @@ public final class PiglinBruteHealth {
 	private PiglinBruteHealth() {
 	}
 
-	/** Вызвать один раз, когда брут только появился. */
+	/** Call once when the brute has just spawned. */
 	public static void onSpawn(PiglinBrute brute) {
 		if (!ENABLED) {
 			return;

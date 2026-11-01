@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Моб с тыквой ушёл из мира. Свет гасим здесь: aiStep после удаления уже не идёт.
+ The pumpkin mob is gone. Lights go out here: aiStep after removal no longer goes.
  */
 @Mixin(Entity.class)
 public class JackLanternLightRemoveMixin {

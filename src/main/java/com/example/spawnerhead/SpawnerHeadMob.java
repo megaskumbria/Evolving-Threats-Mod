@@ -31,49 +31,49 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий зомби, скелет или скелет-иссушитель с {@link Items#SPAWNER} на голове.
- * Каждые {@link #HITS_TO_SUMMON} удара игрока призывает таких же мобов рядом.
- * У зомби и скелета это {@link #SUMMON_COUNT_MIN}–{@link #SUMMON_COUNT_MAX} штук.
- * У скелета-иссушителя всегда {@link #WITHER_SUMMON_COUNT}.
- * Подмога никогда не получает спавнер на голове.
+ * Rare zombie, skeleton, or wither skeleton with a {@link Items#SPAWNER} on the head.
+ * Every {@link #HITS_TO_SUMMON} player hits summons more of the same mob nearby.
+ * Zombies and skeletons summon {@link #SUMMON_COUNT_MIN}–{@link #SUMMON_COUNT_MAX}.
+ * Wither skeleton carriers always summon {@link #WITHER_SUMMON_COUNT}.
+ * Reinforcements never get a spawner on the head.
  */
 public final class SpawnerHeadMob {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — спавнер на голове не появляется. */
+	/** Enable mechanic. false — spawner head never appears. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что при спавне зомби или скелет станет носителем, на 100-й день (GROWING: в начале игры
-	 * в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.005 = 0.5%, один из двухсот.
-	 * Отдельный бросок для каждого зомби/скелета. Скелет-иссушитель этот шанс не использует.
+	 * Chance (0.0–1.0) on day 100 that a zombie or skeleton spawn becomes a carrier (GROWING: 10× lower
+	 * at start, see ThreatTable.DANGEROUS_START_RATIO). 0.005 = 0.5%, one in two hundred.
+	 * Separate roll per zombie/skeleton. Wither skeletons use a different constant.
 	 */
 	public static final float CARRIER_SPAWN_CHANCE = 0.005f;
 
 	/**
-	 * Шанс (0.0–1.0), что скелет-иссушитель появится со спавнером на голове, на 100-й день (GROWING). 0.005 = 0.5%.
-	 * Свой шанс, чтобы крутить ад, не меняя обычный мир. Команда спавна его не бросает.
+	 * Chance (0.0–1.0) on day 100 for wither skeleton spawner head (GROWING). 0.005 = 0.5%.
+	 * Separate so you can tune Nether without changing Overworld. Command spawn skips the roll.
 	 */
 	public static final float WITHER_CARRIER_SPAWN_CHANCE = 0.005f;
 
-	/** Сколько ударов игрока нужно, чтобы сработал призыв (2 = два попадания). Общее для всех носителей. */
+	/** Player hits needed to trigger a summon (2 = two landed hits). Same for all carriers. */
 	public static final int HITS_TO_SUMMON = 2;
 
-	/** Минимум и максимум призванных зомби или скелетов за одно срабатывание (включительно). */
+	/** Min and max zombies or skeletons summoned per trigger (inclusive). */
 	public static final int SUMMON_COUNT_MIN = 1;
 	public static final int SUMMON_COUNT_MAX = 2;
 
 	/**
-	 * Сколько скелетов-иссушителей призывает носитель за раз. 2 = всегда двое, без случайности.
-	 * Призванные сами спавнер на голову не получают.
+	 * Wither skeletons summoned per trigger. 2 = always two, no randomness.
+	 * Summoned mobs never get spawner heads themselves.
 	 */
 	public static final int WITHER_SUMMON_COUNT = 2;
 
-	/** Радиус (блоки) вокруг носителя, где появляются прислужники. */
+	/** Radius (blocks) around the carrier where minions appear. */
 	public static final double SUMMON_RADIUS = 3.0;
 
-	/** Шанс дропа спавнера с головы при смерти (как у брони). */
+	/** Spawner head drop chance on death (like armor). */
 	public static final float SPAWNER_HEAD_DROP_CHANCE = 0.085f;
 
 	// ========================================================================
@@ -85,7 +85,7 @@ public final class SpawnerHeadMob {
 		return mob.getItemBySlot(EquipmentSlot.HEAD).is(Items.SPAWNER);
 	}
 
-	/** Вызвать при finalizeSpawn зомби/скелета (после брони). Возвращает true, если надел спавнер. */
+	/** Call on zombie/skeleton finalizeSpawn (after armor). Returns true if spawner was equipped. */
 	public static boolean tryEquipOnSpawn(Mob mob) {
 		if (!ENABLED || !isEligibleType(mob) || !isEligibleSpecial(mob)) {
 			return false;
@@ -96,7 +96,7 @@ public final class SpawnerHeadMob {
 		if (!(mob instanceof SpawnerHeadCarrierEntity carrier)) {
 			return false;
 		}
-		// Призванная подмога — только обычная экипировка, без цепочки «спавнер на голове».
+		// Summoned reinforcements get normal gear only — no spawner chain.
 		if (carrier.evolvingthreats$isSpawnerReinforcement()) {
 			return false;
 		}
@@ -105,8 +105,8 @@ public final class SpawnerHeadMob {
 	}
 
 	/**
-	 * Скелет-иссушитель. Броня и оружие мода ему не выдаются — только спавнер на голове.
-	 * Вызвать из finalizeSpawn. Команда ставит флаг заранее и шанс не бросает.
+	 * Wither skeleton. Mod armor and weapons are skipped — spawner head only.
+	 * Call from finalizeSpawn. Command sets the flag early and skips the roll.
 	 */
 	public static boolean tryEquipWitherSkeleton(Mob mob) {
 		if (!ENABLED || !(mob instanceof WitherSkeleton)) {
@@ -128,7 +128,7 @@ public final class SpawnerHeadMob {
 		return true;
 	}
 
-	/** Команда: скелет-иссушитель со спавнером перед игроком. null — механика выключена. */
+	/** Command: wither skeleton carrier in front of player. null — mechanic disabled. */
 	public static @Nullable WitherSkeleton spawnWitherCarrier(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -171,7 +171,7 @@ public final class SpawnerHeadMob {
 		return (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0f;
 	}
 
-	/** После успешного урона по носителю (вызывается из mixin). */
+	/** After successful damage to carrier (called from mixin). */
 	public static void onPlayerHit(Mob mob, DamageSource source) {
 		if (!ENABLED || !(mob instanceof SpawnerHeadCarrierEntity carrier)) {
 			return;

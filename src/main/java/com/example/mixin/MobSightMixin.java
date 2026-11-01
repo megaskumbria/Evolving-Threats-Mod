@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Дальность взгляда задаётся при появлении, до особых мобов.
- * Надсмотрщик, осада и быстрый крипер потом ставят своё число, если оно больше.
+ * The gaze range is set when appearing, to special mobs.
+ The overseer, the siege and the quick cryper then put their number if it is larger.
  */
 @Mixin(Mob.class)
 public class MobSightMixin {

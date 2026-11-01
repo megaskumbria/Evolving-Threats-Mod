@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-/** К состоянию отрисовки скелета добавляется предмет на спине. */
+/** An item on the back is added to the skeleton drawing state. */
 @Mixin(SkeletonRenderState.class)
 public class TacticianBackItemStateMixin implements TacticianBackItemState {
 

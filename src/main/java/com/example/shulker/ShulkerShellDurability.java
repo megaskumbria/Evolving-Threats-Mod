@@ -12,29 +12,29 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Удар по закрытому панцирю шалкера иногда снимает половину прочности
- * с оружия или инструмента, которым ударили. Лук и арбалет тоже.
- * Чара «Прочность» это списание не уменьшает.
+ * Hitting a closed shulker shell sometimes removes half the durability
+ * from the weapon or tool used. Bows and crossbows count too.
+ * Unbreaking does not reduce this loss.
  */
 public final class ShulkerShellDurability {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — панцирь больше не портит оружие. */
+	/** false — closed shells no longer damage gear. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) на каждый удар по закрытому панцирю.
-	 * 0.05 = 5%. Бросок заново на каждый удар, общий счётчик на шалкеров не ведётся.
-	 * Открытый шалкер этот шанс не бросает. Удар кулаком тоже: у кулака нет прочности.
-	 * 0 = никогда. 1 = каждый удар по закрытому панцирю.
+	 * Chance (0.0–1.0) per hit on a closed shell.
+	 * 0.05 = 5%. Fresh roll each hit; no global counter across shulkers.
+	 * Open shulkers never roll. Bare fist hits too but fists have no durability.
+	 * 0 = never. 1 = every closed-shell hit.
 	 */
 	public static final float HIT_CHANCE = 0.05f;
 
 	/**
-	 * Какую долю максимальной прочности снять. 0.5 = половина шкалы.
-	 * Если осталось меньше, вещь ломается.
-	 * 0 = не списывать. 1 = вещь ломается сразу.
+	 * Fraction of max durability to remove. 0.5 = half the bar.
+	 * If less durability remains, the item breaks.
+	 * 0 = no loss. 1 = item breaks immediately.
 	 */
 	public static final float DURABILITY_FRACTION = 0.5f;
 
@@ -44,8 +44,8 @@ public final class ShulkerShellDurability {
 	}
 
 	/**
-	 * Шалкер уже закрыт. Вызывается в момент удара, даже если панцирь урон не пропустил.
-	 * Стрела по закрытому шалкеру как раз не наносит урон, но лук всё равно может пострадать.
+	 * Shulker is already closed. Called at hit time even if the shell blocked damage.
+	 * Arrows on a closed shulker deal no damage, but the bow can still take durability loss.
 	 */
 	public static void onClosedHit(DamageSource source) {
 		if (!ENABLED || HIT_CHANCE <= 0.0f || DURABILITY_FRACTION <= 0.0f) {
@@ -65,7 +65,7 @@ public final class ShulkerShellDurability {
 		shred(player, weapon);
 	}
 
-	/** Игрок ударил сам или его снаряд. Чужой моб и взрыв сюда не входят. */
+	/** Player hit directly or via their projectile. Other mobs and explosions are excluded. */
 	private static Player playerAttacker(DamageSource source) {
 		Entity direct = source.getDirectEntity();
 		if (direct instanceof Player player) {
@@ -78,8 +78,8 @@ public final class ShulkerShellDurability {
 	}
 
 	/**
-	 * Предмет, который реально лежит у игрока.
-	 * У стрелы игра хранит только копию лука, по ней прочность не спишешь.
+	 * Stack that actually lives in the player's inventory.
+	 * Arrows only store a bow copy; durability cannot be applied to that copy.
 	 */
 	private static ItemStack liveWeapon(Player player, DamageSource source) {
 		if (source.getDirectEntity() instanceof Player) {
@@ -140,7 +140,7 @@ public final class ShulkerShellDurability {
 		}
 	}
 
-	/** Тот же треск, что при полной поломке. Слышно, даже если вещь ещё в руке. */
+	/** Same crack as a full break. Plays even if the item is still held. */
 	private static void playBreak(Player player) {
 		player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
 	}

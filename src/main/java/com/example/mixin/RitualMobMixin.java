@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Опыт и лишний лут стаи. Оба метода объявлены у Mob.
- * Хлопок крипера — {@link RitualDeathMixin}, урон и иссушение — {@link RitualHurtMixin}.
+ Experience and extra loot packs. Both methods are announced by Mob.
+ * Cryper cotton - {@link RitualDeathMixin}, damage and desiccation - {@link RitualHurtMixin}.
  */
 @Mixin(Mob.class)
 public class RitualMobMixin {

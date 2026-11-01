@@ -10,30 +10,30 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * Удар зомби, скелета или брутального пиглина топором сбивает щит,
- * как удар поборника: щит на несколько секунд нельзя поднять.
- * Деревянный топор щит не сбивает.
+ * A blow from a zombie, a skeleton or a brutal piglin with an axe knocks down the shield,
+ * as a champion strike: the shield cannot be raised for a few seconds.
+ * Wooden axe shield does not knock down.
  *
- * <p>У поборника и у брута с золотым топором в основной руке игра это уже делает сама.
- * Здесь то же самое для топора во второй руке и запрет для деревянного.
- * От дней не зависит.
+ * <p>The defender and the brute with a gold axe in the main hand already have the game itself.
+ * Here it is the same for an axe in the second hand and a ban for a wooden one.
+ * Does not depend on days.
  */
 public final class AxeShieldDisable {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — щит снова сбивает только то, что умеет сама игра. Деревянный топор в основной руке тоже. */
+	/** false — the shield again knocks down only what the game itself can do. Wooden axe in the main hand too. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * На сколько секунд щит нельзя поднять после удара топором.
-	 * 5 = как у поборника и у топора в обычной игре. 2 = короче. 0 = щит не сбивается.
+	 * For how many seconds the shield cannot be lifted after being hit with an axe.
+	 * 5 = like a champion and an axe in a normal game. 2 = shorter. 0 = the shield does not shoot down.
 	 */
 	public static final float COOLDOWN_SECONDS = 5.0f;
 
 	// ========================================================================
 
-	/** Камень, медь, золото, железо, алмаз, незерит. Дерева нет. */
+	/** Stone, copper, gold, iron, diamond, Netherite. No wood. */
 	private static final Item[] AXES = {
 			Items.STONE_AXE,
 			Items.COPPER_AXE,
@@ -47,9 +47,9 @@ public final class AxeShieldDisable {
 	}
 
 	/**
-	 * Сколько секунд отдать игре, когда удар попал в щит.
-	 * -1 = этот моб не наш, пусть решает игра.
-	 * 0 = щит не сбивать (деревянный топор).
+	 * How many seconds to give the game when the blow hit the shield.
+	 * -1 = this mob is not ours, let the game decide.
+	 * 0 = do not knock down the shield (wooden axe).
 	 */
 	public static float seconds(LivingEntity attacker) {
 		if (!ENABLED || COOLDOWN_SECONDS < 0.0f || !applies(attacker)) {
@@ -64,14 +64,14 @@ public final class AxeShieldDisable {
 		return -1.0f;
 	}
 
-	/** Зомби (и его виды), скелет (и его виды), брутальный пиглин. Поборник сюда не входит. */
+	/** Zombies (and its species), skeleton (and its species), brutal piglin. A champion is not included. */
 	private static boolean applies(LivingEntity attacker) {
 		return attacker instanceof Zombie
 				|| attacker instanceof AbstractSkeleton
 				|| attacker instanceof PiglinBrute;
 	}
 
-	/** {@code wooden} — ищем деревянный топор. Иначе любой другой из списка. Смотрим обе руки. */
+	/** {@code wooden} — looking for a wooden axe. Otherwise, any other one from the list. We look at both hands. */
 	private static boolean holds(LivingEntity attacker, boolean wooden) {
 		return isAxe(attacker.getItemBySlot(EquipmentSlot.MAINHAND), wooden)
 				|| isAxe(attacker.getItemBySlot(EquipmentSlot.OFFHAND), wooden);

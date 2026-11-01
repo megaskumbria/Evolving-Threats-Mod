@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Добавляет зомби цель «прокопать путь к игроку».
- * Кто умеет ломать (все / часть, утопленники и пиглины нет) — {@link com.example.digging.BlockBreaking#isBreaker}.
+ * Adds the dig-toward-target goal for zombies.
+ * Who can break blocks (not drowned or piglins, etc.) — {@link com.example.digging.BlockBreaking#isBreaker}.
  */
 @Mixin(Zombie.class)
 public class ZombieBreakGoalsMixin {

@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Обычный зомби помнит, что его оружие — динамит, и сколько ещё ждать до следующего.
- * Запись в мир здесь: сохранение объявлено у Zombie.
+ An ordinary zombie remembers that his weapon is dynamite, and how much longer to wait until the next.
+ Record in the world here: conservation announced at Zombie
  */
 @Mixin(Zombie.class)
 public class TntZombieMixin implements TntZombieEntity {

@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Память отряда на разбойнике, поборнике и разорителе.
- * Цель «идти в точку» вешается при создании моба и молчит, пока точка не задана.
- * Сохранение нужно, чтобы после выгрузки чанка они не забыли, куда шли.
+ The memory of the detachment on the robber, champion and destroyer.
+ The goal of “go to the point” is hung when creating a mob and is silent until the point is set.
+ Preservation is necessary so that after unloading the chank they do not forget where they went.
  */
 @Mixin(Raider.class)
 public class RaiderPatrolMixin implements IllagerPatrolMember {
@@ -39,7 +39,7 @@ public class RaiderPatrolMixin implements IllagerPatrolMember {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$patrolMarch(CallbackInfo ci) {
 		Raider self = (Raider) (Object) this;
-		// Приоритет 5 — ниже удара и выстрела. Пока видят цель, дерутся, а не топают в точку.
+		// Priority 5 is lower than hit and shot. As long as they see the target, they fight, not stomp at the point.
 		self.getGoalSelector().addGoal(5, new IllagerPatrolMarchGoal(self, this));
 	}
 

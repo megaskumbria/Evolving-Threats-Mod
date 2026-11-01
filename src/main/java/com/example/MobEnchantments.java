@@ -18,146 +18,146 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Случайные чары на оружии, инструментах и броне мобов (зомби, скелеты, разбойники).
- * Оружие: мечи, топоры, кирки, лопаты, мотыги, лук и арбалет. Броня: шлем, нагрудник, поножи, ботинки
- * у зомби и скелетов (разбойники брони не носят).
+ Random charms on weapons, tools and armor mobs (zombies, skeletons, robbers).
+ * Weapons: swords, axes, pickaxes, shovels, hoes, bow and crossbow. Armor: helmet, breastplate, knives, shoes
+ In zombies and skeletons (robbers do not wear armor).
  *
- * <p>Как это устроено: после того как моб получил оружие и броню, для каждого предмета
- * бросается шанс «зачаровать». Если выпало — выбирается от 1 до 5 чар, подходящих именно этому предмету,
- * причём несовместимые между собой (острота + небесная кара, защита + защита от огня и т.п.)
- * вместе не попадают, как в ванильном Майнкрафте.
- * Уровни у чар могут быть вплоть до максимума (острота V на деревянном мече, защита IV на кожаном шлеме),
- * но высокие уровни выпадают редко.
+ How it works: after the mob has received weapons and armor, for each item
+ There is a chance to “enchant”. If it falls out - from 1 to 5 charms suitable for this object are selected,
+ Incompatible with each other (sharpness + heavenly punishment, protection + protection from fire, etc.)
+ * They don't get together like in vanilla Minecraft.
+ Charm levels can be up to the maximum (sharpness V on a wooden sword, protection IV on a leather helmet),
+ *But high levels rarely fall out.
  *
- * <p>Что реально работает в бою у моба: острота, огненный заговор, отбрасывание (ближний бой),
- * сила / отбрасывание / пламя (лук), быстрая перезарядка / многозарядность / пронзающая стрела (арбалет),
- * защита всех видов (моба труднее убить), шипы (бьют игрока в ответ), невесомость.
- * Небесная кара и бич членистоногих урон по игроку НЕ усиливают (игрок не нежить и не паук).
- * Остальное (добыча, эффективность, прочность, починка, проклятия, подводное дыхание...) на самом мобе
- * ничего не меняет — они нужны, чтобы выпавший предмет был интересным лутом.
+ * <p>What really works in the battle of the mob: sharpness, fiery conspiracy, throwback (close battle),
+ *force/drop/flame (bow), fast recharge/multi-charge/piercing arrow (bow),
+ Protection of all kinds (mob harder to kill), thorns (beat the player back), weightlessness.
+ Heavenly punishment and the scourge of arthropod damage to the player do not increase (the player is not undead and not a spider).
+ The rest (mining, efficiency, strength, repair, curses, underwater breathing...) on the mob itself
+ It does not change anything – they are needed to make the object that fell out an interesting loot.
  */
 public final class MobEnchantments {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — мобы не получают чар (оружие по-прежнему выдаётся как раньше). */
+	/** Turn on the mechanics. False - Mobs do not receive charms (weapons are still issued as before). */
 	public static final boolean ENABLED = true;
 
 	/*
-	 * ВАЖНО про шансы ниже: это значения на 100-й день (КОНЕЦ шкалы угрозы).
-	 * В начале игры шанс намного меньше (ThreatTable.WEAPON_ENCHANT_CHANCE_START / ARMOR_ENCHANT_CHANCE_START)
-	 * и плавно растёт вместе со шкалой и луной. Так же растут число чар и их уровни.
-	 * Механики с меткой FIXED (парящий инструмент, капитан, рейд, ритуалы) растут не должны: они зовут
-	 * rollHeldWeapons / rollArmorPieces со своим шансом, и там остаются ваши прежние числа (COUNT_WEIGHTS и LEVEL_BIAS_FIXED).
+	 Important about the odds below: these are values on the 100th day (End of the threat scale).
+	 At the beginning of the game, the chance is much smaller (ThreatTable.WEAPON ENCHANT CHANCE START / ARMOR ENCHANT CHANCE START)
+	 It grows smoothly with the scale and the moon. The number of charms and their levels are also increasing.
+	 Mechanics labeled FIXED (floating instrument, captain, raid, rituals) should not grow: they call
+	 * rollHeldWeapons / rollArmorPieces with your chance, and there remain your old numbers (COUNT WEIGHTS and LEVEL BIAS FIXED).
 	 */
 
 	/**
-	 * Шанс (0.0–1.0), что КАЖДЫЙ предмет в руках зомби будет зачарован на 100-й день. 0.70 = 70%.
-	 * Это шанс уже для зомби, у которого оружие есть (оно у ~40% зомби, см. RandomWeapons).
-	 * 0 = у зомби чар не будет.
+	 Chance (0.0-1.0) that EVERY object in the hands of zombies will be enchanted on day 100. 0.70 = 70%.
+	 This is a chance for zombies who have weapons (about 40% of zombies, see RandomWeapons).
+	 * 0 = Zombies will have no charm.
 	 */
 	public static final float ZOMBIE_ENCHANT_CHANCE = 0.70f;
 
 	/**
-	 * Шанс (0.0–1.0) для КАЖДОГО предмета в руках скелета/странника (лук и второе оружие бросаются отдельно).
-	 * 0.70 = 70% на 100-й день. 0 = у скелетов чар не будет.
+	 * Chance (0.0–1.0) for EVERY object in the hands of the skeleton/wanderer (bow and second weapon thrown separately).
+	 0.70 = 70% on the 100th day. 0 = skeletons will have no charms.
 	 */
 	public static final float SKELETON_ENCHANT_CHANCE = 0.70f;
 
 	/**
-	 * Шанс (0.0–1.0) для оружия разбойника (арбалет) и громилы (топор).
-	 * 0.70 = 70% на 100-й день. В рейде у разбойника тот же шанс, но бросок после арбалета самой игры.
-	 * Если выпало — чары мода заменяют быструю перезарядку рейда. Если нет — она остаётся.
-	 * Громилу в рейде это не затрагивает: игра меняет ему топор уже после нашего броска.
-	 * 0 = чар не будет.
+	 Chance (0.0-1.0) for the weapon of the robber (crossbow) and the thug (axe).
+	 0.70 = 70% on the 100th day. In the raid, the robber has the same chance, but the throw after the crossbow of the game itself.
+	 If it falls out, the charms of fashion replace the quick recharge of the raid. If not, she stays.
+	 Gromil in the raid this does not affect: the game changes his axe after our throw.
+	 * 0 = no spell.
 	 */
 	public static final float ILLAGER_ENCHANT_CHANCE = 0.70f;
 
 	/**
-	 * Шанс (0.0–1.0), что КАЖДЫЙ надетый кусок брони зомби будет зачарован на 100-й день. 0.65 = 65%.
-	 * Считается отдельно для шлема, нагрудника, поножей и ботинок (броня сама выпадает у зомби с шансом 50% на слот,
-	 * см. RandomArmor). 0 = у зомби брони с чарами не будет.
+	 Chance (0.0–1.0) that EVERY piece of zombie armor will be enchanted on Day 100. 0.65 = 65%.
+	 * Considered separately for helmet, breastplate, knife and boots (armor itself falls out in zombies with a 50% chance of slot,
+	 * see RandomArmor. Zombies will not have armor with charms.
 	 */
 	public static final float ZOMBIE_ARMOR_ENCHANT_CHANCE = 0.65f;
 
-	/** То же для брони скелетов и странников. 0.65 = 65% на каждый кусок. 0 = чар на броне скелетов не будет. */
+	/*Same for the armor of skeletons and wanderers. 0.65 = 65% for each piece. 0 = Charm on the armor of skeletons will not. */
 	public static final float SKELETON_ARMOR_ENCHANT_CHANCE = 0.65f;
 
 	/**
-	 * Сколько чар сразу на одном предмете-ОРУЖИИ. Индекс 0 = одна чара, 1 = две, 2 = три и т.д. Числа — «вес» (шанс относительно остальных).
-	 * {55, 28, 12, 4, 1} = в сумме 100: одна чара у 55%, две у 28%, три у 12%, четыре у 4%, пять у 1%.
-	 * Хочешь только по одной чаре — поставь {1}. Больше пяти не добавляй без нужды: предмет станет «прокачанным мечом» из скрина.
-	 * Если подходящих чар для предмета не хватает, будет меньше (например у мотыги их мало).
+	 How many spells at once on one object-weapons. Index 0 = one charm, 1 = two, 2 = three, etc. Numbers - "weight" (a chance relative to others).
+	 * {55, 28, 12, 4, 1} = sum of 100: one charm at 55%, two at 28%, three at 12%, four at 4%, five at 1%.
+	 If you want only one spell, put {1}. Do not add more than five without need: the object will become a “pumped sword” from the screen.
+	 If suitable charms for the object are not enough, there will be less (for example, the hoe has few of them).
 	 */
 	public static final int[] COUNT_WEIGHTS = { 55, 28, 12, 4, 1 };
 
 	/**
-	 * То же самое для БРОНИ. Брони на мобе до четырёх штук сразу, поэтому по умолчанию чар на кусок немного меньше:
-	 * {60, 28, 10, 2} = одна чара у 60%, две у 28%, три у 10%, четыре у 2%.
-	 * Хочешь «просто защиту IV и всё» — поставь {1}.
+	 Same for Broney. Armor on the mob up to four pieces at once, so by default the spell per piece is slightly less:
+	 * {60, 28, 10, 2} = one charm at 60%, two at 28%, three at 10%, four at 2%.
+	 If you want "just protection IV and that's it," put {1}.
 	 */
 	public static final int[] ARMOR_COUNT_WEIGHTS = { 60, 28, 10, 2 };
 
 	/**
-	 * Насколько уровень чары тяготеет к низким значениям — на 100-й день (конец шкалы угрозы).
-	 * Для остроты (максимум V): 0.0 = все уровни равновероятны (V = 20%), 0.5 = V ≈ 12%,
-	 * 1.0 = V ≈ 7%, 2.0 = V ≈ 2% (I ≈ 45%), 3.0 = V почти не встречается. Меньше нуля — высокие чаще низких (сейчас -0.3: V ≈ 26%, I ≈ 14%).
-	 * В начале игры уклон сильнее (ThreatTable.ENCHANT_LEVEL_BIAS_START).
+	 How much the level of charm gravitates to low values - on the 100th day (end of the threat scale).
+	 * For acuteness (maximum V): 0.0 = all levels are equally probable (V = 20%), 0.5 = V ≈ 12%,
+	 1.0 = V ≈ 7%, 2.0 = V ≈ 2% (I ≈ 45%), 3.0 = V almost does not occur. Less than zero - high more often than low (now -0.3: V ≈ 26%, I ≈ 14%).
+	 At the beginning of the game, the slope is stronger (ThreatTable.ENCHANT LEVEL BIAS START).
 	 */
 	public static final double LEVEL_BIAS = -0.3;
 
 	/**
-	 * Тот же уклон для механик с меткой FIXED (парящий инструмент, капитан, рейд, ритуальные группы):
-	 * они от шкалы не зависят, поэтому остаются на прежних 2.0. См. описание LEVEL_BIAS.
+	 * Same bias for mechanics labeled FIXED (floating instrument, captain, raid, ritual groups):
+	 They do not depend on the scale, so they remain on the previous 2.0. See the description of LEVEL BIAS.
 	 */
 	public static final double LEVEL_BIAS_FIXED = 2.0;
 
 	/**
-	 * Какие чары вообще могут выпасть и как часто (вес; 0 = выключена).
-	 * Из этого списка берутся только те, что подходят предмету (острота — мечам и топорам, сила — луку и т.д.),
-	 * ванильная несовместимость (острота + кара, шёлковое касание + удача, ...) учитывается сама.
-	 * Веса взяты из стола зачарований Майнкрафта, можно менять как угодно.
+	 What charms can fall and how often (weight; 0 = off)
+	 * Only those that fit the subject are taken from this list (sharpness - swords and axes, strength - bow, etc.),
+	 vanilla incompatibility (sharpness + cara, silk touch + luck, ...) is taken into account itself.
+	 The scales are taken from the Minecraft enchantment table, you can change as you like.
 	 */
 	private static final Candidate[] CANDIDATES = {
-		// ---- мечи и топоры ----
-		new Candidate(Enchantments.SHARPNESS, 10),           // Острота (до V): +урон
-		new Candidate(Enchantments.SMITE, 5),                // Небесная кара (до V): урон по нежити, игрока не бьёт сильнее
-		new Candidate(Enchantments.BANE_OF_ARTHROPODS, 5),   // Бич членистоногих (до V): урон по паукам, игрока не бьёт сильнее
-		new Candidate(Enchantments.KNOCKBACK, 5),            // Отбрасывание (до II): откидывает игрока
-		new Candidate(Enchantments.FIRE_ASPECT, 5),          // Заговор огня (до II): поджигает игрока
-		new Candidate(Enchantments.LOOTING, 5),              // Добыча (до III): только для лута
-		new Candidate(Enchantments.SWEEPING_EDGE, 5),        // Разящий клинок (до III): только для лута
-		// ---- кирки, лопаты, мотыги, топоры ----
-		new Candidate(Enchantments.EFFICIENCY, 10),          // Эффективность (до V): только для лута
-		new Candidate(Enchantments.SILK_TOUCH, 1),           // Шёлковое касание: только для лута
-		new Candidate(Enchantments.FORTUNE, 5),              // Удача (до III): только для лута
-		// ---- лук ----
-		new Candidate(Enchantments.POWER, 10),               // Сила (до V): +урон стрелы
-		new Candidate(Enchantments.PUNCH, 2),                // Отбрасывание стрелы (до II)
-		new Candidate(Enchantments.FLAME, 2),                // Горящая стрела
-		new Candidate(Enchantments.INFINITY, 1),             // Бесконечность: только для лута
-		// ---- арбалет ----
-		new Candidate(Enchantments.QUICK_CHARGE, 5),         // Быстрая перезарядка (до III)
-		new Candidate(Enchantments.MULTISHOT, 2),            // Многозарядный: три стрелы
-		new Candidate(Enchantments.PIERCING, 10),            // Пронзающая стрела (до IV)
-		// ---- броня ----
-		new Candidate(Enchantments.PROTECTION, 10),          // Защита (до IV): моба труднее убить
-		new Candidate(Enchantments.FIRE_PROTECTION, 5),      // Защита от огня (до IV): горит и от лавы почти не страдает
-		new Candidate(Enchantments.BLAST_PROTECTION, 2),     // Защита от взрыва (до IV): крипер почти не бьёт
-		new Candidate(Enchantments.PROJECTILE_PROTECTION, 5),// Защита от снарядов (до IV): стрелы почти не бьют
-		new Candidate(Enchantments.THORNS, 3),               // Шипы (до III): бьют игрока в ответ на каждый удар
-		new Candidate(Enchantments.FEATHER_FALLING, 5),      // Невесомость (до IV, ботинки): не получает урон от падения
-		new Candidate(Enchantments.RESPIRATION, 2),          // Подводное дыхание (до III, шлем): только для лута
-		new Candidate(Enchantments.AQUA_AFFINITY, 2),        // Подводник (шлем): только для лута
-		new Candidate(Enchantments.DEPTH_STRIDER, 2),        // Подводная ходьба (до III, ботинки): быстрее в воде
-		new Candidate(Enchantments.FROST_WALKER, 0),         // Ледоход (ботинки): ВЫКЛЮЧЕНА, моб замораживал бы воду под собой
-		new Candidate(Enchantments.SOUL_SPEED, 1),           // Скорость души (до III, ботинки): быстрее по песку душ
-		new Candidate(Enchantments.SWIFT_SNEAK, 1),          // Проворство (до III, поножи): только для лута
-		new Candidate(Enchantments.BINDING_CURSE, 1),        // Проклятие несъёмности: надетую броню с выпавшего предмета не снять
-		// ---- для всех ----
-		new Candidate(Enchantments.UNBREAKING, 10),          // Прочность (до III): только для лута
-		new Candidate(Enchantments.MENDING, 2),              // Починка: только для лута
-		new Candidate(Enchantments.VANISHING_CURSE, 2),      // Проклятие утраты: только для лута
+		// Swords and axes--
+		new Candidate(Enchantments.SHARPNESS, 10),           // Acuteness (up to V): + Damage
+		new Candidate(Enchantments.SMITE, 5),                // Heavenly punishment (up to V): damage to the undead, the player does not hit harder
+		new Candidate(Enchantments.BANE_OF_ARTHROPODS, 5),   // Scourge of arthropods (up to V): damage to spiders, the player does not hit harder
+		new Candidate(Enchantments.KNOCKBACK, 5),            // Rejection (up to II): Rejects the player
+		new Candidate(Enchantments.FIRE_ASPECT, 5),          // Fire conspiracy (up to II): sets the player on fire
+		new Candidate(Enchantments.LOOTING, 5),              // Mining (up to III): for loot only
+		new Candidate(Enchantments.SWEEPING_EDGE, 5),        // Breaking blade (up to III): only for loot
+		// Picks, shovels, hoes, axes.
+		new Candidate(Enchantments.EFFICIENCY, 10),          // Efficiency (up to V): for loot only
+		new Candidate(Enchantments.SILK_TOUCH, 1),           // Silk touch: for loot only
+		new Candidate(Enchantments.FORTUNE, 5),              // Luck (up to III): Loot only
+		// Onions ----
+		new Candidate(Enchantments.POWER, 10),               // Force (up to V): +arrow damage
+		new Candidate(Enchantments.PUNCH, 2),                // Arrow drop (up to II)
+		new Candidate(Enchantments.FLAME, 2),                // Burning arrow
+		new Candidate(Enchantments.INFINITY, 1),             // Infinity: for loot only
+		// Crossbow ----
+		new Candidate(Enchantments.QUICK_CHARGE, 5),         // Fast recharge (up to III)
+		new Candidate(Enchantments.MULTISHOT, 2),            // Multi-charge: three arrows
+		new Candidate(Enchantments.PIERCING, 10),            // Piercing arrow (up to IV)
+		// ---- armor ----
+		new Candidate(Enchantments.PROTECTION, 10),          // Defense (up to IV): Mob harder to kill
+		new Candidate(Enchantments.FIRE_PROTECTION, 5),      // Fire protection (up to IV): burns and almost no lava
+		new Candidate(Enchantments.BLAST_PROTECTION, 2),     // Explosion protection (up to IV): the cryper hardly hits
+		new Candidate(Enchantments.PROJECTILE_PROTECTION, 5),// Protection against shells (up to IV): arrows hardly hit
+		new Candidate(Enchantments.THORNS, 3),               // Thorns (up to III): hit the player in response to each punch
+		new Candidate(Enchantments.FEATHER_FALLING, 5),      // Weightlessness (up to IV, boots): no fall damage
+		new Candidate(Enchantments.RESPIRATION, 2),          // Underwater Breathing (up to III, helmet): Loot only
+		new Candidate(Enchantments.AQUA_AFFINITY, 2),        // Submarine (helmet): loot only
+		new Candidate(Enchantments.DEPTH_STRIDER, 2),        // Scuba walking (up to III, boots): faster in the water
+		new Candidate(Enchantments.FROST_WALKER, 0),         // Icebreaker (shoes): OFF, mob would freeze water underneath
+		new Candidate(Enchantments.SOUL_SPEED, 1),           // Speed of the soul (up to III, shoes): faster on the sand of the shower
+		new Candidate(Enchantments.SWIFT_SNEAK, 1),          // Agility (up to III, knives): only for loot
+		new Candidate(Enchantments.BINDING_CURSE, 1),        // The curse of removability: wearing armor from a fallen object can not be removed
+		// - For everyone--
+		new Candidate(Enchantments.UNBREAKING, 10),          // Strength (up to III): only for loot
+		new Candidate(Enchantments.MENDING, 2),              // Fixing: Loot only
+		new Candidate(Enchantments.VANISHING_CURSE, 2),      // The Curse of Loss: For Loot Only
 	};
 
 	// ========================================================================
@@ -168,60 +168,60 @@ public final class MobEnchantments {
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET,
 	};
 
-	/** Чара из списка настроек выше: ключ в реестре игры и вес. */
+	/*Charm from the list of settings above: key in the game registry and weight. */
 	private record Candidate(ResourceKey<Enchantment> key, int weight) {
 	}
 
-	/** Чара, уже подтянутая из реестра игры и подходящая предмету. */
+	/*Charm already drawn from the game register and suitable for the subject. */
 	private record Option(Holder<Enchantment> holder, int weight) {
 	}
 
 	private MobEnchantments() {
 	}
 
-	/** Вызывается из ZombieMixin после того, как зомби получил оружие. */
+	/*Called out of ZombieMixin after a zombie gets a gun. */
 	public static void rollForZombie(Mob mob) {
 		rollForHeldItems(mob, ZOMBIE_ENCHANT_CHANCE, true);
 	}
 
-	/** Вызывается из SkeletonMixin после того, как скелет получил лук/оружие. */
+	/*Called out of SkeletonMixin after the skeleton has received a bow/weapon. */
 	public static void rollForSkeleton(Mob mob) {
 		rollForHeldItems(mob, SKELETON_ENCHANT_CHANCE, true);
 	}
 
-	/** Вызывается из IllagerWeaponEnchantMixin для разбойников и громил. */
+	/*Called from IllagerWeaponEnchantMixin for robbers and thugs. */
 	public static void rollForIllager(Mob mob) {
 		rollForHeldItems(mob, ILLAGER_ENCHANT_CHANCE, true);
 	}
 
-	/** Вызывается из ZombieMixin ПОСЛЕ того, как зомби получил броню (RandomArmor). */
+	/*Called from ZombieMixin after the zombie received armor (RandomArmor). */
 	public static void rollArmorForZombie(Mob mob) {
 		rollForArmor(mob, ZOMBIE_ARMOR_ENCHANT_CHANCE, true);
 	}
 
-	/** Вызывается из SkeletonMixin ПОСЛЕ того, как скелет получил броню (RandomArmor). */
+	/*Called from SkeletonMixin after the skeleton has received armor (RandomArmor). */
 	public static void rollArmorForSkeleton(Mob mob) {
 		rollForArmor(mob, SKELETON_ARMOR_ENCHANT_CHANCE, true);
 	}
 
 	/**
-	 * Шанс отдельно на каждый кусок брони. 0.45 = 45% на шлем, отдельно 45% на нагрудник и так далее.
-	 * 0 = броня без чар. 1 = зачарован каждый кусок.
-	 * Для механик с меткой FIXED (капитан, рейд, ритуал): шанс и уровни от шкалы угрозы не зависят.
+	 * Chance for each piece of armor. 0.45 = 45% on the helmet, 45% on the breastplate and so on.
+	 * 0 = armor without enchantment. 1 = enchanted every piece.
+	 For mechanic labeled FIXED (captain, raid, ritual): the odds and levels of the threat scale are independent.
 	 */
 	public static void rollArmorPieces(Mob mob, float chancePerPiece) {
 		rollForArmor(mob, chancePerPiece, false);
 	}
 
-	/** Шанс отдельно на каждый предмет в руках. 0 = оружие без чар. От шкалы угрозы не зависит (метка FIXED). */
+	/** Chance for each item in hand. 0 = weapon without charm. The threat scale does not depend on the FIXED label. */
 	public static void rollHeldWeapons(Mob mob, float chancePerItem) {
 		rollForHeldItems(mob, chancePerItem, false);
 	}
 
 	/**
-	 * Бросает шанс отдельно для каждого куска брони. Особые «головы» (спавнер, тыква, раздатчик) не трогает.
+	 * Throws a chance separately for each piece of armor. Special "heads" (savner, pumpkin, distributor) do not touch.
 	 *
-	 * @param growing true — {@code chance} это значение на 100-й день, в начале игры оно меньше (GROWING)
+	 * @param growing true - {@code chance} is the value on day 100, at the beginning of the game it is smaller (GROWING)
 	 */
 	private static void rollForArmor(Mob mob, float chance, boolean growing) {
 		if (!ENABLED || chance <= 0.0f) {
@@ -243,12 +243,12 @@ public final class MobEnchantments {
 	}
 
 	/**
-	 * Чары на меч в основной руке. Каменный и незеритовый тоже:
-	 * обычный список оружия мода незерит не включает.
-	 * {@code endChance} — шанс на 100-й день (0.70 = 70%).
-	 * В начале он равен {@link ThreatTable#WEAPON_ENCHANT_CHANCE_START} (1%).
-	 * Число чар и их уровни растут так же, как у меча зомби. Луна тоже влияет.
-	 * Если чары выпали, они заменяют те, что игра уже повесила на этот меч.
+	 Sword spell in the main hand. Stone and unserite, too:
+	 * The usual list of weapons fashion Neserite does not include.
+	 * {@code endChance} is a chance on day 100 (0.70 = 70%).
+	 * At the beginning it is equal to {@link ThreatTable#WEAPON ENCHANT CHANCE START} (1%).
+	 The number of charms and their levels increase the same as the zombie sword. The moon does, too.
+	 If the spell has fallen, it replaces those that the game has already hung on the sword.
 	 */
 	public static void rollMainHandGrowing(Mob mob, float endChance) {
 		if (!ENABLED || endChance <= 0.0f) {
@@ -264,7 +264,7 @@ public final class MobEnchantments {
 		}
 	}
 
-	/** Бросает шанс отдельно для каждого предмета в основной и второй руке. {@code growing} — как у брони. */
+	/*Throws a chance separately for each item in the main and second hand. {@code growing} - like a reservation. */
 	private static void rollForHeldItems(Mob mob, float chance, boolean growing) {
 		if (!ENABLED || chance <= 0.0f) {
 			return;
@@ -279,23 +279,23 @@ public final class MobEnchantments {
 				continue;
 			}
 			if (enchant(mob, stack, random, false, growing)) {
-				// Кладём обратно на случай, если игра отдала копию, а не сам предмет.
+				// Put it back in case the game gave away a copy instead of the item itself.
 				mob.setItemSlot(slot, stack);
 			}
 		}
 	}
 
-	/** Только наше оружие/инструменты (дерево…алмаз, железный топор громилы) и луки/арбалеты. Щиты, броню, трезубец не трогаем. */
+	/** Only our weapons/tools (wood...diamond, iron axe of the thug) and bows/arbalets. Shields, armor, trident. */
 	private static boolean isEnchantableWeapon(ItemStack stack) {
 		return !stack.isEmpty()
 				&& (RandomWeapons.isModMeleeWeapon(stack) || stack.is(Items.BOW) || stack.is(Items.CROSSBOW));
 	}
 
 	/**
-	 * Заменяет чары предмета на случайный набор. Ванильные чары (если игра их уже выдала) стираются —
-	 * иначе старая и новая чара могли бы быть несовместимы.
+	 * Replaces the charm of an object with a random set. Vanilla charms (if the game has already given them) are erased.
+	 Otherwise, the old and the new spell might not be compatible.
 	 *
-	 * @return true, если на предмет что-то повешено
+	 * @return true if something is hung on the subject
 	 */
 	private static boolean enchant(Mob mob, ItemStack stack, RandomSource random, boolean armor, boolean growing) {
 		List<Option> pool = buildPool(mob, stack);
@@ -303,7 +303,7 @@ public final class MobEnchantments {
 			return false;
 		}
 
-		// GROWING: и число чар, и их уровни зависят от шкалы угрозы. FIXED: прежние значения.
+		// GROWING: Both the number of charms and their levels depend on the threat scale. FIXED: former values.
 		int[] endCounts = armor ? ARMOR_COUNT_WEIGHTS : COUNT_WEIGHTS;
 		int wanted;
 		double levelBias;
@@ -322,7 +322,7 @@ public final class MobEnchantments {
 			Option pick = pickWeighted(random, pool);
 			chosen.add(pick);
 			pool.remove(pick);
-			// Выкидываем из пула всё, что несовместимо с выбранной чарой (острота ↔ кара ↔ бич и т.д.).
+			// We throw out of the pool everything that is incompatible with the chosen charm (sharpness . Kara . Beach, etc.).
 			pool.removeIf(other -> !Enchantment.areCompatible(pick.holder(), other.holder()));
 		}
 
@@ -335,7 +335,7 @@ public final class MobEnchantments {
 		return true;
 	}
 
-	/** Подходящие предмету чары из списка настроек. */
+	/** Suitable subject charms from the list of settings. */
 	private static List<Option> buildPool(Mob mob, ItemStack stack) {
 		var registry = mob.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
 		List<Option> pool = new ArrayList<>();
@@ -384,7 +384,7 @@ public final class MobEnchantments {
 		return pool.get(0);
 	}
 
-	/** Уровень от 1 до maxLevel; чем больше {@code bias}, тем реже высокие уровни (см. LEVEL_BIAS). */
+	/** Level 1 to maxLevel; the higher the {@code bias}, the lower the higher levels (see LEVEL BIAS). */
 	private static int pickLevel(RandomSource random, int maxLevel, double bias) {
 		if (maxLevel <= 1) {
 			return 1;

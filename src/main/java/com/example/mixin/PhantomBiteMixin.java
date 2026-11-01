@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 /**
- * Укус фантома. Срабатывает в момент, когда он врезается в цель на пикировании.
- * Обычный удар моба здесь не трогается.
+ Phantom bite. It works when it hits the target on a dive.
+ The usual mob kick doesn't touch here.
  */
 @Mixin(Mob.class)
 public class PhantomBiteMixin {

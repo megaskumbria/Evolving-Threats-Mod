@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * К списку поведения утопленника добавляется заброс удочки.
- * Удар вблизи остаётся его обычной атакой.
+ * To the list of drowned behavior is added the cast of the fishing rod.
+ A close strike remains his usual attack.
  */
 @Mixin(Drowned.class)
 public class DrownedFishingMixin {

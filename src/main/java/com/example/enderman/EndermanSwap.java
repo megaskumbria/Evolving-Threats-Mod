@@ -16,74 +16,74 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Злой эндермен может поменяться с игроком местами.
- * Если игрок в воде, обмен не делается: эндермен утащит его на сушу,
- * где есть воздух на рост и земля под ногами. Внутрь блоков не ставит.
- * Обычный телепорт эндермена (от удара, от взгляда, от воды) остаётся.
+ An evil enderman can switch places with the player.
+ If the player is in the water, the exchange is not made: the Enderman will drag him to land.
+ Where there is air for growth and earth underfoot. No blocks inside.
+ The usual teleport of the enderman (from the impact, from the look, from the water) remains.
  */
 public final class EndermanSwap {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — обмена и вытаскивания из воды нет. Обычный телепорт эндермена остаётся. */
+	/*False – there is no exchanging or pulling out of the water. The Enderman's usual teleporter remains. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Сколько секунд после начала злости ждать перед первой попыткой.
-	 * 8 = восемь секунд боя, потом уже может поменяться.
+	 How many seconds after the beginning of anger to wait before the first attempt?
+	 8 = eight seconds of fighting, then it can change.
 	 */
 	public static final int FIRST_WAIT_SECONDS = 8;
 
 	/**
-	 * Пауза после удачного обмена или вытаскивания из воды, секунды.
-	 * 14 = следующий раз не раньше чем через 14 секунд.
+	 Pause after a successful exchange or pull out of the water, seconds.
+	 * 14 = next time not earlier than 14 seconds.
 	 */
 	public static final int COOLDOWN_SECONDS = 14;
 
 	/**
-	 * Пауза, если попытка не вышла: шанс не сработал или сухого места нет.
-	 * 4 = четыре секунды, потом пробует снова.
+	 Pause if the attempt did not work: the chance did not work or there is no dry place.
+	 4 = four seconds, then try again.
 	 */
 	public static final int RETRY_SECONDS = 4;
 
 	/**
-	 * Шанс (0.0–1.0) сработать, когда пауза кончилась.
-	 * 0.45 = 45%. 1 = каждый раз. 0 = никогда.
+	 Chance (0.0-1.0) to work when the pause is over.
+	 * 0.45 = 45%. 1 = every time. 0 = never.
 	 */
 	public static final float SWAP_CHANCE = 0.45f;
 
 	/**
-	 * Дальше этого (блоки) не трогает игрока.
-	 * 24 = около 24 блоков. Дальше эндермен просто идёт или телепортируется как обычно.
+	 * Beyond that (blocks) does not touch the player.
+	 * 24 = about 24 blocks. Then the enderman just walks or teleports as usual.
 	 */
 	public static final double MAX_RANGE_BLOCKS = 24.0;
 
 	/**
-	 * Ближе этого (блоки) из воды не вытаскивает: слишком рядом с тем же берегом.
-	 * 8 = минимум восемь блоков от места, где игрок был в воде.
+	 Closer than this (blocks) from the water does not pull: too close to the same shore.
+	 8 = a minimum of eight blocks from where the player was in the water.
 	 */
 	public static final double DRY_MIN_BLOCKS = 8.0;
 
 	/**
-	 * Дальше этого (блоки) сухое место не ищет.
-	 * 24 = если суши нет в этом круге, игрок остаётся в воде. Лучше так, чем засунуть в камень.
+	 Next to this (blocks) dry place is not looking.
+	 24 = if there is no sushi in this circle, the player remains in the water. It's better than sticking it in a rock.
 	 */
 	public static final double DRY_MAX_BLOCKS = 24.0;
 
 	/**
-	 * Сколько блоков вокруг точки посадки не должно быть воды.
-	 * 3 = вода не ближе трёх блоков, чтобы не поставить на самую кромку.
-	 * 0 = достаточно, чтобы сам игрок не стоял в воде.
+	 How many blocks around the landing point should there be no water?
+	 3 = water no closer than three blocks, so as not to put on the edge.
+	 0 = enough for the player not to stand in the water.
 	 */
 	public static final int DRY_PADDING = 3;
 
-	/** Сколько блоков вверх от игрока смотреть, ища поверхность над водой. 32 хватает глубокого озера. */
+	/*How many blocks up from the player look looking for the surface above the water. 32 grabs a deep lake. */
 	public static final int SEARCH_UP = 32;
 
-	/** Сколько блоков вниз от игрока ещё смотреть. 6 = чуть ниже ног, не в пещеру под океаном. */
+	/*How many blocks down from the player are there to watch? 6 = just below the feet, not into a cave under the ocean. */
 	public static final int SEARCH_DOWN = 6;
 
-	/** Сколько разных точек пробовать, когда игрок в воде. 24 = двадцать четыре попытки за один раз. */
+	/*How many different points to try when a player is in the water. 24 = twenty-four attempts at a time. */
 	public static final int RESCUE_TRIES = 24;
 
 	// ========================================================================
@@ -93,7 +93,7 @@ public final class EndermanSwap {
 	private EndermanSwap() {
 	}
 
-	/** Каждый серверный тик эндермена, пока он думает. */
+	/*Every Enderman server tick while he thinks. */
 	public static void tick(Enderman enderman, ServerLevel level) {
 		if (!ENABLED) {
 			return;
@@ -154,7 +154,7 @@ public final class EndermanSwap {
 		return true;
 	}
 
-	/** Игрок в воде: ищем сушу подальше, эндермена в воду не ставим. */
+	/*Player in the water: looking for land away, enderman not put in the water. */
 	private static boolean pullOutOfWater(ServerLevel level, Enderman enderman, Player player) {
 		if (DRY_MAX_BLOCKS < DRY_MIN_BLOCKS) {
 			return false;
@@ -190,7 +190,7 @@ public final class EndermanSwap {
 		return false;
 	}
 
-	/** Воздух на весь рост, опора под ногами, не вода и не лава. Чужое тело не мешает: его место как раз и занимаем. */
+	/*Air to the full height, support under the feet, not water and not lava. A foreign body does not interfere: we occupy its place. */
 	private static boolean canStand(ServerLevel level, Entity body, double x, double y, double z) {
 		BlockPos feet = BlockPos.containing(x, y, z);
 		if (!level.isLoaded(feet) || !level.getWorldBorder().isWithinBounds(feet)) {

@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Скелет-снайпер: стреляет с дальней дистанции. Реализация — mixin на скелета. */
+/*Skeleton-sniper: shoots from a long distance. Realization - mixin on the skeleton. */
 public interface SniperSkeletonEntity {
 
 	boolean evolvingthreats$isSniper();

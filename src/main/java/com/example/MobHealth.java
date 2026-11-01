@@ -13,49 +13,49 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 
 /**
- * Случайное здоровье при появлении. Число целое, оба края входят: 20 и 40 — тоже возможны.
- * Гнилой надсмотрщик потом ставит свои 100. Паучиха-матка — свои 40. Якорь рейда — свои 100.
- * Василиск потом ставит свои 100 (BasiliskSkeleton.MAX_HEALTH).
- * Бастион потом ставит свои 1000 (Bastion.MAX_HEALTH).
- * Скелет «700 IQ» потом ставит свои 50 (TacticianSkeleton.HEALTH_MIN и HEALTH_MAX).
- * Excalibur потом ставит свои 50 (ZombieExcalibur.MAX_HEALTH).
- * Ритуальная стая потом ставит свои 50 (RitualBand.MAX_HEALTH).
+ * Accidental health upon appearance. The number is integer, both edges are included: 20 and 40 are also possible.
+ The rotten overseer then puts his 100. Spider womb is 40. The anchor of the raid is 100.
+ Basilisk then puts his 100 (BasiliskSkeleton.MAX HEALTH)
+ Bastion then bets his 1000 (Bastion.MAX HEALTH)
+ The 700 IQ skeleton then puts its 50 (TacticianSkeleton.HEALTH MIN and HEALTH MAX).
+ Excalibur then puts its 50 (ZombieExcalibur.MAX HEALTH).
+ The ritual pack then puts its 50 (RitualBand.MAX HEALTH).
  */
 public final class MobHealth {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — у всех остаётся ванильное здоровье. */
+	/** Turn on the mechanics. False: Everyone has vanilla health. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Зомби, кадавр, зомби-житель, утопленник, скелет и странник.
-	 * Сейчас у них 20. 20 и 40 = от 20 до 40 жизней (от 10 до 20 сердец).
-	 * MAX — это потолок на 100-й день: в начале игры он ниже и растёт вместе со шкалой угрозы
-	 * (стартовое значение — в ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START).
+	 Zombie, husk, zombie villager, drowned, skeleton and wanderer.
+	 * They have 20 now. 20 and 40 = 20 to 40 lives (10 to 20 hearts).
+	 MAX is the ceiling on day 100: at the beginning of the game it is lower and grows with the threat scale.
+	 * (Starting value in ThreatTable.ZOMBIE SKELETON HEALTH MAX START)
 	 */
 	public static final int ZOMBIE_SKELETON_MIN = 20;
 	public static final int ZOMBIE_SKELETON_MAX = 40;
 
 	/**
-	 * Паук и пещерный паук. У обычного паука сейчас 16, у пещерного 12.
-	 * 16 и 30 = оба начинают минимум с 16.
+	 Spider and cave spider. The average spider is now 16, the cave 12.
+	 * 16 and 30 = both start at least 16.
 	 */
 	public static final int SPIDER_MIN = 16;
 	public static final int SPIDER_MAX = 30;
 
-	/** Крипер, в том числе подрывник, метатель и ломатель щита. Сейчас 20. */
+	/** Creeper, including bomber, thrower and shield breaker. It's 20. */
 	public static final int CREEPER_MIN = 20;
 	public static final int CREEPER_MAX = 30;
 
-	// Эндермен сюда не входит: у него всегда 40, как в обычной игре.
+	// Enderman doesn't come in here: he's always 40, like in a normal game.
 
 	// ========================================================================
 
 	private MobHealth() {
 	}
 
-	/** Один раз при появлении. При загрузке мира заново не бросается: здоровье уже записано. */
+	/** Once upon appearance. When downloading the world again does not throw: health is already recorded. */
 	public static void tryRoll(Mob mob) {
 		if (!ENABLED || !(mob.level() instanceof ServerLevel)) {
 			return;
@@ -66,7 +66,7 @@ public final class MobHealth {
 		int min;
 		int max;
 		if (mob instanceof Zombie || mob instanceof Skeleton || mob instanceof Stray) {
-			// GROWING: потолок здоровья поднимается от ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START до MAX к 100-му дню.
+			// GROWING: The health ceiling rises from ThreatTable.ZOMBIE SKELETON HEALTH MAX START to MAX by day 100.
 			min = ZOMBIE_SKELETON_MIN;
 			max = Math.round(ThreatScale.lerp(mob.level(), (float) ThreatTable.ZOMBIE_SKELETON_HEALTH_MAX_START,
 					(float) ZOMBIE_SKELETON_MAX));

@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Фантом, который вешает слабость укусом. Реализация — mixin на Phantom. */
+/*A phantom that hangs weakness with a bite. The implementation is mixin on Phantom. */
 public interface WeakeningPhantomEntity {
 
 	boolean evolvingthreats$weakensOnBite();

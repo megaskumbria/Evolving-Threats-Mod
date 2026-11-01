@@ -18,50 +18,50 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Утопленник с удочкой просто держит её в руке. Крючок не закидывает и никого не тащит.
- * Удочку выдаёт сама игра, мод её не забирает. Бьёт руками, как обычный утопленник.
- * true у {@link #ENABLED} снова включает заброс и подтягивание.
+ The drowned man with the fishing rod just holds it in his hand. The hook does not throw and does not drag anyone.
+ The rod is given by the game itself, the mod does not take it. He beats his hands like a regular drowned man.
+ * true y {@link #ENABLED} again includes throwing and pulling.
  */
 public final class DrownedFishing {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * false — удочка только предмет в руке, крючок не закидывается.
-	 * true — снова кидает крючок в игрока и подтягивает его.
+	 False - only the object in the hand, the hook does not throw.
+	 True - again throws the hook at the player and pulls him up.
 	 */
 	public static final boolean ENABLED = false;
 
 	/**
-	 * Ближе этого (блоки) крючок отпускает, и утопленник атакует в упор.
-	 * 3 = около трёх блоков, как длина его удара. Меньше — бьёт ещё издалека.
+	 Closer to this (blocks) the hook releases, and the drowned attack at point-blank range.
+	 3 = about three blocks as the length of its impact. Less hits from afar.
 	 */
 	public static final double MELEE_BLOCKS = 3.0;
 
 	/**
-	 * Дальше этого (блоки) крючок не закидывает, просто идёт к игроку.
-	 * 16 = заброс примерно на 16 блоков.
+	 Next to this (blocks) the hook does not throw, just goes to the player.
+	 * 16 = throw of approximately 16 blocks.
 	 */
 	public static final double CAST_BLOCKS = 16.0;
 
 	/**
-	 * Насколько сильно тянет зацепленного игрока за тик (20 тиков = 1 секунда).
-	 * 0.18 = заметно тащит к себе. Больше — рывок резче. 0 = висит на крючке, но не едет.
+	 How much does the player pull by the tick (20 ticks = 1 second).
+	 * 0.18 = noticeably pulling towards himself. More is a sharper push. 0 = hanging on the hook, but not going.
 	 */
 	public static final double PULL_PER_TICK = 0.18;
 
 	/**
-	 * Пауза после промаха, секунды. 1 = новый заброс через секунду.
-	 * Пока игрок на крючке, пауза не идёт.
+	 Pause after miss, second. 1 = new throw in a second.
+	 While the player is on the hook, there is no pause.
 	 */
 	public static final int MISS_COOLDOWN_SECONDS = 1;
 
-	/** Сколько тиков крючок летит, если никого не задел. 30 = полторы секунды, потом это промах. */
+	/*How many ticks does the hook fly if you don't hit anyone? 30 = a second and a half, then it's a miss. */
 	public static final int FLIGHT_TICKS = 30;
 
 	/**
-	 * Скорость крючка, блоки за тик. 1.6 = быстро долетает на обычной дистанции.
-	 * Меньше — дуга ниже и чаще бьётся о землю.
+	 Hook speed, blocks per tick. 1.6 = Flying at a normal distance.
+	 Less - the arc lower and more often beats the ground.
 	 */
 	public static final double CAST_SPEED = 1.6;
 
@@ -74,7 +74,7 @@ public final class DrownedFishing {
 		return drowned.getMainHandItem().is(Items.FISHING_ROD);
 	}
 
-	/** Удочка в руке, игрок не вплотную и не слишком далеко. */
+	/*rod in hand, the player is not close and not too far away. */
 	public static boolean wantsToCast(Drowned drowned) {
 		if (!ENABLED || CAST_BLOCKS <= MELEE_BLOCKS || !holdsRod(drowned)) {
 			return false;
@@ -98,7 +98,7 @@ public final class DrownedFishing {
 			return null;
 		}
 		direction = direction.normalize();
-		// Дальше тела, иначе крючок сразу упирается в самого утопленника.
+		// Next to the body, otherwise the hook immediately rests on the drowned person.
 		Vec3 spawn = from.add(direction.scale(1.4));
 
 		FishingHook hook = new FishingHook(EntityTypes.FISHING_BOBBER, level);
@@ -113,10 +113,10 @@ public final class DrownedFishing {
 	}
 
 	/**
-	 * Полёт крючка, пока владелец — утопленник.
-	 * Обычная удочка живёт только у игрока, поэтому этот тик вместо неё.
+	 Fly the hook while the owner is drowned.
+	 The usual fishing rod lives only in the player, so this tick instead of it.
 	 *
-	 * @return false — крючок пора убрать (промах, утопленник умер, удочки больше нет)
+	 * @return false - it's time to remove the hook (miss, drowned man died, fishing rod no more)
 	 */
 	public static boolean tickBobber(FishingHook hook, Drowned drowned) {
 		if (!ENABLED || !drowned.isAlive() || !holdsRod(drowned)) {
@@ -162,7 +162,7 @@ public final class DrownedFishing {
 			hook.needsSync = true;
 			return true;
 		}
-		// У самого тела крючок может задеть пол. Стена дальше — промах, и можно кидать снова.
+		// In the body itself, the hook can touch the floor. The wall is a mistake, and you can throw again.
 		if (hit.getType() == HitResult.Type.BLOCK && hook.tickCount > 2 && hit.getLocation().distanceToSqr(drowned.position()) > 2.25) {
 			return false;
 		}

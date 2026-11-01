@@ -1,65 +1,65 @@
 SPIKY
 =====
 
-Тип: редкий обычный зомби или обычный скелет. Не новый моб в меню.
-Код: spiky/Spiky.java (шанс, сердца, кусок брони),
-     mixin/SpikyMixin.java (помнит, что он Spiky),
-     mixin/SpikyHitMixin.java (гасит обычные Шипы и колет в ответ),
-     mixin/ZombieMixin.java и mixin/SkeletonMixin.java (шанс при появлении).
+Type: a rare normal zombie or normal skeleton. Not a new mob in the menu.
+Code: spiky/Spiky.java (chance, hearts, armor piece),
+     mixin/SpikyMixin.java (remembers Spiky),
+     mixin/SpikyHitMixin.java (suppresses vanilla Thorns, counter-stab),
+     mixin/ZombieMixin.java and mixin/SkeletonMixin.java (chance on spawn).
 
-Бастион, надсмотрщик, якорь, чародей, Excalibur, Mjölnir, динамит, ритуал,
-Василиск, капитан и «700 IQ» им не становятся. Маленький скелет тоже нет.
-Бастион и Spiky на одном мобе не встречаются.
+Bastion, overseer, anchor, sorcerer, Excalibur, Mjölnir, dynamite, ritual,
+Basilisk, captain, and “700 IQ” do not become Spiky. Small skeleton — no.
+Bastion and Spiky never on one mob.
 
 
-КАК ВЫГЛЯДИТ
+HOW IT LOOKS
 ------------
-Над головой имя Spiky. Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-Один случайный кусок брони всегда с Шипами. Уровень на предмете — THORNS_LEVEL (сейчас III).
-Этот уровень на силу укола не влияет: сердца задаются отдельно.
-Остальные три слота — как у обычного зомби или скелета: могут быть пустыми, с бронёй или с особой головой.
-Если брони не было совсем, один кусок всё равно надевается.
+Name above head: Spiky. Visible only when crosshair is on it and within ~64 blocks.
+One random armor piece always has Thorns. Level on item — THORNS_LEVEL (currently III).
+Level does not affect stab strength: hearts are set separately.
+Other three slots — like normal zombie or skeleton: empty, armor, or special head.
+If no armor at all, one piece is still equipped.
 
 
-КАК ДЕЙСТВУЕТ
+HOW IT ACTS
 -------------
-1. Удар игрока, его стрела или трезубец дошли — один укол в ответ, не с каждого куска.
-   Снимает 7 или 8 сердец. Броня, Защита и поднятый щит это число не режут.
-   Слышен тот же звон, что при уроне от обычных Шипов. Если укол не прошёл, звука нет.
-2. Жёлтые сердца от золотого яблока съедаются первыми, потом красные.
-   Зелье «Сопротивление урону» удар всё ещё ослабляет.
-3. Огонь, взрыв и чужие Шипы укол не вызывают.
-4. Обычные Шипы игры с его брони не добавляются: иначе удар сложился бы дважды.
-5. Если снять эту броню и надеть самому, она колет уже слабо, как обычные Шипы.
-6. Имя не даёт ему исчезнуть самому.
-7. Шанс 0,2% с 40-го дня. FIXED: луна и дальнейшие дни его не меняют.
-   До 40-го дня таких нет.
+1. Player hit, arrow, or trident that lands — one counter-stab, not per piece.
+   Removes 7 or 8 hearts. Armor, Protection, and raised shield do not reduce it.
+   Same ring as vanilla Thorns damage. No ring if stab did not apply.
+2. Golden apple absorption hearts go first, then red.
+   Resistance potion still weakens the hit.
+3. Fire, explosion, and foreign Thorns do not trigger stab.
+4. Vanilla Thorns from its armor are not added: otherwise hit would stack twice.
+5. If you take that armor and wear it, it pokes weakly like normal Thorns.
+6. Name does not prevent despawn by itself.
+7. Chance 0.2% from day 40. FIXED: moon and later days do not change it.
+   None before day 40.
 
 
-КОГО НЕТ
+WHO IS EXCLUDED
 --------
-Детёныш, кадавр, утопленник, зомби-житель, странник, болотный и пустынный скелет.
-В ночь осады не появляется. Призванная подмога и /summon шанс не бросают.
-Спаунер бросает.
+Baby, husk, drowned, zombie villager, stray, swamp and desert skeleton.
+Does not appear on siege night. Summoned reinforcements and /summon skip chance.
+Spawner rolls.
 
 
-КОМАНДА
+COMMAND
 -------
-  /etspiky                 — зомби
-  /etspiky skeleton        — скелет
+  /etspiky                 — zombie
+  /etspiky skeleton        — skeleton
   /evolvingthreats spawn spiky
   /evolvingthreats spawn spiky skeleton
-День и шанс не проверяются. Появляется в 6 блоках по взгляду.
-Нужны права оператора.
+Day and chance not checked. Spawns 6 blocks along look.
+Operator rights required.
 
 
-ЧТО МЕНЯТЬ
+WHAT TO TUNE
 ----------
 Spiky.java:
-  ENABLED .......... false — новые не появляются, команда тоже молчит
-  SPAWN_CHANCE ..... 0.002 = 0,2%. 0 = не появляется сам. 0.01 = 1%
-  HEARTS_MIN ....... 7 — меньше сердец за укол. Оба края входят
-  HEARTS_MAX ....... 8 — больше сердец за укол
-  THORNS_LEVEL ..... 3 — что написано на куске. 0 = чары не написаны, колоть будет всё равно
+  ENABLED .......... false — no new spawns, command silent too
+  SPAWN_CHANCE ..... 0.002 = 0.2%. 0 = never natural. 0.01 = 1%
+  HEARTS_MIN ....... 7 — fewer hearts per stab. Both ends inclusive
+  HEARTS_MAX ....... 8 — more hearts per stab
+  THORNS_LEVEL ..... 3 — text on piece. 0 = no enchant text, still stabs
 ThreatTable.java:
-  SPIKY_DAY ........ 40 — с какого дня появляется сам
+  SPIKY_DAY ........ 40 — first day for natural spawn

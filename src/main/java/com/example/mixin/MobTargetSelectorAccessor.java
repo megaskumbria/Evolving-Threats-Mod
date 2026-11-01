@@ -6,9 +6,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 /**
- * Выбор цели (targetSelector) объявлен в Mob и закрыт.
- * Открытого метода, как у обычных целей (getGoalSelector), у него нет.
- * @Shadow из mixin на зомби или скелета это поле не видит: оно лежит в родителе.
+ TargetSelector is declared in Mob and closed.
+ It does not have an open method, like the usual goals (getGoalSelector).
+ * @Shadow from mixin on zombies or skeleton doesn't see this field: it lies in the parent.
  */
 @Mixin(Mob.class)
 public interface MobTargetSelectorAccessor {

@@ -27,60 +27,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Моб может появиться сразу под несколькими полезными зельями.
- * Эффект не кончается, пока моб жив, и сыпет частицы, как у игрока с зельем.
+ Mob can appear immediately under several useful potions.
+ The effect does not end while the mob is alive, and sprinkles particles, like a player with a potion.
  *
- * <p>В игре 25 полезных зелий, но долгая версия при бесконечном эффекте ничем не отличается
- * от обычной: время и так не идёт. Поэтому здесь 10 разных эффектов.
- * Лечения нет: это мгновенное зелье, и если сделать его бесконечным, моб лечится каждый миг.
+ In the game 25 useful potions, but the long version with an infinite effect is no different
+ From the usual: time does not go by. So here are 10 different effects.
+ There is no cure: it is an instant potion, and if you make it endless, the mob is healed every moment.
  */
 public final class MobPotionBuffs {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — мобы появляются без этих зелий. */
+	/** Turn on the mechanics. False - Mobs appear without these potions. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Сколько эффектов сразу на 100-й день (КОНЕЦ шкалы угрозы). Индекс 0 = ни одного, 1 = один, … 5 = пять.
-	 * Числа — вес (шанс относительно остальных). {50, 24, 13, 7, 4, 2} в сумме 100:
-	 * без зелья 50%, одно 24%, два 13%, три 7%, четыре 4%, пять 2%.
-	 * В начале игры веса другие (ThreatTable.POTION_COUNT_WEIGHTS_START: почти у всех ни одного зелья)
-	 * и плавно приходят к этим значениям вместе со шкалой и луной.
-	 * Хочешь, чтобы пять эффектов почти не встречались — уменьши последнее число.
-	 * Больше пяти не добавляй: на мобе всего 10 разных эффектов.
+	 How many effects on day 100 (end of threat scale) Index 0 = none, 1 = one, ... 5 = five.
+	 Numbers - weight (a chance relative to the rest). {50, 24, 13, 7, 4, 2} in the sum of 100:
+	 * without the potion 50%, one 24%, two 13%, three 7%, four 4%, five 2%.
+	 ThreatTable.POTION COUNT WEIGHTS START: almost all have no potions
+	 * and smoothly arrive at these values along with the scale and the moon.
+	 If you want the five effects to almost never occur, reduce the last number.
+	 Do not add more than five: there are only 10 different effects on the moba.
 	 */
 	public static final int[] COUNT_WEIGHTS = { 50, 24, 13, 7, 4, 2 };
 
 	/**
-	 * Шанс (0.0–1.0), что эффект будет II уровня, если у него есть сильное зелье.
-	 * 0.33 ≈ 33%, то есть примерно одно из трёх: обычное, долгое и сильное, а долгое здесь то же, что обычное.
-	 * Касается только прыжка, скорости, регенерации и силы. У остальных сильной версии нет.
-	 * 0 = всегда I уровень. 1 = всегда II, где он бывает.
+	 Chance (0.0-1.0) that the effect will be level II if it has a strong potion.
+	 0.33 ≈ 33%, that is, about one of three: ordinary, long and strong, and long is the same as usual.
+	 * Refers only to jump, speed, regeneration and strength. The others don't have a strong version.
+	 * 0 = always level I. 1 = always II, where it is.
 	 */
 	public static final float STRONG_LEVEL_CHANCE = 0.33f;
 
 	/**
-	 * Сколько секунд эффект из тумана крипера держится на том, кто в него вошёл.
-	 * Сам туман живёт 15 секунд, как у обычного крипера: это делает игра, не это число.
-	 * 45 = как у взрывного зелья обычной длины (четверть от трёх минут).
-	 * На живом крипере эффект по-прежнему не кончается. Меняется только туман после взрыва.
+	 How many seconds does the effect of the cryper fog hold on who entered it?
+	 The fog itself lives 15 seconds, like a regular cryper: it does the game, not this number.
+	 45 = as in an explosive potion of normal length (a quarter of three minutes).
+	 On a live cryper, the effect still does not end. Only the fog changes after the explosion.
 	 */
 	public static final int CLOUD_EFFECT_SECONDS = 45;
 
 	/**
-	 * Игра умножает время эффекта в тумане крипера на это число. 0.25 = четверть.
-	 * Поэтому в туман записывается в 4 раза больше, а на игроке остаётся {@link #CLOUD_EFFECT_SECONDS}.
+	 The game multiplies the effect time in the cryper fog by this number. 0.25 = a quarter.
+	 * Therefore, the fog is recorded 4 times more, and the player remains {@link #CLOUD EFFECT SECONDS}.
 	 */
 	private static final float VANILLA_CREEPER_CLOUD_SCALE = 0.25f;
 
 	// ========================================================================
 
 	/**
-	 * Полезные эффекты. Второй флаг — есть ли сильное зелье (уровень II).
-	 * Ночное зрение и удача почти не помогают мобу в бою, но остаются в списке:
-	 * это тоже полезные зелья, и частицы от них видны.
-	 * Подводное дыхание не даёт зомби захлебнуться и превратиться в утопленника.
+	 Useful effects. The second flag is whether there is a strong potion (level II).
+	 Night vision and luck do not help the mob in combat, but remain on the list:
+	 These are also useful potions, and particles from them are visible.
+	 Underwater breath does not allow zombies to drown and turn into a drowned person.
 	 */
 	private static final List<Buff> BUFFS = List.of(
 			new Buff(MobEffects.NIGHT_VISION, false),
@@ -99,10 +99,10 @@ public final class MobPotionBuffs {
 	}
 
 	/**
-	 * Крипер, эндермен, блейз, фантом, слизень и магмовый куб, страж и древний страж,
-	 * шалкер, пиглин и брут, хоглин и зоглин.
-	 * Древний страж — это тоже страж, поэтому отдельной проверки нет.
-	 * У части из них нет своего появления, поэтому вызов идёт из общего спавна моба.
+	 Creeper, Enderman, Blaze, Phantom, Slug and Magma Cube, Guardian and Ancient Guardian,
+	 * shalker, piglin and brut, hoglin and zoglin.
+	 The ancient guard is also a guard, so there is no separate check.
+	 Some of them do not have their appearance, so the call comes from a common mob spawn.
 	 */
 	public static void tryApplyExtra(Mob mob) {
 		if (mob instanceof Creeper
@@ -121,7 +121,7 @@ public final class MobPotionBuffs {
 		}
 	}
 
-	/** Вызвать один раз, когда моб только появился. Повторно при загрузке мира не вызывается. */
+	/*Call once when the mob first appeared. Re-loading the world is not called. */
 	public static void tryApply(Mob mob) {
 		if (!ENABLED || !(mob.level() instanceof ServerLevel)) {
 			return;
@@ -131,9 +131,9 @@ public final class MobPotionBuffs {
 			return;
 		}
 		List<Buff> pool = new ArrayList<>(BUFFS);
-		// Крипер и парящий инструмент без невидимости.
-		// Крипера и так легко не заметить, а у инструмента нет тела: зелье прячет его целиком.
-		// Остальные эффекты из списка им по-прежнему выпадают. Снять запрет — убрать эту проверку.
+		// Kreeper and a hovering instrument without invisibility.
+		// Creeper is easy to miss, and the tool has no body: the potion hides it entirely.
+		// The rest of the effects on the list still fall out. Lifting the ban is removing that check.
 		if (mob instanceof Creeper || mob instanceof FloatingTool) {
 			pool.removeIf(buff -> buff.effect == MobEffects.INVISIBILITY);
 		}
@@ -141,7 +141,7 @@ public final class MobPotionBuffs {
 		for (int i = 0; i < count && !pool.isEmpty(); i++) {
 			Buff buff = pool.remove(random.nextInt(pool.size()));
 			int amplifier = buff.canBeStrong && random.nextFloat() < STRONG_LEVEL_CHANCE ? 1 : 0;
-			// ambient = false — обычные частицы, как у выпитого зелья, а не тусклые от маяка.
+			// ambient = false - ordinary particles, as in a drunken potion, and not dull from a lighthouse.
 			mob.addEffect(new MobEffectInstance(
 					buff.effect,
 					MobEffectInstance.INFINITE_DURATION,
@@ -153,9 +153,9 @@ public final class MobPotionBuffs {
 	}
 
 	/**
-	 * Туман после взрыва крипера копирует зелья с моба. Бесконечное время так и осталось бы
-	 * бесконечным: игра его не укорачивает. Здесь оно становится конечным.
-	 * Обычное зелье со своим временем (крипера облили из бутылки) не трогаем.
+	 The fog after the cryper explosion copies potions from the mob. Infinite time would remain that way.
+	 Infinite: The game does not shorten it. Here it becomes finite.
+	 Ordinary potion with its time (cripper doused from a bottle) do not touch.
 	 */
 	public static MobEffectInstance forDeathCloud(MobEffectInstance effect) {
 		if (effect == null || !effect.isInfiniteDuration()) {
@@ -172,9 +172,9 @@ public final class MobPotionBuffs {
 				effect.showIcon());
 	}
 
-	/** 0 = без эффекта. Чем правее индекс в {@link #COUNT_WEIGHTS}, тем больше эффектов. */
+	/** 0 = no effect. The more right the index in {@link #COUNT WEIGHTS}, the more effects. */
 	private static int rollCount(Mob mob) {
-		// GROWING: в начале игры почти у всех ноль зелий, веса плавно доходят до COUNT_WEIGHTS к 100-му дню.
+		// GROWING: At the beginning of the game, almost everyone has zero potions, the weights smoothly reach COUNT WEIGHTS by day 100.
 		return ThreatScale.pickWeighted(mob.level(), mob.getRandom(), ThreatTable.POTION_COUNT_WEIGHTS_START, COUNT_WEIGHTS);
 	}
 

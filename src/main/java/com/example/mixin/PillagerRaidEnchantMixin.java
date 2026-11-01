@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Рейд сначала выдаёт разбойнику свой арбалет (часто с быстрой перезарядкой I или II).
- * Сразу после этого тот же бросок, что вне рейда: с шансом арбалет получает чары мода,
- * вплоть до максимального уровня. Если бросок не выпал, чара рейда остаётся.
+ The raid first gives the robber his crossbow (often with a quick reload I or II).
+ Immediately after that, the same throw as outside the raid: with a chance, the crossbow gets the charm of fashion,
+ * up to the maximum level. If the throw does not fall, the charm of the raid remains.
  */
 @Mixin(Pillager.class)
 public class PillagerRaidEnchantMixin {

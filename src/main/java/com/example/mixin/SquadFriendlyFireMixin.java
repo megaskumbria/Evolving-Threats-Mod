@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удар до того, как игра запомнит обидчика.
- * Стрела капитана и меч охранника по своим не проходят: нет урона и нет ответной атаки.
+ Strike before the game remembers the offender.
+ The arrow of the captain and the sword of the guard do not pass on their own: there is no damage and no retaliatory attack.
  */
 @Mixin(LivingEntity.class)
 public class SquadFriendlyFireMixin {

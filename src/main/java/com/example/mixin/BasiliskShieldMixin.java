@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Щит уже отбил удар. Если это стрела Василиска, удар копится на щите.
- * Если игрок смотрел не на стрелу, щит её не отбил и сюда удар не попадает.
+ The shield has already repulsed. If it's Basiliska's arrow, the impact builds up on the shield.
+ If the player did not look at the arrow, the shield did not repel it and the blow does not fall here.
  */
 @Mixin(LivingEntity.class)
 public class BasiliskShieldMixin {

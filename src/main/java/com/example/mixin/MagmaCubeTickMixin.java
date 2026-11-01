@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Общий тик кубов. Слизень здесь ничего не делает.
- * У магмового куба своего тика нет, поэтому перегрев и магма считаются отсюда.
+ Common cube tick. Slug doesn't do anything here.
+ The magma cube does not have its own tick, so overheating and magma are counted from here.
  */
 @Mixin(AbstractCubeMob.class)
 public class MagmaCubeTickMixin {

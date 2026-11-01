@@ -12,8 +12,8 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 /**
- * Капитан сам идёт к закреплённому игроку, даже если ещё не видел его в упор.
- * Помощники эту цель не ведут: они бегут за капитаном поводком.
+ The captain himself goes to the fixed player, even if he has not yet seen him at point-blank range.
+ Assistants do not lead this goal: they run after the captain with a leash.
  */
 public class CaptainHuntGoal extends Goal {
 

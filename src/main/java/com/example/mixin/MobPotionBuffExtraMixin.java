@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Общее появление моба. Сюда попадают крипер, эндермен, блейз, фантом, слизень,
- * магмовый куб, страж, древний страж, шалкер, пиглин, брут, хоглин и зоглин.
- * Зомби, скелеты и пауки получают баф в своих mixin.
+ The general appearance of the mob. Here comes the cryper, the enderman, the blaze, the phantom, the slug,
+ magma cube, guard, ancient guard, shalker, piglin, brute, hoglin and zoglin.
+ Zombies, skeletons and spiders get a buff in their mixin.
  */
 @Mixin(Mob.class)
 public class MobPotionBuffExtraMixin {
@@ -31,8 +31,8 @@ public class MobPotionBuffExtraMixin {
 		Mob mob = (Mob) (Object) this;
 		MobHealth.tryRoll(mob);
 		MobPotionBuffs.tryApplyExtra(mob);
-		// Ифрит, ведьма, крипер, пиглин, эндермен, чешуйница.
-		// Зомби, скелет, паук и брут бросают шанс у себя, иначе вышло бы два броска.
+		// Ifrit, witch, cryper, piglin, enderman, scales.
+		// Zombies, skeleton, spider and brute throw a chance at themselves, otherwise two shots would come out.
 		Mirror.tryRollSharedSpawn(mob, spawnReason);
 	}
 }

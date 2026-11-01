@@ -1,44 +1,44 @@
-ПОВРЕЖДЁННЫЙ ГОЛЕМ
+DAMAGED GOLEM
 ==================
 
-Тип: железный голем, который с самого начала враждебен к игроку.
-Код: golem/DamagedGolem.java (здоровье, трещины, удар, команда),
-     spawn/NaturalMonsterSwap.java (общий бросок с парящим инструментом),
-     mixin/NaturalSpawnerFloatingToolMixin.java (ночной спавн),
-     client/golem/DamagedGolemRenderer.java (текстура с чёрными глазами).
-Текстура: assets/evolving-threats/textures/entity/damaged_golem.png
+Type: iron golem hostile to the player from spawn.
+Code: golem/DamagedGolem.java (health, cracks, hit, command),
+     spawn/NaturalMonsterSwap.java (shared roll with floating tool),
+     mixin/NaturalSpawnerFloatingToolMixin.java (night spawn),
+     client/golem/DamagedGolemRenderer.java (texture with black eyes).
+Texture: assets/evolving-threats/textures/entity/damaged_golem.png
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. В обычном мире ночью, там же, где зомби и скелеты. Не ближе 24 блоков до игрока.
-   Шанс NATURAL_SPAWN_CHANCE = 0.002 (0,2%, один из пятисот). FIXED: с первого дня, от шкалы не растёт.
-   Бросок один на двоих с парящим инструментом: сначала 5% инструмент, следующий 0,2% голем.
-2. Если потолок низкий и голем ростом 2.7 блока не влезает, в этом месте остаётся обычный моб.
-3. Увидел игрока — идёт бить. Деревню не защищает, цветы не дарит.
-   Железный слиток его не чинит.
-   Зомби, скелеты и прочие на него не агрятся: для них он не цель.
-   На обычного деревенского голема по-прежнему агрятся.
-4. Удар как у обычного железного голема.
-5. Здоровье 100 (50 сердец), даже пока он выглядит развалившимся.
-6. Глаза абсолютно чёрные. Трещины задаёт CRACK_LEVEL: 3 = самые сильные.
-7. В аду и в Энде не появляется. В мирном режиме исчезает.
-8. Железо после смерти не выпадает, иначе ночь стала бы железной фермой.
+1. Overworld at night, same places as zombies and skeletons. Not closer than 24 blocks to player.
+   Chance NATURAL_SPAWN_CHANCE = 0.002 (0.2%, one in five hundred). FIXED from day one, not scale.
+   Shared roll with floating tool: first 5% tool, next 0.2% golem.
+2. If ceiling too low for 2.7-block golem, normal mob spawns there instead.
+3. Sees player — attacks. Does not protect village or give flowers.
+   Iron ingot does not repair it.
+   Zombies, skeletons, etc. do not aggro: not a target for them.
+   Village iron golem still aggro’d as before.
+4. Hit like normal iron golem.
+5. Health 100 (50 hearts) even while looking broken.
+6. Eyes fully black. Cracks from CRACK_LEVEL: 3 = heaviest.
+7. Does not spawn in Nether or End. Despawns in peaceful.
+8. No iron drop on death — otherwise night would be an iron farm.
 
 
-КОМАНДА
+COMMAND
 -------
   /etgolem
   /evolvingthreats spawn golem
-Проверка, не обычный спавн. Появляется в 6 блоках впереди по земле и сразу идёт на тебя.
-Шанс 0,2% не бросает. Нужны права оператора.
+Test spawn, not natural. Appears 6 blocks ahead on ground and attacks.
+Does not roll 0.2% chance. Operator rights required.
 
 
 SETTINGS (DamagedGolem.java)
 -----------------------------
-  NATURAL_SPAWN_CHANCE ..... 0.002 — 0,2%, один из 500. 0 = только команда
-  MAX_HEALTH ............... 100 — 50 сердец
-  ATTACK_DAMAGE ............ 15 — как у обычного голема
-  FOLLOW_RANGE ............. 24 блока
-  CRACK_LEVEL .............. 3 сильно, 2 средне, 1 чуть-чуть, 0 целый
-  EXPERIENCE_REWARD ........ 10 до множителя, с моба падает 20
+  NATURAL_SPAWN_CHANCE ..... 0.002 — 0.2%, one in 500. 0 = command only
+  MAX_HEALTH ............... 100 — 50 hearts
+  ATTACK_DAMAGE ............ 15 — like normal golem
+  FOLLOW_RANGE ............. 24 blocks
+  CRACK_LEVEL .............. 3 heavy, 2 medium, 1 slight, 0 intact
+  EXPERIENCE_REWARD ........ 10 before multiplier, 20 from mob

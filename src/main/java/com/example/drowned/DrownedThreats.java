@@ -22,67 +22,67 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 /**
- * Утопленник: черепаший шлем, лечение в воде и чары на трезубце, который уже выдала игра.
- * Шлем и чары решаются один раз при появлении. Лечение работает у всех, пока они в воде.
- * Новый трезубец мод не создаёт и удочку не забирает. Если игра успела повесить свои чары, мод их заменяет.
+ Drowning: turtle helmet, treatment in the water and charms on the trident, which has already given the game.
+ Helmet and spells are solved once upon appearance. The treatment works for everyone while they are in the water.
+ The new trident fashion does not create and does not take the rod. If the game has managed to hang its charms, the mod replaces them.
  */
 public final class DrownedThreats {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — утопленник как в обычной игре. */
+	/*False - drowned as in a normal game. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) появиться в черепашьем шлеме.
-	 * 0.10 = 10%, примерно каждый десятый. 0 = шлема нет. 1 = шлем у каждого.
-	 * Если на голове уже что-то есть, шлем не надевается.
+	 Chance (0.0-1.0) to appear in a turtle helmet.
+	 * 0.10 = 10%, approximately one in ten. 0 = no helmet. 1 = everyone's helmet.
+	 If something is already on the head, the helmet is not worn.
 	 */
 	public static final float HELMET_CHANCE = 0.10f;
 
 	/**
-	 * Уровень чар «Защита» на шлеме. Это и есть сопротивление урону.
-	 * 2 = Защита II. 0 = шлем без чар, остаётся только своя броня панциря.
-	 * 4 = максимум игры, Защита IV.
+	 The level of charm "Protection" on the helmet. That's what damage resistance is.
+	 * 2 = Protection II. 0 = helmet without enchantment, only its own armor remains.
+	 4 = maximum game, Defense IV.
 	 */
 	public static final int HELMET_PROTECTION = 2;
 
 	/**
-	 * Шанс (0.0–1.0), что на трезубце, который уже выдала игра, будет «Громовержец».
-	 * Считается только если трезубец уже в руке. Новый трезубец мод не создаёт.
-	 * 0.30 = 30%. Остальные 70% получают одну другую чару: Пронзатель, Верность, Тягун или Прочность.
-	 * 0 = «Громовержца» нет, всегда другая чара. 1 = «Громовержец» на каждом таком трезубце.
+	 * Chance (0.0-1.0) that the trident, which has already given the game, will be "Thunderer".
+	 * Only count if the trident is already in hand. The new trident doesn't make fashion.
+	 * 0.30 = 30%. The remaining 70% receive one other charm: Piercing, Loyalty, Tragon or Strength.
+	 * 0 = "Thunderbolt" no, always another charm. 1 = "Thunderbolt" on each such trident.
 	 */
 	public static final float CHANNELING_CHANCE = 0.30f;
 
 	/**
-	 * Шанс (0.0–1.0), что черепаший шлем выпадет при смерти.
-	 * 0.085 = 8.5%, как обычная броня мобов. 0 = не выпадает. 1 = выпадает всегда.
-	 * На трезубец не влияет: его выдала игра, и падает он по её правилам.
+	 * Chance (0.0–1.0) that a turtle helmet will fall out on death.
+	 0.085 = 8.5%, like a regular mob armor. 0 = not falling out. 1 = always falls out.
+	 The trident is not affected: it was issued by the game, and he falls according to its rules.
 	 */
 	public static final float DROP_CHANCE = 0.085f;
 
 	/**
-	 * Сколько здоровья возвращает лечение в воде. 2 = одно сердце.
-	 * 0 = в воде не лечится.
+	 How much health returns treatment in water. 2 = one heart.
+	 * 0 = not treated in water.
 	 */
 	public static final float REGEN_HP = 2.0f;
 
 	/**
-	 * Как часто лечение, в секундах. 3 = раз в три секунды, пока утопленник в воде и не полный.
-	 * На суше таймер стоит и начинается заново, когда он снова зайдёт в воду.
+	 How often treatment, in seconds. 3 = once every three seconds until drowned in water and not full.
+	 On land, the timer stands and starts again when it goes back into the water.
 	 */
 	public static final int REGEN_SECONDS = 3;
 
 	// ========================================================================
 
-	/** В одной секунде 20 тиков. */
+	/** 20 ticks in one second. */
 	private static final int TICKS_PER_SECOND = 20;
 
 	private DrownedThreats() {
 	}
 
-	/** Черепаший шлем и чары на уже выданный трезубец. Удочку не заменяет. */
+	/*Turtle helmet and charm on the already issued trident. It's not a rod. */
 	public static void onSpawn(Drowned drowned) {
 		if (!ENABLED || drowned.level().isClientSide()) {
 			return;
@@ -99,8 +99,8 @@ public final class DrownedThreats {
 	}
 
 	/**
-	 * Один тик. Возвращает, сколько тиков ещё ждать до лечения.
-	 * На суше счётчик сбрасывается, лечение не идёт.
+	 One tick. Returns how many tics to wait before treatment.
+	 On land, the meter is reset, treatment does not go.
 	 */
 	public static int tickRegen(Drowned drowned, int ticksLeft) {
 		int interval = Math.max(1, REGEN_SECONDS) * TICKS_PER_SECOND;
@@ -118,10 +118,10 @@ public final class DrownedThreats {
 	}
 
 	/**
-	 * Брошенный трезубец уже попал в цель и снял здоровье.
-	 * Молния бьёт игрока, только если на трезубце «Громовержец» — его вешает мод, примерно на каждый третий такой трезубец.
-	 * Тогда удар бьёт молнией даже без дождя и под крышей.
-	 * В грозу под открытым небом молнию вызывает сама игра, второй раз не бьём.
+	 Abandoned trident has already hit the target and removed health.
+	 Lightning hits the player only if the trident "Thunderbolt" - it hangs a mod, about every third such trident.
+	 Then lightning strikes even without rain and under the roof.
+	 In a thunderstorm under the open sky lightning causes the game itself, the second time do not hit.
 	 */
 	public static void onTridentHit(ThrownTrident trident, Entity target) {
 		if (!ENABLED || !(target instanceof Player player) || !(trident.getOwner() instanceof Drowned)) {
@@ -155,9 +155,9 @@ public final class DrownedThreats {
 	}
 
 	/**
-	 * Одна чара на трезубец игры. Свои чары игры, если они уже были, стираются.
-	 * Уровень другой чары — от I до её максимума, каждый уровень равновероятен.
-	 * «Громовержец» бывает только I.
+	 One spell for a trident game. Their magic games, if they already were, are erased.
+	 The level of the other charm is from I to its maximum, each level is equally likely.
+	 "Thunderbolt" is only I.
 	 */
 	private static void enchantTrident(ServerLevel level, Drowned drowned) {
 		ItemStack trident = drowned.getMainHandItem();
@@ -178,7 +178,7 @@ public final class DrownedThreats {
 		drowned.setItemSlot(EquipmentSlot.MAINHAND, trident);
 	}
 
-	/** Пронзатель, Верность, Тягун, Прочность — поровну. «Громовержца» среди них нет. */
+	/*Piercing, Loyalty, Tiagun, Strength - equally. The Thunderbolt is not among them. */
 	private static ResourceKey<Enchantment> otherTridentEnchant(int roll) {
 		return switch (roll) {
 			case 0 -> Enchantments.IMPALING;

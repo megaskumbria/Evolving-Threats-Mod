@@ -8,36 +8,36 @@ import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Часть фантомов вешает слабость, когда укус снял здоровье.
- * Кто умеет — решается один раз при появлении. Остальные кусают как раньше, только с уроном.
- * Щит, который отбил удар, и короткое мигание после удара слабость не дают.
+ Part of the phantom hangs weakness when the bite relieved health.
+ Who knows - is decided once upon appearance. The rest bite as before, only with damage.
+ A shield that repulsed the blow, and a short blink after the blow do not give weakness.
  */
 public final class PhantomWeakness {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — укус снова только с уроном, слабость не вешается даже у уже помеченных фантомов. */
+	/*False - bite again only with damage, weakness does not hang even in already labeled phantoms. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что фантом при появлении умеет вешать слабость.
-	 * 0.30 = 30%, примерно каждый третий. Бросок один: ночная стая, яйцо и команда спавна.
-	 * Такой фантом вешает слабость каждым укусом, который прошёл. Остальные — никогда.
-	 * 0 = слабости нет. 1 = её вешает каждый фантом.
+	 * Chance (0.0-1.0) that the phantom can hang weakness when it appears.
+	 * 0.30 = 30%, approximately one in three. Throw one: night pack, egg and team spawn.
+	 This phantom hangs the weakness with every bite that has passed. The rest never.
+	 * 0 = no weakness. 1 = each phantom hangs it.
 	 */
 	public static final float SPAWN_CHANCE = 0.30f;
 
 	/**
-	 * Сколько секунд длится слабость. 10 = десять секунд.
-	 * Повторный укус обновляет время, если на игроке слабость уже короче или такая же.
-	 * Более долгая слабость (например от стрелы) этим укусом не укорачивается.
-	 * Молоко снимает эффект сразу. 0 = эффект не появится.
+	 How many seconds does weakness last? 10 = ten seconds.
+	 Repeated bite updates the time if the player's weakness is already shorter or the same.
+	 Longer weakness (for example, from an arrow) is not shortened by this bite.
+	 Milk removes the effect immediately. 0 = no effect.
 	 */
 	public static final int WEAKNESS_SECONDS = 10;
 
 	/**
-	 * Сила слабости. 0 = Слабость I: удары игрока вблизи слабее на 4 здоровья (2 сердца).
-	 * 1 = Слабость II: слабее на 8 здоровья (4 сердца), меч часто почти не бьёт.
+	 The power of weakness. 0 = Weakness I: The player's close beats are weaker by 4 health (2 hearts).
+	 1 = Weakness II: weaker by 8 health (4 hearts), the sword often hardly beats.
 	 */
 	public static final int AMPLIFIER = 0;
 
@@ -46,7 +46,7 @@ public final class PhantomWeakness {
 	private PhantomWeakness() {
 	}
 
-	/** Один раз при появлении фантома. Повторный вызов уже помеченного не перебрасывает шанс. */
+	/** Once when a phantom appears. Repeated call already marked does not throw the chance. */
 	public static void rollOnSpawn(Phantom phantom) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f || !(phantom instanceof WeakeningPhantomEntity data)) {
 			return;
@@ -61,8 +61,8 @@ public final class PhantomWeakness {
 	}
 
 	/**
-	 * Укус уже снял здоровье.
-	 * Не игрок сюда не попадает: голем, животное и другой моб слабость не получают.
+	 The bite has taken its toll.
+	 The player does not get here: golem, animal and other mob do not get weakness.
 	 */
 	public static void onBite(Phantom phantom, LivingEntity target) {
 		if (!ENABLED || WEAKNESS_SECONDS <= 0 || !(target instanceof Player)) {

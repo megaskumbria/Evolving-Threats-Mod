@@ -12,24 +12,24 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Свет от светящейся тыквы на голове. Сам предмет в слоте шлема мир не освещает,
- * поэтому рядом с головой ставится невидимый блок света и едет вместе с мобом.
- * Тыква снята, моб умер или ушёл из мира — свет гаснет.
+ * The light from the glowing pumpkin on the head. The object itself in the helmet slot does not illuminate the world,
+ * therefore, an invisible block of light is placed next to the head and rides along with the mob.
+ * The pumpkin is removed, the mob is dead or gone from the world — the lights go out.
  */
 public final class JackLanternLight {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Насколько ярко светит тыква на голове. 0–15.
-	 * 15 = как блок светильника Джека, пещера вокруг моба освещена.
-	 * 7 = примерно как факел поменьше. 0 = не светить.
+	 * How bright the pumpkin shines on the head. 0–15.
+	 * 15 = as a block of Jack's lamp, the cave around the mob is illuminated.
+	 * 7 = roughly like a smaller torch. 0 = no light.
 	 */
 	public static final int LIGHT_LEVEL = 15;
 
 	// ========================================================================
 
-	/** Где сейчас стоит свет этого моба. После выгрузки мира карта пустая: свет к тому моменту уже убран. */
+	/** Where is the light of this mob now. After unloading the world, the map is empty: the light has already been removed by that time. */
 	private static final Map<Mob, BlockPos> PLACED = new WeakHashMap<>();
 
 	private static final int UPDATE = Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE;
@@ -37,7 +37,7 @@ public final class JackLanternLight {
 	private JackLanternLight() {
 	}
 
-	/** Каждый ход моба. Свет переставляется, только когда голова перешла в другой блок. */
+	/** Every move of the mob. The light is rearranged only when the head has moved to another block. */
 	public static void tick(Mob mob) {
 		if (!(mob.level() instanceof ServerLevel level)) {
 			return;
@@ -65,7 +65,7 @@ public final class JackLanternLight {
 		}
 	}
 
-	/** Моб исчез из мира: убрать его свет, чтобы в пещере не осталась вечная лампа. */
+	/** The mob has disappeared from the world: remove its light so that the eternal lamp does not remain in the cave. */
 	public static void clear(Mob mob) {
 		BlockPos previous = PLACED.remove(mob);
 		if (previous != null && mob.level() instanceof ServerLevel level) {

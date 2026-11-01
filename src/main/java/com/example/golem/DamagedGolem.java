@@ -35,50 +35,50 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Железный голем, который сразу враждебен к игроку.
- * Выглядит потресканным и с чёрными глазами, но здоровье полное.
- * Глаза нарисованы в текстуре {@code textures/entity/damaged_golem.png}.
- * Сам появляется ночью в обычном мире, шанс — {@link #NATURAL_SPAWN_CHANCE}.
+ An iron golem that is immediately hostile to the player.
+ Looks cracked and black eyes, but healthy.
+ * Eyes are drawn in texture {@code textures/entity/damaged golem.png}.
+ Himself appears at night in the ordinary world, chance - {@link #NATURAL SPAWN CHANCE}
  */
 public class DamagedGolem extends IronGolem implements Enemy {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Шанс (0.0–1.0), что вместо обычного ночного монстра появится этот голем.
-	 * 0.002 = 0,2%, один из пятисот. FIXED: с первого дня, от шкалы угрозы не растёт.
-	 * Бросок общий с парящим инструментом: сначала шанс инструмента (5%), потом этот.
-	 * Если в этом месте голему не встать (низкий потолок), появится обычный моб, попытка не пропадает.
-	 * Обычный мир, не ад и не Энд. Ближе 24 блоков игра не ставит.
-	 * Команда /etgolem этот шанс не бросает. 0 = в мире сам не появляется.
+	 Chance (0.0-1.0) that instead of the usual night monster will appear this golem.
+	 0.002 = 0.2%, one in five hundred. FIXED: From day one, the threat scale does not increase.
+	 A shot shared with a hovering instrument: first the instrument's chance (5%), then this one.
+	 If in this place the golem does not get up (low ceiling), there will be an ordinary mob, the attempt does not disappear.
+	 Ordinary world, neither hell nor end. The game does not put more than 24 blocks.
+	 Team /etgolem does not throw this chance. 0 = does not appear in the world.
 	 */
 	public static final float NATURAL_SPAWN_CHANCE = 0.002f;
 
 	/**
-	 * Здоровье. 100 = 50 сердец, как у обычного железного голема.
-	 * Трещины от этого числа не зависят: он выглядит повреждённым даже на полном здоровье.
+	 Health. 100 = 50 hearts, like an iron golem.
+	 Cracks do not depend on this number: it looks damaged even in full health.
 	 */
 	public static final double MAX_HEALTH = 100.0;
 
 	/**
-	 * Сила удара, как у обычного голема. Сам удар ещё кидает случайное число,
-	 * поэтому по игроку прилетает примерно от половины этого значения до чуть больше него.
+	 Strength of impact, like a normal golem. The stroke itself still throws a random number.
+	 * Therefore, the player arrives from about half of this value to a little more.
 	 */
 	public static final double ATTACK_DAMAGE = 15.0;
 
-	/** С какой дистанции (в блоках) замечает игрока. 24 — через двор уже идёт. */
+	/*From what distance (in blocks) the player notices. 24 - it's coming through the yard. */
 	public static final double FOLLOW_RANGE = 24.0;
 
 	/**
-	 * Насколько потрескан с виду. На здоровье не влияет.
-	 * 3 = сильно, как будто почти развалился. 2 = средне. 1 = чуть-чуть. 0 = целый.
+	 * How cracked in appearance. It doesn't affect your health.
+	 3 = strong, as if almost collapsed. 2 = average. 1 = a little bit. 0 = whole.
 	 */
 	public static final int CRACK_LEVEL = 3;
 
 	/**
-	 * Опыт до общего множителя. 10 — больше, чем у голого зомби.
-	 * Потом {@link com.example.MobExperience} удваивает: с голема падает 20.
-	 * Множитель выключен или стоит 1 — упадёт ровно это число.
+	 * Experience to the total multiplier. 10 is more than a naked zombie.
+	 * Then {@link com.example.MobExperience} doubles: 20 falls off the golem.
+	 The multiplier is turned off or costs 1 – this number will fall.
 	 */
 	public static final int EXPERIENCE_REWARD = 10;
 
@@ -115,7 +115,7 @@ public class DamagedGolem extends IronGolem implements Enemy {
 	}
 
 	/**
-	 * Влезет ли голем ростом 2.7 блока. Ноги на {@code feet}, под ногами твёрдый блок, тело ни во что не упирается.
+	 * Whether Golem height 2.7 blocks. Legs on {@code feet}, underfoot hard block, body doesn't rest on anything.
 	 */
 	public static boolean hasRoom(ServerLevel level, BlockPos feet) {
 		if (TYPE == null) {
@@ -128,7 +128,7 @@ public class DamagedGolem extends IronGolem implements Enemy {
 		return level.noCollision(TYPE.getSpawnAABB(feet.getX() + 0.5, feet.getY(), feet.getZ() + 0.5));
 	}
 
-	/** Призыв командой. Шанс ночного спавна не бросается. Сразу идёт на цель, если она есть. */
+	/** Team call. There's no chance of a night spawn. It goes straight to the target, if there is one. */
 	public static @Nullable DamagedGolem spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		DamagedGolem golem = TYPE.create(level, EntitySpawnReason.COMMAND);
 		if (golem == null) {
@@ -161,17 +161,17 @@ public class DamagedGolem extends IronGolem implements Enemy {
 	}
 
 	/**
-	 * Зомби, скелеты, пауки и разбойники ищут железного голема и идут его бить.
-	 * Этот тоже железный, поэтому без отказа они агрились бы и на него.
-	 * Здесь он для них не цель. Обычный деревенский голем по-прежнему их злит.
-	 * Сам повреждённый голем игрока бить не перестаёт.
+	 Zombies, skeletons, spiders and robbers look for the iron golem and go to beat it.
+	 This one is also iron, so without a refusal they would stare at it.
+	 He's not a target here. The usual village golem still makes them angry.
+	 * The player injured by the goal does not cease to beat.
 	 */
 	@Override
 	public boolean canBeSeenAsEnemy() {
 		return false;
 	}
 
-	/** Всегда выглядит повреждённым. Полоска здоровья при этом полная, пока его не побили. */
+	/** Always looks damaged. The health strip is full until it is beaten. */
 	@Override
 	public Crackiness.Level getCrackiness() {
 		return switch (CRACK_LEVEL) {
@@ -182,7 +182,7 @@ public class DamagedGolem extends IronGolem implements Enemy {
 		};
 	}
 
-	/** Железный слиток его не чинит: он не деревенский страж, а враг. */
+	/*An iron bar does not repair him: he is not a village guard, but an enemy. */
 	@Override
 	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 		return InteractionResult.PASS;

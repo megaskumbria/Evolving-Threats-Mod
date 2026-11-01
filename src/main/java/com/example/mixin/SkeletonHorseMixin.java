@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Помечает лошадь наездника и убирает её, когда всадник умер или игрока нет рядом.
- * Код лошади крутится каждый тик здесь, решение — в SkeletonHorseman.
+ Marks the rider's horse and removes it when the rider is dead or the player is not around.
+ The horse code is twisted every tick here, the solution is in SkeletonHorseman.
  */
 @Mixin(SkeletonHorse.class)
 public class SkeletonHorseMixin implements SkeletonHorsemanMount {

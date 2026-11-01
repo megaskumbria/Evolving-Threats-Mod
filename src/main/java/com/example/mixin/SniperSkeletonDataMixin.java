@@ -5,7 +5,7 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-/** Пометка снайпера живёт на скелете и страннике. */
+/*Sniper marks live on the skeleton and the wanderer. */
 @Mixin(AbstractSkeleton.class)
 public class SniperSkeletonDataMixin implements SniperSkeletonEntity {
 

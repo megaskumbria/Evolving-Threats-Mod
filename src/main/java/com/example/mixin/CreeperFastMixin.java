@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Крипер помнит, что он супербыстрый, и после загрузки мира снова получает скорость.
- * Шанс при появлении — в {@link MobDynamiteCreeperSpawnMixin}.
+ * Creeper remembers it is super-fast and regains speed after the world loads.
+ * Spawn chance is in {@link MobDynamiteCreeperSpawnMixin}.
  */
 @Mixin(Creeper.class)
 public class CreeperFastMixin implements FastCreeperEntity {

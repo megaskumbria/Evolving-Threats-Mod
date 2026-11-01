@@ -4,14 +4,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-/** Участник ритуальной стаи. Реализация — mixin на Zombie и на Skeleton. */
+/*Participant in a ritual pack. The implementation is mixin on Zombie and Skeleton. */
 public interface RitualMember {
 
 	boolean evolvingthreats$isRitual();
 
 	void evolvingthreats$setRitual(boolean ritual);
 
-	/** 1 игрок, 2 крипер, 3 пиглин, 4 иссушитель. 0 — не стая. */
+	/** 1 player, 2 crypers, 3 piglins, 4 dehumidifier. 0 is not a pack. */
 	int evolvingthreats$getRitualHead();
 
 	void evolvingthreats$setRitualHead(int head);
@@ -20,12 +20,12 @@ public interface RitualMember {
 
 	void evolvingthreats$setRitualGroup(@Nullable UUID group);
 
-	/** true — в руке красный факел, false — кость. */
+	/*True is a red torch, false is a bone. */
 	boolean evolvingthreats$isRitualTorch();
 
 	void evolvingthreats$setRitualTorch(boolean torch);
 
-	/** Хлопок при смерти уже был. Чтобы один моб не взрывался дважды. */
+	/*There was already cotton on the deathbed. So one mob doesn't explode twice. */
 	boolean evolvingthreats$ritualExploded();
 
 	void evolvingthreats$setRitualExploded(boolean exploded);

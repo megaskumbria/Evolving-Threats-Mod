@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import java.util.EnumSet;
 
 /**
- * Держит цель на игроке из «памяти», когда ваниль её сбросила (нет прямой видимости).
- * Приоритет 0 — выше атаки и похода к свету. Флаг TARGET: не мешает движению, только цель.
+ Holds the target on the player from "memory" when vanilla dropped it (no line of sight).
+ Priority 0 is above attack and going to the light. TARGET flag: does not interfere with movement, only the goal.
  */
 public class ZombiePlayerGrudgeGoal extends Goal {
 
@@ -24,7 +24,7 @@ public class ZombiePlayerGrudgeGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		// Первый контакт: ваниль только что выставила игрока в цель — запоминаем сразу.
+		// First contact: vanilla just set the player on target - remember right away.
 		LivingEntity current = zombie.getTarget();
 		if (current instanceof Player player) {
 			PlayerGrudge.rememberPlayer(zombie, player);
@@ -39,7 +39,7 @@ public class ZombiePlayerGrudgeGoal extends Goal {
 
 	@Override
 	public void tick() {
-		// Новая ванильная цель — игрок: обновляем память.
+		// The new vanilla target is the player: update the memory.
 		LivingEntity current = zombie.getTarget();
 		if (current instanceof Player player) {
 			PlayerGrudge.rememberPlayer(zombie, player);
@@ -52,7 +52,7 @@ public class ZombiePlayerGrudgeGoal extends Goal {
 		if (zombie.getTarget() != grudge) {
 			zombie.setTarget(grudge);
 		}
-		// Продлеваем охоту, если снова видим игрока (ваниль сама держит target).
+		// We extend the hunt if we see the player again (the vanilla itself holds the target).
 		if (current == grudge) {
 			PlayerGrudge.rememberPlayer(zombie, grudge);
 		}

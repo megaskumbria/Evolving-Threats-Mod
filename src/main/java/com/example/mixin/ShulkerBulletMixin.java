@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Попадание снаряда шалкера. Игра в этот момент вешает левитацию на 10 секунд.
- * Если удар не прошёл, сюда не заходит: щит и мигание эффекты не дают.
+ * Hit by a shalker. The game at this point hangs levitation for 10 seconds.
+ If the impact did not pass, it does not come here: the shield and blinking do not give effects.
  */
 @Mixin(ShulkerBullet.class)
 public class ShulkerBulletMixin implements ShulkerBulletTraits {

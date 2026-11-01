@@ -1,50 +1,50 @@
-БЛЕЙЗ-АЛХИМИК
+Blaze chemist
 ==============
 
-Тип: редкий вариант обычного блейза. Сам выглядит как ванильный.
-Код: blaze/BlazeAlchemist.java (настройки, срез стойкости, команда),
-     mixin/BlazeAlchemistMixin.java (флаг и пауза между особыми шарами),
-     mixin/BlazeAlchemistMobMixin.java (шанс при спавне и сохранение),
-     mixin/SmallFireballAlchemyMixin.java (какой шар срезает стойкость).
+Type: a rare variant of an ordinary blaze. It looks like vanilla.
+Code: blaze/BlazeAlchemist.java (settings, resistance slice, command),
+     mixin/BlazeAlchemistMixin.java (flag and pause between special balls),
+     mixin/BlazeAlchemistMobMixin.java (spawn chance and save),
+     mixin/SmallFireballAlchemyMixin.java (which ball cuts resistance).
 
 
-КАК РАБОТАЕТ
+How it works
 ------------
-1. При спавне шанс SPAWN_CHANCE (4%). Спаунер крепости тоже может выдать алхимика.
-2. Блейз по-прежнему крутит стержни 3 секунды и пускает залп из трёх шаров.
-   Все три шара — обычные огненные: тот же вид, скорость, урон и поджог.
-   Первый шар залпа, если пауза прошла, дополнительно срезает огненную стойкость.
-3. Если на цели огненная стойкость длиннее 20 секунд — остаётся 20 секунд.
-   Уровень зелья не меняется (если была II, останется II).
-   Если стойкости нет или она уже короче 20 секунд — таймер не трогает.
-   Бесконечная стойкость с команды тоже срезается до 20 секунд.
-   Сам шар при этом всё равно бьёт и поджигает, как шар обычного блейза.
-4. Щит, которым смотришь на шар, ловит срез стойкости. Урон шара щит не отменяет.
-5. В блок шар ставит огонь, как обычный.
-6. Следующий шар со срезом не раньше чем через 20 секунд.
-   Обычные залпы в эту паузу идут как у обычного блейза.
-   Вплотную (ближе 2 блоков) блейз бьёт рукой и шары не пускает — отойди, чтобы увидеть залп.
+1. On spawn, chance SPAWN_CHANCE (4%). Fortress spawns can also roll alchemist.
+2. Blaze still spins rods for 3 seconds and fires a volley of three balls.
+   All three are ordinary fireballs: same kind, speed, damage, and ignition.
+   First volley ball, if pause has passed, further trims fire resistance.
+3. If fire resistance on target is longer than 20 seconds, 20 seconds remain.
+   Potion level unchanged (II stays II).
+   If none or already shorter than 20 seconds, timer untouched.
+   Infinite resistance from commands is also cut to 20 seconds.
+   Ball still hits and burns like normal blaze ball.
+4. Shield facing the ball catches resistance slice. Shield ball damage not cancelled.
+5. In a block, ball places fire as usual.
+6. Next slicing ball not sooner than 20 seconds apart.
+   Normal volleys during pause behave like ordinary blaze.
+   Up close (closer than 2 blocks) blaze melee hits and does not shoot — step back to see volley.
 
 
-КОМАНДА
+COMMAND
 -------
   /etalchemist
   /evolvingthreats spawn alchemist
-Блейз появляется в 10 блоках по взгляду и сразу смотрит на тебя.
-Нужны права оператора, как у остальных команд мода.
+Blaze appears 10 blocks ahead and immediately targets you.
+Operator rights required, like other mod commands.
 
 
 SETTINGS (BlazeAlchemist.java)
 -------------------------------
-  ENABLED ...................... true — false выключает и спавн, и срез стойкости
-  SPAWN_CHANCE ................. 0.04 — шанс в мире (4%). Команда шанс не бросает
-  FIRE_RESISTANCE_LEFT_SECONDS . 20 — сколько секунд стойкости остаётся после попадания
-  SHOT_COOLDOWN_SECONDS ........ 20 — пауза между шарами, которые срезают стойкость
+  ENABLED ...................... true — false turns off spawn and resistance slice
+  SPAWN_CHANCE ................. 0.04 — world chance (4%). Command ignores chance
+  FIRE_RESISTANCE_LEFT_SECONDS . 20 — seconds of resistance left after hit
+  SHOT_COOLDOWN_SECONDS ........ 20 — pause between resistance-cutting balls
 
 
-ТЕСТ
+TEST
 ----
-1. Выпей огненную стойкость на 8 минут. Введи /etalchemist и отойди, если встал вплотную.
-2. Дождись, пока стержни раскрутятся. Шары выглядят как обычный огонь блейза.
-3. Пусть попадёт первый. В эффекте останется около 20 секунд. Шар по-прежнему жжёт.
-4. Закройся щитом на следующий такой шар. Таймер стойкости не должен сброситься.
+1. Drink long fire resistance. Enter /etalchemist and step back if standing close.
+2. Wait for rods to finish. Balls look like normal blaze fire.
+3. Let first hit land. Effect lasts ~20 seconds. Ball still burns.
+4. Block next such ball with shield. Resistance timer must not reset.

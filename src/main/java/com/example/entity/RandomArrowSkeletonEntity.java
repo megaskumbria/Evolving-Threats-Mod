@@ -1,18 +1,18 @@
 package com.example.entity;
 
-/** Скелет, который сам меняет эффект стрелы. Стрелу в руке не держит. */
+/*A skeleton that changes the effect of an arrow. He can't hold an arrow. */
 public interface RandomArrowSkeletonEntity {
 
 	boolean evolvingthreats$isRandomArrow();
 
 	void evolvingthreats$setRandomArrow(boolean randomArrow);
 
-	/** Оставшиеся эффекты этого круга, по одной букве. Пусто — круг ещё не начат. */
+	/*The remaining effects of this circle, one letter at a time. Empty - the circle hasn't started yet. */
 	String evolvingthreats$getArrowQueue();
 
 	void evolvingthreats$setArrowQueue(String queue);
 
-	/** Эффект прошлого выстрела. Пусто — ещё не стрелял. */
+	/*The effect of last shot. I haven't fired yet. */
 	String evolvingthreats$getLastArrow();
 
 	void evolvingthreats$setLastArrow(String effect);

@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Обычный зомби или скелет, который стал Spiky. Реализация — mixin, не новый моб. */
+/*Ordinary zombie or skeleton that became Spiky. The implementation is mixin, not a new mob. */
 public interface SpikyEntity {
 
 	boolean evolvingthreats$isSpiky();

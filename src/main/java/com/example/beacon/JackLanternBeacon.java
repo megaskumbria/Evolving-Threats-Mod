@@ -23,74 +23,74 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Редкий зомби или скелет с {@link Items#JACK_O_LANTERN} на голове — «маяк».
- * Зомби: не ищет/не ломает свет; раз в несколько тиков ускоряет зомби вокруг к игроку, которого видит.
- * Скелет: раз в кулдаун одна огненная стрела (цель {@link com.example.entity.ai.JackLanternFireShotGoal}).
+ * A rare zombie or skeleton with {@link Items#JACK_O_LANTERN} on its head is a beacon.
+ * Zombie: does not look for/break the light; every few tics accelerates the zombies around to the player he sees.
+ * Skeleton: One fire arrow per cooldown (target {@link com.example.entity.ai.JackLanternFireShotGoal}).
  */
 public final class JackLanternBeacon {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — тыква-фонарь на голове не появляется. */
+	/** Turn on the mechanics. false — the pumpkin-lantern does not appear on the head. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) при спавне стать носителем на 100-й день (GROWING: в начале игры в 10 раз меньше,
-	 * см. ThreatTable.DANGEROUS_START_RATIO). 0.01 = 1%. 0.05 = снова каждый двадцатый.
-	 * Бросок после спавнера (и раздатчика у скелета): голова одна.
+	 * The chance (0.0–1.0) for a spawn to become a carrier on the 100th day (GROWING: at the beginning of the game, 10 times less,
+	 * see ThreatTable.DANGEROUS_START_RATIO). 0.01 = 1%. 0.05 = again every twentieth.
+	 * Throw after the spavner (and the distributor at the skeleton): one head.
 	 */
 	public static final float CARRIER_SPAWN_CHANCE = 0.01f;
 
-	/** Шанс дропа jack o'lantern с головы при смерти. */
+	/** Chance of a jack o'lantern drop from the head at death. */
 	public static final float JACK_HEAD_DROP_CHANCE = 0.085f;
 
-	// --- Зомби-маяк ---
+	// --- Zombie Beacon ---
 
 	/**
-	 * Радиус (блоки) вокруг носителя: зомби внутри получают ускорение, если маяк видит игрока.
-	 * 20 ≈ как «агро» вокруг факела-маяка.
+	 * Radius (blocks) around the bearer: the zombies inside receive acceleration if the beacon sees the player.
+	 * 20 ≈ as "agro" around the beacon torch.
 	 */
 	public static final double BEACON_RADIUS = 20.0;
 
-	/** Каждые N тиков (20 = 1 сек) маяк «пульсирует» эффект по стае. */
+	/** Every N ticks (20 = 1 sec), the beacon “pulses” the effect across the flock. */
 	public static final int BEACON_PULSE_INTERVAL_TICKS = 20;
 
 	/**
-	 * Эффект скорости союзникам: 0 = Speed I, 1 = Speed II.
-	 * Длительность должна быть ≥ интервала пульса, иначе эффект будет мигать.
+	 * Speed effect to allies: 0 = Speed I, 1 = Speed II.
+	 * Duration must be ≥ pulse interval, otherwise the effect will flash.
 	 */
 	public static final int ALLY_SPEED_AMPLIFIER = 0;
 
-	/** Сколько тиков держится Speed у союзника после пульса (40 = 2 сек). */
+	/** How many ticks does Speed hold for an ally after a pulse (40 = 2 sec). */
 	public static final int ALLY_SPEED_DURATION_TICKS = 40;
 
 	/**
-	 * Если у зомби в радиусе нет цели — дать цель того же игрока, которого видит маяк.
-	 * false — только ускорение, без нового агро.
+	 * If the zombie in the radius does not have a goal, give the goal to the same player that the beacon sees.
+	 * false — acceleration only, without a new agro.
 	 */
 	public static final boolean SHARE_TARGET_WITH_ALLIES = true;
 
-	// --- Скелет-маяк (огненная стрела) ---
+	// --- Skeleton beacon (fire arrow) ---
 
-	/** Минимальная пауза между огненными выстрелами (сек). */
+	/** Minimum pause between fire shots (sec). */
 	public static final int FIRE_SHOT_COOLDOWN_MIN_SECONDS = 8;
 
-	/** Максимальная пауза между огненными выстрелами (сек). */
+	/** Maximum pause between fire shots (sec). */
 	public static final int FIRE_SHOT_COOLDOWN_MAX_SECONDS = 14;
 
-	/** Скорость огненной стрелы. */
+	/** The speed of the fire arrow. */
 	public static final float FIRE_ARROW_VELOCITY = 1.25f;
 
-	/** Разброс (меньше, чем у раздатчика — один точный «жаркий» выстрел). */
+	/** Spread (less than that of the distributor — one accurate "hot" shot). */
 	public static final float FIRE_ARROW_INACCURACY = 6.0f;
 
-	/** Секунды горения стрелы после попадания. */
+	/** Seconds of arrow burning after hitting. */
 	public static final int FIRE_ARROW_FIRE_SECONDS = 5;
 
-	/** Минимальная дистанция до цели для выстрела (блоки). */
+	/** Minimum distance to the target for the shot (blocks). */
 	public static final double FIRE_SHOT_MIN_DISTANCE = 4.0;
 
-	/** Максимальная дистанция до цели для выстрела (блоки). */
+	/** The maximum distance to the target for the shot (blocks). */
 	public static final double FIRE_SHOT_MAX_DISTANCE = 22.0;
 
 	// ========================================================================
@@ -102,12 +102,12 @@ public final class JackLanternBeacon {
 		return mob.getItemBySlot(EquipmentSlot.HEAD).is(Items.JACK_O_LANTERN);
 	}
 
-	/** Носитель-зомби с активной ролью маяка (для целей ИИ). */
+	/** Zombie carrier with active beacon role (for AI purposes). */
 	public static boolean isBeaconZombie(Zombie zombie) {
 		return ENABLED && hasJackOnHead(zombie) && isEligibleSpecial(zombie);
 	}
 
-	/** Маяк не гоняется за факелами — см. {@link LightSeeking#isEligible}. */
+	/** The beacon is not chasing torches — see {@link LightSeeking#isEligible}. */
 	public static boolean skipsLightSeeking(Zombie zombie) {
 		return isBeaconZombie(zombie);
 	}
@@ -136,7 +136,7 @@ public final class JackLanternBeacon {
 		return random.nextIntBetweenInclusive(min, max);
 	}
 
-	/** Одна «волна» ускорения стаи — вызывается из {@link JackBeaconAuraGoal}. */
+	/** One “wave” of pack acceleration is called from {@link JackBeaconAuraGoal}. */
 	public static void pulseAura(Zombie beacon, LivingEntity focus) {
 		if (!ENABLED || !(beacon.level() instanceof ServerLevel level)) {
 			return;

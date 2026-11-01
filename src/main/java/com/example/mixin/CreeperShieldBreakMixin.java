@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Крипер: флаг «ломает щит» и сохранение.
- * Шанс при появлении — в {@link MobDynamiteCreeperSpawnMixin}, после подрывника и метателя.
- * Ведёт себя как обычный крипер: сам подбегает и взрывается. Щит ломается в момент блока взрыва.
+ Creeper: Flag breaks shield and preservation
+ * Chance upon appearance - in {@link MobDynamiteCreeperSpawnMixin}, after the bomber and thrower.
+ Acts like an ordinary cryper: he runs up and explodes. The shield breaks at the moment of the explosion block.
  */
 @Mixin(Creeper.class)
 public class CreeperShieldBreakMixin implements ShieldBreakCreeperEntity {

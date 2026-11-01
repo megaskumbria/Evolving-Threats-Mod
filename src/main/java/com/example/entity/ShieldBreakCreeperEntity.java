@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Крипер, чей взрыв уничтожает щит, если игрок им закрылся. */
+/*Creeper, whose explosion destroys the shield if the player is closed. */
 public interface ShieldBreakCreeperEntity {
 
 	boolean evolvingthreats$isShieldBreakCreeper();

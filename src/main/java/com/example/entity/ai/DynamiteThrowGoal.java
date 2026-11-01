@@ -9,10 +9,10 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 
 /**
- * Метатель держит дистанцию: близко — отступает, далеко — подходит,
- * в зоне броска — кружит боком вокруг игрока и кидает TNT на ходу.
- * Занимает MOVE, поэтому обычный бег вплотную и подрыв (SwellGoal) его не перебивают,
- * пока цель жива. Сам подрыв дополнительно выключен в {@code SwellGoalMixin}.
+ The thrower keeps the distance: close - retreats, far - approaches,
+ * in the throw zone - circles sideways around the player and throws TNT on the move.
+ * Occupies MOVE, so the usual running close and blowing (SwellGoal) it does not interrupt,
+ * while the target is alive. The blast itself is further disabled in {@code SwellGoalMixin}.
  */
 public class DynamiteThrowGoal extends Goal {
 
@@ -56,7 +56,7 @@ public class DynamiteThrowGoal extends Goal {
 			return;
 		}
 		creeper.getLookControl().setLookAt(target, 30.0f, 30.0f);
-		// На всякий случай гасим набор к самоподрыву, если он уже начался.
+		// Just in case, we're throwing out the self-destruct kit if it's already started.
 		if (creeper.getSwellDir() > 0) {
 			creeper.setSwellDir(-1);
 		}
@@ -99,7 +99,7 @@ public class DynamiteThrowGoal extends Goal {
 		nextThrowGameTime = now + DynamiteCreeper.cooldownTicks();
 	}
 
-	/** Точка сбоку от игрока на удобной дистанции — крипер идёт к ней. */
+	/*A point to the side of the player at a convenient distance - the cryper goes to her. */
 	private void circleAround(LivingEntity target) {
 		double dx = creeper.getX() - target.getX();
 		double dz = creeper.getZ() - target.getZ();

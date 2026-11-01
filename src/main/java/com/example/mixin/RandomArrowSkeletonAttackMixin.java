@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Вместо обычной стрелы выпускает следующий эффект круга. Быстрый лук свою скорость не теряет. */
+/*Instead of an ordinary arrow, it releases the following circle effect. A fast bow does not lose its speed. */
 @Mixin(AbstractSkeleton.class)
 public class RandomArrowSkeletonAttackMixin {
 

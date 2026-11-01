@@ -13,48 +13,48 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Редкий рой: обычный паук при появлении приводит с собой ещё нескольких таких же.
- * Не матка и не ткач. Пещерные пауки и наездники сюда не попадают — их отсекает
- * {@link SpiderThreats} до вызова.
- * Помощники создаются как «призванные», поэтому сами новый рой не открывают.
+ * Rare swarm: a normal spider sometimes brings several more of the same kind on spawn.
+ * Not a matriarch or weaver. Cave spiders and jockey spiders are filtered out by
+ * {@link SpiderThreats} before this runs.
+ * Extra spiders use MOB_SUMMONED, so they never start a new swarm themselves.
  */
 public final class SpiderSwarm {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — роёв нет, пауки появляются как раньше. */
+	/** false — no swarms; spiders spawn as before. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный паук окажется началом роя.
-	 * 0.02 = 2%. Реже матки (4%): рой сразу добавляет несколько пауков.
-	 * Бросок общий: сначала матка, потом ткач, потом рой.
+	 * Chance (0.0–1.0) that a normal spider starts a swarm.
+	 * 0.02 = 2%. Rarer than matriarch (4%): swarm adds several spiders at once.
+	 * Single roll order: matriarch, then weaver, then swarm.
 	 */
 	public static final float SPAWN_CHANCE = 0.02f;
 
 	/**
-	 * Сколько пауков в рое всего, включая того, кто его начал.
-	 * 6 и 10 = от шести до десяти.
+	 * Total spiders in the swarm, including the leader.
+	 * 6–10 = six to ten spiders.
 	 */
 	public static final int PACK_MIN = 6;
 	public static final int PACK_MAX = 10;
 
 	/**
-	 * Как далеко от первого паука искать место, в блоках.
-	 * 2.0 и 6.0 = от двух до шести блоков в сторону, чтобы не встали друг в друга.
+	 * How far from the first spider to search for a spot, in blocks.
+	 * 2.0–6.0 = two to six blocks away so they do not stack inside each other.
 	 */
 	public static final double RADIUS_MIN = 2.0;
 	public static final double RADIUS_MAX = 6.0;
 
 	/**
-	 * Сколько случайных точек перебрать для одного паука.
-	 * Не нашёл свободный пол — этот паук просто не появляется, рой будет меньше.
+	 * Random spot attempts per extra spider.
+	 * No valid floor — that spider is skipped and the pack may be smaller.
 	 */
 	public static final int SPOT_TRIES = 16;
 
 	/**
-	 * На сколько блоков вверх и вниз от ног первого паука ещё смотреть пол.
-	 * 3 = неровная пещера. 0 = только тот же уровень.
+	 * Vertical search range (blocks up/down from the leader's feet).
+	 * 3 = uneven caves. 0 = same Y only.
 	 */
 	public static final int VERTICAL_STEPS = 3;
 
@@ -64,8 +64,8 @@ public final class SpiderSwarm {
 	}
 
 	/**
-	 * Добирает пауков до размера пачки. Сам первый паук уже стоит в мире.
-	 * Вызывается один раз при его появлении, и только если это настоящий мир, не генерация чанка.
+	 * Adds spiders until the pack reaches target size. The leader is already in the world.
+	 * Called once on its spawn, only in a live world (not chunk generation).
 	 */
 	public static void spawnPack(Spider leader, ServerLevel level) {
 		if (!ENABLED) {
@@ -91,12 +91,12 @@ public final class SpiderSwarm {
 		}
 		spider.snapTo(pos.x, pos.y, pos.z, leader.getRandom().nextFloat() * 360.0f, 0.0f);
 		DifficultyInstance difficulty = level.getCurrentDifficultyAt(spider.blockPosition());
-		// MOB_SUMMONED: в SpiderThreats такой паук остаётся обычным и новый рой не зовёт.
+		// MOB_SUMMONED: SpiderThreats leaves these normal — no new swarm.
 		spider.finalizeSpawn(level, difficulty, EntitySpawnReason.MOB_SUMMONED, (SpawnGroupData) null);
 		level.addFreshEntity(spider);
 	}
 
-	/** Точка рядом: твёрдый пол и тело паука не внутри блока. Иначе он задохнётся в стене. */
+	/** Nearby spot with solid floor and spider body not inside a block — otherwise it suffocates. */
 	private static Vec3 findOpenSpot(ServerLevel level, Spider leader) {
 		var random = leader.getRandom();
 		double min = RADIUS_MIN;
@@ -118,8 +118,8 @@ public final class SpiderSwarm {
 	}
 
 	/**
-	 * Паук низкий (ниже одного блока), но широкий.
-	 * Поэтому не требуем два блока воздуха, как зомби: подходит ли место, решает его настоящая коробка.
+	 * Spiders are short (under one block) but wide.
+	 * We do not require two blocks of air like zombies — the entity AABB decides fit.
 	 */
 	private static boolean canStand(ServerLevel level, double x, int y, double z) {
 		BlockPos feet = BlockPos.containing(x, y, z);

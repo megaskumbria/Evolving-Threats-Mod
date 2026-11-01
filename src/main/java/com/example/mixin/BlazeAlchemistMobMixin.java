@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление и сохранение алхимика.
- * finalizeSpawn и запись в мир объявлены у Mob, у Blaze своих копий нет — поэтому mixin на Mob.
+ The emergence and preservation of the alchemist.
+ FinalizeSpawn and record in the world announced by Mob, Blaze has no copies of its own - so mixin on Mob.
  */
 @Mixin(Mob.class)
 public class BlazeAlchemistMobMixin {

@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Начало зарядки арбалета, до того как игра положит в него стрелу.
- * Ракета уже лежит на арбалете, поэтому всю зарядку виден фейерверк.
- * Шанс — {@link PillagerFirework}.
+ Start charging the crossbow before the game puts an arrow in it.
+ The rocket is already on the crossbow, so all the charging is visible fireworks.
+ * Chance - {@link PillagerFirework}.
  */
 @Mixin(LivingEntity.class)
 public class PillagerFireworkMixin {

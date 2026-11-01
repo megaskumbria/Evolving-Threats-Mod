@@ -16,7 +16,7 @@ public class AbstractSkeletonRaidGoalsMixin {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$registerRaidGoals(CallbackInfo ci) {
 		AbstractSkeleton self = (AbstractSkeleton) (Object) this;
-		// Осада: цель и поход к игроку. На обычного скелета не действуют, пока нет метки осады.
+		// Siege: Aim and approach to the player. A normal skeleton is not affected until there is a siege mark.
 		((MobTargetSelectorAccessor) self).evolvingthreats$getTargetSelector().addGoal(0, new SiegeTargetGoal(self));
 		self.getGoalSelector().addGoal(1, new SiegeMarchGoal(self));
 		if (!(self instanceof RaidParticipantEntity raid) || !raid.evolvingthreats$isRaidMinion()) {

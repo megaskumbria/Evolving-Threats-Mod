@@ -1,168 +1,168 @@
-ПАТРУЛЬ У ДОМА
+PATROL AT THE BASE
 ===============
 
-Тип: отряд обычных разбойников, поборников и разорителя (не новый моб в меню).
-Код: illager/IllagerPatrol.java (состав, дистанция, как часто),
-     illager/IllagerPatrolEvents.java (проверка каждый тик мира),
-     entity/ai/IllagerPatrolMarchGoal.java (идут в точку, где стоял игрок),
-     mixin/RaiderPatrolMixin.java (память точки и сохранение в мире).
+Type: squad of vanilla pillagers, vindicators, and ravager (not a new mob in the menu).
+Code: illager/IllagerPatrol.java (composition, distance, how often),
+     illager/IllagerPatrolEvents.java (check every world tick),
+     entity/ai/IllagerPatrolMarchGoal.java (march to where the player stood),
+     mixin/RaiderPatrolMixin.java (remember the point and save in the world).
 
-Обычный патруль игры не выключен: редкая группа одних разбойников по-прежнему
-может выйти вдали от деревни. Этот отряд появляется отдельно и у дома тоже.
+Vanilla patrol is not disabled: a rare group of pillagers alone can still appear far from a village.
+This squad spawns separately and also near the base.
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Пауза случайная: от 8 до 14 игровых дней (один день — 20 минут).
-   Каждый раз число новое. Выходит только днём и не на мирной сложности.
-   Если срок вышел ночью, отряд приходит ближайшим утром, а не через ещё две недели.
-   В креативе и в режиме наблюдателя отряд не выходит.
-2. Место — в 64–96 блоках от игрока, на поверхности, не в воде.
-   Если рядом уже есть идущий отряд (140 блоков), новый не появляется.
-3. В отряде 2–3 разбойника, 2–3 поборника и 1 разоритель.
-   Один разбойник — капитан со знаменем. С него падает зловещая бутылочка.
-4. Запоминают точку, где игрок стоял в момент появления, и идут туда.
-   Если игрок ушёл, они всё равно приходят на базу и останавливаются в 12 блоках от точки.
-   За игроком по карте не бегут. Если по дороге увидят его вблизи — дерутся как обычные мобы,
-   потеряют из виду — снова идут в ту же точку.
-5. В чужой рейд деревни этот отряд не вступает.
+1. Random pause: 8 to 14 in-game days (one day = 20 minutes).
+   Each time the number is new. Spawns only in daytime and not on Peaceful difficulty.
+   If the timer expires at night, the squad comes the next morning, not two weeks later.
+   In Creative and Spectator the squad does not spawn.
+2. Location — 64–96 blocks from the player, on the surface, not in water.
+   If a marching squad is already nearby (140 blocks), a new one does not spawn.
+3. The squad has 2–3 pillagers, 2–3 vindicators, and 1 ravager.
+   One pillager is the captain with a banner. An ominous bottle drops from them.
+4. They remember where the player stood at spawn and march there.
+   If the player left, they still reach the base and stop within 12 blocks of the point.
+   They do not chase the player across the map. If they see the player nearby on the way — fight like normal mobs,
+   lose sight — march to the same point again.
+5. This squad does not join someone else’s village raid.
 
 
 SETTINGS (IllagerPatrol.java)
 ------------------------------
-  ENABLED ...................... true — вкл/выкл появление
-  DAYS_MIN / DAYS_MAX .......... 8 / 14 — случайная пауза, в игровых днях
-  TEST_ATTEMPT_TICKS ........... 0 — если больше 0, дни не считаются, пауза в тиках
-  RETRY_TICKS .................. 1200 — как часто пробовать снова, если сейчас ночь или нет места
-  DAYTIME_ONLY ................. true — только днём
-  SPAWN_DISTANCE_MIN / MAX ..... 64 / 96 — как далеко от игрока появляются, в блоках
-  ARRIVE_BLOCKS ................ 12 — насколько близко к точке нужно дойти, чтобы остановиться
-  MARCH_SPEED .................. 0.6 — скорость шага к точке
-  PILLAGER_MIN / MAX ........... 2 / 3 — разбойники
-  VINDICATOR_MIN / MAX ......... 2 / 3 — поборники
-  RAVAGER_COUNT ................ 1 — разорители. 0 = без них
-  NEARBY_BLOCKS ................ 140 — не выпускать второй отряд, если первый ещё идёт
+  ENABLED ...................... true — turn spawning on/off
+  DAYS_MIN / DAYS_MAX .......... 8 / 14 — random pause, in in-game days
+  TEST_ATTEMPT_TICKS ........... 0 — if greater than 0, days are ignored, pause in ticks
+  RETRY_TICKS .................. 1200 — how often to retry if it is night or no valid spot
+  DAYTIME_ONLY ................. true — daytime only
+  SPAWN_DISTANCE_MIN / MAX ..... 64 / 96 — how far from the player they appear, in blocks
+  ARRIVE_BLOCKS ................ 12 — how close to the point to stop
+  MARCH_SPEED .................. 0.6 — march speed toward the point
+  PILLAGER_MIN / MAX ........... 2 / 3 — pillagers
+  VINDICATOR_MIN / MAX ......... 2 / 3 — vindicators
+  RAVAGER_COUNT ................ 1 — ravagers. 0 = none
+  NEARBY_BLOCKS ................ 140 — do not spawn a second squad while the first is still marching
 
 
-ТЕСТ
+TEST
 ----
-Команда (нужны читы): /etpatrol
-Отряд сразу появляется в 64–96 блоках и идёт в точку, где ты стоишь.
-Работает и в креативе, и ночью. Обычный таймер на 8–14 дней от этого не сбрасывается.
+Command (cheats required): /etpatrol
+The squad spawns immediately 64–96 blocks away and marches to where you stand.
+Works in Creative and at night. The normal 8–14 day timer is not reset by this.
 
 ==============================================================================================
 
-РАЗБОЙНИК: РАКЕТА ИЗ АРБАЛЕТА
+PILLAGER: FIREWORK FROM CROSSBOW
 ==============================
 
-Тип: обычный разбойник (не новый моб). В патруле, в рейде и в особняке один и тот же.
-Код: illager/PillagerFirework.java (шанс, звёзды и куда целиться),
-     mixin/PillagerFireworkMixin.java (самое начало зарядки арбалета),
-     mixin/PillagerFireworkAimMixin.java (ракета летит в грудь, без дуги стрелы).
+Type: vanilla pillager (not a new mob). Same in patrol, raid, and mansion.
+Code: illager/PillagerFirework.java (chance, stars, and aim),
+     mixin/PillagerFireworkMixin.java (start of crossbow charge),
+     mixin/PillagerFireworkAimMixin.java (rocket flies at the chest, no arrow arc).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Примерно каждый пятый залп — ракета. Она лежит на арбалете с первого момента зарядки:
-   на арбалете виден фейерверк, стрела в этот залп не попадает. Остальные залпы обычные.
-2. Ракета летит прямо в грудь. Игра целила её как стрелу, с подъёмом, и она проходила над головой.
-3. В ракете одна звезда. Без брони на нормальной сложности это 7 здоровья (3,5 сердца).
-   На лёгкой слабее, на сложной сильнее. Броня уменьшает удар.
-4. Взрыв задевает всех в радиусе около пяти блоков: игрока, жителя, голема,
-   других разбойников и самого стрелка, если он слишком близко.
-5. Пиглин с арбалетом и игрок этой подменой не пользуются.
+1. About every fifth shot is a rocket. It is on the crossbow from the first moment of charging:
+   a firework is visible on the crossbow, no arrow in that shot. Other shots are normal.
+2. The rocket flies straight at the chest. The game aimed it like an arrow, with lift, and it passed over the head.
+3. The rocket has one star. With no armor on Normal difficulty that is 7 health (3.5 hearts).
+   Weaker on Easy, stronger on Hard. Armor reduces the hit.
+4. The blast hits everyone in a radius of about five blocks: player, villager, golem,
+   other pillagers, and the shooter if too close.
+5. Piglins with crossbows and players do not use this swap.
 
 
 SETTINGS (PillagerFirework.java)
 ---------------------------------
-ENABLED — false снова всегда стрела.
-SHOT_CHANCE — 0.20 = каждый пятый залп. 0 = никогда. 1 = каждый залп ракета.
-STAR_COUNT — звёзды в ракете. 1 = 3,5 сердца. 0 = всегда стрела. 7 = максимум, 9,5 сердца.
-AIM_BODY — куда по росту цели. 0.45 = грудь. 1.0 = макушка.
+ENABLED — false means arrow every time again.
+SHOT_CHANCE — 0.20 = every fifth shot. 0 = never. 1 = every shot is a rocket.
+STAR_COUNT — stars in the rocket. 1 = 3.5 hearts. 0 = always arrow. 7 = max, 9.5 hearts.
+AIM_BODY — height on the target. 0.45 = chest. 1.0 = top of head.
 
 ==============================================================================================
 
-ПОБОРНИК: АЛМАЗНЫЙ ТОПОР
+VINDICATOR: DIAMOND AXE
 =========================
 
-Тип: обычный поборник (не новый моб). Железный топор остаётся у остальных.
-Код: illager/VindicatorDiamondAxe.java (шанс),
-     mixin/VindicatorDiamondAxeMixin.java (момент, когда топор уже в руке).
+Type: vanilla vindicator (not a new mob). Iron axe stays on the rest.
+Code: illager/VindicatorDiamondAxe.java (chance),
+     mixin/VindicatorDiamondAxeMixin.java (moment when the axe is already in hand).
 
-Где бросается шанс: особняк, патруль у дома, рейд, яйцо призыва, команда спавна.
-Везде один и тот же шанс.
+Where the chance rolls: mansion, home patrol, raid, spawn egg, spawn command.
+Same chance everywhere.
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Примерно каждый четвёртый поборник получает алмазный топор вместо железного.
-2. Чары с железного топора переходят на алмазный.
-   Вне рейда их вешает игра по сложности, и отдельно мод с шансом 30%
-   (см. mobs/common/enchantments-on-gear.txt, ILLAGER_ENCHANT_CHANCE).
-   В рейде чары свои, рейдовые: если рейд решил зачаровать топор, алмазный остаётся зачарованным.
-   Не каждый топор с чарами. Шанс чар тот же, что был у железного.
-3. Топор падает с поборника с тем же шансом, что железный: около 8.5%.
-   Чары на выпавшем топоре сохраняются.
+1. About every fourth vindicator gets a diamond axe instead of iron.
+2. Enchantments from the iron axe carry over to the diamond one.
+   Outside raids the game applies them by difficulty, and separately the mod with 30% chance
+   (see mobs/common/enchantments-on-gear.txt, ILLAGER_ENCHANT_CHANCE).
+   In raids enchantments are raid-specific: if the raid decided to enchant the axe, the diamond one stays enchanted.
+   Not every axe has enchantments. Enchant chance is the same as for iron.
+3. The axe drops from the vindicator with the same chance as iron: about 8.5%.
+   Enchantments on the dropped axe are preserved.
 
 
 SETTINGS (VindicatorDiamondAxe.java)
 -------------------------------------
-  ENABLED ...................... true — false снова все топоры железные
-  CHANCE ....................... 0.25 — доля алмазных топоров (25%)
+  ENABLED ...................... true — false means all axes iron again
+  CHANCE ....................... 0.25 — share of diamond axes (25%)
 
 
-ТЕСТ
+TEST
 ----
-1. Чтобы увидеть сразу, временно поставь CHANCE = 1.0. После проверки верни 0.25.
-2. Призови поборника или вызови патруль /etpatrol. В руке алмазный топор.
-   Часть из них переливается — это чары.
-3. Начни рейд с поборниками. Среди них тоже бывают алмазные, в том числе зачарованные рейдом.
-4. Особняк: поборники в нём бросают тот же шанс.
+1. To see it immediately, temporarily set CHANCE = 1.0. After testing set back to 0.25.
+2. Summon a vindicator or call patrol /etpatrol. Diamond axe in hand.
+   Some shimmer — that is enchantments.
+3. Start a raid with vindicators. Some have diamond axes too, including raid-enchanted ones.
+4. Mansion: vindicators there use the same chance.
 
 ==============================================================================================
 
-ПОБОРНИК РУБИТ ДЕРЕВО
+VINDICATOR CHOPS WOOD
 =====================
 
-Тип: обычный поборник. Камень и землю не ломает.
-Код: illager/VindicatorWoodBreak.java (что считать деревом и скорость),
-     entity/ai/VindicatorChopGoal.java (когда рубить),
-     mixin/VindicatorChopMixin.java (подключение цели).
+Type: vanilla vindicator. Does not break stone or dirt.
+Code: illager/VindicatorWoodBreak.java (what counts as wood and speed),
+     entity/ai/VindicatorChopGoal.java (when to chop),
+     mixin/VindicatorChopMixin.java (hook up the goal).
 
 
-КОГДА РУБИТ
+WHEN IT CHOPS
 -----------
-Есть цель (игрок, житель, железный голем) ближе 32 блоков, обычного пути нет,
-а прямо перед поборником деревянный блок с коллизией.
-Если цель уже в зоне удара, он бьёт, а не рубит.
-Появился обход — бросает блок и идёт.
-Топор во время рубки остаётся в руке, бьёт им, а не кулаками.
-Как только путь открыт, снова атакует игрока этим же топором.
-Трещина не сбрасывается 5 секунд, если его отвлекли и он вернулся к тому же блоку.
+Has a target (player, villager, iron golem) within 32 blocks, no normal path,
+and a wooden block with collision directly in front of the vindicator.
+If the target is already in melee range, it attacks instead of chopping.
+If a path opens — drops the block and moves.
+The axe stays in hand while chopping, hits with it, not fists.
+As soon as the path is clear, attacks the player again with the same axe.
+Crack progress is not reset for 5 seconds if distracted and returning to the same block.
 
 
-ЧТО ЛОМАЕТ
+WHAT IT BREAKS
 ----------
-Всё деревянное, что мешает пройти:
-  забор, калитка, дверь, люк, доски, брёвна, ступеньки, плиты,
-  кнопка, нажимная плита, полка, табличка, бамбук.
-Незерский и любой недеревянный забор не трогает.
-Сундук и бочка не ломаются: внутри лежат вещи.
-Земля, камень, камень забора — нет.
+Everything wooden that blocks the way:
+  fence, gate, door, trapdoor, planks, logs, stairs, slabs,
+  button, pressure plate, shelf, sign, bamboo.
+Nether and any non-wood fence is left alone.
+Chest and barrel are not broken: items are inside.
+Dirt, stone, cobblestone fence — no.
 
 
-СКОРОСТЬ
+SPEED
 --------
-20% от того, как тот же топор рубит у игрока.
-Дубовый забор: железный топор около 2.5 сек, алмазный около 1.9 сек.
-Эффективность на топоре тоже ускоряет. Острота на скорость рубки не влияет.
-Предметы из блока не выпадают.
+20% of how fast the same axe chops for the player.
+Oak fence: iron axe about 2.5 sec, diamond about 1.9 sec.
+Efficiency on the axe speeds it up too. Sharpness does not affect chop speed.
+Items from the block do not drop.
 
 
 SETTINGS (VindicatorWoodBreak.java)
 ------------------------------------
   ENABLED ...................... true
-  SPEED_MULTIPLIER ............. 0.2 — доля скорости игрока
+  SPEED_MULTIPLIER ............. 0.2 — fraction of player speed
   DROP_ITEMS ................... false
   MAX_DISTANCE_TO_TARGET ....... 32
   CHECK_INTERVAL_TICKS ......... 10
@@ -171,86 +171,86 @@ SETTINGS (VindicatorWoodBreak.java)
   RESPECT_MOB_GRIEFING ......... true
 
 
-ТЕСТ
+TEST
 ----
-1. Поставь деревянный забор между собой и поборником. Он должен рубить забор с трещинами.
-2. Железный топор медленнее алмазного на том же заборе.
-3. Каменный забор и земля не ломаются: поборник стоит и ищет обход.
-4. /gamerule mobGriefing false — рубка прекращается.
+1. Put a wooden fence between yourself and a vindicator. It should chop the fence with crack animation.
+2. Iron axe is slower than diamond on the same fence.
+3. Stone fence and dirt are not broken: vindicator stands and looks for a path.
+4. /gamerule mobGriefing false — chopping stops.
 
 ==============================================================================================
 
-РАЗОРИТЕЛЬ: ПРОБИВАЕТ СТЕНЫ
+RAVAGER: BREAKS THROUGH WALLS
 =============================
 
-Тип: обычный разоритель (не новый моб). В патруле и в рейде один и тот же.
-Код: illager/RavagerWallBreak.java (пауза, размер проёма, что считать камнем),
-     entity/ai/RavagerHeadbuttGoal.java (когда бить),
-     mixin/RavagerHeadbuttMixin.java (цель в списке поведения).
+Type: vanilla ravager (not a new mob). Same in patrol and raid.
+Code: illager/RavagerWallBreak.java (cooldown, hole size, what counts as stone),
+     entity/ai/RavagerHeadbuttGoal.java (when to strike),
+     mixin/RavagerHeadbuttMixin.java (goal in behavior list).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Если до цели нет пути, разоритель бьёт головой по стене перед собой.
-   Цель рядом и путь свободен — обычный укус, стену не трогает.
-2. Один удар сразу сносит проём 3 блока в ширину и 3 в высоту, один слой в глубину.
-   Толстая стена сдаёт по слою: следующий слой только после паузы.
-3. Земля, дерево, стекло, шерсть, незерак падают с первого удара.
-   Камень, булыжник, глубинный сланец, кирпичи, руды и металлические блоки
-   трескаются с первого и падают со второго.
-4. Обсидиан, плачущий обсидиан и бедрок не ломаются.
-   Барьер, рамка портала и усиленный глубинный сланец тоже: их нельзя сломать.
-5. Сундук и бочка падают с первого удара, печь — со второго, как камень.
-   Сам блок предметом не выпадает. Вещи изнутри высыпаются на землю, их можно подобрать.
-   Стена из досок и камня тоже не оставляет обломков.
-6. Пауза между ударами случайная, 20–25 секунд.
-   Пока оглушён щитом или рычит, не бьёт.
+1. If there is no path to the target, the ravager headbutts the wall in front.
+   Target is close and path is clear — normal bite, does not touch the wall.
+2. One strike removes a hole 3 blocks wide and 3 high, one layer deep.
+   A thick wall gives way layer by layer: the next layer only after a cooldown.
+3. Dirt, wood, glass, wool, netherrack drop on the first hit.
+   Stone, cobblestone, deepslate, bricks, ores, and metal blocks
+   crack on the first hit and drop on the second.
+4. Obsidian, crying obsidian, and bedrock do not break.
+   Barrier, portal frame, and reinforced deepslate too: they cannot be broken.
+5. Chest and barrel drop on the first hit, furnace on the second like stone.
+   The block itself does not drop as an item. Contents spill on the ground and can be picked up.
+   A wall of planks and stone also leaves no block drops.
+6. Cooldown between hits is random, 20–25 seconds.
+   While stunned by a shield or roaring, it does not strike.
 
 
 SETTINGS (RavagerWallBreak.java)
 ---------------------------------
-ENABLED — false выключает пробивание стен.
-COOLDOWN_MIN_SECONDS / COOLDOWN_MAX_SECONDS — пауза в секундах. 20 и 25 = от двадцати до двадцати пяти.
-STONE_HITS — ударов по камню. 2 = два удара. 1 = камень падает сразу.
-HOLE_WIDTH — ширина проёма. 3 = центр, слева и справа.
-HOLE_HEIGHT — высота от ног. 3 = ноги, тело и голова.
-REACH — как близко стена, чтобы ударить. 2 = вплотную или на блок дальше.
-DROP_ITEMS — true, если блоки должны выпадать предметом.
-RESPECT_MOB_GRIEFING — true: при mobGriefing false стены не ломает.
+ENABLED — false disables wall breaking.
+COOLDOWN_MIN_SECONDS / COOLDOWN_MAX_SECONDS — pause in seconds. 20 and 25 = twenty to twenty-five.
+STONE_HITS — hits on stone. 2 = two hits. 1 = stone drops immediately.
+HOLE_WIDTH — hole width. 3 = center, left, and right.
+HOLE_HEIGHT — height from feet. 3 = feet, body, and head.
+REACH — how close the wall must be to strike. 2 = flush or one block away.
+DROP_ITEMS — true if blocks should drop as items.
+RESPECT_MOB_GRIEFING — true: with mobGriefing false walls are not broken.
 
 ==============================================================================================
 
-ДОСАЖДАТЕЛЬ: +1 СЕРДЦЕ К УДАРУ
+VEX: +1 HEART PER HIT
 ==============================
 
-Тип: обычный досаждатель (не новый моб). Призывает разоритель, как и раньше.
-Код: vex/VexDamage.java (сколько сердец добавить),
-     mixin/VexDamageMixin.java (момент удара).
+Type: vanilla vex (not a new mob). Still summons ravager as before.
+Code: vex/VexDamage.java (how many hearts to add),
+     mixin/VexDamageMixin.java (moment of hit).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-Каждый удар снимает на одно сердце больше, чем в обычной игре. Без брони.
-Меч, острота и сложность остаются как были — сверху одно сердце.
+Each hit removes one heart more than in vanilla. With no armor.
+Sword, Sharpness, and difficulty stay as they were — one extra heart on top.
 
-На нормальной сложности удар с железным мечом был 4,5 сердца, стал 5,5.
-На лёгкой было 2,75 сердца, стало 3,75.
-На сложной было 6,75 сердца, стало 7,75.
+On Normal difficulty iron sword hit was 4.5 hearts, now 5.5.
+On Easy was 2.75 hearts, now 3.75.
+On Hard was 6.75 hearts, now 7.75.
 
-Броня по-прежнему уменьшает удар. Мирный режим удар обнуляет, как и раньше.
+Armor still reduces damage. Peaceful still zeroes damage as before.
 
-Примерно каждый пятый удар, который снял здоровье, вешает Слабость I на 10 секунд.
-Это только по игроку. Житель и голем слабость не получают.
-Щит, который отбил удар, и короткое мигание после удара тоже не считаются.
-Молоко снимает эффект сразу. Повторный такой удар обновляет время.
-Стая из нескольких досаждателей вешает слабость чаще: шанс считается у каждого отдельно.
+About every fifth hit that removed health applies Weakness I for 10 seconds.
+Player only. Villager and golem do not get weakness.
+A shield block and brief post-hit invulnerability do not count.
+Milk removes the effect immediately. Another such hit refreshes the duration.
+A swarm of several vexes applies weakness more often: chance rolls separately for each.
 
 
 SETTINGS (VexDamage.java)
 --------------------------
-ENABLED — false выключает прибавку урона. Слабость при этом остаётся.
-EXTRA_HEARTS — лишние сердца за удар. 1 = одно сердце. 0 = как в обычной игре.
-WEAKNESS_ENABLED — false убирает слабость. Лишнее сердце остаётся.
-WEAKNESS_CHANCE — 0.20 = каждый пятый прошедший удар. 0.25 = каждый четвёртый. 0 = никогда.
-WEAKNESS_SECONDS — сколько секунд держится слабость. 10 = десять секунд. 0 = эффекта нет.
-WEAKNESS_AMPLIFIER — 0 = Слабость I. 1 = Слабость II, меч почти не бьёт.
+ENABLED — false disables the extra damage. Weakness still applies.
+EXTRA_HEARTS — extra hearts per hit. 1 = one heart. 0 = vanilla.
+WEAKNESS_ENABLED — false removes weakness. Extra heart remains.
+WEAKNESS_CHANCE — 0.20 = every fifth hit that landed. 0.25 = every fourth. 0 = never.
+WEAKNESS_SECONDS — how long weakness lasts. 10 = ten seconds. 0 = no effect.
+WEAKNESS_AMPLIFIER — 0 = Weakness I. 1 = Weakness II, sword barely hits.

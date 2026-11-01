@@ -6,7 +6,7 @@ import net.minecraft.world.entity.monster.Shulker;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-/** Куда шалкер может прилипнуть. Методы закрыты, снаружи их не вызвать. */
+/*Where the shalker might stick. The methods are closed, they cannot be called outside. */
 @Mixin(Shulker.class)
 public interface ShulkerTeleportAccessor {
 

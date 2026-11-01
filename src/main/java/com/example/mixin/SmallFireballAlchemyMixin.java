@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Момент выстрела блейза и попадание шара.
- * Алхимический шар снаружи такой же, как обычный: урон, поджог и огонь на блоке остаются.
- * Дополнительно при попадании срезается огненная стойкость.
+ * The moment the Blaze shot and the ball hit.
+ The alchemical ball on the outside is the same as the usual: damage, arson and fire on the block remain.
+ * In addition, when hit, the fire resistance is cut off.
  */
 @Mixin(SmallFireball.class)
 public class SmallFireballAlchemyMixin {

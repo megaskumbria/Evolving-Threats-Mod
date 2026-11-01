@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Ведьма, разбойник, громила, вызыватель и разоритель появляются через общий код рейдеров.
- * Иллюзор здесь не проходит. Пещерный паук не вызывает код обычного паука.
+ The witch, the robber, the thug, the summoner and the ruiner appear through the common code of the raiders.
+ The illusion doesn't pass here. A cave spider does not call the code of a regular spider.
  */
 @Mixin({ Raider.class, CaveSpider.class })
 public class MobPotionBuffMixin {
@@ -34,7 +34,7 @@ public class MobPotionBuffMixin {
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 		Mob mob = (Mob) (Object) this;
-		// Пещерный паук не вызывает общий спавн, поэтому здоровье бросается здесь.
+		// The cave spider does not cause a common spawn, so health is thrown here.
 		if (mob instanceof CaveSpider) {
 			MobHealth.tryRoll(mob);
 		}

@@ -31,83 +31,83 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Скелет со случайными стрелами. В руке обычный лук, без стрелы с эффектом.
- * Эффект выбирается в момент выстрела. В круге десять разных.
- * Один и тот же не повторяется, пока не вышли остальные.
- * Следующий круг не начинает с того эффекта, который только что выстрелил.
+ A skeleton with random arrows. In the hand is a regular bow, without an arrow with effect.
+ The effect is selected at the time of the shot. There are ten different circles.
+ The same thing is not repeated until the others have come out.
+ The next lap does not start with the effect that just shot.
  */
 public final class RandomArrowSkeleton {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие скелеты не появляются. Уже живущие стреляют как обычно. */
+	/** Turn on the mechanics. False - these skeletons do not appear. Those already alive are shooting as usual. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет или странник будет стрелять этими эффектами.
-	 * 0.01 = 1%, один из ста.
-	 * FIXED: с первого дня, от шкалы угрозы и луны не растёт.
-	 * Два меча лук убирают — такой скелет этот шанс не бросает. 0 = только команда.
+	 The chance (0.0–1.0) that an ordinary skeleton or wanderer will shoot these effects.
+	 * 0.01 = 1%, one in a hundred.
+	 FIXED: From day one, the threat scale and the moon do not rise.
+	 Two swords are removed bow - this skeleton does not throw this chance. 0 = commands only.
 	 */
 	public static final float SPAWN_CHANCE = 0.01f;
 
 	/**
-	 * Поджог после попадания, в секундах. 5 = как огненная стрела в обычной игре.
-	 * Огнестойкость урон снимает, как обычно. 1 = почти вспышка.
+	 Arson after hit, in seconds. 5 = like a fire arrow in a normal game.
+	 Fire resistance removes damage as usual. 1 = almost flash.
 	 */
 	public static final int FIRE_SECONDS = 5;
 
 	/**
-	 * Слепота после попадания, в секундах. Уровень I. 8 = почти без обзора.
-	 * У вредной стрелы со слепотой тоже 8.
+	 Blindness after hit, in seconds. Level I. 8 = almost without review.
+	 A bad arrow with blindness also has 8.
 	 */
 	public static final int BLINDNESS_SECONDS = 8;
 
 	/**
-	 * Яд после попадания, в секундах. Уровень I, не сильный яд.
-	 * 5 = примерно как обычная стрела яда. 0 = яда нет, выстрел всё равно занимает очередь.
+	 Poison after exposure, in seconds. Level I, not a strong poison.
+	 * 5 = approximately like a conventional arrow of poison. 0 = no poison, the shot is still in line.
 	 */
 	public static final int POISON_SECONDS = 5;
 
 	/**
-	 * Голод после попадания, в секундах. Уровень I.
-	 * 30 = полминуты. У вредной стрелы голод на минуты: здесь короче, выстрел повторяется по кругу.
+	 Hunger after hit, in seconds. Level I.
+	 * 30 = half a minute. The harmful arrow is hungry for minutes: here it is shorter, the shot is repeated in a circle.
 	 */
 	public static final int HUNGER_SECONDS = 30;
 
 	/**
-	 * Замедление после попадания, в секундах. Уровень I.
-	 * 15 = заметно, но не на весь бой. 0 = выстрел всё равно занимает очередь.
+	 Slowdown after hit, in seconds. Level I.
+	 15 = noticeable, but not for the whole fight. 0 = the shot is still in line.
 	 */
 	public static final int SLOWNESS_SECONDS = 15;
 
 	/**
-	 * Слабость после попадания, в секундах. Уровень I.
-	 * 15 = удары слабее ненадолго. 0 = выстрел всё равно занимает очередь.
+	 Weakness after hit, in seconds. Level I.
+	 * 15 = weaker strokes for a short time. 0 = the shot is still in line.
 	 */
 	public static final int WEAKNESS_SECONDS = 15;
 
 	/**
-	 * Иссушение после попадания, в секундах. Уровень I, не как у скелета-иссушителя на II.
-	 * 7 = как у вредной стрелы с иссушением.
+	 Drying after hit, in seconds. Level I, not like a dehumidifier skeleton on II.
+	 * 7 = like a bad arrow with drying.
 	 */
 	public static final int WITHER_SECONDS = 7;
 
 	/**
-	 * Тошнота после попадания, в секундах. Уровень I: экран качает.
-	 * 8 = коротко. У вредной стрелы тошнота на минуты, здесь выстрел возвращается по кругу.
+	 Nausea after hit, in seconds. Level I: The screen is rocking.
+	 * 8 = short. The bad arrow has nausea for minutes, here the shot returns in a circle.
 	 */
 	public static final int NAUSEA_SECONDS = 8;
 
 	/**
-	 * Левитация после попадания, в секундах. Уровень I.
-	 * 8 = подъём примерно на 8 блоков, потом падение. Как у вредной стрелы.
+	 Levitation after hit, in seconds. Level I.
+	 8 = rise of about 8 blocks, then fall. Like a bad arrow.
 	 */
 	public static final int LEVITATION_SECONDS = 8;
 
 	/**
-	 * Мгновенный урон, уровень. 0 = уровень I, три сердца. 1 = уровень II, шесть сердец.
-	 * Длительности у этого эффекта нет: бьёт сразу.
+	 Instant damage, level. 0 = Level I, three hearts. 1 = Level II, six hearts.
+	 There is no duration of this effect: it hits immediately.
 	 */
 	public static final int HARM_LEVEL = 0;
 
@@ -127,7 +127,7 @@ public final class RandomArrowSkeleton {
 			FIRE, BLIND, POISON, HUNGER, SLOW, WEAK, WITHER, NAUSEA, LEVITATE, HARM
 	};
 
-	/** Имя на огненной стреле, чтобы попадание ставило свой поджог, а не только ванильные 5 секунд. */
+	/*The name on the fire arrow so that the hit puts its arson, not just vanilla 5 seconds. */
 	public static final String FIRE_ARROW_NAME = "random_fire";
 
 	private static final float VANILLA_ARROW_SPEED = 1.6f;
@@ -143,8 +143,8 @@ public final class RandomArrowSkeleton {
 	}
 
 	/**
-	 * true — этот скелет стреляет эффектами по кругу.
-	 * Вредную стрелу в руку ему не кладём: иначе в руке торчала бы одна и та же.
+	 * True - this skeleton shoots effects in a circle.
+	 We do not put a harmful arrow in his hand; otherwise the same one would stick out in his hand.
 	 */
 	public static boolean tryRoll(AbstractSkeleton skeleton) {
 		if (!ENABLED || !(skeleton instanceof RandomArrowSkeletonEntity data)) {
@@ -153,7 +153,7 @@ public final class RandomArrowSkeleton {
 		if (!(skeleton.level() instanceof ServerLevel)) {
 			return false;
 		}
-		// Команда ставит метку до появления. Шанс тогда не бросаем.
+		// The team puts the mark before it appears. Then we don't give up.
 		if (data.evolvingthreats$isRandomArrow()) {
 			return true;
 		}
@@ -167,7 +167,7 @@ public final class RandomArrowSkeleton {
 		return true;
 	}
 
-	/** Если набор моба забрал лук, вернуть его: без лука круг эффектов не из чего стрелять. */
+	/*If the set of mob took the bow, return it: without the bow, the circle of effects has nothing to shoot from. */
 	public static void ensureBow(AbstractSkeleton skeleton) {
 		if (!isActive(skeleton) || skeleton.isHolding(Items.BOW)) {
 			return;
@@ -176,8 +176,8 @@ public final class RandomArrowSkeleton {
 	}
 
 	/**
-	 * Команда: скелет перед игроком, без случайного шанса.
-	 * Броня, чары на луке и быстрый лук вешаются тем же кодом, что у обычного спавна.
+	 Team: Skeleton in front of the player, without chance.
+	 Armor, charms on the bow and fast bow are hung with the same code as a regular spawn.
 	 */
 	public static void spawn(ServerLevel level, Vec3 pos, LivingEntity lookAt) {
 		if (!ENABLED) {
@@ -203,7 +203,7 @@ public final class RandomArrowSkeleton {
 		level.addFreshEntity(skeleton);
 	}
 
-	/** Выпустить следующую стрелу круга. false — это не он или в руках нет лука. */
+	/*Release the next arrow of the circle. False is not him or there is no bow in his hands. */
 	public static boolean shoot(AbstractSkeleton skeleton, LivingEntity target, float power) {
 		if (!isActive(skeleton) || !skeleton.isHolding(Items.BOW)) {
 			return false;
@@ -219,7 +219,7 @@ public final class RandomArrowSkeleton {
 		AbstractArrow arrow = ProjectileUtil.getMobArrow(skeleton, projectile, power, bow);
 		arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
 		if (FIRE.equals(effect)) {
-			// В полёте стрела горит, как с чарами Огонь. Сколько горит игрок — в попадании.
+			// In flight, the arrow burns, as with the spell of Fire. How much the player burns is in the hit.
 			arrow.igniteForSeconds(100.0f);
 		}
 		double xd = target.getX() - skeleton.getX();
@@ -228,7 +228,7 @@ public final class RandomArrowSkeleton {
 		double distance = Math.sqrt(xd * xd + zd * zd);
 		float speed = VANILLA_ARROW_SPEED;
 		double arc = VANILLA_ARC;
-		// Быстрый лук — та же надбавка, что у остальных скелетов с этой меткой.
+		// A fast bow is the same premium as the rest of the skeletons with this label.
 		if (skeleton instanceof FastBowSkeletonEntity fast && fast.evolvingthreats$isFastBow()) {
 			speed = FastBowSkeleton.ARROW_SPEED;
 			arc = FastBowSkeleton.arrowArc();
@@ -239,7 +239,7 @@ public final class RandomArrowSkeleton {
 		return true;
 	}
 
-	/** Поджог своей длительности. Ваниль после горящей стрелы ставит 5 секунд, здесь число из настроек. */
+	/*Arson of its duration. Vanilla after burning arrow puts 5 seconds, here is the number of settings. */
 	public static void onFireHit(AbstractArrow arrow, Entity hit) {
 		if (!(hit instanceof LivingEntity living) || FIRE_SECONDS <= 0) {
 			return;
@@ -263,7 +263,7 @@ public final class RandomArrowSkeleton {
 		return effect;
 	}
 
-	/** Все эффекты круга в случайном порядке. Первый не равен прошлому выстрелу. */
+	/*All effects of the circle in random order. The first one doesn't equal the last shot. */
 	private static String shuffle(AbstractSkeleton skeleton, String last) {
 		List<String> bag = new ArrayList<>(List.of(EFFECTS));
 		var random = skeleton.getRandom();
@@ -291,7 +291,7 @@ public final class RandomArrowSkeleton {
 			return namedArrow(FIRE_ARROW_NAME, 0xFF6A00, List.of());
 		}
 		if (HARM.equals(effect)) {
-			// Уровень I или II. У ванильной стрелы урона своя длительность не нужна.
+			// Level I or II. The vanilla arrow does not need its own duration.
 			ItemStack harm = PotionContents.createItemStack(
 					Items.TIPPED_ARROW,
 					HARM_LEVEL >= 1 ? Potions.STRONG_HARMING : Potions.HARMING);
@@ -339,7 +339,7 @@ public final class RandomArrowSkeleton {
 				Optional.of(color),
 				effects,
 				Optional.of(name)));
-		// 1 = длительность в эффекте уже в тиках, игра её не укорачивает.
+		// 1 = the duration of the effect is already in ticks, the game does not shorten it.
 		arrow.set(DataComponents.POTION_DURATION_SCALE, 1.0F);
 		return arrow;
 	}

@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Обычный скелет помнит, что он Василиск.
- * После загрузки мира заново выбирает стрельбу, чтобы дальняя дистанция не сбросилась.
- * Опыт и лут — {@link BasiliskLootMixin}. Дальность выстрела — {@link BasiliskBowMixin}.
+ An ordinary skeleton remembers that it is a Basilisk.
+ After loading the world again chooses shooting so that the long distance is not reset.
+ * Experience and loot — @link BasiliskLootMixin. Range: @link BasiliskBowMixin.
  */
 @Mixin(Skeleton.class)
 public class BasiliskSkeletonMixin implements BasiliskSkeletonEntity {

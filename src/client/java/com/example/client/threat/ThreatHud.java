@@ -14,49 +14,49 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 /**
- * Шкала угрозы на экране: слева луна текущего дня, в центре полоска (день / 100), справа череп текущей ступени.
- * По умолчанию висит в ЛЕВОМ ВЕРХНЕМ углу: справа сверху ваниль рисует иконки эффектов зелий, по центру боссбары.
+ * The threat scale on the screen: on the left is the moon of the current day, in the center is a strip (day / 100), on the right is the skull of the current step.
+ * By default, it hangs in the UPPER LEFT corner: on the top right, vanilla draws icons of potion effects, in the center of the bossbar.
  *
- * <p>Ничего не приходит с сервера: день и фазу луны клиент считает сам по времени мира,
- * которое игра и так присылает ({@link ThreatScale}). Подписи с числом дней нет — только картинки.
- * Картинки лежат в assets/evolving-threats/textures/gui/sprites/threat/ (делает tools/prepare_threat_textures.py).
+ * <p>Nothing comes from the server: the client counts the day and phase of the moon by itself according to the time of the world,
+ * which the game already sends ({@link ThreatScale}). No signatures with the number of days — only pictures.
+ * Pictures are in assets/evolving-threats/textures/gui/sprites/threat/ (makes tools/prepare_threat_textures.py).
  */
 public final class ThreatHud {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — шкала на экране не показывается (на самой механике это не сказывается). */
+	/** false — the scale is not shown on the screen (this does not affect the mechanics itself). */
 	public static final boolean ENABLED = true;
 
-	/** Отступ от левого края экрана, в пикселях интерфейса. Больше — шкала правее. */
+	/** Margin from the left edge of the screen, in interface pixels. More — the scale is to the right. */
 	public static final int MARGIN_LEFT = 4;
 
-	/** Отступ от верхнего края экрана, в пикселях интерфейса. Больше — шкала ниже. */
+	/** Margin from the top edge of the screen, in interface pixels. More — the scale is lower. */
 	public static final int MARGIN_TOP = 4;
 
 	/**
-	 * Во сколько раз изменить размер всей шкалы. 1.0 = как нарисовано (164 пикселя в ширину),
-	 * 0.75 = поменьше (сейчас), 0.5 = совсем маленькая, 1.5 = побольше. Дробные числа делают картинку чуть мягче.
+	 * How many times to resize the entire scale. 1.0 = as drawn (164 pixels wide),
+	 * 0.75 = smaller (now), 0.5 = very small, 1.5 = larger. Fractional numbers make the picture a little softer.
 	 */
 	public static final float SCALE = 0.75f;
 
-	/** Показывать ли иконку луны слева. */
+	/** Whether to show the moon icon on the left. */
 	public static final boolean SHOW_MOON = true;
 
-	/** Показывать ли череп справа. */
+	/** Whether to show the skull on the right. */
 	public static final boolean SHOW_STAGE_ICON = true;
 
-	/** Не рисовать шкалу, пока открыт экран отладки (F3): он занимает как раз левый верх. */
+	/** Do not draw the scale while the debug screen (F3) is open: it occupies just the left top. */
 	public static final boolean HIDE_WHEN_DEBUG_OPEN = true;
 
 	// ========================================================================
 
-	// Размеры картинок. Должны совпадать с файлами (tools/prepare_threat_textures.py пишет их при запуске).
+	// Image sizes. Must match the files (tools/prepare_threat_textures.py writes them at startup).
 	private static final int ICON_SIZE = 16;
 	private static final int ICON_GAP = 2;
 	private static final int FRAME_WIDTH = 128;
 	private static final int FRAME_HEIGHT = 12;
-	/** Окно внутри рамки, куда рисуется заполнение: отступ слева, сверху и размер. */
+	/** The window inside the frame, where the padding is drawn: padding on the left, top and size. */
 	private static final int WINDOW_X = 5;
 	private static final int WINDOW_Y = 4;
 	private static final int WINDOW_WIDTH = 118;
@@ -68,9 +68,9 @@ public final class ThreatHud {
 	private ThreatHud() {
 	}
 
-	/** Вызывается один раз при запуске клиента. */
+	/** Called once at client startup. */
 	public static void register() {
-		// Сервер сообщает, с какого момента мир считает дни (иначе в старом мире шкала показала бы весь возраст мира).
+		// The server reports from what point the world counts the days (otherwise, in the old world, the scale would show the entire age of the world).
 		ClientPlayNetworking.registerGlobalReceiver(ThreatStartPayload.TYPE,
 				(payload, context) -> ThreatScale.setStartClock(payload.startClock()));
 		if (!ENABLED) {
@@ -102,7 +102,7 @@ public final class ThreatHud {
 		int barY = (ICON_SIZE - FRAME_HEIGHT) / 2;
 		int filled = Math.round(WINDOW_WIDTH * ThreatScale.progress(level));
 		if (filled > 0) {
-			// Частичная картинка: берём только левую часть полоски, чтобы цвет шёл от зелёного к красному по шкале.
+			// Partial picture: we take only the left part of the strip so that the color goes from green to red on the scale.
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FILL,
 					WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0,
 					x + WINDOW_X, barY + WINDOW_Y, filled, WINDOW_HEIGHT);
@@ -117,7 +117,7 @@ public final class ThreatHud {
 		graphics.pose().popMatrix();
 	}
 
-	/** Номер иконки-черепа 0–3 по текущему дню. Дни порогов — ThreatTable.STAGE_ICON_FROM_DAY. */
+	/** Skull icon number is 0–3 for the current day. Threshold Days — ThreatTable.STAGE_ICON_FROM_DAY. */
 	private static int stageIndex(Level level) {
 		int day = ThreatScale.day(level);
 		int stage = 0;

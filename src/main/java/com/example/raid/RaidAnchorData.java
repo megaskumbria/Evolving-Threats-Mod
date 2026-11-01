@@ -9,13 +9,13 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 /**
- * Что мир помнит о естественных Рейдовых якорях: в какой день появился последний.
- * Нужно для паузы между якорями (см. {@link RaidAnchorNatural#MIN_DAYS_BETWEEN}).
- * Лежит в папке мира (data/evolving-threats/raid_anchor.dat). Настроек здесь нет.
+ * Persisted natural raid-anchor state: which game day the last one spawned.
+ * Used for spacing between anchors (see {@link RaidAnchorNatural#MIN_DAYS_BETWEEN}).
+ * Stored under the world folder (data/evolving-threats/raid_anchor.dat). No tunables here.
  */
 public final class RaidAnchorData extends SavedData {
 
-	/** Игровой день, когда появился последний естественный якорь. -1 = ещё ни разу. */
+	/** Game day when the last natural anchor spawned. -1 = never yet. */
 	public int lastNaturalAnchorDay = -1;
 
 	public static final Codec<RaidAnchorData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -36,7 +36,7 @@ public final class RaidAnchorData extends SavedData {
 		this.lastNaturalAnchorDay = lastNaturalAnchorDay;
 	}
 
-	/** Данные хранятся один раз на весь мир, в верхнем мире. Можно передать любой мир сервера. */
+	/** One copy per world in the overworld save. Any server dimension level works. */
 	public static RaidAnchorData get(ServerLevel anyLevel) {
 		return anyLevel.getServer().overworld().getDataStorage().computeIfAbsent(TYPE);
 	}

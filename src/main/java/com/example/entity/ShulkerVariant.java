@@ -1,33 +1,33 @@
 package com.example.entity;
 
-/** Какой шалкер выпал при появлении. Реализация — mixin на Shulker. */
+/*What kind of shalker fell on the appearance. The implementation is mixin on Shulker. */
 public interface ShulkerVariant {
 
 	boolean evolvingthreats$rolled();
 
 	void evolvingthreats$setRolled(boolean rolled);
 
-	/** Снаряды этого шалкера вешают замедление. */
+	/*The shells of this shalker are decelerating. */
 	boolean evolvingthreats$slows();
 
 	void evolvingthreats$setSlows(boolean slows);
 
-	/** После обычного выстрела выпускает второй снаряд. */
+	/*After a regular shot, the second projectile is fired. */
 	boolean evolvingthreats$doubleShot();
 
 	void evolvingthreats$setDoubleShot(boolean doubleShot);
 
-	/** Попадание телепортирует игрока. */
+	/*The hit teleports the player. */
 	boolean evolvingthreats$teleportsPlayer();
 
 	void evolvingthreats$setTeleportsPlayer(boolean teleportsPlayer);
 
-	/** Сколько тиков осталось до второго снаряда. 0 — второй не ждёт. */
+	/*How many tics are left before the second projectile. 0 doesn't wait for second. */
 	int evolvingthreats$secondShotTicks();
 
 	void evolvingthreats$setSecondShotTicks(int ticks);
 
-	/** Сколько тиков до пересадки на соседний блок. */
+	/*How many tics before transferring to a neighboring block? */
 	int evolvingthreats$hopTicks();
 
 	void evolvingthreats$setHopTicks(int ticks);

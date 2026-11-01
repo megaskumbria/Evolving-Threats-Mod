@@ -13,29 +13,29 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
- * Опыт за убийство любого враждебного моба.
- * Обычные 5 становятся 10. Броня и оружие в игре сами добавляют ещё 1–3 за вещь:
- * эта добавка тоже умножается.
+ Experience for killing any hostile mob.
+ The normal 5 becomes 10. Armor and weapons in the game add another 1-3 per item:
+ * This supplement is also multiplied.
  *
- * <p>Враждебный — тот, кого игра считает монстром: зомби, скелет, крипер, паук,
- * эндермен, ведьма, брут, слизень, магмовый куб, фантом, блейз и остальные из этого списка.
- * Коровы, свиньи и жители сюда не входят.
+ Hostile - the one whom the game considers a monster: zombie, skeleton, cryper, spider,
+ *Enderman, witch, brute, slug, magma cube, phantom, blaze and the rest of this list.
+ Cows, pigs and residents are not included.
  *
- * <p>Срабатывает в момент смерти, когда игра уже посчитала свой опыт.
- * Свой опыт не трогаем: Excalibur, Mjölnir, чародей, ритуал, василиск, Бастион, скелет «700 IQ»,
- * скелет-иссушитель.
+ <p>It works at the time of death, when the game has already counted its experience.
+ We do not touch our experience: Excalibur, Mjölnir, sorcerers, ritual, basilisk, Bastion, skeleton "700 IQ",
+ * exhumerator skeleton.
  */
 public final class MobExperience {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — опыт как в обычной игре. */
+	/** Turn on the mechanics. False - experience as in a normal game. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Во сколько раз больше опыта. 2 = вдвое: голый зомби даёт 10 вместо 5.
-	 * 1 = как без мода. 3 = втрое, голый даёт 15.
-	 * FIXED: от дня и шкалы угрозы не растёт. Здоровье моба на это число не влияет.
+	 * How many times more experience. 2 = double: naked zombie gives 10 instead of 5.
+	 * 1 = like no fashion. 3 = three, naked gives 15.
+	 FIXED: From day to day and the scale of threat does not increase. The health of the mob does not affect this number.
 	 */
 	public static final int MULTIPLIER = 2;
 
@@ -45,9 +45,9 @@ public final class MobExperience {
 	}
 
 	/**
-	 * Сколько опыта оставить. -1 = не враждебный или у него своё число, пусть решает игра.
+	 How much experience to leave. -1 = not hostile or has its own number, let the game decide.
 	 *
-	 * @param vanilla уже посчитанный игрой опыт, вместе с добавкой за вещи
+	 * @param vanilla already considered game experience, along with extra for things
 	 */
 	public static int reward(Mob mob, int vanilla) {
 		if (!ENABLED || MULTIPLIER == 1 || vanilla <= 0 || !getsBonus(mob)) {
@@ -64,7 +64,7 @@ public final class MobExperience {
 		return mob.getType().getCategory() == MobCategory.MONSTER && !hasOwnReward(mob);
 	}
 
-	/** У этих мобов опыт уже записан своим числом. Множитель его не увеличивает. */
+	/*In these mobs, the experience is already recorded in its number. The multiplier doesn't increase it. */
 	private static boolean hasOwnReward(Mob mob) {
 		if (mob instanceof Zombie zombie) {
 			if (ZombieExcalibur.isExcalibur(zombie)

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 
 /**
- * Заброс удочки. Ходьбу и удар не занимает: когда игрок близко, бьёт обычная атака утопленника.
+ * The rod roll. Walking and kicking does not take: when the player is close, the usual attack of a drowned person hits.
  */
 public class DrownedFishingGoal extends Goal {
 

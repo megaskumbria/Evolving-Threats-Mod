@@ -1,61 +1,61 @@
-РЕЙДОВЫЙ ЯКОРЬ (Raid Anchor)
+Raid ANCHOR
 ============================
 
-Тип: событие-рейд (1 якорь + 12–15 прислуг). Не отдельный тип сущности Minecraft.
-Код: raid/RaidAnchor.java, raid/RaidEliteLoadout.java — настройки в блоках «SETTINGS».
+Type: Raid event (1 anchor + 12–15 servants). Not a separate type of Minecraft entity.
+Code: raid/RaidAnchor.java, raid/RaidEliteLoadout.java - settings in the "SETTINGS" blocks.
 
 
-СУТЬ
+ESSENCE
 ----
-• Якорь — зомби с золотой мотыгой и 100 здоровья. Сам бьёт слабо.
-• Пока якорь жив, прислуги «слышат» игрока: идут к закреплённой цели
-  в радиусе ~128 блоков (как охота надсмотрщика, но на всю волну).
-• Прислуги — зомби и скелеты с отдельным рандомом брони/оружия
-  (RaidEliteLoadout): чаще железо/алмаз, чаще чары; НЕ лут обычного мира.
-• Убил якорь → у всех прислуг этого рейда Slowness II на 30 с,
-  GPS выключается, цель сбрасывается (дальше только обычная агрессия).
+• Anchor — a zombie with a golden hoe and 100 health. He himself beats weakly.
+• While the anchor is alive, the servants “hear” the player: they go to the fixed target
+  within a radius of ~128 blocks (as a foreman's hunt, but for the whole wave).
+• Domestic workers — zombies and skeletons with a separate armor/weapon random
+  (RaidEliteLoadout): more often iron/diamond, more often enchantment; not loot of the ordinary world.
+• Killed the anchor → of all the servants of this Slowness II raid for 30 seconds,
+  GPS is turned off, the target is reset (then only normal aggression).
 
 
-ЯКОРЬ (по умолчанию)
+Anchor by default.
 -------------------
-  Здоровье .............. 100 HP
-  Оружие ................ золотая мотыга (слабый, символично)
-  Имя над головой ....... Raid Anchor. Видно, только когда прицел на нём
-                          и он не дальше примерно 64 блоков.
+  Health .............. 100 HP
+  Weapon ................ golden hoe (weak, symbolic)
+  The name is overhead ....... Raid Anchor. Visible only when the sight is on it
+                          and it's no further than about 64 blocks.
 
 
-ПРИСЛУГИ
+DOMESTIC WORKERS
 --------
-  Количество ............ 12–15 (случайно)
-  Состав ................ ~60% зомби, ~40% скелеты
-  Спавн ................. кольцо 6–14 блоков от якоря
-  Броня ................. свой рандом (см. RaidEliteLoadout.java)
-  Скелеты ............... лук; без раздатчика на голове
+  Quantity ............ 12–15 (random)
+  Composition ................ ~60% zombies, ~40% skeletons
+  Spawn ................. ring of 6–14 blocks from anchor
+  Armor ................. its random (see RaidEliteLoadout.java)
+  Skeletons ............... bow; no distributor on the head
 
 
-ТЕСТ В ИГРЕ
+IN-GAME TEST
 -----------
-Команды (читы / OP, уровень прав гейммастера):
+Commands (cheats / OP, gamaster rights level):
 
   /etraid
   /evolvingthreats spawn raid
-  /evolvingthreats spawn raid <игрок>   — цель рейда
+  /evolvingthreats spawn raid — raid target
 
-Якорь появляется ~8 блоков перед вами; прислуги вокруг.
+Anchor appears ~8 blocks in front of you; servants around.
 
 
-ЕСТЕСТВЕННОЕ ПОЯВЛЕНИЕ
+NATURAL APPEARANCE
 ----------------------
-Код: raid/RaidAnchorNatural.java (настройки вверху), raid/RaidAnchorData.java (память мира).
-  С какого дня ........... 80-й (ThreatTable.RAID_ANCHOR_DAY)
-  Шанс ................... 0,1% на каждого появившегося зомби (SPAWN_CHANCE), от дня не растёт
-  Где и когда ............ верхний мир, ночь, под открытым небом, обычный зомби (не ребёнок),
-                           только естественный спавн; не в ночь осады
-  Пауза .................. не чаще одного якоря на мир за 5 игровых дней (MIN_DAYS_BETWEEN)
-  Как ................... появившийся зомби сам становится якорем, прислуги встают вокруг на поверхности.
-Команда /etraid работает как раньше (без условий).
+Code: raid/RaidAnchorNatural.java (settings at the top), raid/RaidAnchorData.java (world memory).
+  From which day ........... 80th (ThreatTable.RAID_ANCHOR_DAY)
+  The chance of................. 0.1% for each zombie (SPAWN_CHANCE) that appears does not increase from day to day
+  Where and when ............ the upper world, the night, under the open sky, an ordinary zombie (not a child),
+                           only natural spawn; not on the night of the siege
+  Pause .................. no more than one anchor per world in 5 game days (MIN_days_BETWEEN)
+  As the................... appeared zombie itself becomes an anchor, the servants stand around on the surface.
+The /etraid command works as before (without conditions).
 
 
-БУДУЩЕЕ (пока не в коде)
+FUTURE (not yet in code)
 ------------------------
-• Отдельное яйцо призыва — по желанию позже.
+• Separate draft egg — optional later.

@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удар по живому существу. Если это моб со щитом мода и выпал шанс блока,
- * удар гасится целиком: игра даже не начинает считать урон.
+ * Hitting a living thing. If it's a mob with a shield fashion and a block chance has dropped,
+ The blow is extinguished completely: the game does not even begin to count damage.
  */
 @Mixin(LivingEntity.class)
 public class LivingEntityMobShieldMixin {

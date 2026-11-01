@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Серверный ход мыслей эндермена. Обмен местами считается здесь,
- * потому что злость и цель уже известны. Сам телепорт — в {@link EndermanSwap}.
+ *Enderman's server train of thought. The exchange of seats counts here.
+ Because anger and purpose are already known. The teleport itself is at {@link EndermanSwap}.
  */
 @Mixin(Enderman.class)
 public class EndermanSwapMixin {

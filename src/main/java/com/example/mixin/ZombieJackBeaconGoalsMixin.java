@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Цель «маяк стаи» — только у зомби с jack o'lantern на голове (см. {@link com.example.beacon.JackLanternBeacon}).
+ * Pack-beacon goal — only for zombies with a jack o'lantern on the head (see {@link com.example.beacon.JackLanternBeacon}).
  */
 @Mixin(Zombie.class)
 public class ZombieJackBeaconGoalsMixin {

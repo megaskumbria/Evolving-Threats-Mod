@@ -40,48 +40,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Редкий обычный зомби или скелет по имени Spiky.
- * Игра его не добавляет: это тот же моб, только один кусок брони колет в ответ.
- * Урон задан здесь, а не уровнем чар «Шипы»: в этой версии игры уровень Шипов урон не поднимает.
+ * Rare normal zombie or skeleton named Spiky.
+ * Not a separate entity type: same mob, one armor piece reflects damage.
+ * Damage is set here, not by Thorns enchant level — in this game version Thorns level does not scale reflect damage.
  */
 public final class Spiky {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — новые Spiky не появляются, команда тоже не спавнит. Уже живые остаются как есть. */
+	/** false — no new Spiky, command spawn off. Existing ones unchanged. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби или скелет при появлении станет Spiky.
-	 * 0.002 = 0.2%. Бросается отдельно для зомби и для скелета.
-	 * До дня ThreatTable.SPIKY_DAY (40) шанса нет. С этого дня число не растёт и луна его не меняет.
-	 * Команда этот шанс не бросает. Спаунер бросает. Призванная подмога и /summon — нет.
+	 * Chance (0.0–1.0) that a normal zombie or skeleton becomes Spiky on spawn.
+	 * 0.002 = 0.2%. Separate roll for zombie and skeleton.
+	 * No chance before ThreatTable.SPIKY_DAY (40). From that day chance is fixed; moon does not change it.
+	 * Command skips roll. Spawner rolls. Summoned reinforcements and /summon — no.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
-	/** Имя над головой. По-английски, как у остальных именных мобов. */
+	/** Name tag. English, like other named mobs. */
 	public static final String NAME = "Spiky";
 
 	/**
-	 * Сколько сердец снимает укол, от и до. Оба края входят: 7 и 8 тоже выпадают.
-	 * 1 сердце = 2 единицы урона. 7 сердец = 14, 8 сердец = 16.
-	 * Броня, Защита и щит это число не режут. Жёлтые сердца от золотого яблока съедаются первыми.
-	 * Зелье «Сопротивление урону» всё ещё ослабляет удар.
+	 * Hearts removed per reflect hit, inclusive range. 7 and 8 both possible.
+	 * 1 heart = 2 damage. 7 hearts = 14 HP, 8 = 16.
+	 * Armor, Protection, and shield do not reduce this. Absorption hearts are consumed first.
+	 * Resistance potion still weakens the hit.
 	 */
 	public static final int HEARTS_MIN = 7;
 	public static final int HEARTS_MAX = 8;
 
 	/**
-	 * Какой уровень «Шипов» написан на колючем куске. 3 = Шипы III, как потолок обычной игры.
-	 * На силу укола НЕ влияет: сердца задают HEARTS_MIN и HEARTS_MAX.
-	 * 0 = на предмете чары не написаны, колоть всё равно будет.
-	 * Если игрок снимет эту броню и наденет сам, она колет уже как обычные Шипы игры, слабо.
+	 * Thorns level shown on the spiked piece. 3 = Thorns III, vanilla cap.
+	 * Does NOT set reflect damage — hearts come from HEARTS_MIN and HEARTS_MAX.
+	 * 0 = no enchant text on item; reflect still works.
+	 * If the player wears the piece, vanilla Thorns applies weakly.
 	 */
 	public static final int THORNS_LEVEL = 3;
 
 	// ========================================================================
 
-	/** Урон укола. Стоит в bypasses_armor и bypasses_enchantments, поэтому броня и Защита его не режут. */
+	/** Reflect damage type: bypasses_armor and bypasses_enchantments. */
 	private static final ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(
 			Registries.DAMAGE_TYPE, EvolvingThreats.id("spiky"));
 
@@ -89,7 +89,7 @@ public final class Spiky {
 			EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET,
 	};
 
-	/** Чтобы укол, который сам ранит игрока, не вызвал второй укол. */
+	/** Prevents reflect from chaining when reflect damage hits the player. */
 	private static boolean spiking;
 
 	private Spiky() {
@@ -100,8 +100,8 @@ public final class Spiky {
 	}
 
 	/**
-	 * Обычные Шипы игры с брони Spiky. Их надо погасить: иначе к 7–8 сердцам
-	 * прибавится ещё слабый укол 1–5 с каждого куска.
+	 * Vanilla Thorns from Spiky armor must be suppressed — otherwise weak Thorns
+	 * stacks on top of 7–8 heart reflect.
 	 */
 	public static boolean isVanillaThorns(DamageSource source) {
 		if (!source.is(DamageTypes.THORNS) || !(source.getEntity() instanceof Mob mob)) {
@@ -111,8 +111,8 @@ public final class Spiky {
 	}
 
 	/**
-	 * Бросить шанс. true = это Spiky.
-	 * Кусок брони с шипами надевает {@link #apply}, уже после обычной брони.
+	 * Roll spawn chance. true = Spiky.
+	 * Spiked armor is applied in {@link #apply}, after normal armor.
 	 */
 	public static boolean tryRoll(Mob mob, EntitySpawnReason reason) {
 		if (isSpiky(mob)) {
@@ -131,9 +131,9 @@ public final class Spiky {
 	}
 
 	/**
-	 * Команда. Появляется уже Spiky, шанс и день не смотрим.
-	 * skeleton = false — зомби, true — скелет.
-	 * false — выключен или моба не удалось создать.
+	 * Command spawn as Spiky — ignores chance and day gate.
+	 * skeleton = false zombie, true skeleton.
+	 * false — disabled or spawn failed.
 	 */
 	public static boolean spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt, boolean skeleton) {
 		if (!ENABLED) {
@@ -162,7 +162,7 @@ public final class Spiky {
 		return true;
 	}
 
-	/** Имя и один колючий кусок брони. Остальная броня уже выдана как обычно. */
+	/** Name tag and one spiked armor piece. Other armor already rolled normally. */
 	public static void apply(Mob mob) {
 		if (!isSpiky(mob)) {
 			return;
@@ -172,7 +172,7 @@ public final class Spiky {
 		ensureSpikePiece(mob);
 	}
 
-	/** После загрузки мира. Броню не перебрасывает: какой кусок надели, тот и остался. */
+	/** After world load. Does not re-roll armor slots. */
 	public static void refresh(Mob mob) {
 		if (!isSpiky(mob)) {
 			return;
@@ -181,8 +181,8 @@ public final class Spiky {
 	}
 
 	/**
-	 * Удар игрока уже дошёл до Spiky. Один укол в ответ, не с каждого куска брони.
-	 * Рука, меч, стрела и трезубец игрока колют. Огонь, взрыв и чужие Шипы — нет.
+	 * Player hit already landed on Spiky. One reflect hit, not per armor piece.
+	 * Hand, sword, arrow, and trident reflect. Fire, explosion, and foreign Thorns — no.
 	 */
 	public static void onHurt(LivingEntity mob, ServerLevel level, DamageSource source, boolean landed) {
 		if (!landed || spiking || !(mob instanceof Mob spiky) || !isSpiky(spiky)) {
@@ -209,8 +209,6 @@ public final class Spiky {
 		} finally {
 			spiking = false;
 		}
-		// Обычные Шипы играют этот звон только на своём типе урона. У Spiky тип свой, поэтому зовём звук сами.
-		// Если укол не прошёл (игрок уже неуязвим), звука нет — как у обычных Шипов.
 		if (landedOnPlayer) {
 			level.playSound(
 					null,
@@ -222,7 +220,6 @@ public final class Spiky {
 		}
 	}
 
-	/** Случайное число сердец от HEARTS_MIN до HEARTS_MAX. Оба края входят. */
 	private static int hearts(RandomSource random) {
 		int min = Math.min(HEARTS_MIN, HEARTS_MAX);
 		int max = Math.max(HEARTS_MIN, HEARTS_MAX);
@@ -254,14 +251,12 @@ public final class Spiky {
 			chosen = empty.get(random.nextInt(empty.size()));
 			RandomArmor.equipRandomPiece(mob, chosen);
 		} else {
-			// На голове тыква или спавнер, а слоты брони заняты не бронёй. Всё равно нужен один кусок.
 			chosen = ARMOR_SLOTS[random.nextInt(ARMOR_SLOTS.length)];
 			RandomArmor.equipRandomPiece(mob, chosen);
 		}
 		addThorns(mob, chosen);
 	}
 
-	/** Дописывает Шипы на кусок, остальные чары на нём не стирает. */
 	private static void addThorns(Mob mob, EquipmentSlot slot) {
 		if (THORNS_LEVEL <= 0) {
 			return;

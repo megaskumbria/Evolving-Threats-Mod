@@ -8,7 +8,7 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import java.util.EnumSet;
 
 /**
- * Зомби с jack o'lantern на голове: пока видит игрока — периодически ускоряет зомби в радиусе.
+ Zombie with jack o'lantern on his head: while he sees the player - periodically accelerates zombies in radius.
  */
 public class JackBeaconAuraGoal extends Goal {
 

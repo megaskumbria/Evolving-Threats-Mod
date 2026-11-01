@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Обычный зомби и обычный скелет помнят, что они Бастион.
- * Зелье скорости не вешается в {@link BastionSpeedMixin}.
- * Хаск и странник этот класс не получают: поле есть у Zombie и Skeleton,
- * но шанс им не бросается — у кадавра и странника другой тип.
+ Ordinary zombies and an ordinary skeleton remember that they are Bastion.
+ * The speed potion is not hung in {@link BastionSpeedMixin}.
+ Husk and wanderer do not get this class: the field is Zombie and Skeleton.
+ * But they don't get a chance - the husk and the wanderer have a different type.
  */
 @Mixin({ Zombie.class, Skeleton.class })
 public class BastionMixin implements BastionEntity {

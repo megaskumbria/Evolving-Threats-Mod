@@ -20,63 +20,62 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Два редких варианта обычного паука (пещерные пауки и пауки-наездники не участвуют):
+ * Two rare variants of the normal spider (cave spiders and jockey spiders excluded):
  * <ul>
- *   <li><b>Ткач</b> — ставит паутину под ноги игроку (цель {@link com.example.entity.ai.SpiderWebWeaveGoal});</li>
- *   <li><b>Матка</b> — паук с 40 HP, при появлении рядом спавнятся 1–4 пещерных паука.</li>
+ *   <li><b>Weaver</b> — places cobweb under the player's feet (goal {@link com.example.entity.ai.SpiderWebWeaveGoal});</li>
+ *   <li><b>Matriarch</b> — 40 HP spider that spawns 1–4 cave spiders nearby on spawn.</li>
  * </ul>
- * Одним броском при спавне: матка, иначе ткач, иначе рой ({@link SpiderSwarm}), иначе обычный паук.
- * Паутина ткача не исчезает сама.
- * Паук, призванный другим мобом ({@link EntitySpawnReason#MOB_SUMMONED}), остаётся обычным:
- * иначе помощники роя сами открывали бы новые рои.
+ * One roll on spawn: matriarch, else weaver, else swarm ({@link SpiderSwarm}), else normal spider.
+ * Weaver cobweb does not decay on its own.
+ * MOB_SUMMONED spiders stay normal — otherwise swarm extras would chain new swarms.
  */
 public final class SpiderThreats {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику вообще. false — все пауки обычные. */
+	/** Master switch. false — all spiders are normal. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный паук при спавне окажется ТКАЧОМ. 0.10 = 10%.
-	 * Бросок общий с маткой: шанс матки проверяется первым.
+	 * Chance (0.0–1.0) that a normal spider spawns as a WEAVER. 0.10 = 10%.
+	 * Shared roll with matriarch: matriarch is checked first.
 	 */
 	public static final float WEAVER_SPAWN_CHANCE = 0.10f;
 
-	/** Шанс (0.0–1.0), что паук окажется МАТКОЙ. 0.04 = 4% (редко). */
+	/** Chance (0.0–1.0) for MATRIARCH. 0.04 = 4% (uncommon). */
 	public static final float MATRIARCH_SPAWN_CHANCE = 0.04f;
 
-	// --- Ткач ---
+	// --- Weaver ---
 
-	/** Пауза между паутинами: минимум и максимум, секунды (случайное значение между ними). */
+	/** Pause between webs: min and max seconds (random between). */
 	public static final int WEB_COOLDOWN_MIN_SECONDS = 5;
 	public static final int WEB_COOLDOWN_MAX_SECONDS = 9;
 
-	/** Если не вышло поставить паутину (клетка занята), повторить через столько секунд. */
+	/** If web placement failed (cell blocked), retry after this many seconds. */
 	public static final int WEB_RETRY_SECONDS = 1;
 
-	/** Дальность (блоки), на которой ткач плюёт паутиной в игрока. Нужна прямая видимость. */
+	/** Range (blocks) at which the weaver places cobweb on the player. Requires line of sight. */
 	public static final double WEB_MAX_DISTANCE = 12.0;
 
 	/**
-	 * Уважать игровое правило mobGriefing (/gamerule mobGriefing false):
-	 * true — если правило выключено, ткач паутину не ставит.
+	 * Honor mobGriefing (/gamerule mobGriefing false):
+	 * true — when the rule is off, weavers do not place cobweb.
 	 */
 	public static final boolean RESPECT_MOB_GRIEFING = true;
 
-	// --- Матка ---
+	// --- Matriarch ---
 
-	/** Здоровье матки (у обычного паука 16). 40 = 20 сердец. */
+	/** Matriarch health (normal spider 16). 40 = 20 hearts. */
 	public static final float MATRIARCH_MAX_HEALTH = 40.0f;
 
-	/** Сколько пещерных пауков появляется рядом при спавне матки (включительно). */
+	/** Cave spiders spawned near matriarch on spawn (inclusive range). */
 	public static final int MATRIARCH_CAVE_SPIDERS_MIN = 1;
 	public static final int MATRIARCH_CAVE_SPIDERS_MAX = 4;
 
-	/** Радиус (блоки) вокруг матки, где появляются пещерные пауки. */
+	/** Radius (blocks) around matriarch for cave spider spawn. */
 	public static final double MATRIARCH_MINION_RADIUS = 2.5;
 
-	/** Размер матки: 1.0 = как обычный паук, 1.3 = заметно крупнее. Чтобы отличать в бою. */
+	/** Matriarch scale: 1.0 = normal spider, 1.3 = visibly larger for combat recognition. */
 	public static final double MATRIARCH_SCALE = 1.3;
 
 	// ========================================================================
@@ -96,18 +95,18 @@ public final class SpiderThreats {
 		return ENABLED && getRole(mob) == ROLE_WEAVER;
 	}
 
-	/** Вызывается из finalizeSpawn паука (один раз при появлении моба в мире). */
+	/** Called from spider finalizeSpawn (once when the mob enters the world). */
 	public static void rollOnSpawn(Spider spider, ServerLevelAccessor level, EntitySpawnReason spawnReason) {
 		if (!ENABLED || !(spider instanceof SpiderRoleEntity data) || !isEligible(spider)) {
 			return;
 		}
-		// Помощники роя и прочие призванные пауки не становятся маткой, ткачом и новым роем.
+		// Swarm extras and other summoned spiders never become matriarch, weaver, or a new swarm.
 		if (spawnReason == EntitySpawnReason.MOB_SUMMONED) {
 			return;
 		}
 		float roll = spider.getRandom().nextFloat();
 		if (roll < MATRIARCH_SPAWN_CHANCE) {
-			// Без настоящего серверного мира (генерация чанка) матку не делаем — иначе она будет без пауков.
+			// Without a real server level (chunk gen) skip matriarch — minions could not spawn.
 			if (level instanceof ServerLevel serverLevel) {
 				data.evolvingthreats$setSpiderRole(ROLE_MATRIARCH);
 				applyMatriarch(spider, serverLevel);
@@ -117,12 +116,12 @@ public final class SpiderThreats {
 		} else if (SpiderSwarm.ENABLED
 				&& level instanceof ServerLevel serverLevel
 				&& roll < MATRIARCH_SPAWN_CHANCE + WEAVER_SPAWN_CHANCE + SpiderSwarm.SPAWN_CHANCE) {
-			// Генерация чанка тоже пропускается: там нет мира, куда ставить пачку.
+			// Chunk generation skipped too — no world to place the pack.
 			SpiderSwarm.spawnPack(spider, serverLevel);
 		}
 	}
 
-	/** Обычный паук: не пещерный и не «наездник» (скелет сверху / сам под всадником). */
+	/** Normal spider: not cave spider and not a jockey (rider on top or passenger). */
 	private static boolean isEligible(Spider spider) {
 		return !(spider instanceof CaveSpider) && !spider.isVehicle() && !spider.isPassenger();
 	}
@@ -171,15 +170,15 @@ public final class SpiderThreats {
 		return max <= min ? min : random.nextIntBetweenInclusive(min, max);
 	}
 
-	/** Разрешено ли ставить паутину по правилу mobGriefing. */
+	/** Whether cobweb placement is allowed under mobGriefing. */
 	public static boolean webPlacementAllowed(ServerLevel level) {
 		return !RESPECT_MOB_GRIEFING || level.getGameRules().get(GameRules.MOB_GRIEFING);
 	}
 
 	/**
-	 * Ставит паутину в клетку, где стоят ноги цели (если клетка пустая или заменяемая, не вода).
+	 * Places cobweb in the cell under the target's feet (if empty or replaceable, not fluid).
 	 *
-	 * @return true, если паутина поставлена
+	 * @return true if cobweb was placed
 	 */
 	public static boolean placeWebUnderTarget(ServerLevel level, LivingEntity target) {
 		BlockPos pos = target.blockPosition();
@@ -195,7 +194,7 @@ public final class SpiderThreats {
 		level.setBlockAndUpdate(pos, web);
 		level.playSound(null, pos, web.getSoundType().getPlaceSound(),
 				net.minecraft.sounds.SoundSource.HOSTILE, 0.8f, 1.0f);
-		// Паутина остаётся навсегда: убрать можно мечом, ножницами или сломав блок.
+		// Cobweb stays until broken (sword, shears, or mining).
 		return true;
 	}
 }

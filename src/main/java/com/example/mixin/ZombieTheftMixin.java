@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удар зомби. Срабатывает, когда удар уже снял здоровье.
- * Кто ворует и с каким шансом — {@link ZombieTheft}.
+ * Zombie melee hit. Runs after a hit that actually damaged the target.
+ * Who steals and at what chance — {@link ZombieTheft}.
  */
 @Mixin(Zombie.class)
 public class ZombieTheftMixin {

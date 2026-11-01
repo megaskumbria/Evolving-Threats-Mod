@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 /**
- * Пока якорь жив и GPS активен — держит цель на игроке рейда (как охота надсмотрщика).
+ As long as the anchor is alive and the GPS is active, it keeps the target on the player of the raid (like the hunt of the guard).
  */
 public class RaidHuntGoal extends Goal {
 

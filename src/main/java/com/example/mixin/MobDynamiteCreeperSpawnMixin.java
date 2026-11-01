@@ -18,11 +18,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Шанс особого крипера при появлении: заряженный (1%), подрывник (5%), метатель (4%), ломатель щита (5%),
- * обманка (0,3%), супербыстрый (3%). Быстрый и обманка не бывают подрывником и метателем и не бывают друг другом.
- * Заряженный динамит не бросает, но может быть подрывником или ломателем щита.
- * Если подрывник или метатель уже выпал, ломатель щита на этого крипера не бросается.
- * Метод finalizeSpawn объявлен в Mob, у Creeper своей копии нет — поэтому mixin на Mob.
+ * The chance of a special cryper when it appears: charged (1%), bomber (5%), thrower (4%), shield breaker (5%),
+ Deception (0.3%), superfast (3%). Fast and deception are not subversive and thrower and are not each other.
+ Charged dynamite does not throw, but can be a bomber or a shield breaker.
+ If the bomber or thrower has already fallen, the shield breaker does not throw at this cryper.
+ The finalizeSpawn method is announced in Mob, Creeper does not have its own copy - so mixin on Mob.
  */
 @Mixin(Mob.class)
 public class MobDynamiteCreeperSpawnMixin {

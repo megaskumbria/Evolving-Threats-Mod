@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Размер куба игра выставляет сама, в том числе когда большой делится на средних.
- * Здесь после этого поднимаются здоровье и скорость. Пауза прыжка короче только в перегреве.
+ The size of the cube is set by the game itself, including when the large is divided into averages.
+ Here, after that, health and speed rise. The jump pause is shorter only in overheating.
  */
 @Mixin(MagmaCube.class)
 public class MagmaCubeThreatMixin {

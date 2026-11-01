@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Алмазный топор поборника.
- * Вне рейда топор выдаётся при появлении, и сразу после этого его можно заменить:
- * чары сложности и чары мода вешаются уже на алмаз.
- * В рейде игра потом выдаёт топор заново и сама его зачаровывает — замена ещё раз, чары остаются.
+ Diamond axe champion.
+ Outside the raid, the axe is issued when it appears, and immediately after that it can be replaced:
+ The charms of complexity and fashion are hanging on the diamond.
+ In the raid, the game then gives out the axe again and enchants it itself - the replacement again, the charms remain.
  */
 @Mixin(Vindicator.class)
 public class VindicatorDiamondAxeMixin {

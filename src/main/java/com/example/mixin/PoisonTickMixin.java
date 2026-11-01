@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Тик любого отравления. Пока здоровья больше половины сердца, урон наносит игра.
- * Если яд повесил пещерный паук, этот же тик бьёт и на половине сердца — и может убить.
+ Tick of any poisoning. As long as the health is more than half the heart, the damage is caused by the game.
+ If the poison is hanged by a cave spider, the same tick strikes on the half of the heart - and can kill.
  */
 @Mixin(PoisonMobEffect.class)
 public class PoisonTickMixin {

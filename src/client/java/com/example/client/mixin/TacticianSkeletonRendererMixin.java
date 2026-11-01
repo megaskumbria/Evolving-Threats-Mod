@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Вешает слой «предмет на спине» и каждый кадр кладёт туда лук или меч. */
+/** Hangs a layer of "object on the back" and each frame puts a bow or sword there. */
 @Mixin(AbstractSkeletonRenderer.class)
 public abstract class TacticianSkeletonRendererMixin {
 
@@ -44,7 +44,7 @@ public abstract class TacticianSkeletonRendererMixin {
 		((LivingEntityRendererAccessor) (Object) this).evolvingthreats$itemModelResolver().updateForLiving(
 				back.evolvingthreats$getBackItem(),
 				stack,
-				// FIXED — картинка плашмя, как в рамке. В руке (THIRD_PERSON) меч встаёт ребром и втыкается в спину.
+				// FIXED — a flat picture, as in a frame. In the hand (THIRD_PERSON), the sword stands with its rib and sticks into the back.
 				ItemDisplayContext.FIXED,
 				entity);
 	}

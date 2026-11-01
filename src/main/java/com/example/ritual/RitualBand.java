@@ -39,113 +39,113 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Редкая стая: 1–2 зомби и 1–2 скелета в тёмно-зелёной коже.
- * Шлема нет. У всех одна и та же голова, она и решает поведение стаи.
- * В руке у кого-то красный редстоуновый факел, у кого-то кость.
- * Чары, случайное оружие и зелья мода им не выдаются — иначе стая перестаёт выглядеть одинаково.
+ Rare pack: 1-2 zombies and 1-2 skeletons in dark green skin.
+ No helmet. Everyone has the same head, and it decides the behavior of the pack.
+ Someone has a red redstone torch in their hand, someone has a bone.
+ Charms, random weapons and potions of fashion are not given to them - otherwise the pack ceases to look the same.
  */
 public final class RitualBand {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — стаи не появляются, команда тоже не спавнит. */
+	/** Turn on the mechanics. False - packs do not appear, the team does not spawn either. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби или обычный скелет окажется началом стаи.
-	 * 0.002 = 0,2%, один из пятисот. FIXED: с первого дня, от шкалы угрозы не растёт.
-	 * Бросают и зомби, и скелеты, поэтому у смешанного спаунера стая чуть чаще.
-	 * Призванные согруппники, кадавр, странник и команда /summon этот шанс не бросают.
-	 * 0 = только команда.
+	 Chance (0.0–1.0) that a common zombie or common skeleton will be the beginning of the pack.
+	 0.002 = 0.2%, one in five hundred. FIXED: From day one, the threat scale does not increase.
+	 Drop and zombies, and skeletons, so the mixed spawner pack a little more often.
+	 Called groupmates, husk, wanderer and team /summon skip this roll.
+	 * 0 = commands only.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
 	/**
-	 * Опыт с каждого. 50 — своё число, общий множитель опыта его не удваивает.
-	 * У обычного зомби и скелета в игре 5, мод удваивает их до 10.
-	 * Падает, только если моба убил игрок: так устроена сама игра.
-	 * 0 = опыта нет.
+	 * Everyone's experience. 50 is its number, the total multiplier of experience does not double it.
+	 In the common zombie and skeleton in Game 5, the mod doubles them to 10.
+	 Falls only if a moba kills a player: this is how the game works.
+	 * 0 = no experience.
 	 */
 	public static final int XP_REWARD = 50;
 
 	/**
-	 * Цвет кожи, RGB. 0x1B4F2A — тёмно-зелёный, темнее обычного зелёного красителя.
-	 * Таким же цветом падает кусок брони.
+	 Skin color, RGB. 0x1B4F2A is dark green, darker than a regular green dye.
+	 * A piece of armor falls in the same color.
 	 */
 	public static final int LEATHER_COLOR = 0x1B4F2A;
 
 	/**
-	 * Шанс (0.0–1.0), что выпадет один надетый кусок кожи. 0.085 ≈ 8,5%, как обычная броня мода.
-	 * Шлем не надет, вместо него голова. 0 = кожа не падает.
+	 * Chance (0.0-1.0) that one piece of skin will fall out. 0.085 ≈ 8.5%, as standard armor fashion.
+	 Helmet is not worn, head instead. 0 = skin doesn't fall.
 	 */
 	public static final float LEATHER_DROP_CHANCE = 0.085f;
 
 	/**
-	 * Шанс, что выпадет красный факел из руки. 0.35 = 35%. Кость из руки не падает:
-	 * скелет и так роняет кости.
+	 The chance of a red torch falling out of your hand. 0.35 = 35%. The bone doesn't fall out of your hand.
+	 The skeleton is already falling.
 	 */
 	public static final float TORCH_DROP_CHANCE = 0.35f;
 
 	/**
-	 * Шанс (0.0–1.0), что выпадет голова крипера, пиглина или череп иссушителя,
-	 * если моба убил игрок. 0.025 = 2,5%, как череп со скелета-иссушителя.
-	 * Голова игрока этим шансом не пользуется: вместо неё с тем же шансом падает компас.
-	 * Добыча I/II/III поднимает и головы, и компас до 3,5% / 4,5% / 5,5%.
-	 * 0 = эти головы и компас не падают. 1 = всегда.
+	 * Chance (0.0-1.0) that the head of the cryper, piglin or the skull of the dryer will fall,
+	 If a mob killed a player. 0.025 = 2.5%, like a skull from an exhumerator skeleton.
+	 The head of the player does not use this chance: instead of it, a compass falls with the same chance.
+	 * I/II/III mining raises both heads and compass to 3.5%/4.5%/5.5%.
+	 0 = these heads and compass do not fall. 1 = always.
 	 */
 	public static final float HEAD_DROP_CHANCE = 0.025f;
 
 	/**
-	 * Здоровье каждого в стае: и зомби, и скелета, любая голова. 50 = 25 сердец.
-	 * У обычного зомби и скелета в этом моде случайно 20–40. Это число ставится после того броска.
-	 * Меньше 1 игра почти сразу убивает.
+	 The health of everyone in the pack: zombies, skeletons, any head. 50 = 25 hearts.
+	 The common zombie and skeleton in this mod accidentally 20-40. That number is put after that throw.
+	 Less than 1 game kills almost immediately.
 	 */
 	public static final float MAX_HEALTH = 50.0f;
 
 	/**
-	 * Урон удара каждого в стае: и зомби, и скелета, любая голова. 2 урона = 1 сердце.
-	 * У обычного зомби 3 (полтора сердца), у скелета с костью 2 (одно сердце).
-	 * 8 = четыре сердца до брони. Без брони игрок переживает два удара.
-	 * 14 было слишком больно. 4 = как у скелета-иссушителя.
+	 Damage to everyone in the pack: zombies, skeletons, any head. 2 damage = 1 heart.
+	 A common zombie 3 (heart and a half), a skeleton with bone 2 (one heart).
+	 8 = four hearts to armor. Without armor, the player suffers two strokes.
+	 14 was too painful. 4 = like the exhumerator skeleton.
 	 */
 	public static final double ATTACK_DAMAGE = 8.0;
 
-	/** Сколько пороха с моба стаи крипера, включая зомби. 1 = одна кучка. */
+	/*How much gunpowder from a mob pack of crypers, including zombies. 1 = one pile. */
 	public static final int GUNPOWDER_COUNT = 1;
 
-	/** Сколько золотых слитков с моба стаи пиглина. 1 = один слиток. */
+	/*How many gold bars from a mob of piglin. 1 = one bar. */
 	public static final int GOLD_INGOT_COUNT = 1;
 
-	/** Сколько угля с моба стаи иссушителя. 1 = один уголь. */
+	/*How much coal from the mob of the dryer pack. 1 = one coal. */
 	public static final int COAL_COUNT = 1;
 
-	/** Сколько роз визера с моба стаи иссушителя. 1 = одна роза. */
+	/*How many roses from the mob of the dryer pack. 1 = one rose. */
 	public static final int ROSE_COUNT = 1;
 
 	/**
-	 * Как далеко (блоки) любой в стае замечает игрока, если видит его.
-	 * 52 = дальше обычного зомби (35) и скелета (32).
-	 * Голова игрока на этой же дистанции чует сквозь стены.
-	 * 0 = дальность как у обычного моба, сквозь стены никто не чует.
+	 How far (blocks) does anyone in the pack notice a player if they see him?
+	 52 = further than normal zombie (35) and skeleton (32).
+	 The head of the player at the same distance smells through the walls.
+	 0 = range like a regular mob, no one can feel through the walls.
 	 */
 	public static final double SENSE_BLOCKS = 52.0;
 
 	/**
-	 * Сила хлопка при смерти стаи крипера. У обычного крипера 3.
-	 * 1.5 = больно вплотную, блоки почти не ломает. Своих не ранит и не раскидывает.
-	 * 0 = взрыва нет.
+	 The power of cotton at the death of the cryper pack. A regular cryper has 3.
+	 1.5 = painfully close, blocks almost does not break. He doesn't hurt his own.
+	 * 0 = no explosion.
 	 */
 	public static final float EXPLOSION_POWER = 1.5f;
 
 	/**
-	 * Сколько секунд длится иссушение от удара или стрелы стаи иссушителя. 4 = четыре секунды.
-	 * Уровень I, слабее долгого иссушения настоящего скелета-иссушителя.
+	 How many seconds does the drying from the impact or arrow of the pack of dryer last? 4 = four seconds.
+	 Level I, weaker than the long drying of a real dryer skeleton.
 	 */
 	public static final int WITHER_SECONDS = 4;
 
 	/**
-	 * Пока на цели осталось больше стольких секунд иссушения, новый удар его не обновляет.
-	 * 1 = при длительности 4 секунды повтор примерно раз в 3 секунды, а не каждый тычок.
+	 As long as the target has more than so many seconds of drying, a new strike does not renew it.
+	 1 = for a duration of 4 seconds, repeat about once every 3 seconds, not every point.
 	 */
 	public static final int WITHER_REFRESH_IF_BELOW_SECONDS = 1;
 
@@ -170,8 +170,8 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Конец появления зомби или скелета. true = это стая: случайное оружие, броня,
-	 * чары, щит, тотем и особые головы мода ему не выдаём.
+	 The end of a zombie or skeleton. true = this pack: accidental weapon, armor,
+	 Charms, shield, totem and special heads are not given to him.
 	 */
 	public static boolean tryClaim(Mob mob, EntitySpawnReason reason) {
 		if (!(mob instanceof RitualMember member)) {
@@ -194,7 +194,7 @@ public final class RitualBand {
 		return true;
 	}
 
-	/** Сколько опыта дать. -1 = это не стая, пусть решает игра. */
+	/*How much experience to give. -1 = not a pack, let the game decide. */
 	public static int experienceReward(Mob mob) {
 		if (!isRitual(mob)) {
 			return -1;
@@ -203,8 +203,8 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Лишние вещи, если убил игрок. Голова на слоте падает отдельно, кроме головы игрока.
-	 * Кожа и факел тоже падают сами, по своим шансам.
+	 * Extra possessions if the player is killed. The head on the slot falls separately, except for the player's head.
+	 The skin and the torch also fall on their own.
 	 */
 	public static void dropBonus(Mob mob, ServerLevel level, DamageSource source, boolean killedByPlayer) {
 		if (!isRitual(mob) || !killedByPlayer || !(mob instanceof RitualMember data)) {
@@ -227,7 +227,7 @@ public final class RitualBand {
 		}
 	}
 
-	/** Перед целями ИИ. Стая с головой игрока снова берёт ближайшего, даже за стеной. */
+	/** Before AI targets. The pack with the head of the player again takes the nearest, even behind the wall. */
 	public static void syncHuntTarget(Mob mob) {
 		if (!isPlayerHead(mob) || SENSE_BLOCKS <= 0.0 || !(mob.level() instanceof ServerLevel level)) {
 			return;
@@ -238,7 +238,7 @@ public final class RitualBand {
 		}
 	}
 
-	/** true = этот урон стае пиглина не проходит: лава, огонь и солнце. */
+	/** true = this damage to a pack of piglin does not pass: lava, fire and sun. */
 	public static boolean shouldCancelFire(Mob mob, DamageSource source) {
 		if (!isPiglinHead(mob)) {
 			return false;
@@ -246,7 +246,7 @@ public final class RitualBand {
 		return source.is(DamageTypes.LAVA) || source.is(DamageTypeTags.IS_FIRE);
 	}
 
-	/** После шага моба. Иначе солнце снова поджигает зомби в том же тике. */
+	/*After the Mob's step. Otherwise, the sun sets zombies on fire again in the same tick. */
 	public static void keepOutOfFire(Mob mob) {
 		if (!isPiglinHead(mob) || mob.getRemainingFireTicks() <= 0) {
 			return;
@@ -254,7 +254,7 @@ public final class RitualBand {
 		mob.clearFire();
 	}
 
-	/** Удар или стрела стаи иссушителя. На нежить не вешается: иссушение её лечит. */
+	/** Strike or arrow of the dryer pack. The undead does not hang: drying it cures. */
 	public static void applyWither(DamageSource source, LivingEntity victim) {
 		LivingEntity attacker = null;
 		if (source.getEntity() instanceof LivingEntity living) {
@@ -280,7 +280,7 @@ public final class RitualBand {
 				0), attacker);
 	}
 
-	/** Хлопок стаи крипера. Своих не задевает: урон от союзника режется отдельно. */
+	/*Cryper's pack. It does not hurt its own: damage from an ally is cut separately. */
 	public static void onDeath(Mob mob) {
 		if (!isCreeperHead(mob) || EXPLOSION_POWER <= 0.0f || !(mob instanceof RitualMember data)) {
 			return;
@@ -323,8 +323,8 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Команда. head = 0 значит случайная голова.
-	 * false — механика выключена или номер головы не из списка.
+	 * Team. head = 0 means random head.
+	 False: Mechanics off or head number off the list.
 	 */
 	public static boolean spawnCommand(ServerLevel level, Vec3 pos, float yaw, int head, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
@@ -406,9 +406,9 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Шанс головы, здоровье, сила удара и дальность взгляда.
-	 * Зовётся и при появлении, и когда стая загружается из мира:
-	 * иначе уже живущие остаются со старым запасом жизней, слабым ударом и короткой дальностью.
+	 Head Chance, Health, Strength of Impact and Range of View.
+	 It is called when it appears and when the pack is loaded from the world:
+	 Otherwise, those already living are left with an old reserve of lives, a weak stroke and a short range.
 	 */
 	public static void applyTuning(Mob mob) {
 		if (!(mob instanceof RitualMember data) || !data.evolvingthreats$isRitual()) {
@@ -430,8 +430,8 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Поднимает запас до {@link #MAX_HEALTH}. Если полоска была полной, она становится полной и на новом запасе.
-	 * Уже снятое здоровье при загрузке мира не лечится.
+	 * Raises stock to {@link #MAX HEALTH} If the strip was full, it becomes full and on a new stock.
+	 Already removed health when loading the world is not treated.
 	 */
 	private static void applyHealth(Mob mob) {
 		if (MAX_HEALTH < 1.0f) {
@@ -485,7 +485,7 @@ public final class RitualBand {
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
 			return false;
 		}
-		// В ночь осады ритуальные стаи не появляются.
+		// On the night of the siege, ritual packs do not appear.
 		if (SiegeNight.isWindowOpen(mob.level())) {
 			return false;
 		}
@@ -507,7 +507,7 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Тот же шанс, что у головы на слоте. Добыча добавляет 1% за уровень:
+	 Same chance as the head on the slot. Mining adds 1% per level:
 	 * I = 3,5%, II = 4,5%, III = 5,5%.
 	 */
 	private static float rareDropChance(DamageSource source) {
@@ -589,7 +589,7 @@ public final class RitualBand {
 		return stack;
 	}
 
-	/** Хотя бы один факел и одна кость, потом порядок перемешивается. */
+	/*At least one torch and one bone, then the order is mixed. */
 	private static boolean[] hands(int count, net.minecraft.util.RandomSource random) {
 		boolean[] torch = new boolean[Math.max(0, count)];
 		if (count <= 0) {

@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 /**
- * Пометка «этот фантом вешает слепоту» живёт на самом фантоме.
- * Шанс при появлении и запись в мир — {@link PhantomBlindnessMobMixin}.
+ The mark "this phantom hangs blindness" lives on the phantom itself.
+ * Chance to appear and record in the world - {@link PhantomBlindnessMobMixin}.
  */
 @Mixin(Phantom.class)
 public class PhantomBlindnessMixin implements BlindingPhantomEntity {

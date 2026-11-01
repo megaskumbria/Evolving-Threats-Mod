@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Пометка читается до того, как скелет заново выбирает стрельбу из лука. */
+/*The mark is read before the skeleton re-chooses archery. */
 @Mixin(Mob.class)
 public class FastBowSkeletonSaveMixin {
 

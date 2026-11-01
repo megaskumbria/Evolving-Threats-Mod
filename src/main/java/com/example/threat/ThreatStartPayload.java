@@ -6,9 +6,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
- * Пакет «сервер → игрок»: с какого момента мир считает дни угрозы. Нужен только для шкалы на экране:
- * клиент сам считает день и луну, но ему надо знать, когда мод начал отсчёт.
- * Шлётся при входе в мир и при команде /evolvingthreats day set.
+ * Server → client packet: when the world started counting threat days.
+ * Used only for the on-screen threat bar: the client computes day and moon locally
+ * but needs the mod's start timestamp.
+ * Sent on join and after {@code /evolvingthreats day set}.
  */
 public record ThreatStartPayload(long startClock) implements CustomPacketPayload {
 

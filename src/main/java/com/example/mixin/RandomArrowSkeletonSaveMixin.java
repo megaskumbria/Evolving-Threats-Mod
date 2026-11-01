@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Очередь эффектов сохраняется, иначе после загрузки мира тот же эффект мог бы выйти дважды. */
+/*The queue of effects persists, otherwise, after loading the world, the same effect could come out twice. */
 @Mixin(Mob.class)
 public class RandomArrowSkeletonSaveMixin {
 

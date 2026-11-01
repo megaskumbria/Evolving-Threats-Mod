@@ -20,9 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Появление, сохранение и укус фантома со слабостью.
- * Появление и запись в мир объявлены у Mob, у Phantom своих копий нет — поэтому mixin на Mob.
- * Укус срабатывает, когда пикирование уже ударило цель. Если удар не прошёл, слабости нет.
+ The appearance, preservation and bite of a phantom with weakness.
+ Appearance and record in the world announced by Mob, Phantom has no copies of its own - so mixin on Mob.
+ The bite is triggered when the dive has already hit the target. If the blow did not pass, there is no weakness.
  */
 @Mixin(Mob.class)
 public class PhantomWeaknessMobMixin {

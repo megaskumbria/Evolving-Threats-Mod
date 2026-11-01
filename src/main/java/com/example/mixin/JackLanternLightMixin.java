@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Светящаяся тыква на голове. Ход моба переставляет свет.
- * Удаление моба (смерть, выгрузка чанка) свет гасит.
+ Glowing pumpkin on his head. Mob moves the light.
+ Removal of the mob (death, unloading of the chank) lights out.
  */
 @Mixin(Mob.class)
 public class JackLanternLightMixin {

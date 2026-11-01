@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Крипер помнит, что он обманка, на какой дистанции срывается и сорвался ли уже.
- * Шанс при появлении — в {@link MobDynamiteCreeperSpawnMixin}. Рывок считается каждый тик.
+ * Creeper remembers it is a feint, at what distance it breaks cover, and whether it already revealed.
+ * Spawn chance is in {@link MobDynamiteCreeperSpawnMixin}. The burst is evaluated every tick.
  */
 @Mixin(Creeper.class)
 public class CreeperFeintMixin implements FeintCreeperEntity {

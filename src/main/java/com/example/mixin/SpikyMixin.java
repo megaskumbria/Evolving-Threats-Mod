@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Обычный зомби и обычный скелет помнят, что они Spiky.
- * Хаск и странник этот класс тоже получают, потому что они наследники,
- * но шанс им не бросается: у кадавра и странника другой тип.
+ Ordinary zombies and an ordinary skeleton remember that they are Spiky.
+ The Husk and the Wanderer get this class, too, because they are heirs,
+ But they don’t have a chance: the Cadavr and the Wanderer have a different type.
  */
 @Mixin({ Zombie.class, Skeleton.class })
 public class SpikyMixin implements SpikyEntity {

@@ -5,7 +5,7 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-/** Пометка «дальний быстрый лук» живёт на скелете и страннике. */
+/*The mark "long-range fast bow" lives on the skeleton and the wanderer. */
 @Mixin(AbstractSkeleton.class)
 public class AbstractSkeletonFastBowDataMixin implements FastBowSkeletonEntity {
 

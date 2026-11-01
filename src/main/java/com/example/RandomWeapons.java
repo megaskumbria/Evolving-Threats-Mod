@@ -22,56 +22,56 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentTarget;
 
 /**
- * Логика случайного оружия для мобов.
- * Миксины только вызывают методы отсюда — настройки и пояснения в одном месте.
+ * Random weapon logic for mobs.
+ * Mixins only call methods from here — settings and explanations live in one place.
  */
 public final class RandomWeapons {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Шанс (0.0–1.0), что зомби появится с оружием в руке. 0.40 = 40%. */
+	/** Chance (0.0–1.0) that a zombie spawns with a weapon in hand. 0.40 = 40%. */
 	public static final float ZOMBIE_WEAPON_CHANCE = 0.40f;
 
 	/**
-	 * Шанс, что скелет появится с луком И вторым оружием (лук в основной руке, меч/топор/… во второй).
-	 * 0.35 = 35%. На дальности стреляет, вплотную переключается на ближний бой.
+	 * Chance that a skeleton spawns with a bow AND a second weapon (bow in main hand, sword/axe/… in offhand).
+	 * 0.35 = 35%. Shoots at range, switches to melee up close.
 	 */
 	public static final float SKELETON_DUAL_WIELD_CHANCE = 0.35f;
 
 	/**
-	 * Шанс, что скелет появится ТОЛЬКО с ближним оружием (лук заменяется — как раньше).
-	 * 0.20 = 20%. Не пересекается с dual wield: сначала бросок dual, потом этот.
+	 * Chance that a skeleton spawns with melee ONLY (bow is replaced — as before).
+	 * 0.20 = 20%. Does not overlap dual wield: dual roll first, then this one.
 	 */
 	public static final float SKELETON_MELEE_ONLY_CHANCE = 0.20f;
 
 	/**
-	 * Шанс (0.0–1.0), что зомби появится с оружием в ОБЕИХ руках (меч и меч, топор и кирка и т.д.).
-	 * 0.20 = 20%. Бросается раньше одного оружия, тотема и щита: вторая рука занята.
-	 * 0 = двух оружий не будет.
+	 * Chance (0.0–1.0) that a zombie spawns with weapons in BOTH hands (sword and sword, axe and pickaxe, etc.).
+	 * 0.20 = 20%. Rolled before single weapon, totem, and shield: offhand is taken.
+	 * 0 = no dual weapons.
 	 */
 	public static final float ZOMBIE_DUAL_MELEE_CHANCE = 0.20f;
 
 	/**
-	 * То же для скелета и странника. 0.20 = 20%.
-	 * Лук при этом убирается: обе руки — ближний бой. Вредная стрела, тотем и щит не выдаются.
+	 * Same for skeleton and stray. 0.20 = 20%.
+	 * Bow is removed: both hands are melee. Harmful arrow, totem, and shield are not given.
 	 */
 	public static final float SKELETON_DUAL_MELEE_CHANCE = 0.20f;
 
 	/**
-	 * Если игрок ближе этого расстояния (в блоках), скелет с луком+мечом НЕ стреляет (работает ближний бой).
-	 * 4.0 — разумный порог; ближний удар всё равно только в радиусе удара (~2–3 блока, см. mixin).
+	 * If the player is closer than this distance (blocks), a bow+sword skeleton does NOT shoot (melee takes over).
+	 * 4.0 is a reasonable threshold; melee hit still only within strike range (~2–3 blocks, see mixin).
 	 */
 	public static final float SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS = 4.0f;
 
 	/**
-	 * Чуть больше порога выше — лук снова включается, когда отбегаешь (гистерезис, меньше дёрганья).
-	 * Должно быть >= SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS. 5.0 при suppress 4.0 — норм.
+	 * Slightly above the threshold above — bow turns back on when you run away (hysteresis, less flicker).
+	 * Must be >= SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS. 5.0 with suppress 4.0 is fine.
 	 */
 	public static final float SKELETON_BOW_RESUME_DISTANCE_BLOCKS = 5.0f;
 
 	// ========================================================================
 
-	/** Материалы оружия при спавне: только дерево…алмаз, без незерита. Парящий инструмент берёт предмет отсюда же. */
+	/** Weapon materials on spawn: wood through diamond, no netherite. Floating tool picks items from here too. */
 	private static final Item[][] MATERIALS = {
 		{ Items.WOODEN_SWORD, Items.WOODEN_AXE, Items.WOODEN_SHOVEL, Items.WOODEN_PICKAXE, Items.WOODEN_HOE },
 		{ Items.STONE_SWORD, Items.STONE_AXE, Items.STONE_SHOVEL, Items.STONE_PICKAXE, Items.STONE_HOE },
@@ -82,8 +82,8 @@ public final class RandomWeapons {
 	};
 
 	/**
-	 * Веса материала оружия на 100-й день (конец шкалы): дерево, камень, золото, медь, железо, алмаз (без незерита).
-	 * В начале игры веса другие: ThreatTable.WEAPON_MATERIAL_WEIGHTS_START.
+	 * Material weights for weapons on day 100 (end of scale): wood, stone, gold, copper, iron, diamond (no netherite).
+	 * At game start weights differ: ThreatTable.WEAPON_MATERIAL_WEIGHTS_START.
 	 */
 	private static final int[] MATERIAL_WEIGHTS = {
 		30, 25, 10, 10, 15, 10,
@@ -92,11 +92,11 @@ public final class RandomWeapons {
 	private RandomWeapons() {
 	}
 
-	/** Вызывается из SkeletonMixin при спавне. */
+	/** Called from SkeletonMixin on spawn. */
 	public static void rollSkeletonLoadout(Mob mob) {
 		RandomSource random = mob.getRandom();
 		float roll = random.nextFloat();
-		// GROWING: оба шанса выше написаны для 100-го дня, в начале игры они меньше (ThreatTable.WEAPON_START_RATIO).
+		// GROWING: both chances above are for day 100; at game start they are lower (ThreatTable.WEAPON_START_RATIO).
 		float dualWield = growing(mob, SKELETON_DUAL_WIELD_CHANCE);
 		float meleeOnly = growing(mob, SKELETON_MELEE_ONLY_CHANCE);
 
@@ -108,31 +108,31 @@ public final class RandomWeapons {
 		if (roll < dualWield + meleeOnly) {
 			equipMeleeOnly(mob);
 		}
-		// иначе — ванильный скелет только с луком
+		// otherwise — vanilla skeleton with bow only
 	}
 
 	/**
-	 * Лук остаётся в основной руке (ваниль уже выдала), случайное оружие — во второй.
+	 * Bow stays in main hand (vanilla already gave it), random weapon in offhand.
 	 */
 	public static void equipDualWieldArcher(Mob mob) {
 		Item weapon = pickRandomWeapon(mob);
 		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(weapon));
 	}
 
-	/** Заменяет лук в основной руке на случайное оружие. */
+	/** Replaces the bow in main hand with a random weapon. */
 	public static void equipMeleeOnly(Mob mob) {
 		Item weapon = pickRandomWeapon(mob);
 		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(weapon));
 	}
 
 	/**
-	 * Скелет с луком и вторым оружием (лук может быть в любой руке во время боя — мы меняем руки местами).
+	 * Skeleton with bow and second weapon (bow may be in either hand during combat — we swap hands).
 	 */
 	public static boolean isDualWieldArcher(AbstractSkeleton skeleton) {
 		return skeleton.isHolding(Items.BOW) && hasModMeleeWeapon(skeleton);
 	}
 
-	/** Есть ли у моба наше «инструментальное» оружие (не лук) в одной из рук. */
+	/** Whether the mob holds our tool-style weapon (not a bow) in either hand. */
 	public static boolean hasModMeleeWeapon(LivingEntity entity) {
 		return isModMeleeWeapon(entity.getMainHandItem()) || isModMeleeWeapon(entity.getOffhandItem());
 	}
@@ -163,7 +163,7 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * Лук «выключен» на близкой дистанции; с гистерезисом — снова включается, когда отбежал дальше resume.
+	 * Bow is suppressed at close range; with hysteresis it turns back on when you move beyond resume distance.
 	 */
 	public static boolean shouldSuppressBow(AbstractSkeleton skeleton, LivingEntity target, boolean bowGoalWasActive) {
 		double distSqr = skeleton.distanceToSqr(target);
@@ -174,7 +174,7 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * Перед ударом в ближнем бою: меч в основную руку, лук во вторую (иначе урон шёл бы «луком»).
+	 * Before a melee hit: sword in main hand, bow in offhand (otherwise damage would count as bow).
 	 */
 	public static void swapToMeleeHands(AbstractSkeleton skeleton) {
 		if (!isDualWieldArcher(skeleton)) {
@@ -185,7 +185,7 @@ public final class RandomWeapons {
 		}
 	}
 
-	/** После ближнего боя: снова лук в основной руке. */
+	/** After melee: bow back in main hand. */
 	public static void swapToRangedHands(AbstractSkeleton skeleton) {
 		if (!skeleton.isHolding(Items.BOW)) {
 			return;
@@ -203,17 +203,17 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * Два случайных оружия ближнего боя, каждое выбирается отдельно.
-	 * Может совпасть (меч и меч) или разойтись (топор и кирка).
+	 * Two random melee weapons, each picked separately.
+	 * May match (sword and sword) or differ (axe and pickaxe).
 	 *
-	 * @return true — обе руки заняты, щит, тотем и стрелу ставить не нужно
+	 * @return true — both hands taken; no shield, totem, or arrow needed
 	 */
 	public static boolean tryEquipDualMelee(Mob mob, float chance) {
 		if (chance <= 0.0f) {
 			return false;
 		}
 		RandomSource random = mob.getRandom();
-		// chance — значение на 100-й день, в начале игры шанс меньше.
+		// chance — value on day 100; at game start the roll is lower.
 		if (random.nextFloat() >= growing(mob, chance)) {
 			return false;
 		}
@@ -222,15 +222,15 @@ public final class RandomWeapons {
 		return true;
 	}
 
-	/** GROWING: шанс от {@code endChance × WEAPON_START_RATIO} (день 0) до {@code endChance} (день 100). */
+	/** GROWING: chance from {@code endChance × WEAPON_START_RATIO} (day 0) to {@code endChance} (day 100). */
 	private static float growing(Mob mob, float endChance) {
 		return ThreatScale.growingChance(mob.level(), endChance, ThreatTable.WEAPON_START_RATIO);
 	}
 
 	/**
-	 * Сколько урона добавить с оружия во второй руке.
-	 * Сила моба и оружие в основной руке сюда не входят: их игра уже посчитала.
-	 * Острота со второй руки входит. 0, если во второй руке не наше оружие.
+	 * Extra damage from the weapon in offhand.
+	 * Mob strength and main-hand weapon are not included: the game already counted those.
+	 * Sharpness from offhand counts. 0 if offhand is not our weapon.
 	 */
 	public static float offhandMeleeDamage(ServerLevel level, Mob mob, Entity target) {
 		ItemStack offhand = mob.getOffhandItem();
@@ -245,8 +245,8 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * После удара: огненный аспект со второй руки и износ этого оружия.
-	 * Вызывать только если удар прошёл.
+	 * After a hit: fire aspect from offhand and durability loss on that weapon.
+	 * Call only if the hit landed.
 	 */
 	public static void applyOffhandOnHit(ServerLevel level, Mob mob, Entity target) {
 		ItemStack offhand = mob.getOffhandItem();
@@ -261,7 +261,7 @@ public final class RandomWeapons {
 		offhand.hurtAndBreak(wear, mob, EquipmentSlot.OFFHAND);
 	}
 
-	/** Урон, написанный на предмете. Он прописан для основной руки, во второй игра его сама не прибавляет. */
+	/** Damage shown on the item. It is defined for main hand; the game does not add it in offhand by itself. */
 	private static float weaponAttackDamage(ItemStack weapon) {
 		ItemAttributeModifiers modifiers = weapon.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
 		float[] damage = { 0.0f };
@@ -275,7 +275,7 @@ public final class RandomWeapons {
 
 	public static boolean tryEquip(Mob mob, float chance) {
 		RandomSource random = mob.getRandom();
-		// chance — значение на 100-й день, в начале игры шанс меньше.
+		// chance — value on day 100; at game start the roll is lower.
 		if (random.nextFloat() >= growing(mob, chance)) {
 			return false;
 		}
@@ -283,7 +283,7 @@ public final class RandomWeapons {
 		return true;
 	}
 
-	/** Материал по весам, которые плавно меняются от начала шкалы угрозы к концу. Вид оружия (меч, топор…) — поровну. */
+	/** Material by weights that smoothly shift from early threat scale to late. Weapon type (sword, axe…) — equal. */
 	private static Item pickRandomWeapon(Mob mob) {
 		RandomSource random = mob.getRandom();
 		int materialIndex = ThreatScale.pickWeighted(

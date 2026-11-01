@@ -29,124 +29,124 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Шалкеры стреляют не только обычной левитацией и в бою пересаживаются на соседний блок.
- * Редкие свойства решаются один раз при появлении. Длинная левитация — отдельно у каждого снаряда.
- * С виду шалкеры одинаковые: кто редкий, видно только по попаданию.
+ Shalkers shoot not only conventional levitation and in battle transplanted to a neighboring block.
+ Rare properties are solved once upon appearance. Long levitation - separately for each projectile.
+ In appearance, shalkers are the same: who is rare, you can see only by hitting.
  */
 public final class ShulkerThreats {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — шалкеры как в обычной игре: один снаряд, левитация 10 секунд, телепорт только когда ранен. */
+	/*False - shalkers as in a normal game: one projectile, levitation 10 seconds, teleport only when wounded. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что шалкер при появлении стреляет замедлением и слабостью.
-	 * 0.12 = 12%, примерно каждый восьмой. Левитация при этом остаётся.
-	 * 0 = ни замедления, ни слабости. 1 = оба эффекта у каждого шалкера.
+	 * Chance (0.0–1.0) that the shalker when it appears shoots slowdown and weakness.
+	 * 0.12 = 12%, approximately one in eight. The levitation remains.
+	 * 0 = no deceleration or weakness. 1 = both effects of each shalker.
 	 */
 	public static final float SLOWNESS_CHANCE = 0.12f;
 
 	/**
-	 * Сколько секунд длится замедление. 20 = двадцать секунд.
-	 * Обычная левитация держится 10 секунд, поэтому после приземления ещё есть замедление.
-	 * 0 = эффект не появится.
+	 * How many seconds does the deceleration last? 20 = twenty seconds.
+	 Normal levitation lasts 10 seconds, so there is still a slowdown after landing.
+	 * 0 = no effect.
 	 */
 	public static final int SLOWNESS_SECONDS = 20;
 
 	/**
-	 * Сила замедления. 0 = Замедление I, шаг примерно на 15% короче.
-	 * 1 = Замедление II, примерно на 30% короче.
+	 Deceleration force. 0 = Slowdown I, the step is about 15% shorter.
+	 1 = Deceleration II, approximately 30% shorter.
 	 */
 	public static final int SLOWNESS_AMPLIFIER = 0;
 
 	/**
-	 * Сколько секунд слабости вешает тот же редкий шалкер, что и замедление.
-	 * 20 = двадцать секунд. Левитация при этом остаётся.
-	 * 0 = слабости нет, замедление остаётся.
+	 How many seconds of weakness hangs the same rare shalker as the slowdown.
+	 * 20 = twenty seconds. The levitation remains.
+	 0 = no weakness, the deceleration remains.
 	 */
 	public static final int WEAKNESS_SECONDS = 20;
 
 	/**
-	 * Сила слабости. 0 = Слабость I: удары игрока вблизи слабее на 4 здоровья (2 сердца).
-	 * 1 = Слабость II, меч почти не бьёт.
+	 The power of weakness. 0 = Weakness I: The player's close beats are weaker by 4 health (2 hearts).
+	 1 = Weakness II, the sword hardly strikes.
 	 */
 	public static final int WEAKNESS_AMPLIFIER = 0;
 
 	/**
-	 * Шанс (0.0–1.0), что шалкер выпускает два снаряда.
-	 * 0.30 = 30%, примерно каждый третий. Второй вылетает в ту же цель.
-	 * 0 = всегда один снаряд. 1 = два снаряда у каждого.
+	 * Chance (0.0-1.0) that the shalker fires two shells.
+	 * 0.30 = 30%, approximately one in three. The second one goes to the same target.
+	 * 0 = always one projectile. 1 = two rounds each.
 	 */
 	public static final float DOUBLE_SHOT_CHANCE = 0.30f;
 
 	/**
-	 * Пауза между двумя снарядами, в тиках. 10 = полсекунды. 20 = одна секунда.
-	 * 0 = второго снаряда нет, даже если шалкер умеет стрелять дважды.
+	 A pause between two shells, in ticks. 10 = half a second. 20 = one second.
+	 0 = no second shell, even if the shalker can shoot twice.
 	 */
 	public static final int SECOND_SHOT_TICKS = 10;
 
 	/**
-	 * Как часто в бою шалкер пересаживается на соседний блок, в секундах.
-	 * 8 = раз в восемь секунд, пока есть цель. В обычной игре он прыгает далеко
-	 * только когда его сильно ранили, и не по таймеру.
-	 * 0 = такой пересадки нет, остаётся только обычный прыжок игры.
+	 How often in battle the shalker is transferred to the neighboring block, in seconds.
+	 8 = once every eight seconds as long as there is a target. In a normal game, he jumps far.
+	 Only when he was severely injured, and not by the timer.
+	 0 = there is no such transfer, only the usual jump of the game remains.
 	 */
 	public static final int NEIGHBOR_HOP_SECONDS = 8;
 
 	/**
-	 * На сколько блоков в сторону он пересаживается. 1 = только соседние клетки,
-	 * включая диагональ. 2 = уже на две клетки.
+	 How many blocks to the side it is transplanted. 1 = only neighboring cells,
+	 * including the diagonal. 2 = already two cells.
 	 */
 	public static final int NEIGHBOR_RANGE = 1;
 
 	/**
-	 * Шанс (0.0–1.0), что конкретный снаряд даст длинную левитацию.
-	 * 0.25 = 25%, примерно каждый четвёртый снаряд. Бросок заново на каждый выстрел.
-	 * 0 = всегда обычные 10 секунд. 1 = каждый снаряд длинный.
+	 Chance (0.0-1.0) that a particular projectile will produce long levitation.
+	 0.25 = 25%, approximately one in four shells. Throw again for each shot.
+	 * 0 = always the usual 10 seconds. 1 = each projectile is long.
 	 */
 	public static final float LONG_LEVITATION_CHANCE = 0.25f;
 
 	/**
-	 * Сколько секунд длится длинная левитация. 18 = восемнадцать секунд.
-	 * Обычный снаряд игры держит 10. Молоко снимает эффект сразу.
+	 How many seconds does a long levitation last? 18 = eighteen seconds.
+	 * The usual projectile of the game holds 10. Milk takes effect immediately.
 	 */
 	public static final int LONG_LEVITATION_SECONDS = 18;
 
 	/**
-	 * Шанс (0.0–1.0), что шалкер при появлении телепортирует игрока попаданием.
-	 * 0.08 = 8%, примерно каждый двенадцатый. Другие мобы не телепортируются.
-	 * 0 = телепорта нет. 1 = телепортирует каждый шалкер.
+	 * Chance (0.0–1.0) that the shalker teleports the player with a hit.
+	 * 0.08 = 8%, approximately one in twelve. Other mobs don't teleport.
+	 * 0 = no teleport. 1 = teleports each shalker.
 	 */
 	public static final float TELEPORT_CHANCE = 0.08f;
 
 	/**
-	 * Минимальная дальность телепорта игрока, в блоках. 3 = три блока в сторону.
-	 * Игрок остаётся на той же высоте или на блок выше/ниже, если там есть пол.
+	 Minimum range of the player's teleport, in blocks. 3 = three blocks to the side.
+	 The player stays at the same height or a block above/below if there is a floor.
 	 */
 	public static final int TELEPORT_MIN_BLOCKS = 3;
 
-	/** Максимальная дальность телепорта игрока, в блоках. 5 = пять блоков. */
+	/*Maximum range of the player's teleport, in blocks. 5 = five blocks. */
 	public static final int TELEPORT_MAX_BLOCKS = 5;
 
-	/** Сколько раз искать свободное место. Не нашёл — игрок остаётся, эффект снаряда всё равно есть. */
+	/*How many times to look for a free seat? Not found - the player remains, the effect of the projectile is still there. */
 	public static final int TELEPORT_ATTEMPTS = 8;
 
 	// ========================================================================
 
-	/** Обычная левитация снаряда шалкера: 10 секунд. */
+	/*Normal levitation of a shalker projectile: 10 seconds. */
 	private static final int VANILLA_LEVITATION_TICKS = 200;
 
-	/** В одной секунде 20 тиков. */
+	/** 20 ticks in one second. */
 	private static final int TICKS_PER_SECOND = 20;
 
-	/** Радиус, с которым игра пакует короткий телепорт шалкера для картинки. Менять не нужно. */
+	/*The radius with which the game packs a short shalker teleport for the picture. No need to change. */
 	private static final int VANILLA_TELEPORT_PACK_RADIUS = 8;
 
 	private ShulkerThreats() {
 	}
 
-	/** Один раз при появлении. Повторный вызов и загрузка из сохранения шанс не перебрасывают. */
+	/** Once upon appearance. Re-calling and downloading from saving the chance does not recast. */
 	public static void rollOnSpawn(Shulker shulker) {
 		if (!ENABLED || !(shulker instanceof ShulkerVariant data) || data.evolvingthreats$rolled()) {
 			return;
@@ -165,7 +165,7 @@ public final class ShulkerThreats {
 		data.evolvingthreats$setHopTicks(hopIntervalTicks());
 	}
 
-	/** Каждый тик шалкера на сервере: второй снаряд и пересадка на соседний блок. */
+	/*Each tick shalker on the server: a second projectile and transfer to a neighboring unit. */
 	public static void tick(Shulker shulker) {
 		if (!ENABLED || shulker.level().isClientSide() || !(shulker instanceof ShulkerVariant data)) {
 			return;
@@ -196,8 +196,8 @@ public final class ShulkerThreats {
 	}
 
 	/**
-	 * Обычный выстрел шалкера уже создал снаряд. Помечает его и, если шалкер умеет,
-	 * ставит второй снаряд в очередь.
+	 A conventional shalker shot has already created a projectile. Marks it and, if the shalker can,
+	 * Puts the second projectile in line.
 	 */
 	public static boolean launch(Level level, Entity entity) {
 		if (entity instanceof ShulkerBullet bullet) {
@@ -220,8 +220,8 @@ public final class ShulkerThreats {
 	}
 
 	/**
-	 * Снаряд уже попал и игра собралась повесить левитацию.
-	 * Здесь длина левитации, замедление, слабость и телепорт игрока.
+	 The projectile has already hit and the game is about to hang levitation.
+	 There is levitation length, slowdown, weakness and teleport of the player.
 	 */
 	public static boolean onHit(ShulkerBullet bullet, LivingEntity target, MobEffectInstance vanilla, Entity source) {
 		int duration = vanilla.getDuration();

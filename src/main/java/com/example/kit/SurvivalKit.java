@@ -20,104 +20,104 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import java.util.List;
 
 /**
- * Тестовый набор в инвентарь. Не механика мобов: только команда.
+ * Test kit for inventory. Not mob mechanics: just a team.
  * <p>
- * В чат: {@code /etkit} или {@code /evolvingthreats give kit}.
- * Нужны читы, как у остальных команд мода.
- * Вещи не надеваются сами. Если инвентарь полон, лишнее падает под ноги.
+ * In chat: {@code /etkit} or {@code /evolvingthreats give kit}.
+ You need cheats like the other fashion teams.
+ * Things don't wear themselves. If the inventory is full, the excess falls under your feet.
  * <p>
- * Чары — максимум наковальни в выживании, и только те, что стоят на одной вещи вместе.
- * Защита от взрыва, от огня и от снарядов сюда не входят: с обычной Защитой они не сочетаются.
- * Проклятия не ставятся.
+ Charms are the maximum anvil in survival, and only those that stand on one thing together.
+ Explosion, fire and shell protection are not included here: they are not combined with conventional Protection.
+ There's no curse.
  */
 public final class SurvivalKit {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Сколько обычных золотых яблок. Не зачарованных. 64 = полный стак. 0 = не выдавать. */
+	/*How many ordinary golden apples? Not enchanted. 64 = full stack. 0 = not to give. */
 	public static final int GOLDEN_APPLE_COUNT = 64;
 
-	/** Сколько тотемов бессмертия. 2 — как просили. 0 = не выдавать. */
+	/*How many totems of immortality. 2 - as requested. 0 = not to give. */
 	public static final int TOTEM_COUNT = 2;
 
 	/**
-	 * Сколько ракет для элитр. 64 = полный стак.
-	 * Без звезды: толкают в полёте и не взрываются в лицо. 0 = не выдавать.
+	 How many missiles for the elite. 64 = full stack.
+	 Starless: Pushed in flight without exploding in the face. 0 = not to give.
 	 */
 	public static final int FIREWORK_COUNT = 64;
 
 	/**
-	 * Длительность полёта ракеты. В выживании 1–3 (сколько пороха в крафте).
-	 * 3 = максимальный толчок элитр.
+	 * Missile duration. In survival 1-3 (how much gunpowder in crafting).
+	 3 = maximum push of the elite.
 	 */
 	public static final int FIREWORK_FLIGHT = 3;
 
 	/**
-	 * Стрелы к луку. Бесконечность их не тратит, но хотя бы одна должна лежать в инвентаре.
-	 * 64 = полный стак. 0 = не выдавать.
+	 Arrows to bow. Infinity does not waste them, but at least one should lie in the inventory.
+	 * 64 = full stack. 0 = not to give.
 	 */
 	public static final int ARROW_COUNT = 64;
 
-	/** Защита на каждом куске брони. Потолок выживания — IV. */
+	/*Protection on every piece of armor. The survival ceiling is IV. */
 	public static final int PROTECTION = 4;
-	/** Шипы. Потолок — III. 0 = убрать шипы (броня не колется в ответ и медленнее ломается). */
+	/*Thorns. Ceiling III. 0 = remove the thorns (armor does not prick in response and breaks more slowly). */
 	public static final int THORNS = 3;
-	/** Прочность. Потолок — III. */
+	/*Durability. Ceiling III. */
 	public static final int UNBREAKING = 3;
-	/** Починка. 1 = есть, 0 = нет. Чинится опытом, на наковальне с книгой. */
+	/** Repair. 1 = is, 0 = no. It's based on experience, on an anvil with a book. */
 	public static final int MENDING = 1;
 
-	/** Подводное дыхание, только шлем. Потолок — III. */
+	/*Underwater breath, only helmet. Ceiling III. */
 	public static final int RESPIRATION = 3;
-	/** Подводник, только шлем. 1 = копать под водой как на суше. */
+	/*Submarine, only helmet. 1 = to dig underwater as on land. */
 	public static final int AQUA_AFFINITY = 1;
-	/** Проворство, только поножи. Потолок — III. Книга из древнего города. */
+	/** Agile, just stabbing. Ceiling III. A book from an ancient city. */
 	public static final int SWIFT_SNEAK = 3;
-	/** Невесомость, только ботинки. Потолок — IV. */
+	/*Weightlessness, only shoes. The ceiling is IV. */
 	public static final int FEATHER_FALLING = 4;
 	/**
-	 * Подводная ходьба, только ботинки. Потолок — III.
-	 * С ледоходом вместе не работает. Сейчас включена ходьба, ледоход выключен (см. FROST_WALKER).
-	 * Чтобы был ледоход: поставь здесь 0, а FROST_WALKER = 2.
+	 Scuba walking, shoes only. Ceiling III.
+	 * The icebreaker doesn't work together. Walking is now on, the icebreaker is off (see FROST WALKER).
+	 For an icebreaker, set 0 here and FROST WALKER = 2.
 	 */
 	public static final int DEPTH_STRIDER = 3;
-	/** Ледоход, только ботинки. Потолок — II. 0 = выключен, пока включена подводная ходьба. */
+	/*Icebreaker, only shoes. Ceiling II. 0 = off while the underwater walk is on. */
 	public static final int FROST_WALKER = 0;
-	/** Скорость души, только ботинки. Потолок — III. С подводной ходьбой сочетается. */
+	/*Speed of mind, only shoes. Ceiling III. It goes with underwater walking. */
 	public static final int SOUL_SPEED = 3;
 
-	/** Острота меча. Потолок — V. Небесная кара на мече не стоит: она на топоре. Вместе не работают. */
+	/*Sword sharpness. The ceiling is V. Heavenly punishment is not on the sword: it is on the axe. They don't work together. */
 	public static final int SWORD_SHARPNESS = 5;
-	/** Отбрасывание меча. Потолок — II. 0 = убрать: мобов не будет откидывать. */
+	/*Sword throwing. Ceiling II. 0 = Remove: the mobs will not fold. */
 	public static final int SWORD_KNOCKBACK = 2;
-	/** Заговор огня. Потолок — II. */
+	/*Conspiracy of fire. Ceiling II. */
 	public static final int SWORD_FIRE_ASPECT = 2;
-	/** Добыча. Потолок — III. */
+	/** Prey. Ceiling III. */
 	public static final int SWORD_LOOTING = 3;
-	/** Разящий клинок. Потолок — III. Только меч, в Java. */
+	/*Smashing blade. Ceiling III. Only a sword, in Java. */
 	public static final int SWORD_SWEEPING = 3;
 
-	/** Сила лука. Потолок — V. */
+	/*The power of the bow. The ceiling is V. */
 	public static final int BOW_POWER = 5;
-	/** Откидывание лука. Потолок — II. */
+	/** Onion recline. Ceiling II. */
 	public static final int BOW_PUNCH = 2;
-	/** Воспламенение. 1 = стрела поджигает. */
+	/*ignition. 1 = the arrow burns. */
 	public static final int BOW_FLAME = 1;
 	/**
-	 * Бесконечность на луке. 1 = есть, Починки на этом луке нет.
-	 * В выживании они вместе не ставятся.
-	 * 0 = убрать Бесконечность и вернуть Починку, как на остальном наборе.
+	 Infinity on the bow. 1 = Eat, there is no repair on this bow.
+	 In survival, they are not put together.
+	 0 = Remove Infinity and return Repair as on the rest of the set.
 	 */
 	public static final int BOW_INFINITY = 1;
 
-	/** Эффективность кирки, топора и лопаты. Потолок — V. */
+	/** Effectiveness of pickaxe, axe and shovel. The ceiling is V. */
 	public static final int TOOL_EFFICIENCY = 5;
 	/**
-	 * Удача на кирке, топоре и лопате. Потолок — III.
-	 * Шёлковое касание сюда не ставится: с удачей на одной вещи не работает.
+	 Luck on pickaxe, axe and shovel. Ceiling III.
+	 Silk touch is not put here: luck does not work on one thing.
 	 */
 	public static final int TOOL_FORTUNE = 3;
-	/** Небесная кара топора. Потолок — V. Острота на этом топоре не стоит. */
+	/*The heavenly punishment of the axe. The ceiling is V. The axe is not sharp. */
 	public static final int AXE_SMITE = 5;
 
 	// ========================================================================
@@ -125,14 +125,14 @@ public final class SurvivalKit {
 	private SurvivalKit() {
 	}
 
-	/** Кладёт набор игроку, который ввёл команду. С консоли не работает. */
+	/*Puts the set to the player who entered the team. The console doesn't work. */
 	public static int give(CommandSourceStack source) {
 		if (!(source.getEntity() instanceof ServerPlayer player)) {
-			source.sendFailure(Component.literal("Команду нужно вводить самому, не из консоли"));
+			source.sendFailure(Component.literal("You need to enter the command yourself, not from the console."));
 			return 0;
 		}
 		if (!(player.level() instanceof ServerLevel level)) {
-			source.sendFailure(Component.literal("Команда только на сервере"));
+			source.sendFailure(Component.literal("Team only on the server"));
 			return 0;
 		}
 
@@ -172,11 +172,11 @@ public final class SurvivalKit {
 		give(player, plain(Items.ARROW, ARROW_COUNT));
 		give(player, fireworks());
 
-		source.sendSuccess(() -> Component.literal("Набор для выживания положен в инвентарь"), true);
+		source.sendSuccess(() -> Component.literal("Survival kit put in inventory"), true);
 		return 1;
 	}
 
-	/** Защита, шипы, прочность и починка — на каждом куске брони. Плюс чары этого слота. */
+	/*Protection, spikes, strength and repair - on every piece of armor. Plus the charm of this slot. */
 	private static ItemStack armor(ServerLevel level, Item item, Level... extra) {
 		Level[] all = new Level[4 + extra.length];
 		all[0] = enchant(Enchantments.PROTECTION, PROTECTION);
@@ -187,7 +187,7 @@ public final class SurvivalKit {
 		return enchanted(level, item, 1, all);
 	}
 
-	/** Прочность и починка есть у меча, инструментов и элитр. Лук собирается отдельно. */
+	/*Strength and repair are in the sword, tools and elite. The onions are assembled separately. */
 	private static ItemStack tool(ServerLevel level, Item item, Level... extra) {
 		Level[] all = new Level[2 + extra.length];
 		all[0] = enchant(Enchantments.UNBREAKING, UNBREAKING);
@@ -197,8 +197,8 @@ public final class SurvivalKit {
 	}
 
 	/**
-	 * Лук с Бесконечностью не получает Починку.
-	 * Если BOW_INFINITY = 0, вместо неё ставится Починка.
+	 Infinity bow doesn't get repaired.
+	 * If BOW INFINITY = 0, it is replaced by Repair.
 	 */
 	private static ItemStack bow(ServerLevel level) {
 		boolean infinity = BOW_INFINITY > 0;
@@ -216,7 +216,7 @@ public final class SurvivalKit {
 		var registry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
 		EnchantmentHelper.updateEnchantments(stack, mutable -> {
 			for (Level enchantment : enchantments) {
-				// 0 в константе выше = этого чара на вещи нет.
+				// 0 in constant above = this spell on things is not.
 				if (enchantment.level <= 0) {
 					continue;
 				}
@@ -234,7 +234,7 @@ public final class SurvivalKit {
 		return new ItemStack(item, count);
 	}
 
-	/** Ракета без звезды: только порох и бумага, для элитр. */
+	/*Rocket without a star: only gunpowder and paper, for the elite. */
 	private static ItemStack fireworks() {
 		if (FIREWORK_COUNT <= 0) {
 			return ItemStack.EMPTY;
@@ -250,8 +250,8 @@ public final class SurvivalKit {
 			return;
 		}
 		if (!player.getInventory().add(stack)) {
-			// false — не бросок из руки, вещь падает под ноги.
-			// SERVER_ONLY — выброс решает сервер (команда), клиент его не предугадывал.
+			// False is not a throw from the hand, a thing falls under the feet.
+			// SERVER ONLY – the ejection is decided by the server (team), the client did not anticipate it.
 			player.drop(stack, false, Prediction.SERVER_ONLY);
 		}
 	}

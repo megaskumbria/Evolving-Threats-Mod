@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Вещи моба падают внутри dropCustomDeathLoot, метод объявлен у Mob.
- * До этого обнуляем шанс лука с Откидыванием V или VI, иначе он может упасть игроку.
+ Mob items fall inside dropCustomDeathLoot, method announced by Mob
+ Before that, zero chance of a bow with a Retraction V or VI, otherwise it may fall to the player.
  */
 @Mixin(Mob.class)
 public class SkeletonPunchBowMixin {

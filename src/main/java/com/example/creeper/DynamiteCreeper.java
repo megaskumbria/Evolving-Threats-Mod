@@ -17,99 +17,99 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Обычный на вид крипер, который не подбегает взрываться, а кидает зажжённый динамит и отступает.
- * Выглядит как ванильный крипер — игрок узнаёт его только когда прилетает TNT.
+ The usual-looking cryper, which does not run up to explode, but throws lit dynamite and retreats.
+ It looks like a vanilla cryper - the player only recognizes it when TNT arrives.
  */
 public final class DynamiteCreeper {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — все криперы обычные, команда спавна тоже не делает метателя. */
+	/** Turn on the mechanics. False - all crypers are ordinary, the team spawn does not throw either. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный крипер при появлении в мире окажется метателем.
-	 * 0.04 = 4%. Команда спавна этот шанс не использует — она всегда создаёт метателя.
+	 * Chance (0.0-1.0) that a common cryper will be a thrower when it appears in the world.
+	 * 0.04 = 4%. The Spawn team doesn't take that chance - it always creates a thrower.
 	 */
 	public static final float SPAWN_CHANCE = 0.04f;
 
 	/**
-	 * Ближе этого (блоки) крипер пятится от игрока и не кидает динамит.
-	 * 8 = держит дистанцию примерно в 8 блоков.
+	 Closer than that (blocks) the cryper is backing away from the player and does not throw dynamite.
+	 8 = holds a distance of about 8 blocks.
 	 */
 	public static final double RETREAT_DISTANCE = 8.0;
 
 	/**
-	 * Дальше этого (блоки) крипер подходит ближе, чтобы кинуть.
-	 * Между {@link #RETREAT_DISTANCE} и этим числом он кружит боком и бросает.
+	 * Beyond that (blocks) the cryper comes closer to throw.
+	 * Between {@link #RETREAT DISTANCE} and this number he circles sideways and throws.
 	 */
 	public static final double THROW_MAX_DISTANCE = 16.0;
 
 	/**
-	 * На какой дистанции (блоки) крипер старается держаться, пока кидает динамит.
-	 * Меньше {@link #RETREAT_DISTANCE} он пятится, больше {@link #THROW_MAX_DISTANCE} — подходит.
+	 At what distance (blocks) the cryper tries to keep while throwing dynamite.
+	 * Less {@link #RETREAT DISTANCE} he's backing up, more {@link #THROW MAX DISTANCE} - fits.
 	 */
 	public static final double HOLD_DISTANCE = 12.0;
 
 	/**
-	 * На сколько блоков в сторону от игрока смещается точка, к которой он идёт.
-	 * Больше — шире кружит. 6 = заметно бегает, но остаётся в зоне броска.
+	 How many blocks away from the player moves the point to which he goes.
+	 * Bigger, bigger circle. 6 = visibly running, but remains in the throw zone.
 	 */
 	public static final double STRAFE_SIDE_BLOCKS = 6.0;
 
-	/** Скорость бега боком (1.0 = обычный шаг крипера). */
+	/*Speed of running sideways (1.0 = usual step of the cryper). */
 	public static final double STRAFE_SPEED = 1.1;
 
-	/** Как часто меняет сторону кружения, секунды (случайное число между ними). */
+	/*How often does the spin side change, seconds (random number between them). */
 	public static final int STRAFE_SWITCH_MIN_SECONDS = 2;
 	public static final int STRAFE_SWITCH_MAX_SECONDS = 4;
 
 	/**
-	 * Дальше этого (блоки) метатель бросает погоню.
-	 * Чуть больше ванильной дальности зрения крипера, чтобы он успевал выйти на бросок.
+	 * Beyond that (blocks) the thrower throws the chase.
+	 Slightly more vanilla range of sight of the cryper so that he had time to come out on the throw.
 	 */
 	public static final double CHASE_MAX_DISTANCE = 28.0;
 
-	/** Как далеко (блоки) крипер «видит» игрока. У обычного крипера около 16. */
+	/*How far (blocks) the cryper "sees" the player. A normal cryper has about 16. */
 	public static final double FOLLOW_RANGE = 32.0;
 
-	/** Пауза между бросками, секунды. 8 = один динамит раз в 8 секунд. */
+	/*Pause between throws, seconds. 8 = one dynamite every 8 seconds. */
 	public static final int THROW_COOLDOWN_SECONDS = 8;
 
-	/** Запал динамита: минимум и максимум, секунды (случайное число между ними). 2 и 3 = взрыв через 2–3 сек. */
+	/*Dynamite fuse: minimum and maximum, seconds (random number between them). 2 and 3 = explosion in 2-3 seconds. */
 	public static final int FUSE_MIN_SECONDS = 2;
 	public static final int FUSE_MAX_SECONDS = 3;
 
-	/** Скорость отступления (1.0 = обычный шаг крипера, 1.2 = чуть быстрее убегает). */
+	/*Retreat rate (1.0 = usual cryper step, 1.2 = slightly faster escapes). */
 	public static final double RETREAT_SPEED = 1.2;
 
-	/** Скорость, с которой подходит на дистанцию броска. */
+	/*The speed at which it fits the throw distance. */
 	public static final double APPROACH_SPEED = 1.0;
 
 	/**
-	 * Горизонтальная скорость динамита, блоки за тик (20 тиков = 1 сек).
-	 * 0.70 = долетает до игрока в 12 блоках примерно за секунду и падает к ногам, а не над головой.
-	 * Больше — быстрее и более настильно. Меньше — выше дуга.
+	 Horizontal velocity of dynamite, blocks per tick (20 ticks = 1 sec).
+	 0.70 = reaches the player in 12 blocks in about a second and falls to his feet, not over his head.
+	 * Bigger, faster and more flattering. Less is above the arc.
 	 */
 	public static final double THROW_BLOCKS_PER_TICK = 0.70;
 
 	/**
-	 * За сколько тиков до взрыва динамит должен уже быть у ног.
-	 * 8 = 0.4 сек лежит на земле рядом с игроком, потом взрывается.
-	 * Меньше — взрыв ещё в полёте. Больше — дольше лежит, игрок успеет отойти.
+	 How many tics before the explosion dynamite should already be at the feet.
+	 8 = 0.4 seconds lies on the ground next to the player, then explodes.
+	 Less - the explosion is still in flight. More is longer, the player will have time to leave.
 	 */
 	public static final int LAND_BEFORE_EXPLODE_TICKS = 8;
 
 	/**
-	 * Случайный сдвиг точки падения, блоки. 0.4 = почти в игрока, но не идеальный снайпер.
-	 * Больше — чаще промах мимо ног.
+	 Random shift of the drop point, blocks. 0.4 = almost the player, but not the perfect sniper.
+	 * More - more often misses the legs.
 	 */
 	public static final double AIM_SPREAD_BLOCKS = 0.4;
 
-	/** Гравитация ванильного TNT за тик. Не меняй, если не менялась сама игра. */
+	/*Gravity of vanilla TNT per tick. Don’t change unless the game itself has changed. */
 	private static final double TNT_GRAVITY = 0.04;
 
-	/** Замедление TNT в воздухе за тик (ваниль). Не меняй, если не менялась сама игра. */
+	/*Deceleration of TNT in the air for tick (vanilla). Don’t change unless the game itself has changed. */
 	private static final double TNT_AIR_DRAG = 0.98;
 
 	// ========================================================================
@@ -123,7 +123,7 @@ public final class DynamiteCreeper {
 				&& data.evolvingthreats$isDynamiteCreeper();
 	}
 
-	/** Вызвать из finalizeSpawn. Командный спавн ставит флаг заранее и сюда не попадает повторно. */
+	/** Call from finalizeSpawn. The team spawn puts the flag in advance and does not get here again. */
 	public static void rollOnSpawn(Creeper creeper, ServerLevelAccessor level, EntitySpawnReason reason) {
 		if (!ENABLED || !(creeper instanceof DynamiteCreeperEntity data)) {
 			return;
@@ -134,7 +134,7 @@ public final class DynamiteCreeper {
 		if (creeper instanceof SapperCreeperEntity sapper && sapper.evolvingthreats$isSapperCreeper()) {
 			return;
 		}
-		// Заряженный крипер динамит не кидает. Подрывником или ломателем щита он быть может.
+		// Charged cryper dynamite doesn't throw. He could be a bomber or a shield breaker.
 		if (creeper.isPowered()) {
 			return;
 		}
@@ -147,7 +147,7 @@ public final class DynamiteCreeper {
 		apply(creeper);
 	}
 
-	/** Команда: крипер-метатель перед игроком (или в точке источника команды). */
+	/*Team: Cryper-thrower in front of the player (or at the source point of the team). */
 	public static Creeper spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		Creeper creeper = EntityTypes.CREEPER.create(level, EntitySpawnReason.COMMAND);
 		if (creeper == null) {
@@ -181,7 +181,7 @@ public final class DynamiteCreeper {
 		return THROW_COOLDOWN_SECONDS * 20;
 	}
 
-	/** Кинуть зажжённый динамит в цель. Динамит — обычный ванильный TNT, падает к ногам. */
+	/*Toss lighted dynamite at the target. Dynamite, a common vanilla TNT, falls to your feet. */
 	public static void throwTnt(Creeper creeper, LivingEntity target) {
 		if (!(creeper.level() instanceof ServerLevel level)) {
 			return;
@@ -198,7 +198,7 @@ public final class DynamiteCreeper {
 
 		double spread = (creeper.getRandom().nextDouble() - 0.5) * AIM_SPREAD_BLOCKS;
 		double spreadZ = (creeper.getRandom().nextDouble() - 0.5) * AIM_SPREAD_BLOCKS;
-		// Небольшой упреждение, если игрок бежит. Стоящий игрок — почти без сдвига.
+		// A little preemptive if the player runs. A worthwhile player - with almost no shift.
 		Vec3 motion = target.getDeltaMovement();
 		double landX = target.getX() + motion.x * 8.0 + spread;
 		double landZ = target.getZ() + motion.z * 8.0 + spreadZ;
@@ -222,7 +222,7 @@ public final class DynamiteCreeper {
 		level.playSound(null, creeper.blockPosition(), SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1.0f, 1.0f);
 	}
 
-	/** Сколько блоков по горизонтали пролетит TNT за {@code ticks}, если начальная скорость 1. */
+	/*How many blocks horizontally will TNT fly for {@code ticks} if the initial speed is 1? */
 	private static double horizontalDragSum(int ticks) {
 		double sum = 0.0;
 		double drag = 1.0;
@@ -234,8 +234,8 @@ public final class DynamiteCreeper {
 	}
 
 	/**
-	 * Начальная скорость вверх, чтобы через {@code ticks} тиков TNT оказался на нужной высоте.
-	 * Каждый тик игра сначала прибавляет гравитацию, потом двигает, потом замедляет (как у ванильного TNT).
+	 * Initial speed up to {@code ticks} tics TNT was at the desired height.
+	 Each tick game first adds gravity, then moves, then slows down (like vanilla TNT).
 	 */
 	private static double verticalSpeedToLand(double dy, int ticks) {
 		double atZero = simulateVertical(0.0, ticks);

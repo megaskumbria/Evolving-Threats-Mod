@@ -33,6 +33,6 @@ public class MobSpawnerHeadSaveMixin {
 		}
 		carrier.evolvingthreats$setSpawnerHeadCarrier(true);
 		carrier.evolvingthreats$setSpawnerHeadHitCount(input.getIntOr("EvolvingThreatsSpawnerHeadHits", 0));
-		// Старые миры: EvolvingThreatsSpawnerHeadSummoned больше не используется — призыв снова каждые 2 удара.
+		// Old Worlds: EvolvingThreatsSpawnerHeadSummoned is no longer used - call again every 2 beats.
 	}
 }

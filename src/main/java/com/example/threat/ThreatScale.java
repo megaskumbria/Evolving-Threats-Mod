@@ -4,79 +4,79 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 
 /**
- * Шкала угрозы мира: одна на весь мир, растёт от 0 до 100 дней, ночью «дышит» вместе с луной.
- * Здесь только математика. Все пороги дней и стартовые шансы лежат в {@link ThreatTable}.
+ * World threat scale: one per world, grows from 0 to 100 days, "breathes" with the moon at night.
+ * Math only lives here. Day thresholds and start chances — in {@link ThreatTable}.
  *
- * <h3>Как это считается (по шагам)</h3>
+ * <h3>How it is computed (step by step)</h3>
  * <ol>
- *   <li><b>День</b> = (время мира − момент установки мода) / 24000 (дробное: 37.5 = середина 38-го дня).
- *       Шкала стартует с нуля, когда мод впервые загрузил мир, даже если мир уже старый.
- *       Спишь ночью — счётчик идёт быстрее, это нормально: мир «стареет».</li>
- *   <li><b>Прогресс</b> t = день / {@link #DAYS_TO_MAX}, не больше 1.</li>
- *   <li><b>Угроза</b> Θ = t в степени {@link #CURVE_POWER}: медленный старт, быстрее к концу.</li>
- *   <li><b>Луна</b>: полнолуние усиливает, новолуние ослабляет (см. {@link #thetaEff(Level)}).</li>
+ *   <li><b>Day</b> = (world time − mod install time) / 24000 (fractional: 37.5 = mid day 38).
+ *       Scale starts at zero when the mod first loads the world, even on an old world.
+ *       Sleeping skips time faster — normal: the world "ages" while you sleep.</li>
+ *   <li><b>Progress</b> t = day / {@link #DAYS_TO_MAX}, capped at 1.</li>
+ *   <li><b>Threat</b> Θ = t raised to {@link #CURVE_POWER}: slow start, faster toward the end.</li>
+ *   <li><b>Moon</b>: full moon strengthens, new moon weakens (see {@link #thetaEff(Level)}).</li>
  * </ol>
- * Результат «Θ_eff» (0.0–1.0) используют броня, оружие, чары, зелья и прочие механики из mobs.txt с пометкой GROWING.
- * Механики с пометкой «С N-го дня» проверяют только {@link #reached(Level, int)} и луну не учитывают.
+ * Resulting Θ_eff (0.0–1.0) drives armor, weapons, enchants, potions, and other GROWING mechanics in mobs.txt.
+ * "From day N" mechanics only call {@link #reached(Level, int)} — moon ignored.
  */
 public final class ThreatScale {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Главный выключатель. false = шкала не работает: все шансы равны своему максимуму (как было до шкалы),
-	 * все пороги дней открыты. Удобно, чтобы быстро сравнить «с шкалой» и «без».
+	 * Master switch. false = scale off: all chances use their maximum (pre-scale behavior),
+	 * all day gates open. Handy to compare "with scale" vs "without".
 	 */
 	public static final boolean ENABLED = true;
 
-	/** За сколько игровых дней шкала доходит до 100%. 100 дней = 33 часа без сна. После этого остаётся на максимуме. */
+	/** Game days until scale reaches 100%. 100 days ≈ 33 hours without sleeping. Stays at max after that. */
 	public static final int DAYS_TO_MAX = 100;
 
 	/**
-	 * Степень кривой роста. 1.0 = ровно по дням. 1.5 = первые дни почти ноль, потом всё быстрее.
-	 * 2.0 = ещё медленнее старт, почти всё случается в конце. Меньше 1.0 — быстрый старт (так делать не стоит).
+	 * Growth curve exponent. 1.0 = linear by day. 1.5 = near zero early, then accelerates.
+	 * 2.0 = even slower start; most events cluster at the end. Below 1.0 — fast start (avoid).
 	 */
 	public static final double CURVE_POWER = 1.5;
 
 	/**
-	 * Новолуние: угроза умножается на это число. 0.7 = на 30% слабее обычной.
-	 * Луна считается по номеру дня (весь день с утра до утра, как в небе).
+	 * New moon: threat × this factor. 0.7 = 30% weaker than baseline.
+	 * Moon phase uses world day number (whole day from dawn to dawn, like the sky).
 	 */
 	public static final float MOON_NEW_FACTOR = 0.7f;
 
-	/** Полнолуние: угроза умножается на это число. 1.2 = на 20% сильнее обычной. */
+	/** Full moon: threat × this factor. 1.2 = 20% stronger than baseline. */
 	public static final float MOON_FULL_FACTOR = 1.2f;
 
 	/**
-	 * Добавка на полнолуние в самом начале игры (доля шкалы, 0.0–1.0). 0.05 = плюс 5% шкалы.
-	 * Нужна, чтобы даже на 5-й день полнолуние было заметно: просто умножение почти ничего не даёт, пока шкала около нуля.
-	 * С ростом шкалы добавка уменьшается сама. 0 = полнолуние только умножает.
+	 * Flat full-moon bonus at game start (scale fraction 0.0–1.0). 0.05 = +5% scale.
+	 * Makes full moon noticeable on day 5: pure multiply barely moves while Θ ≈ 0.
+	 * Bonus fades as Θ grows. 0 = moon multiply only.
 	 */
 	public static final float MOON_FLAT_BONUS = 0.05f;
 
 	// ========================================================================
 
-	/** Один игровой день в тиках. 24000 тиков = 20 минут. */
+	/** Ticks per game day. 24000 ticks = 20 minutes. */
 	public static final long TICKS_PER_DAY = 24000L;
 
-	/** Сколько фаз у луны. Каждая длится один день, полный круг = 8 дней. */
+	/** Moon phase count. Each phase lasts one day; full cycle = 8 days. */
 	public static final int MOON_PHASES = 8;
 
 	/**
-	 * Освещённость луны для каждой фазы (как в ванили): 0 = полнолуние, 4 = новолуние.
-	 * Порядок: полная, убывающая, последняя четверть, старая, новая, молодая, первая четверть, прибывающая.
+	 * Moon brightness per phase (vanilla): 0 = full moon, 4 = new moon.
+	 * Order: full, waning gibbous, last quarter, old, new, waxing crescent, first quarter, waxing gibbous.
 	 */
 	private static final float[] MOON_LIGHT = { 1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f };
 
 	private ThreatScale() {
 	}
 
-	// ----------------------------------------------------------------- время
+	// ----------------------------------------------------------------- time
 
 	/**
-	 * Момент (время мира в тиках), с которого шкала считает дни. Один раз ставится, когда мод впервые
-	 * загрузил этот мир, и хранится в папке мира (ThreatData). Клиент получает его с сервера (ThreatEvents).
-	 * Поэтому в старом мире, где уже прошло 24 дня, шкала всё равно начинается с нуля.
+	 * World time (ticks) when scale counting starts. Set once when the mod first loads the world,
+	 * stored in world data (ThreatData). Client gets it from the server (ThreatEvents).
+	 * On an old world at day 24, scale still starts at zero.
 	 */
 	private static volatile long startClock = 0L;
 
@@ -84,64 +84,64 @@ public final class ThreatScale {
 		return startClock;
 	}
 
-	/** Вызывается самим модом (сервер при старте/команде, клиент при получении пакета). */
+	/** Called by the mod (server on start/command, client on packet). */
 	public static void setStartClock(long clock) {
 		startClock = clock;
 	}
 
-	/** Сколько тиков прошло от начала шкалы. Не бывает меньше нуля. */
+	/** Ticks since scale start. Never negative. */
 	public static long elapsedTicks(Level level) {
 		return Math.max(0L, level.getOverworldClockTime() - startClock);
 	}
 
-	/** Дробный день шкалы: 0.0 — самое начало, 37.5 — середина 38-го дня после установки мода. */
+	/** Fractional scale day: 0.0 at start, 37.5 = mid 38th day after mod install. */
 	public static double dayExact(Level level) {
 		return elapsedTicks(level) / (double) TICKS_PER_DAY;
 	}
 
-	/** Номер текущего дня шкалы целым числом (0 = первые сутки после установки мода). Его проверяют пороги «С N-го дня». */
+	/** Integer scale day (0 = first day after install). Used by "from day N" gates. */
 	public static int day(Level level) {
 		return (int) (elapsedTicks(level) / TICKS_PER_DAY);
 	}
 
-	/** Номер дня самого мира (как в небе и в ванили), считается от создания мира. Нужен луне и осадам. */
+	/** Vanilla world day (sky and vanilla logic), from world creation. Used for moon and sieges. */
 	public static long worldDay(Level level) {
 		return Math.floorDiv(level.getOverworldClockTime(), TICKS_PER_DAY);
 	}
 
 	/**
-	 * Номер дня мира (worldDay), в который наступает день шкалы {@code threatDay}.
-	 * Нужен осадам: они назначаются по дням мира, а первая должна быть на 25-й день шкалы.
+	 * World day (worldDay) when scale day {@code threatDay} begins.
+	 * Sieges use world days; the first must land on scale day 25.
 	 */
 	public static long worldDayOfThreatDay(int threatDay) {
 		return Math.ceilDiv(startClock + threatDay * TICKS_PER_DAY, TICKS_PER_DAY);
 	}
 
-	/** Дошёл ли мир до дня {@code fromDay}. Для механик «С N-го дня». При выключенной шкале всегда true. */
+	/** Has scale reached {@code fromDay}? For "from day N" mechanics. If scale disabled, always true. */
 	public static boolean reached(Level level, int fromDay) {
 		return !ENABLED || day(level) >= fromDay;
 	}
 
-	// ----------------------------------------------------------------- луна
+	// ----------------------------------------------------------------- moon
 
-	/** Фаза луны 0–7 (0 = полнолуние, 4 = новолуние). Берётся из номера дня мира, как в небе. */
+	/** Moon phase 0–7 (0 = full, 4 = new). From world day, like the sky. */
 	public static int moonPhase(Level level) {
 		return moonPhaseOfDay(worldDay(level));
 	}
 
-	/** Фаза луны для заданного номера дня. */
+	/** Moon phase for a given world day. */
 	public static int moonPhaseOfDay(long day) {
 		return (int) Math.floorMod(day, (long) MOON_PHASES);
 	}
 
-	/** Сила луны: 1.0 полнолуние … 0.0 новолуние. */
+	/** Moon strength: 1.0 full … 0.0 new. */
 	public static float moonLight(int phase) {
 		return MOON_LIGHT[Math.floorMod(phase, MOON_PHASES)];
 	}
 
-	// ----------------------------------------------------------------- шкала
+	// ----------------------------------------------------------------- scale
 
-	/** Прогресс по дням, 0.0–1.0: 0.37 = 37-й день из 100. Его рисует полоска на экране. */
+	/** Day progress 0.0–1.0: 0.37 = day 37 of 100. Drawn as the on-screen bar. */
 	public static float progress(Level level) {
 		return progress(dayExact(level));
 	}
@@ -153,7 +153,7 @@ public final class ThreatScale {
 		return (float) Math.min(1.0, dayExact / DAYS_TO_MAX);
 	}
 
-	/** Угроза без луны: прогресс в степени {@link #CURVE_POWER}. 0.0–1.0. */
+	/** Threat without moon: progress raised to {@link #CURVE_POWER}. 0.0–1.0. */
 	public static float theta(Level level) {
 		return theta(dayExact(level));
 	}
@@ -163,16 +163,16 @@ public final class ThreatScale {
 	}
 
 	/**
-	 * Угроза с учётом луны, 0.0–1.0. Её используют все механики со словом GROWING.
+	 * Threat with moon, 0.0–1.0. Used by all GROWING mechanics.
 	 *
-	 * <p>Формула: Θ × (0.7 … 1.2 по фазе луны) + добавка полнолуния × (1 − Θ), потом ограничено до 1.
-	 * Новолуние откатывает угрозу назад, но к следующему полнолунию она всегда выше, чем была.
+	 * <p>Formula: Θ × (0.7 … 1.2 by phase) + full-moon flat × (1 − Θ), then clamped to 1.
+	 * New moon pulls threat down, but each full moon is higher than the last.
 	 */
 	public static float thetaEff(Level level) {
 		return thetaEff(dayExact(level), worldDay(level));
 	}
 
-	/** {@code worldDay} нужен только луне: она идёт по дням мира, а не по дням шкалы. */
+	/** {@code worldDay} is for moon only — moon follows world days, not scale days. */
 	public static float thetaEff(double dayExact, long worldDay) {
 		if (!ENABLED) {
 			return 1.0f;
@@ -184,41 +184,41 @@ public final class ThreatScale {
 		return Math.max(0.0f, Math.min(1.0f, value));
 	}
 
-	// ------------------------------------------------------------- помощники
+	// ------------------------------------------------------------- helpers
 
-	/** Значение между стартом (день 0) и концом (день 100) по {@link #thetaEff(Level)}. */
+	/** Interpolate between start (day 0) and end (day 100) using {@link #thetaEff(Level)}. */
 	public static float lerp(Level level, float start, float end) {
 		return start + (end - start) * thetaEff(level);
 	}
 
-	/** То же для дробных чисел. */
+	/** Same for doubles. */
 	public static double lerp(Level level, double start, double end) {
 		return start + (end - start) * thetaEff(level);
 	}
 
 	/**
-	 * Шанс, который растёт от {@code endChance × startRatio} (день 0) до {@code endChance} (день 100).
-	 * {@code endChance} — это число, которое сейчас стоит в коде у механики.
-	 * {@code startRatio}: 0.10 = в начале игры шанс в 10 раз меньше максимального.
+	 * Chance growing from {@code endChance × startRatio} (day 0) to {@code endChance} (day 100).
+	 * {@code endChance} is the value in the mechanic's class today.
+	 * {@code startRatio}: 0.10 = one tenth of max at game start.
 	 */
 	public static float growingChance(Level level, float endChance, float startRatio) {
 		return lerp(level, endChance * startRatio, endChance);
 	}
 
 	/**
-	 * Шанс «опасной способности» (спавнер на голове, тактик, быстрый лук и т.п. — всё, что в mobs.txt помечено GROWING):
-	 * от {@code endChance × DANGEROUS_START_RATIO} (день 0) до {@code endChance} (день 100).
+	 * "Dangerous ability" chance (spawner head, tactician, fast bow, etc. — GROWING in mobs.txt):
+	 * from {@code endChance × DANGEROUS_START_RATIO} (day 0) to {@code endChance} (day 100).
 	 */
 	public static float dangerousChance(Level level, float endChance) {
 		return growingChance(level, endChance, ThreatTable.DANGEROUS_START_RATIO);
 	}
 
 	/**
-	 * Выбирает номер из набора весов, где вес каждого пункта плавно меняется
-	 * от {@code startWeights} (день 0) до {@code endWeights} (день 100).
-	 * Веса не обязаны давать в сумме 100: игра сама посчитает долю.
+	 * Pick an index from weight arrays where each weight lerps
+	 * from {@code startWeights} (day 0) to {@code endWeights} (day 100).
+	 * Weights need not sum to 100 — relative values matter.
 	 *
-	 * @return номер пункта (0, 1, 2, …)
+	 * @return index (0, 1, 2, …)
 	 */
 	public static int pickWeighted(Level level, RandomSource random, double[] startWeights, double[] endWeights) {
 		float theta = thetaEff(level);
@@ -242,7 +242,7 @@ public final class ThreatScale {
 		return weights.length - 1;
 	}
 
-	/** То же, но конечные веса заданы целыми числами (как в старых настройках мода). */
+	/** Same with int end weights (legacy mod settings). */
 	public static int pickWeighted(Level level, RandomSource random, double[] startWeights, int[] endWeights) {
 		double[] end = new double[endWeights.length];
 		for (int i = 0; i < endWeights.length; i++) {
@@ -252,13 +252,13 @@ public final class ThreatScale {
 	}
 
 	/**
-	 * Короткий текст для команды {@code /evolvingthreats day}: что сейчас показывает шкала.
+	 * Short text for {@code /evolvingthreats day}: what the scale shows now.
 	 */
 	public static String describe(Level level) {
 		double exact = dayExact(level);
 		int phase = moonPhase(level);
 		return String.format(
-				"День шкалы %.1f из %d (день мира %d) | луна %d (сила %.2f) | прогресс %.0f%% | Θ=%.3f | Θ_eff=%.3f",
+				"Scale day %.1f of %d (world day %d) | moon %d (strength %.2f) | progress %.0f%% | theta=%.3f | theta_eff=%.3f",
 				exact,
 				DAYS_TO_MAX,
 				worldDay(level),

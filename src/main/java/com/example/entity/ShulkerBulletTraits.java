@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Что делает конкретный снаряд шалкера. Реализация — mixin на ShulkerBullet. */
+/** What does a particular shalker shell do? The implementation is mixin on ShulkerBullet. */
 public interface ShulkerBulletTraits {
 
 	boolean evolvingthreats$slowness();

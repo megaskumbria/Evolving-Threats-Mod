@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Попадание взрывного зелья в блок или в существо.
- * Обычные зелья проходят мимо. Белое зелье ведьмы-обнулителя снимает эффекты с игрока.
+ Explosive potion hitting a block or creature.
+ Ordinary potions pass by. White potion of the witch-zero removes the effects from the player.
  */
 @Mixin(AbstractThrownPotion.class)
 public class AbstractThrownPotionNullifyMixin {

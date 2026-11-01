@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Скелет-Василиск. Реализация — mixin на обычного скелета, не на странника. */
+/*Skeleton Vasilisk. Realization - mixin on a normal skeleton, not on a wanderer. */
 public interface BasiliskSkeletonEntity {
 
 	boolean evolvingthreats$isBasilisk();

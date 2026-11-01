@@ -20,79 +20,79 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Скелет с одной вредной стрелой во второй руке. Лук в основной руке её и выпускает:
- * обычная стрела из воздуха ему больше не выдаётся, пока эта лежит во второй руке.
- * Ближний бой и щит такому скелету не выдаются — вторая рука занята стрелой.
+ Skeleton with one harmful arrow in the second hand. The bow in the main hand releases it:
+ A normal arrow from the air is no longer issued to him while this one is in the second hand.
+ Close combat and shield are not given to such a skeleton - the second hand is occupied by an arrow.
  */
 public final class HarmfulArrowSkeleton {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие скелеты не появляются. */
+	/** Turn on the mechanics. False - these skeletons do not appear. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет или странник появится с вредной стрелой, на 100-й день
-	 * (GROWING: в начале игры в 10 раз меньше, см. ThreatTable.DANGEROUS_START_RATIO). 0.20 = 20%.
-	 * Бросается раньше случайного меча и щита: если выпало, вторая рука занята стрелой.
+	 * Chance (0.0-1.0) that an ordinary skeleton or wanderer will appear with a harmful arrow on day 100
+	 * (GROWING: 10 times smaller at the beginning of the game, see ThreatTable.DANGEROUS_START_RATIO). 0.20 = 20%.
+	 Throws before an accidental sword and shield: if it falls out, the second hand is occupied by an arrow.
 	 */
 	public static final float SPAWN_CHANCE = 0.20f;
 
 	/**
-	 * Во сколько раз дольше обычной стрелы с зельем длится эффект.
-	 * У ванильной стрелы множитель 0.125: яд II держится около 2.7 сек.
-	 * 0.25 = в два раза дольше, яд II около 5.4 сек. Мгновенный урон от длительности не зависит.
+	 How many times longer than an ordinary arrow with a potion lasts the effect.
+	 The vanilla arrow has a multiplier of 0.125: poison II lasts about 2.7 seconds.
+	 0.25 = twice as long, poison II about 5.4 sec. Instant damage does not depend on duration.
 	 */
 	public static final float EFFECT_DURATION_SCALE = 0.25f;
 
 	/**
-	 * Шанс, что стрела выпадет при смерти. 0.085 ≈ 8.5%, как броня.
-	 * 1.0 = падает всегда.
-	 * Слепота, иссушение, голод, тошнота и левитация этим шансом не пользуются: они не выпадают никогда.
+	 The chance that an arrow will fall at death. 0.085 - 8.5% as armor.
+	 * 1.0 = always falling.
+	 Blindness, drying, hunger, nausea and levitation do not take advantage of this opportunity: they never fall out.
 	 */
 	public static final float DROP_CHANCE = 0.085f;
 
 	/**
-	 * Сколько секунд слепоты чувствует игрок после попадания.
-	 * В игре нет такой стрелы, длительность выбрана отдельно. 8 = 8 секунд почти без обзора.
+	 How many seconds of blindness does the player feel after being hit?
+	 There is no such arrow in the game, the duration is selected separately. 8 = 8 seconds with almost no view.
 	 */
 	public static final int BLINDNESS_SECONDS = 8;
 
 	/**
-	 * Сколько секунд иссушения после попадания. 7 = чуть дольше сильного яда (около 5 сек).
-	 * Уровень I: чёрные сердца тикают, но не так часто, как у визер-скелета на II.
+	 How many seconds of drying after hitting. 7 = slightly longer than a strong poison (about 5 seconds).
+	 Level I: Black hearts tick, but not as often as the viser skeleton on II.
 	 */
 	public static final int WITHER_SECONDS = 7;
 
 	/**
-	 * Голод после попадания, в минутах. Каждый скелет бросает своё число от минимума до максимума.
-	 * 1 и 10 = от одной минуты до десяти. Уровень I: полоска еды уходит заметно, но не за секунды.
+	 Hunger after hit, in minutes. Each skeleton throws its number from minimum to maximum.
+	 * 1 and 10 = from one minute to ten. Level I: A strip of food goes away, but not in seconds.
 	 */
 	public static final int HUNGER_MIN_MINUTES = 1;
 	public static final int HUNGER_MAX_MINUTES = 10;
 
 	/**
-	 * Тошнота после попадания, в минутах. Тот же разброс, что у голода: экран качает от 1 до 10 минут.
+	 Nausea after hit, in minutes. The same scatter as hunger: the screen swings from 1 to 10 minutes.
 	 */
 	public static final int NAUSEA_MIN_MINUTES = 1;
 	public static final int NAUSEA_MAX_MINUTES = 10;
 
 	/**
-	 * Сколько секунд левитации. 8 = игрока поднимает примерно на 8 блоков.
-	 * Когда эффект кончится, падение уже бьёт, но в небо не уносит.
-	 * Уровень I, как у шилкера, только короче: у шилкера около 10 секунд.
+	 How many seconds of levitation? 8 = the player raises about 8 blocks.
+	 When the effect is over, the fall already hits, but does not take you to the sky.
+	 Level I, like the Shilker, is only shorter: the Shilker has about 10 seconds.
 	 */
 	public static final int LEVITATION_SECONDS = 8;
 
 	// ========================================================================
 
 	/**
-	 * Вредные зелья. Обычная, долгая и сильная — разные стрелы.
-	 * Полезные (сила, лечение, невидимость и т.д.) сюда не входят.
-	 * Черепашья мощь тоже нет: вместе с замедлением она даёт защиту, игроку от неё легче.
-	 * Спектральная стрела и эффекты без своего зелья добавляются отдельно в {@link #randomArrow}.
-	 * Слепота красится цветом слабости, иссушение — цветом плетения.
-	 * Голод, тошнота и левитация красятся своим цветом: оливковый, фиолетовый и бледно-голубой.
+	 Harmful potions. Ordinary, long and strong are different arrows.
+	 Useful (power, treatment, invisibility, etc.) are not included.
+	 Turtle power is also not: along with slowing down, it gives protection, it is easier for the player from it.
+	 * Spectral arrow and effects without their potion are added separately to {@link #randomArrow}.
+	 Blindness is painted with the color of weakness, drying with the color of weaving.
+	 Hunger, nausea and levitation are painted with their color: olive, purple and pale blue.
 	 */
 	private static final List<Holder<Potion>> HARMFUL_POTIONS = List.of(
 			Potions.SLOWNESS,
@@ -115,9 +115,9 @@ public final class HarmfulArrowSkeleton {
 	}
 
 	/**
-	 * Вызвать из спавна скелета до меча и щита.
+	 To summon the skeleton from the spawn to the sword and shield.
 	 *
-	 * @return true — скелет получил стрелу, другое оружие во вторую руку ставить не нужно
+	 * @return true - the skeleton received an arrow, no other weapon in the second hand
 	 */
 	public static boolean tryEquip(Mob skeleton) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f) {
@@ -136,7 +136,7 @@ public final class HarmfulArrowSkeleton {
 		return true;
 	}
 
-	/** Случайная вредная стрела. Все варианты равновероятны, включая голод, тошноту и левитацию. */
+	/** Accidental harmful arrow. All options are equally likely, including hunger, nausea and levitation. */
 	private static ItemStack randomArrow(RandomSource random) {
 		int extra = 6;
 		int roll = random.nextInt(HARMFUL_POTIONS.size() + extra);
@@ -166,7 +166,7 @@ public final class HarmfulArrowSkeleton {
 		return arrow;
 	}
 
-	/** Целые минуты от минимума до максимума, оба края входят. */
+	/*Full minutes from minimum to maximum, both edges come in. */
 	private static int randomMinutes(RandomSource random, int minMinutes, int maxMinutes) {
 		int min = Math.min(minMinutes, maxMinutes);
 		int max = Math.max(minMinutes, maxMinutes);
@@ -174,8 +174,8 @@ public final class HarmfulArrowSkeleton {
 	}
 
 	/**
-	 * Стрела с эффектом, которого нет среди ванильных зелий.
-	 * Цвет берётся у другой стрелы, секунды — уже те, что чувствует игрок.
+	 An arrow with an effect not found among vanilla potions.
+	 Color is taken from another arrow, seconds are already what the player feels.
 	 */
 	private static ItemStack effectArrow(Holder<MobEffect> effect, int seconds, int color, String name) {
 		int storedTicks = Math.max(1, Math.round(seconds * 20.0f / EFFECT_DURATION_SCALE));
@@ -190,8 +190,8 @@ public final class HarmfulArrowSkeleton {
 	}
 
 	/**
-	 * Стрелы без ванильного зелья со скелета не падают:
-	 * слепота, иссушение, голод, тошнота, левитация.
+	 Arrows without vanilla potion do not fall from the skeleton:
+	 blindness, drying, hunger, nausea, levitation.
 	 */
 	private static boolean neverDrops(ItemStack arrow) {
 		PotionContents contents = arrow.get(DataComponents.POTION_CONTENTS);

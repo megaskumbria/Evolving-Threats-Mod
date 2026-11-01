@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
- * Ночной спавн враждебных мобов и спавн монстров в аду. Игра уже выбрала моба
- * и собирается его создать. Здесь вместо него иногда ставится парящий инструмент
- * или, в обычном мире, повреждённый голем. Команда и спавнер этот метод не вызывают.
+ Night spawns of hostile mobs and monsters in hell. The game has already chosen a mob.
+ * and is going to make it. Sometimes a hovering instrument is put in its place.
+ * or, in the ordinary world, damaged by a gole. The team and spawner do not cause this method.
  */
 @Mixin(NaturalSpawner.class)
 public class NaturalSpawnerFloatingToolMixin {
 
-	/** Ноги моба, которого игра ставит прямо сейчас. Нужны, чтобы проверить рост голема. */
+	/*The legs of the mob that the game is putting right now. We need to check the growth of the golem. */
 	@Unique
 	private static BlockPos.MutableBlockPos evolvingthreats$feet;
 

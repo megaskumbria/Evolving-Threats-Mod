@@ -155,22 +155,22 @@ public final class EvolvingThreatsCommands {
 										ctx.getSource(),
 										IntegerArgumentType.getInteger(ctx, "count")
 								))))
-				// Набор незерита для проверки боёв. Числа чар — в kit/SurvivalKit.java.
+				// A set of netherite to test the fights. Charm numbers are in kit/SurvivalKit.java.
 				.then(Commands.literal("kit")
 						.executes(ctx -> SurvivalKit.give(ctx.getSource())))));
 
-		// Проверка осады без ожидания 10-15 дней.
-		//   status   — когда следующая и на каком этапе.
-		//   warn     — предупреждение сейчас, ночь осады начнётся через 2 минуты.
-		//   start    — ночь осады сразу (днём мобы на солнце горят, это нормально).
-		//   warn/start undead   — то же, но обязательно нежить и твари (зомби, криперы, пауки…).
-		//   warn/start illagers — то же, но обязательно иллагеры (разбойники, разорители…), день не проверяется.
-		//   warn/start <вид>    — осада на 100% из одного вида: zombie, skeleton, wither_skeleton,
+		// Check the siege without waiting 10-15 days.
+		//   Status: When is the next stage and at what stage?
+		//   Warning now, the night of siege will begin in 2 minutes.
+		//   Start - night of siege at once (in the day mobs burn in the sun, this is normal).
+		//   Warn/start undead is the same, but it is necessary to undead and creatures (zombies, crypers, spiders...).
+		//   Warn/start illagers – the same, but necessarily illagers (robbers, ruiners...), the day is not checked.
+		//   Warning/start is a 100% siege from one species: zombie, skeleton, wither skeleton,
 		//                         creeper, spider, witch, phantom,
 		//                         pillager, vindicator, evoker, ravager.
-		//                         wither_skeleton не проверяет, был ли игрок в Аду.
-		//   stop     — прекратить осаду.
-		//   in <дни> — назначить осаду через столько игровых дней (0 = в ночь сегодня).
+		//                         wither skeleton does not verify if a player has been to Hell.
+		//   Stop the siege.
+		//   in <days> - to appoint a siege after so many game days (0 = night today).
 		var siegeWarn = Commands.literal("warn")
 				.executes(ctx -> siegeWarn(ctx.getSource(), null))
 				.then(Commands.literal("undead")
@@ -204,10 +204,10 @@ public final class EvolvingThreatsCommands {
 										IntegerArgumentType.getInteger(ctx, "days")
 								))))));
 
-		// Шкала угрозы (см. threat/ThreatScale.java).
-		//   day         — показать день, фазу луны и текущую угрозу.
-		//   day set <N> — сделать так, будто с установки мода прошло N дней (время мира и луна не меняются).
-		//                 day set 0 — начать шкалу заново. Для проверки любой стадии.
+		// Threat Scale (see Threat Scale.java).
+		//   The day shows the day, the phase of the moon and the current threat.
+		//   day set <N> - make it as if the installation of the fashion has passed N days (the time of the world and the moon do not change).
+		//                 day set 0 – start the scale again. To test any stage.
 		dispatcher.register(root.then(Commands.literal("day")
 				.executes(ctx -> dayStatus(ctx.getSource()))
 				.then(Commands.literal("set")
@@ -366,10 +366,10 @@ public final class EvolvingThreatsCommands {
 	private static int daySet(CommandSourceStack source, int day) {
 		var server = source.getServer();
 		ServerLevel overworld = server.overworld();
-		// Время мира и луна не трогаем: сдвигаем только «момент старта» шкалы, чтобы прошло ровно day дней.
+		// We do not touch the time of the world and the moon: we shift only the “start point” of the scale so that exactly the day days pass.
 		long start = overworld.getOverworldClockTime() - day * ThreatScale.TICKS_PER_DAY;
 		ThreatEvents.setStartClock(server, start);
-		// Расписание осады привязано к дням шкалы, поэтому пересчитываем его (если осада сейчас не идёт).
+		// The schedule of the siege is tied to the days of the scale, so we recalculate it (if the siege is not going now).
 		SiegeNight.reschedule(overworld);
 		source.sendSuccess(() -> Component.literal("Day set. " + ThreatScale.describe(overworld)), true);
 		return 1;
@@ -682,7 +682,7 @@ public final class EvolvingThreatsCommands {
 			"skeleton", "wither", "blaze", "spider", "piglin", "brute", "enderman", "silverfish", "creeper", "witch"
 	};
 
-	/** Ветка /evolvingthreats spawn mirror. Без слова — зомби. */
+	/*Evolvingthreats spawn mirror. Without a word, zombies. */
 	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> mirrorSpawn() {
 		var mirror = Commands.literal("mirror")
 				.executes(ctx -> spawnMirror(ctx.getSource(), "zombie"));

@@ -52,141 +52,141 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Враждебный парящий инструмент: меч, топор, лопата, кирка или мотыга.
- * Летит к игроку и бьёт вблизи. В обычном мире незерита нет — набор тот же, что у зомби ({@link RandomWeapons}).
- * В аду инструмент всегда незеритовый и с Заговором огня III, сам предмет не выпадает.
- * Чары в обычном мире те же, что на оружии зомби ({@link MobEnchantments}): острота и огненный аспект бьют,
- * эффективность и удача только украшают выпавший предмет.
- * Зелья те же, что у зомби ({@link MobPotionBuffs}): от нуля до пяти, пока моб жив.
- * Невидимости нет: она прятала бы сам предмет, тела у этого моба нет.
+ * Hostile hovering tool: sword, axe, shovel, pickaxe or hoe.
+ He flies to the player and hits close. In the ordinary world, there is no Neserite - the set is the same as that of zombies ({@link RandomWeapons}).
+ In hell, the instrument is always unseritic and with Fire Conspiracy III, the object itself does not fall out.
+ The charm in the ordinary world is the same as on zombie weapons ({@link MobEnchantments}): sharpness and fiery aspect beat,
+ Efficiency and luck only adorn the fallen object.
+ The potions are the same as the zombies (@link MobPotionBuffs): zero to five while the mob is alive.
+ There is no invisibility: she would hide the object itself, this mob has no body.
  *
- * <p>Отдельной модели и анимации нет: на экране рисуется обычная модель предмета
- * (см. клиентский рендерер). Здесь только «тело», полёт и удар.
- * В обычном мире ночью появляется сам, на месте обычного враждебного моба.
- * Шанс — {@link #NATURAL_SPAWN_CHANCE}. В аду — {@link #NETHER_SPAWN_CHANCE}, в любое время.
- * Команда {@code /ettool} шанс не бросает: в аду она тоже даёт незерит.
+ There is no separate model and animation: the usual model of the subject is drawn on the screen
+ * (see client renderer). It's just the body, the flight and the punch.
+ In the ordinary world at night appears himself, in place of the usual hostile mob.
+ * Chance - {@link #NATURAL SPAWN CHANCE} In hell - {@link #NETHER SPAWN CHANCE}, anytime.
+ * The team {@code /ettool} does not give a chance: in hell it also gives nezerite.
  */
 public class FloatingTool extends Monster {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Шанс (0.0–1.0), что вместо обычного ночного монстра появится этот инструмент.
-	 * 0.05 = 5%. Общий бросок с повреждённым големом: сначала этот шанс, потом шанс голема (0,2%).
-	 * 0.05 и 0.002 вместе = 5,2% особых мобов, они не занимают одно и то же появление.
-	 * Обычный мир, не ад и не Энд. Ближе 24 блоков игра не ставит, как любых монстров.
-	 * Команда /ettool этот шанс не бросает. 0 = в мире сам не появляется.
+	 Chance (0.0-1.0) that instead of the usual night monster will appear this tool.
+	 * 0.05 = 5%. Total throw with a damaged golem: first this chance, then the chance of a golem (0.2%).
+	 0.05 and 0.002 together = 5.2% of special mobs, they do not occupy the same appearance.
+	 Ordinary world, neither hell nor end. The game does not put closer than 24 blocks, like any monster.
+	 Team /ettool does not throw this chance. 0 = does not appear in the world.
 	 */
 	public static final float NATURAL_SPAWN_CHANCE = 0.05f;
 
 	/**
-	 * Шанс (0.0–1.0), что вместо враждебного моба в аду появится незеритовый инструмент.
-	 * 0.05 = 5%. FIXED: с первого дня, от шкалы угрозы не растёт.
-	 * Ад не ждёт ночи: монстры там появляются и днём. 0 = в аду их нет.
-	 * Обычный мир этот шанс не использует.
+	 Chance (0.0-1.0) that instead of a hostile mob in hell will appear nonseritic tool.
+	 * 0.05 = 5%. FIXED: From day one, the threat scale does not increase.
+	 Hell does not wait for the night: monsters appear there during the day. 0 = there are none in hell.
+	 The ordinary world does not take this opportunity.
 	 */
 	public static final float NETHER_SPAWN_CHANCE = 0.05f;
 
 	/**
-	 * Заговор огня на адском инструменте. 3 = III. У стола зачарований потолок II.
-	 * Каждый уровень дольше держит игрока в огне. 2 = обычный Заговор огня II. 0 = без огня.
+	 A conspiracy of fire on a hellish instrument. 3 = III. The Enchantment Table has Ceiling II.
+	 Each level keeps the player on fire longer. 2 = Ordinary Fire Conspiracy II. 0 = no fire.
 	 */
 	public static final int NETHER_FIRE_ASPECT_LEVEL = 3;
 
 	/**
-	 * Шанс выпадения адского инструмента. 0 = не падает никогда, Добыча это не меняет:
-	 * игра прибавляет Добычу только если шанс уже не ноль.
-	 * 1 = падает всегда. Обычный мир смотрит на {@link #DROP_CHANCE}, не на это число.
+	 The chance of a hellish instrument falling out. 0 = never falls, mining does not change:
+	 * The game only increases the profit if the chance is no longer zero.
+	 1 = always falling. The ordinary world is looking at {@link #DROP CHANCE}, not this number.
 	 */
 	public static final float NETHER_DROP_CHANCE = 0.0f;
 
 	/**
-	 * Невидимое тело, по которому нужно попасть (ширина и высота в блоках).
-	 * Сам инструмент рисуется отдельно и может быть крупнее этой коробки.
-	 * 0.75 — примерно как блок, по нему реально попасть. Меньше — труднее.
+	 Invisible body to be hit (width and height in blocks)
+	 The tool itself is drawn separately and can be larger than this box.
+	 0.75 is like a block, it is possible to get on it. Less is harder.
 	 */
 	public static final float HITBOX_WIDTH = 0.75f;
 	public static final float HITBOX_HEIGHT = 0.75f;
 
 	/**
-	 * Насколько крупно рисуется предмет. 1.0 = как брошенная на землю вещь.
-	 * 1.6 = заметный парящий инструмент. На хитбокс и урон не влияет.
+	 How large is the object drawn? 1.0 = as a thing thrown to the ground.
+	 * 1.6 = visible hovering instrument. Hitbox and damage don't matter.
 	 */
 	public static final float VISUAL_SCALE = 1.6f;
 
 	/**
-	 * Куда смотрит картинка, пока инструмент атакует, в градусах.
-	 * 0 = туда же, куда повёрнут сам моб (на игрока). Вокруг своей оси в этот момент не крутится.
-	 * 90 или 180 — если лезвие смотрит вбок или назад.
-	 * Когда никого не атакует, предмет снова крутится, как брошенная вещь.
+	 Where the picture looks while the instrument attacks, in degrees.
+	 * 0 = where the mob itself is turned (on the player). It does not rotate around its axis at this moment.
+	 90 or 180 – if the blade looks sideways or backwards
+	 When no one is attacked, the object spins again like an abandoned thing.
 	 */
 	public static final float ATTACK_FACING_OFFSET = 0.0f;
 
 	/**
-	 * «Кулак» моба, в сердечках урона это половина числа (1.0 = полсердца).
-	 * Урон самого инструмента прибавляется сверху: деревянный меч слабее алмазного,
-	 * мотыга слабее меча. Не ставь сюда 5–10 — иначе даже мотыга будет бить как меч.
+	 * "Fist" mob, in the hearts of damage is half the number (1.0 = half the heart).
+	 The damage to the tool itself is added from above: the wooden sword is weaker than the diamond one.
+	 The hoe is weaker than the sword. Don't put 5-10 here, or even the hoe will beat like a sword.
 	 */
 	public static final double BASE_ATTACK_DAMAGE = 1.0;
 
 	/**
-	 * Здоровье по материалу (2.0 = 1 сердце).
-	 * Дерево и золото слабые, алмаз живёт дольше.
+	 Health by material (2.0 = 1 heart).
+	 Wood and gold are weak, diamonds live longer.
 	 */
 	public static final double HEALTH_WOOD_GOLD = 12.0;
 	public static final double HEALTH_STONE_COPPER = 16.0;
 	public static final double HEALTH_IRON = 20.0;
 	public static final double HEALTH_DIAMOND = 28.0;
 
-	/** Незерит в аду. 36 = 18 сердец. Алмазный инструмент — 28 (14 сердец). */
+	/*Neserite in hell. 36 = 18 hearts. Diamond tool – 28 (14 hearts). */
 	public static final double HEALTH_NETHERITE = 36.0;
 
 	/**
-	 * Как быстро летит, когда никого не догоняет. Больше — резвее.
-	 * Вместе с {@link #CHASE_SPEED}: 0.9 и 1.2 — догоняет бегущего игрока, но не телепортируется.
+	 How fast it flies when it doesn’t catch up. More is faster.
+	 * Together with {@link #CHASE SPEED}: 0.9 and 1.2 - catches up with the running player, but does not teleport.
 	 */
 	public static final double FLYING_SPEED = 0.9;
 
-	/** Множитель скорости именно в погоне за игроком. 1.0 = как обычный полёт, 1.6 = заметно злее. */
+	/*The speed multiplier is in pursuit of the player. 1.0 = like a normal flight, 1.6 = noticeably meaner. */
 	public static final double CHASE_SPEED = 1.2;
 
-	/** С какой дистанции (в блоках) замечает игрока. 24 = три чанка по горизонтали не нужно, но через двор видит. */
+	/*From what distance (in blocks) the player notices. 24 = three chunks horizontally not necessary, but through the yard sees. */
 	public static final double FOLLOW_RANGE = 24.0;
 
 	/**
-	 * Пауза между ударами, в тиках. 20 = раз в секунду, пока инструмент вплотную.
-	 * 40 = раз в две секунды, бить легче.
+	 Pause between punches, ticks. 20 = once per second until the instrument is close.
+	 40 = once every two seconds, it is easier to hit.
 	 */
 	public static final int ATTACK_COOLDOWN_TICKS = 20;
 
 	/**
-	 * Шанс (0.0–1.0), что инструмент будет с чарами. 0.30 = 30%, как у оружия зомби.
-	 * Какие чары и какой уровень — в {@link MobEnchantments}. 0 = всегда без чар.
+	 * Chance (0.0-1.0) that the instrument will be charmed. 0.30 = 30%, like a zombie weapon.
+	 * What charms and what level - in {@link MobEnchantments} 0 = always without charm.
 	 */
 	public static final float ENCHANT_CHANCE = 0.30f;
 
 	/**
-	 * Шанс (0.0–1.0), что после смерти выпадет сам инструмент, вместе с чарами.
-	 * 0.15 = 15%. 0 = ничего не падает. 1 = падает всегда.
+	 Chance (0.0–1.0) that the instrument itself will fall out after death, along with the spell.
+	 * 0.15 = 15%. 0 = nothing falls. 1 = falls always.
 	 */
 	public static final float DROP_CHANCE = 0.15f;
 
 	/**
-	 * Опыт до общего множителя. 5 — как у обычного монстра.
-	 * Потом {@link com.example.MobExperience} удваивает: с моба падает 10.
-	 * Множитель выключен или стоит 1 — упадёт ровно это число.
+	 * Experience to the total multiplier. 5 - like a regular monster.
+	 * Then {@link com.example.MobExperience} doubles: 10 drops off the mob.
+	 The multiplier is turned off or costs 1 – this number will fall.
 	 */
 	public static final int EXPERIENCE_REWARD = 5;
 
-	/** Как часто сыпятся частицы зачарования, в тиках. 5 = четыре раза в секунду. Больше — реже. */
+	/*How often do particles of enchantment fall in tics? 5 = four times per second. More is less. */
 	public static final int PARTICLE_INTERVAL_TICKS = 5;
 
-	/** Сколько частиц за один раз. 2 — лёгкое свечение. 8 — уже облако. */
+	/** How many particles at a time. 2 is a light glow. 8 is already a cloud. */
 	public static final int PARTICLE_COUNT = 2;
 
 	/**
-	 * Громкость тихого звука стола зачарований. 0.35 = негромко. 0 = выключить этот звук.
-	 * Звук удара и смерти от этого числа не зависят.
+	 The volume of the quiet sound of the enchanting table. 0.35 = quiet. 0 = turn off that sound.
+	 The sound of impact and death does not depend on this number.
 	 */
 	public static final float AMBIENT_VOLUME = 0.35f;
 
@@ -195,8 +195,8 @@ public class FloatingTool extends Monster {
 	public static EntityType<FloatingTool> TYPE;
 
 	/**
-	 * true, пока есть цель. Клиент по этому флагу перестаёт крутить картинку.
-	 * Сама цель на клиент не приходит, поэтому флаг шлётся отдельно.
+	 * True as long as there's a target. The client stops rotating the image on this flag.
+	 The target itself does not come to the client, so the flag is sent separately.
 	 */
 	private static final EntityDataAccessor<Boolean> DATA_ATTACKING = SynchedEntityData.defineId(
 			FloatingTool.class, EntityDataSerializers.BOOLEAN);
@@ -204,7 +204,7 @@ public class FloatingTool extends Monster {
 	public FloatingTool(EntityType<? extends FloatingTool> type, Level level) {
 		super(type, level);
 		this.xpReward = EXPERIENCE_REWARD;
-		// hoversInPlace = true: когда цель потеряна, не падает на землю.
+		// HoversInPlace = True: When a target is lost, it does not fall to the ground.
 		this.moveControl = new FlyingMoveControl<>(this, 20, true);
 	}
 
@@ -233,8 +233,8 @@ public class FloatingTool extends Monster {
 	}
 
 	/**
-	 * Призыв командой. Появляется в воздухе и сразу смотрит на цель, если она передана.
-	 * Предмет, чары и зелья выбираются внутри {@link #finalizeSpawn}.
+	 * Team call. Appears in the air and immediately looks at the target if it is transmitted.
+	 * Subject, charms and potions are selected inside {@link #finalizeSpawn}.
 	 */
 	public static @Nullable FloatingTool spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		FloatingTool tool = TYPE.create(level, EntitySpawnReason.COMMAND);
@@ -251,7 +251,7 @@ public class FloatingTool extends Monster {
 		if (lookAt != null) {
 			tool.setTarget(lookAt);
 			tool.getLookControl().setLookAt(lookAt, 30.0f, 30.0f);
-			// Сразу, чтобы картинка не крутанулась в первый миг после /ettool.
+			// So that the picture does not spin in the first moment after /ettool.
 			tool.entityData.set(DATA_ATTACKING, true);
 		}
 		level.addFreshEntity(tool);
@@ -264,7 +264,7 @@ public class FloatingTool extends Monster {
 		builder.define(DATA_ATTACKING, false);
 	}
 
-	/** true — гонится за целью, картинка не крутится вокруг своей оси. */
+	/*True - chases the target, the picture does not rotate around its axis. */
 	public boolean isAttacking() {
 		return this.entityData.get(DATA_ATTACKING);
 	}
@@ -297,11 +297,11 @@ public class FloatingTool extends Monster {
 
 	@Override
 	public void aiStep() {
-		// Без гравитации висит в воздухе, даже когда никуда не летит.
+		// Without gravity, it hangs in the air even when it's not flying anywhere.
 		this.setNoGravity(true);
 		super.aiStep();
 		repairTool();
-		// Свои частицы зачарования. Под невидимостью их нет, иначе зелье ничего не прячет.
+		// Their particles of enchantment. They are invisible, otherwise the potion does not hide anything.
 		if (this.level() instanceof ServerLevel server
 				&& !this.isInvisible()
 				&& this.tickCount % PARTICLE_INTERVAL_TICKS == 0) {
@@ -330,21 +330,21 @@ public class FloatingTool extends Monster {
 		if (level instanceof ServerLevel server && server.dimension() == Level.NETHER) {
 			equipNetherTool(server);
 		} else {
-			// Тот же случайный меч/топор/лопата/кирка/мотыга, что у зомби. Незерита в списке нет.
+			// Same random sword/axe/shovel/brick/hoe as zombies. Neserite's not on the list.
 			RandomWeapons.equipMeleeOnly(this);
 			MobEnchantments.rollHeldWeapons(this, ENCHANT_CHANCE);
 			this.setDropChance(EquipmentSlot.MAINHAND, DROP_CHANCE);
 		}
 		applyHealthForTool();
-		// Те же зелья, что у зомби и скелета: сколько штук и какие — в MobPotionBuffs.
-		// Невидимость этому мобу не выдаётся: см. проверку в tryApply.
+		// Same potions as zombies and skeletons: how many and what - in MobPotionBuffs.
+		// Invisibility is not given to this mobu: see check in tryApply.
 		MobPotionBuffs.tryApply(this);
 		return data;
 	}
 
 	@Override
 	public boolean doHurtTarget(ServerLevel level, Entity target) {
-		// Копия до удара: если прочность кончится прямо в ударе, слот опустеет и моб «исчезнет».
+		// Copy before impact: if the strength ends right in the impact, the slot will empty and the mob will “disappear”.
 		ItemStack kept = this.getMainHandItem().copy();
 		boolean hit = super.doHurtTarget(level, target);
 		ItemStack hand = this.getMainHandItem();
@@ -359,7 +359,7 @@ public class FloatingTool extends Monster {
 		return hit;
 	}
 
-	/** Инструмент в бою не тратит прочность, иначе через пару минут моб останется без картинки. */
+	/*The tool in combat does not waste strength, otherwise in a couple of minutes the mob will remain without a picture. */
 	private void repairTool() {
 		ItemStack tool = this.getMainHandItem();
 		if (!tool.isEmpty() && tool.isDamaged()) {
@@ -368,8 +368,8 @@ public class FloatingTool extends Monster {
 	}
 
 	/**
-	 * Ад: незеритовый меч, топор, лопата, кирка или мотыга, поровну.
-	 * Заговор огня III. Шанс выпадения 0 — Добыча к нулю ничего не прибавляет.
+	 Hell: nonseritic sword, axe, shovel, pickaxe or hoe, equally.
+	 Conspiracy of Fire III. Odds of 0 - Mining adds nothing to zero.
 	 */
 	private void equipNetherTool(ServerLevel level) {
 		Item[] tools = {
@@ -391,8 +391,8 @@ public class FloatingTool extends Monster {
 	}
 
 	/**
-	 * Здоровье по имени предмета: diamond_sword, iron_pickaxe и т.д.
-	 * Незнакомый материал (если добавишь его в RandomWeapons и забудешь сюда) получает здоровье дерева.
+	 Health by subject name: diamond sword, iron pickaxe, etc.
+	 Strange material (if you add it to RandomWeapons and forget it here) gets the health of the tree.
 	 */
 	private void applyHealthForTool() {
 		String name = BuiltInRegistries.ITEM.getKey(this.getMainHandItem().getItem()).getPath();
@@ -420,7 +420,7 @@ public class FloatingTool extends Monster {
 
 	@Override
 	protected void checkFallDamage(double ya, boolean onGround, BlockState onState, BlockPos pos) {
-		// Летает, урон от падения не нужен.
+		// Flying, no fall damage needed.
 	}
 
 	@Override

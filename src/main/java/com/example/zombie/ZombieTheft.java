@@ -11,29 +11,29 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Голый зомби иногда забирает вещь из руки игрока себе.
- * Пока вещь у него, он не исчезает сам и не подбирает другую.
- * При смерти вещь падает на землю.
+ * Unarmed zombies sometimes steal an item from the player's hand.
+ * While they hold it they do not despawn and do not pick up anything else.
+ * The item drops on the ground when the zombie dies.
  */
 public final class ZombieTheft {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — удар ничего не забирает. */
+	/** false — hits never steal. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что удар, который уже снял здоровье, заберёт вещь.
-	 * 0.04 = 4%, примерно каждый двадцать пятый такой удар.
-	 * 0.02 = вдвое реже. 0 = никогда. 1 = каждый удар.
-	 * Зомби с предметом в основной руке не ворует, даже если шанс выпал.
+	 * Chance (0.0–1.0) that a hit that already dealt damage steals an item.
+	 * 0.04 = 4%, roughly every twenty-fifth such hit.
+	 * 0.02 = half as often. 0 = never. 1 = every hit.
+	 * Zombies with something in the main hand never steal, even if the roll succeeds.
 	 */
 	public static final float STEAL_CHANCE = 0.04f;
 
 	/**
-	 * Шанс (0.0–1.0), что украденная вещь выпадет при смерти.
-	 * 1 = всегда, и прочность меча не портится.
-	 * Меньше 1 — не каждый раз, и игра может сбить прочность. 0 = вещь пропадает вместе с зомби.
+	 * Chance (0.0–1.0) that the stolen item drops on death.
+	 * 1 = always, and sword durability is not reduced on drop.
+	 * Below 1 — not every time, and the game may reduce durability. 0 = item vanishes with the zombie.
 	 */
 	public static final float DROP_CHANCE = 1.0f;
 
@@ -43,9 +43,9 @@ public final class ZombieTheft {
 	}
 
 	/**
-	 * Удар уже снял здоровье.
-	 * Щит и мигание сюда не попадают.
-	 * Утопленник и зомби-пиглин не воруют. Кадавр и зомби-житель — воруют, если рука пустая.
+	 * Hit already dealt damage.
+	 * Shield blocks and iframes do not reach here.
+	 * Drowned and zombified piglins never steal. Husks and zombie villagers steal if the hand is empty.
 	 */
 	public static void onHit(Zombie zombie, Player player) {
 		if (!ENABLED || STEAL_CHANCE <= 0.0f || !player.isAlive()) {
@@ -77,7 +77,7 @@ public final class ZombieTheft {
 		zombie.level().playSound(null, zombie.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.HOSTILE, 1.0f, 0.6f);
 	}
 
-	/** Сначала меч в основной руке. Если она пустая — щит или тотем во второй. */
+	/** Main hand first (weapon). If empty — shield or totem in offhand. */
 	private static InteractionHand handToSteal(Player player) {
 		if (!player.getMainHandItem().isEmpty()) {
 			return InteractionHand.MAIN_HAND;

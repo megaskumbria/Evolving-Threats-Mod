@@ -1,20 +1,20 @@
 package com.example.entity;
 
-/** Данные «носителя спавнера на голове». Реализация — {@link com.example.mixin.MobSpawnerHeadDataMixin}. */
+/** Data "carrier spawner on the head." Implementation - {@link com.example.mixin.MobSpawnerHeadDataMixin} */
 public interface SpawnerHeadCarrierEntity {
 
 	boolean evolvingthreats$isSpawnerHeadCarrier();
 
 	void evolvingthreats$setSpawnerHeadCarrier(boolean carrier);
 
-	/** Сколько ударов игрока с последнего призыва (сбрасывается после каждых {@link com.example.spawnerhead.SpawnerHeadMob#HITS_TO_SUMMON}). */
+	/** How many hits from the last call (reset after each {@link com.example.spawnerhead.SpawnerHeadMob#HITS TO SUMMON}). */
 	int evolvingthreats$getSpawnerHeadHitCount();
 
 	void evolvingthreats$setSpawnerHeadHitCount(int count);
 
 	/**
-	 * Призванная подмога носителя — никогда не получает спавнер на голову при спавне.
-	 * false = обычный моб из мира.
+	 Called support of the carrier - never receives a spawner on the head during a spawn.
+	 False = ordinary mob from the world.
 	 */
 	boolean evolvingthreats$isSpawnerReinforcement();
 

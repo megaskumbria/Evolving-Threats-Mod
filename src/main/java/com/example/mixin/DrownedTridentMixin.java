@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Попадание брошенного трезубца. Сюда заходит только удар, который уже снял здоровье.
- * Щит и мигание молнию не вызывают. Ближний удар трезубцем молнию не вызывает.
- * Вызов ищется у самого трезубца: в этой версии игры он не записан как вызов стрелы.
+ * Abandoned trident hit. This comes only a blow that has already taken away health.
+ Shield and flashing do not cause lightning. A near-trident strike does not cause lightning.
+ The challenge is sought from the trident itself: in this version of the game it is not recorded as calling an arrow.
  */
 @Mixin(ThrownTrident.class)
 public class DrownedTridentMixin {

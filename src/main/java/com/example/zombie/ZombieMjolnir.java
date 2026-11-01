@@ -29,57 +29,57 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий именной зомби Mjölnir.
- * В руке булава (молот) с Отдачей 20. У стола зачарований потолок II.
- * Молот почти никогда не выпадает. Бирка с именем падает всегда, опыта больше, чем у обычного зомби.
+ * Rare named zombie Mjölnir.
+ * Holds a mace with Knockback XX. The enchantment table caps Knockback at II.
+ * The mace almost never drops. A name tag always drops; kill XP is higher than a normal zombie.
  *
- * <p>Отдача 20 — обычный удар, только отброс гораздо сильнее. Каждый уровень добавляет 1 к силе.
- * Отдача II — это 2, Отдача 20 — это 20, в десять раз сильнее: игрока может унести далеко.
+ * <p>Knockback 20 is a normal hit with much stronger knockback. Each level adds 1 to knockback strength.
+ * Knockback II is 2; Knockback 20 is 20 — about ten times stronger: the player can be launched far away.
  */
 public final class ZombieMjolnir {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие зомби не появляются, команда тоже не спавнит. */
+	/** Enable the mechanic. false — no Mjölnir zombies spawn; command spawn is disabled too. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби окажется Mjölnir. 0.002 = 0.2%, один из пятисот.
-	 * FIXED: с первого дня, от шкалы угрозы и луны не зависит.
-	 * У Excalibur 0.01 = 1%, здесь нарочно реже. 0 = только команда.
-	 * Утопленник, кадавр, зомби-житель, детёныш, надсмотрщик, рейд и Excalibur этот шанс не бросают.
-	 * Команда шанс не использует.
+	 * Chance (0.0–1.0) that a normal zombie becomes Mjölnir. 0.002 = 0.2%, one in five hundred.
+	 * FIXED: from day one; does not scale with threat or moon.
+	 * Excalibur uses 0.01 = 1%; this one is intentionally rarer. 0 = command only.
+	 * Drowned, husk, zombie villager, baby, overseer, raid, and Excalibur never roll this.
+	 * Command spawn ignores the chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
 	/**
-	 * Уровень Отдачи на молоте. 20. У стола зачарований потолок II (2).
-	 * Каждый уровень добавляет 1 к силе отброса. 2 = обычная Отдача II. 20 = в десять раз сильнее.
-	 * 1 = Отдача I. 0 = молот без отдачи, только удар самой булавы.
+	 * Knockback level on the mace. 20. Enchantment table cap is II (2).
+	 * Each level adds 1 to knockback strength. 2 = normal Knockback II. 20 = ten times stronger.
+	 * 1 = Knockback I. 0 = no knockback, only the mace's base hit.
 	 */
 	public static final int KNOCKBACK_LEVEL = 20;
 
 	/**
-	 * Шанс (0.0–1.0), что при смерти упадёт молот вместе с Отдачей. 0.005 = 0.5%, один из двухсот.
-	 * Это стартовое «очень редко»: у капитана скелетов меч падает в 15%, здесь нарочно реже.
-	 * 0 = молот не падает никогда. 1 = падает всегда. Добыча на этот бросок не влияет.
+	 * Chance (0.0–1.0) that the mace drops on death with its enchantments. 0.005 = 0.5%, one in two hundred.
+	 * Intentionally very rare: skeleton captain's sword drops at 15% here.
+	 * 0 = mace never drops. 1 = always drops. Looting does not affect this roll.
 	 */
 	public static final float HAMMER_DROP_CHANCE = 0.005f;
 
 	/**
-	 * Опыт за убийство. 20 — в четыре раза больше обычного зомби (у того 5), как у Excalibur.
-	 * Падает, только если зомби убил игрок: так устроена сама игра.
-	 * 0 = опыта нет. Это число вместо обычного, а не сверху.
+	 * Kill XP. 20 — four times a normal zombie (5), same idea as Excalibur.
+	 * Only if the player killed the zombie (vanilla rule).
+	 * 0 = no XP. This value replaces normal mob XP; it is not added on top.
 	 */
 	public static final int XP_REWARD = 20;
 
 	/**
-	 * Сколько бирок падает всегда. 1 = одна бирка с именем Mjölnir.
-	 * 0 = бирку не ронять. Молот от этого числа не зависит.
+	 * Name tags that always drop. 1 = one tag reading Mjölnir.
+	 * 0 = no tag. Does not control whether the mace drops.
 	 */
 	public static final int NAME_TAG_COUNT = 1;
 
-	/** Имя над головой и текст на бирке. */
+	/** Name above the head and text on the name tag. */
 	public static final String DISPLAY_NAME = "Mjölnir";
 
 	// ========================================================================
@@ -94,9 +94,8 @@ public final class ZombieMjolnir {
 	}
 
 	/**
-	 * Конец появления зомби. true = это Mjölnir: случайное оружие, щит, тотем
-	 * и голова ему не выдаются. Броня — как у обычного зомби.
-	 * Зелья при появлении уже могли повеситься.
+	 * End of zombie spawn. true = Mjölnir: no random weapon, shield, totem, or head gear.
+	 * Armor rolls like a normal zombie. Spawn potions may already be applied.
 	 */
 	public static boolean tryClaim(Zombie zombie, EntitySpawnReason reason) {
 		if (!canBeMjolnir(zombie)) {
@@ -118,7 +117,7 @@ public final class ZombieMjolnir {
 		return true;
 	}
 
-	/** Сколько опыта дать. -1 = это не Mjölnir, пусть решает игра. */
+	/** XP to award. -1 = not Mjölnir; let vanilla decide. */
 	public static int experienceReward(Zombie zombie) {
 		if (!isMjolnir(zombie)) {
 			return -1;
@@ -126,7 +125,7 @@ public final class ZombieMjolnir {
 		return Math.max(0, XP_REWARD);
 	}
 
-	/** Бирка всегда. Молот — отдельным редким броском, с теми же чарами. */
+	/** Name tag always. Mace — separate rare roll in dropBonus, same enchantments. */
 	public static void dropBonus(Zombie zombie, ServerLevel level) {
 		if (!isMjolnir(zombie)) {
 			return;
@@ -145,14 +144,14 @@ public final class ZombieMjolnir {
 		}
 	}
 
-	/** Команда: Mjölnir перед игроком. null — механика выключена. */
+	/** Command spawn: Mjölnir in front of the player. null if {@link #ENABLED} is false. */
 	public static @Nullable Zombie spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
 		}
 		Zombie zombie = EntityTypes.ZOMBIE.create(level, EntitySpawnReason.COMMAND);
 		if (zombie == null) {
-			throw new IllegalStateException("Failed to create Mjolnir");
+			throw new IllegalStateException("Failed to create Mjölnir");
 		}
 		float yaw = lookAt == null ? level.getRandom().nextFloat() * 360.0f : faceYaw(pos, lookAt);
 		zombie.snapTo(pos.x, pos.y, pos.z, yaw, 0.0f);
@@ -190,14 +189,14 @@ public final class ZombieMjolnir {
 	private static void equip(Zombie zombie) {
 		zombie.setCustomName(name());
 		MobNames.showOnlyWhenLookedAt(zombie);
-		// Имя уже не даёт ему исчезнуть. Чужую вещь не подбирает, иначе молот сменится.
+		// Named mobs do not despawn. No pickup — otherwise the mace could be replaced.
 		zombie.setCanPickUpLoot(false);
 		zombie.setItemSlot(EquipmentSlot.MAINHAND, hammer(zombie));
 		zombie.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-		// 0 = игра сама молот не роняет, даже с Добычей. Редкий бросок делает dropBonus.
+		// 0 = vanilla never drops the mace, even with Looting. dropBonus handles the rare drop.
 		zombie.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
 		zombie.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
-		// Та же броня, что у обычного зомби. Руки этот бросок не трогает.
+		// Same armor as a normal zombie. Hands are not touched by armor rolls.
 		RandomArmor.rollForZombie(zombie);
 		MobEnchantments.rollArmorForZombie(zombie);
 	}

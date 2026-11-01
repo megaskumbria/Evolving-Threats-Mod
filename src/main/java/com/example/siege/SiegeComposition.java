@@ -23,77 +23,77 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Состав осады: кто в ней участвует и в каких долях. Выбирается один раз, когда осада начинается,
- * и не меняется до рассвета (хранится в {@link SiegeData#shares}).
+ The composition of the siege: who participates in it and in what proportions. It comes out once the siege begins.
+ * and does not change until dawn (stored at {@link SiegeData#shares}).
  *
- * Две фракции, они НИКОГДА не смешиваются в одной осаде:
- *   НЕЖИТЬ И ТВАРИ — зомби, скелеты, иссушители, криперы, пауки, ведьмы, фантомы.
- *   ИЛЛАГЕРЫ       — разбойники, поборники, вызыватели, разорители.
- * Утопленников и слизней в осаде нет.
- * Иссушители — только если кто-то в мире уже был в Аду ({@link #WITHER_SKELETONS_REQUIRE_NETHER}).
+ Two factions, they never mix in the same siege:
+ Undead and creatures - zombies, skeletons, dehumidifiers, crypers, spiders, witches, phantoms.
+ Illaghers - robbers, champions, summoners, destroyers.
+ There are no drowned or slugs under siege.
+ Extinguishers - only if someone in the world has already been to Hell ({@link #WITHER SKELETONS REQUIRE NETHER}).
  *
- * Как выбирается состав:
- *   1. Фракция. Иллагеры возможны с {@link ThreatTable#SIEGE_ILLAGER_DAY} дня, шанс {@link #ILLAGER_SIEGE_CHANCE}.
- *   2. Сколько видов участвует: 1, 2 или 3 (шансы ONE_KIND_CHANCE / TWO_KINDS_CHANCE, остальное — три).
- *   3. Какие именно виды: случайно, но у каждого вида свой «вес» (см. {@link Kind}).
- *      Иссушители в этот выбор не входят, пока в Аду никто не был.
- *   4. Доли выбранных видов — случайные, в сумме 100%. Например, 90% криперов и 10% зомби, или 100% зомби.
+ * How composition is selected:
+ 1 Faction. Illagers are possible with {@link ThreatTable#SIEGE ILLAGER DAY} of the day, chance {@link #ILLAGER SIEGE CHANCE}.
+ 2. How many species are involved: 1, 2 or 3 (the odds are ONE KIND CHANCE/TWO KINDS CHANCE, the rest are three).
+ 3. Which species: randomly, but each species has its own "weight" (see {@link Kind}).
+ Exciters are not included in this choice until no one has been to Hell.
+ * 4. The shares of selected species are random, in the amount of 100%. For example, 90% of crypers and 10% of zombies or 100% of zombies.
  *
- * Здесь же: какой моб соответствует какому виду и какие мобы получают «поход к игроку».
+ * Here: which mob corresponds to which species and which mobs receive a “call to the player”.
  */
 public final class SiegeComposition {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Шанс, что осада иллагерская (когда они уже разрешены по дню, см. ThreatTable.SIEGE_ILLAGER_DAY).
-	 * 0.25 = 25% (каждая четвёртая). 0 = иллагерских осад нет. 1 = только иллагерские.
+	 * Chance that the siege is Illagher (when they are already resolved by day, see ThreatTable.SIEGE ILLAGER DAY).
+	 0.25 = 25% (every fourth). 0 = there are no sieges. 1 = Illaghers only.
 	 */
 	public static final float ILLAGER_SIEGE_CHANCE = 0.25f;
 
-	/** Шанс, что в осаде участвует только один вид («100% криперов»). 0.15 = 15%. 0 = такого не бывает. */
+	/*The chance that only one species is involved in the siege ("100% of crypers"). 0.15 = 15%. 0 = that doesn't happen. */
 	public static final float ONE_KIND_CHANCE = 0.15f;
 
 	/**
-	 * Шанс, что видов два. 0.50 = 50%. Оставшаяся доля (по умолчанию 35%) — три вида.
-	 * Сумма ONE_KIND_CHANCE и TWO_KINDS_CHANCE не должна быть больше 1.0.
+	 Chances are two. 0.50 = 50%. The remaining share (by default 35%) is three types.
+	 The sum of ONE KIND CHANCE and TWO KINDS CHANCE must not exceed 1.0.
 	 */
 	public static final float TWO_KINDS_CHANCE = 0.50f;
 
 	/**
-	 * Насколько ровными получаются доли. Каждому выбранному виду бросается случайное число от 0 до 1,
-	 * к нему прибавляется это значение, потом всё приводится к 100%.
-	 * 0.0 = совсем случайно, возможна доля в 1–2%. 0.10 = самая маленькая доля обычно около 5%.
-	 * 1.0 = доли почти равные.
+	 * How smooth the shares are. Each selected species is thrown a random number from 0 to 1,
+	 This value is added to it, then everything is reduced to 100%.
+	 * 0.0 = quite accidentally, a share of 1-2% is possible. 0.10 = the smallest fraction is usually about 5%.
+	 * 1.0 = shares almost equal.
 	 */
 	public static final float SHARE_FLOOR = 0.10f;
 
 	/**
-	 * true — скелеты-иссушители в случайной осаде только после похода в Ад.
-	 * false — иссушители могут выпасть и без Ада, как остальные виды нежити.
-	 * Команда /evolvingthreats siege start wither_skeleton это не смотрит: она для проверки.
+	 True: Exhauster skeletons in an accidental siege only after going to Hell.
+	 False - the humidifiers can fall out without Hell, like the rest of the undead.
+	 * The command /evolvingthreats siege start wither skeleton does not watch it: it is for verification.
 	 */
 	public static final boolean WITHER_SKELETONS_REQUIRE_NETHER = true;
 
 	/**
-	 * Достижение игры «Нам нужно забраться глубже»: выдаётся, когда игрок входит в Ад.
-	 * По нему видно старые визиты, которые были до этого правила.
+	 Achievement of the game "We need to get deeper": is issued when the player enters Hell.
+	 It shows old visits that were before this rule.
 	 */
 	private static final Identifier ENTER_NETHER = Identifier.withDefaultNamespace("story/enter_the_nether");
 
-	/** Какая часть пауков — пещерные (ядовитые). 0.20 = 20%. */
+	/*What part of the spiders are cave (poisonous). 0.20 = 20%. */
 	public static final float CAVE_SPIDER_FRACTION = 0.20f;
 
-	/** На какой высоте над землёй появляются фантомы, от и до, в блоках. Они летают, на земле им делать нечего. */
+	/*At what height above the ground appear phantoms, from and to, in blocks. They fly, they have nothing to do on the ground. */
 	public static final int PHANTOM_HEIGHT_MIN = 10;
 	public static final int PHANTOM_HEIGHT_MAX = 18;
 
 	// ========================================================================
 
-	/** Фракции осады. Внутри одной осады только одна. */
+	/*Siege factions. There's only one siege inside. */
 	public enum Faction {
-		UNDEAD("нежить и твари"),
-		ILLAGER("иллагеры");
+		UNDEAD("undead"),
+		ILLAGER("llagher");
 
 		public final String label;
 
@@ -103,29 +103,29 @@ public final class SiegeComposition {
 	}
 
 	/**
-	 * Виды мобов осады. Для каждого вида два числа, их можно менять:
-	 *   weight — как часто вид попадает в осаду (больше = чаще). Не доля внутри осады, а шанс быть выбранным.
-	 *   cost   — «цена» одного моба в размере волны. Размер волны (WAVE_SIZE_MIN/MAX в SiegeWaves)
-	 *            считается в этих единицах: при цене 3 в волну из 12 влезет 4 разорителя вместо 12.
-	 *   max    — сколько таких мобов осады может быть живыми одновременно вокруг одного игрока.
-	 *            Пока столько уже есть, новые этого вида не появляются (ни в волнах, ни из обычного спавна):
-	 *            вместо них берётся другой вид из состава. 0 = без ограничения.
-	 *            Вызыватели, разорители и ведьмы ограничены, потому что очень сильны.
+	 * Siege mobs. For each type of two numbers, they can be changed:
+	 Weight – how often a species is under siege (more = more often). Not a share inside the siege, but a chance to be chosen.
+	 Cost is the price of one mob in wave size. Wave size (WAVE SIZE MIN/MAX in SiegeWaves)
+	 * is considered in these units: at the price of 3 in the wave of 12 fit 4 ruiners instead of 12.
+	 max - how many such mobs of siege can be alive at the same time around one player.
+	 While so many are already there, new of this species do not appear (neither in the waves nor from the usual spawn):
+	 Instead of them, a different species is taken from the composition. 0 = without limitation.
+	 Provocateurs, devastators and witches are limited because they are very strong.
 	 */
 	public enum Kind {
-		//        фракция           вес   цена  max  название для команды /siege status
-		ZOMBIE(Faction.UNDEAD, 3.0f, 1, 0, "зомби"),
-		SKELETON(Faction.UNDEAD, 3.0f, 1, 0, "скелеты"),
-		// Вес как у редких видов. В случайный состав попадает только после Ада, см. WITHER_SKELETONS_REQUIRE_NETHER.
-		WITHER_SKELETON(Faction.UNDEAD, 1.0f, 1, 0, "иссушители"),
-		CREEPER(Faction.UNDEAD, 2.0f, 1, 0, "криперы"),
-		SPIDER(Faction.UNDEAD, 2.0f, 1, 0, "пауки"),
-		WITCH(Faction.UNDEAD, 1.5f, 1, 6, "ведьмы"),
-		PHANTOM(Faction.UNDEAD, 1.0f, 1, 0, "фантомы"),
-		PILLAGER(Faction.ILLAGER, 3.0f, 1, 0, "разбойники"),
-		VINDICATOR(Faction.ILLAGER, 3.0f, 1, 0, "поборники"),
-		EVOKER(Faction.ILLAGER, 1.0f, 2, 3, "вызыватели"),
-		RAVAGER(Faction.ILLAGER, 1.5f, 3, 3, "разорители");
+		//        fraction weight price max name for command /siege status
+		ZOMBIE(Faction.UNDEAD, 3.0f, 1, 0, "zombie"),
+		SKELETON(Faction.UNDEAD, 3.0f, 1, 0, "skeletons"),
+		// Weight like rare species. In a random composition only gets after Hell, see WITHER SKELETONS REQUIRE NETHER.
+		WITHER_SKELETON(Faction.UNDEAD, 1.0f, 1, 0, "dryer"),
+		CREEPER(Faction.UNDEAD, 2.0f, 1, 0, "crypers"),
+		SPIDER(Faction.UNDEAD, 2.0f, 1, 0, "spiders"),
+		WITCH(Faction.UNDEAD, 1.5f, 1, 6, "witches"),
+		PHANTOM(Faction.UNDEAD, 1.0f, 1, 0, "phantom"),
+		PILLAGER(Faction.ILLAGER, 3.0f, 1, 0, "robber"),
+		VINDICATOR(Faction.ILLAGER, 3.0f, 1, 0, "champion"),
+		EVOKER(Faction.ILLAGER, 1.0f, 2, 3, "caller"),
+		RAVAGER(Faction.ILLAGER, 1.5f, 3, 3, "ruiner");
 
 		public final Faction faction;
 		public final float weight;
@@ -142,13 +142,13 @@ public final class SiegeComposition {
 		}
 	}
 
-	/** Какое поведение «идти к игроку» нужно мобу. */
+	/*What behavior "go to the player" need mobu. */
 	public enum AiMode {
-		/** Ничего (обычный моб, или зомби и скелет — у них своя связка в ZombieRaidGoalsMixin и AbstractSkeletonRaidGoalsMixin). */
+		/*Nothing (a common mob, or zombie and skeleton – they have their own bundle in ZombieRaidGoalsMixin and AbstractSkeletonRaidGoalsMixin). */
 		NONE,
-		/** Только держать игрока целью. Фантомы сами летят к цели, отрезками их вести не нужно. */
+		/*Only keep the player a target. Phantoms themselves fly to the target, they do not need to lead in segments. */
 		TARGET_ONLY,
-		/** Цель и поход отрезками (как у зомби). */
+		/*Purpose and campaign segments (like zombies). */
 		TARGET_AND_MARCH
 	}
 
@@ -156,18 +156,18 @@ public final class SiegeComposition {
 	}
 
 	// ------------------------------------------------------------------
-	// Выбор состава
+	// Choice of composition
 	// ------------------------------------------------------------------
 
-	/** Иллагерские осады уже разрешены по дню шкалы? */
+	/*Are Illagher sieges allowed on the day of the scale? */
 	public static boolean illagersAllowed(Level level) {
 		return ThreatScale.reached(level, ThreatTable.SIEGE_ILLAGER_DAY);
 	}
 
 	/**
-	 * Иссушители уже можно выбирать в случайный состав?
-	 * Смотрит память мира и, если её ещё нет, игроков онлайн: достижение «вход в Ад» или сам Ад.
-	 * Находку запоминает. Пока false — в осаде будут другие виды нежити и тварей.
+	 * Can you select the scissors for random selection?
+	 Watches the memory of the world and, if it does not yet exist, players online: achieving "entry into hell" or Hell itself.
+	 * I remember the find. While false - under siege will be other species of undead and creatures.
 	 */
 	public static boolean witherSkeletonsAllowed(ServerLevel level) {
 		if (!WITHER_SKELETONS_REQUIRE_NETHER) {
@@ -186,7 +186,7 @@ public final class SiegeComposition {
 		return false;
 	}
 
-	/** Игрок зашёл в мир. Если он уже бывал в Аду, мир это запоминает. */
+	/*The player entered the world. If he's been to Hell before, the world remembers. */
 	public static void notePlayer(ServerPlayer player) {
 		if (!(player.level() instanceof ServerLevel level) || !playerVisitedNether(player)) {
 			return;
@@ -195,8 +195,8 @@ public final class SiegeComposition {
 	}
 
 	/**
-	 * Кто-то вошёл в Ад. Хватает одного раза на весь мир: следующие осады уже могут быть с иссушителями.
-	 * Повторный заход ничего не меняет.
+	 Someone has entered Hell. Enough once for the whole world: the next siege may already be with the dehumidifiers.
+	 Re-entry doesn't change anything.
 	 */
 	public static void markNetherVisited(ServerLevel level) {
 		SiegeData data = SiegeData.get(level);
@@ -207,7 +207,7 @@ public final class SiegeComposition {
 		data.setDirty();
 	}
 
-	/** Стоит в Аду или уже получил ванильное достижение за вход туда. */
+	/*Stands in Hell or has already received a vanilla achievement for entering there. */
 	private static boolean playerVisitedNether(ServerPlayer player) {
 		if (!(player.level() instanceof ServerLevel level)) {
 			return false;
@@ -220,11 +220,11 @@ public final class SiegeComposition {
 	}
 
 	/**
-	 * Выбирает новый состав.
+	 * Selects a new lineup.
 	 *
-	 * @param forced если не null — фракция задана принудительно (команда для проверки), день и шанс не смотрим
-	 * @param witherSkeletonsAllowed иссушители входят в выбор. Команда одного вида сюда не попадает
-	 * @return доли по порядку {@link Kind#values()}, в сумме 1.0
+	 * @param forced if not null - faction is forced (command to check), day and chance do not watch
+	 * @param witherSkeletonsAllowed humidifiers are included in the selection. A team of one species doesn't get here.
+	 * @return shares in order {@link Kind#values()}, in total 1. 0
 	 */
 	public static float[] roll(RandomSource random, boolean illagersAllowed, boolean witherSkeletonsAllowed,
 			@Nullable Faction forced) {
@@ -240,7 +240,7 @@ public final class SiegeComposition {
 			if (kind.faction != faction) {
 				continue;
 			}
-			// Без похода в Ад иссушители просто не участвуют в выборе. Остальные виды на месте.
+			// Without going to Hell, the savages simply do not participate in the choice. The rest are in place.
 			if (kind == Kind.WITHER_SKELETON && !witherSkeletonsAllowed) {
 				continue;
 			}
@@ -263,7 +263,7 @@ public final class SiegeComposition {
 		return shares;
 	}
 
-	/** Состав из одного вида на 100%. Для команд проверки: /evolvingthreats siege start zombie. */
+	/** Composition of one species 100%. For verification teams: /evolvingthreats siege start zombie. */
 	public static float[] only(Kind kind) {
 		float[] shares = new float[Kind.values().length];
 		shares[kind.ordinal()] = 1.0f;
@@ -299,7 +299,7 @@ public final class SiegeComposition {
 		return pool.get(pool.size() - 1);
 	}
 
-	/** Состав сохранён и подходит под нынешний список видов (иначе его нужно выбрать заново). */
+	/*The composition is preserved and fits the current list of species (otherwise it must be selected again). */
 	public static boolean isValid(float[] shares) {
 		if (shares == null || shares.length != Kind.values().length) {
 			return false;
@@ -312,8 +312,8 @@ public final class SiegeComposition {
 	}
 
 	/**
-	 * Состав идущей осады. Если его почему-то нет (например, осада началась в старом мире до этого обновления),
-	 * выбирается сразу и запоминается.
+	 * Composition of the ongoing siege. If for some reason it is not (for example, the siege began in the old world before this update),
+	 * Selected immediately and remembered.
 	 */
 	public static float[] current(ServerLevel level) {
 		SiegeData data = SiegeData.get(level);
@@ -324,7 +324,7 @@ public final class SiegeComposition {
 		return data.shares;
 	}
 
-	/** Фракция состава или null, если состава нет. */
+	/** Composition fraction or null if no composition. */
 	public static @Nullable Faction factionOf(float[] shares) {
 		if (!isValid(shares)) {
 			return null;
@@ -337,7 +337,7 @@ public final class SiegeComposition {
 		return null;
 	}
 
-	/** Случайный вид по долям. */
+	/** Random view by share. */
 	public static Kind pickKind(float[] shares, RandomSource random) {
 		if (!isValid(shares)) {
 			return Kind.ZOMBIE;
@@ -363,10 +363,10 @@ public final class SiegeComposition {
 	}
 
 	/**
-	 * Вид для нового моба с учётом ограничений {@link Kind#max}. Вокруг center считаются живые мобы осады этого вида.
-	 * Если лимит вида исчерпан, берётся другой вид из состава. Если подходящих не нашлось
-	 * (например, состав из одних вызывателей или одних ведьм) — запасной вид той же фракции: поборник или зомби.
-	 * center == null — лимиты не проверяются.
+	 * View for the new mob subject to constraints {@link Kind#max} Around the center are considered live mobs of siege of this species.
+	 If the species limit is exhausted, another species is taken from the composition. If you don't find the right one.
+	 * (for example, a composition of one conjurer or one witch) - a reserve form of the same faction: a champion or a zombie.
+	 * center = = null - limits are not checked.
 	 */
 	public static Kind pickKindLimited(ServerLevel level, float[] shares, RandomSource random, @Nullable BlockPos center) {
 		Kind kind = pickKind(shares, random);
@@ -383,7 +383,7 @@ public final class SiegeComposition {
 		return faction == Faction.ILLAGER ? Kind.VINDICATOR : Kind.ZOMBIE;
 	}
 
-	/** Мобов этого вида вокруг center уже столько, сколько разрешает Kind.max. */
+	/*Mobs of this kind around the center is already as many as Kind.max allows. */
 	private static boolean isFull(ServerLevel level, Kind kind, BlockPos center) {
 		if (kind.max <= 0) {
 			return false;
@@ -394,11 +394,11 @@ public final class SiegeComposition {
 		return alive >= kind.max;
 	}
 
-	/** Текст для /evolvingthreats siege status: «нежить и твари: криперы 90%, зомби 10%». */
+	/** Text for /evolvingthreats siege status: undead and creatures: crypers 90%, zombies 10%. */
 	public static String describe(float[] shares) {
 		Faction faction = factionOf(shares);
 		if (faction == null) {
-			return "состав не выбран";
+			return "not selected";
 		}
 		List<Kind> kinds = new ArrayList<>();
 		for (Kind kind : Kind.values()) {
@@ -419,10 +419,10 @@ public final class SiegeComposition {
 	}
 
 	// ------------------------------------------------------------------
-	// Какой моб какому виду соответствует
+	// Which mob corresponds to which species
 	// ------------------------------------------------------------------
 
-	/** Вид моба или null, если он в осаде не участвует (корова, эндермен, зомби-пиглин и т. д.). */
+	/*A type of mob or null, if it is not under siege (cow, enderman, zombie piglin, etc.). */
 	public static @Nullable Kind kindOf(EntityType<?> type) {
 		if (type == EntityTypes.ZOMBIE || type == EntityTypes.HUSK || type == EntityTypes.ZOMBIE_VILLAGER) {
 			return Kind.ZOMBIE;
@@ -461,16 +461,16 @@ public final class SiegeComposition {
 		return null;
 	}
 
-	/** Входит ли этот моб в состав идущей осады (его вид есть в составе). */
+	/*Is this mob part of the ongoing siege (its form is in the composition). */
 	public static boolean fitsCurrent(ServerLevel level, EntityType<?> type) {
 		Kind kind = kindOf(type);
 		return kind != null && current(level)[kind.ordinal()] > 0.0f;
 	}
 
 	/**
-	 * Конкретный тип моба для вида. Зомби и скелеты берутся из списка монстров биома
-	 * (кадавры в пустыне, странники на снегу, болотные скелеты в болоте). Если позиции нет
-	 * или в биоме таких нет — обычный зомби или скелет.
+	 * Specific type of mob for the species. Zombies and skeletons are taken from the list of biome monsters
+	 * (husks in the desert, strangers in the snow, marsh skeletons in the swamp). If there is no position
+	 Or in the biome there is no such thing - a normal zombie or skeleton.
 	 */
 	public static EntityType<?> typeOf(Kind kind, ServerLevel level, @Nullable BlockPos pos) {
 		return switch (kind) {
@@ -520,8 +520,8 @@ public final class SiegeComposition {
 	}
 
 	/**
-	 * Подмена обычного ночного спавна во время осады: игра выбрала какого-то монстра,
-	 * вместо него ставится моб из состава осады (по долям). Так обычный спавн не разбавляет осаду чужими.
+	 Replacement of the usual night spawn during the siege: the game chose some monster,
+	 * Instead of it, a mob is placed from the siege (in parts). So the usual spawn does not dilute the siege by strangers.
 	 */
 	public static EntityType<?> swapForSiege(ServerLevel level, @Nullable BlockPos feet) {
 		Kind kind = pickKindLimited(level, current(level), level.getRandom(), feet);
@@ -529,12 +529,12 @@ public final class SiegeComposition {
 	}
 
 	// ------------------------------------------------------------------
-	// Поход к игроку
+	// Going to the player
 	// ------------------------------------------------------------------
 
 	/**
-	 * Какое поведение осады навесить на моба при его создании. Зомби и скелеты сюда не попадают:
-	 * у них своя связка (ZombieRaidGoalsMixin, AbstractSkeletonRaidGoalsMixin).
+	 What behavior of the siege to hang on the mob at its creation. Zombies and skeletons are not included:
+	 They have their own bundle (ZombieRaidGoalsMixin, AbstractSkeletonRaidGoalsMixin).
 	 */
 	public static AiMode aiModeOf(Mob mob) {
 		Kind kind = kindOf(mob.getType());

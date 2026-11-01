@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Помечает, чей яд сейчас висит, и помнит это после перезахода.
- * Срабатывает, когда существу вешают, снимают или записывают эффекты.
- * Сам урон — в {@link PoisonTickMixin}.
+ Marks whose poison is currently hanging and remembers it after resetting.
+ It works when the creature is hanged, filmed or recorded effects.
+ * The damage itself is on {@link PoisonTickMixin}.
  */
 @Mixin(LivingEntity.class)
 public class CaveSpiderPoisonMixin implements LethalPoisonEntity {

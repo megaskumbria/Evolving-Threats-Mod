@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
- * Смерть якоря → «разрыв связи» с прислугами.
+ * When the anchor dies, minions lose their raid link.
  */
 public final class RaidAnchorEvents {
 

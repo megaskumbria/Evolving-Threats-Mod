@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 
 /**
- * Периодически призывает обычных зомби, если цель рядом.
+ Periodically calls on ordinary zombies if the target is near.
  */
 public class OverseerSummonGoal extends Goal {
 
@@ -77,7 +77,7 @@ public class OverseerSummonGoal extends Goal {
 			}
 		}
 
-		// У стены места нет — короткая пауза, чтобы попробовать снова, когда выйдет в коридор.
+		// There's no room near the wall - a short pause to try again when it comes out into the hallway.
 		int cooldown = spawned > 0 ? ZombieOverseer.SUMMON_COOLDOWN_TICKS : ZombieOverseer.SUMMON_FAIL_COOLDOWN_TICKS;
 		overseer.evolvingthreats$setSummonCooldownTicks(cooldown);
 		if (spawned == 0) {
@@ -94,7 +94,7 @@ public class OverseerSummonGoal extends Goal {
 		);
 	}
 
-	/** true — зомби встал на свободный пол, а не внутри блока. */
+	/*True - the zombie stood on the free floor, not inside the block. */
 	private boolean spawnServant(ServerLevel level, LivingEntity target) {
 		Vec3 pos = findOpenSpot(level);
 		if (pos == null) {
@@ -116,8 +116,8 @@ public class OverseerSummonGoal extends Goal {
 	}
 
 	/**
-	 * Точка рядом, где зомби стоит на блоке, а тело и голова в воздухе.
-	 * Иначе он появляется в стене и задыхается.
+	 The point near where the zombie is on the block, and the body and head in the air.
+	 Otherwise he appears in the wall and suffocates.
 	 */
 	private Vec3 findOpenSpot(ServerLevel level) {
 		var random = level.getRandom();
@@ -139,7 +139,7 @@ public class OverseerSummonGoal extends Goal {
 		return null;
 	}
 
-	/** Пол под ногами твёрдый, само тело в два блока не пересекает блоки и не в лаве. */
+	/*The floor under the feet is hard, the body itself in two blocks does not cross the blocks and not in the lava. */
 	private boolean canStand(ServerLevel level, double x, int y, double z) {
 		BlockPos feet = BlockPos.containing(x, y, z);
 		if (!level.getWorldBorder().isWithinBounds(feet)) {

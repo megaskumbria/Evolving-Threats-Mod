@@ -20,68 +20,68 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Ведьма в бою может отпить невидимость.
- * Глоток такой же, как у её обычных зелий: бутылка в руке, она замедляется, потом эффект.
- * Пока пьёт, зелья не кидает. После глотка её не видно, но броски и звуки остаются.
- * Вода без подводного дыхания, огонь без огнестойкости и лечение не перебиваются.
+ * Witches can drink Invisibility in combat.
+ * Drinking works like vanilla potion use: bottle in hand, slow down, then effect.
+ * While drinking she does not throw potions. After drinking she is invisible but throws and sounds remain.
+ * Water breathing, fire resistance, and healing drinks are not interrupted.
  */
 public final class WitchInvisibility {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — ведьма больше не пьёт невидимость. Уже выпитое до конца срока само спадёт. */
+	/** false — witch no longer drinks invisibility. Active effect runs out on its own. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) выпить, когда подошла проверка. 0.10 = 10%.
-	 * Было 0.35: ведьма пила почти в каждом бою. Проверка не каждый миг: см. {@link #CHECK_SECONDS}.
-	 * 0 = не пьёт. 1 = пьёт на каждой проверке.
+	 * Chance (0.0–1.0) to drink when a check runs. 0.10 = 10%.
+	 * Was 0.35 — she drank almost every fight. Checks are not every tick: see {@link #CHECK_SECONDS}.
+	 * 0 = never. 1 = drink on every check.
 	 */
 	public static final float DRINK_CHANCE = 0.10f;
 
 	/**
-	 * Как часто в бою бросать шанс, в секундах. 15 = раз в пятнадцать секунд, пока есть цель.
-	 * Было 6: вместе с высоким шансом невидимость висела почти весь бой.
-	 * Без цели и пока невидимость уже висит, секунды не идут.
-	 * Первая проверка — сразу, как ведьма кого-то выбрала.
-	 * 0 игра считает как 1, иначе шанс бросался бы каждый миг.
+	 * How often to roll in combat, seconds. 15 = every fifteen seconds while she has a target.
+	 * Was 6: with high chance, invisibility lasted most of the fight.
+	 * No target or while already invisible — timer does not advance.
+	 * First check runs as soon as she acquires a target.
+	 * 0 is treated as 1 or the roll would fire every tick.
 	 */
 	public static final int CHECK_SECONDS = 15;
 
 	/**
-	 * Сколько секунд ведьму не видно после глотка. 20 = двадцать секунд.
-	 * Обычное зелье невидимости длится 3 минуты (180). Здесь короче, чтобы бой не превращался
-	 * в поиск невидимки на всю ночь. Поставь 180, если нужна полная бутылка.
-	 * 0 = не пьёт.
+	 * Invisibility duration after drinking, seconds. 20 = twenty seconds.
+	 * Normal invisibility potion lasts 3 minutes (180). Shorter here so fights are not
+	 * endless hide-and-seek. Use 180 for full bottle length.
+	 * 0 = never drinks.
 	 */
 	public static final int INVISIBILITY_SECONDS = 20;
 
 	/**
-	 * Частицы вокруг ведьмы, пока она невидима.
-	 * false — её не выдаёт облачко. Брошенную бутылку и звуки всё равно слышно и видно.
-	 * true — частицы как у обычного зелья, ведьму проще заметить.
+	 * Particles around the witch while invisible.
+	 * false — no puff (harder to spot). Thrown bottles and sounds still visible/audible.
+	 * true — particles like normal potion, easier to track.
 	 */
 	public static final boolean SHOW_PARTICLES = false;
 
 	// ========================================================================
 
 	/**
-	 * То же замедление, что игра вешает на время любого глотка ведьмы.
-	 * Идентификатор общий с игрой: когда глоток кончается, игра сама его снимает.
+	 * Same slow modifier vanilla applies while any witch drinks.
+	 * Shared id with vanilla: game removes it when drinking ends.
 	 */
 	private static final Identifier DRINKING_SLOW_ID = Identifier.withDefaultNamespace("drinking");
 	private static final AttributeModifier DRINKING_SLOW = new AttributeModifier(
 			DRINKING_SLOW_ID, -0.25, AttributeModifier.Operation.ADD_VALUE);
 
-	/** Отрицательная пауза значит: шанс уже выпал, ждём свободный глоток. */
+	/** Negative cooldown means roll succeeded, waiting for a free drink window. */
 	private static final int QUEUED = -1;
 
 	private WitchInvisibility() {
 	}
 
 	/**
-	 * Начало тика ведьмы, до того как она сама выберет воду, огонь, лечение или скорость.
-	 * {@code cooldownTicks} — сколько тиков до следующей проверки. Его же вернуть в поле ведьмы.
+	 * Start of witch tick, before she picks water, fire resist, heal, or speed.
+	 * {@code cooldownTicks} — ticks until next check; return the same in the witch field.
 	 */
 	public static Drink tick(Witch witch, int cooldownTicks) {
 		if (!ENABLED || DRINK_CHANCE <= 0.0f || INVISIBILITY_SECONDS <= 0
@@ -89,7 +89,7 @@ public final class WitchInvisibility {
 			return new Drink(Math.max(0, cooldownTicks), 0);
 		}
 		if (witch.hasEffect(MobEffects.INVISIBILITY)) {
-			// Пока эффект висит, отсчёт замирает на полной паузе. После спада проверка снова через CHECK_SECONDS.
+			// While invisible, timer holds at full interval. After fade, next check in CHECK_SECONDS.
 			return new Drink(Math.max(1, CHECK_SECONDS) * 20, 0);
 		}
 		if (witch.getTarget() == null) {
@@ -143,9 +143,9 @@ public final class WitchInvisibility {
 	}
 
 	/**
-	 * Глоток воды, огнестойкости или лечения. Его не отменяем:
-	 * иначе ведьма тонула бы или горела ради невидимости.
-	 * Скорость сюда не входит — этот глоток можно сменить на невидимость.
+	 * Water, fire resistance, or instant health drink — do not cancel:
+	 * otherwise she would drown or burn for invisibility.
+	 * Speed is not urgent — can swap to invisibility.
 	 */
 	private static boolean isUrgentDrink(Witch witch) {
 		if (!witch.isDrinkingPotion()) {
@@ -184,7 +184,7 @@ public final class WitchInvisibility {
 		return stack;
 	}
 
-	/** Пауза до проверки и длина нового глотка. 0 у длины — бутылку уже пьют, таймер глотка не трогать. */
+	/** Cooldown until next check and length of a new drink. useTicks 0 — already drinking, do not reset drink timer. */
 	public record Drink(int cooldownTicks, int useTicks) {
 	}
 }

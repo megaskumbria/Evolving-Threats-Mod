@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Лишняя вещь чародея. Выпадение вещей объявлено у Mob, у Zombie своей копии нет.
+ * Sorcerer bonus drop. Loot is declared on Mob; Zombie has no separate override.
  */
 @Mixin(net.minecraft.world.entity.Mob.class)
 public class ZombieSorcererLootMixin {

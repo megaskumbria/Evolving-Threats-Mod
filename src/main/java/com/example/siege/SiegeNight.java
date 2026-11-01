@@ -24,143 +24,138 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * «Осада» — редкая ночь, когда в верхнем мире бродят только мобы одной фракции
- * (нежить и твари либо иллагеры, см. {@link SiegeComposition}),
- * идут волнами издалека и охотятся на игрока до самого рассвета.
+ * Siege — a rare night when only mobs of one faction roam the Overworld
+ * (undead and monsters or illagers; see {@link SiegeComposition}),
+ * arrive in waves from afar, and hunt the player until dawn.
  *
- * Здесь расписание (когда осада), предупреждение, запрет сна и порталов, подмена обычного спавна.
- * Сами волны мобов — в {@link SiegeWaves}, состав и доли — в {@link SiegeComposition}. Эта механика не связана с «Рейдовым якорем» (raid/RaidAnchor).
+ * Schedule, warning, sleep and portal lockdown, and natural spawn replacement live here.
+ * Wave spawning — {@link SiegeWaves}; composition and shares — {@link SiegeComposition}.
+ * Not related to the raid anchor (RaidAnchor).
  *
- * Этапы одной осады:
- *   1. Утром за день до осады — туманный намёк в чат (необязательно).
- *   2. За 2 минуты до ночи — страшное сообщение, колокол и стоны вдали. С этого момента
- *      нельзя спать и входить в порталы в Ад и Энд.
- *   3. Ночь — идут волны. Мини-боссов и особых событий мода в это время нет.
- *   4. Рассвет — сообщение в чат, всё возвращается как было.
+ * One siege:
+ *   1. Optional vague chat hint the morning before.
+ *   2. Two minutes before night — warning message, bell, distant moans. Sleep and Nether/End portals blocked from then.
+ *   3. Night — waves. No mod mini-bosses or special events during the window.
+ *   4. Dawn — chat message; everything returns to normal.
  *
- * Mixin и события здесь только вызывают методы этого класса.
+ * Mixins and events only call methods in this class.
  */
 public final class SiegeNight {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — осад нет совсем. Уже идущая осада сразу заканчивается. */
+	/** false — sieges disabled. An active siege ends immediately. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Самая короткая пауза между осадами, в игровых днях. 10 = десять дней.
-	 * Один игровой день длится 20 минут. Меньше — осады чаще.
+	 * Shortest gap between sieges, in game days. 10 = ten days.
+	 * One game day is 20 minutes. Lower = sieges more often.
 	 */
 	public static final int DAYS_MIN = 10;
 
 	/**
-	 * Самая длинная пауза между осадами, в игровых днях. 15 = пятнадцать.
-	 * Каждый раз берётся случайное число от DAYS_MIN до этого. Если поставить меньше минимума,
-	 * игра возьмёт минимум.
+	 * Longest gap between sieges, in game days. 15 = fifteen.
+	 * Each time a random value from DAYS_MIN through this. If set below DAYS_MIN, DAYS_MIN is used.
 	 */
 	public static final int DAYS_MAX = 15;
 
 	/**
-	 * Насколько луна влияет на выбор дня осады (см. scheduleNext). Вес дня = сила луны в этой степени:
-	 * полнолуние 1.0, убывающая 0.75, четверть 0.5, серп 0.25, новолуние 0 (осады не бывает никогда).
-	 * 1.0 = влияние мягкое, 2.0 = полнолуние заметно предпочтительнее, 0 = луна не влияет (кроме новолуния).
-	 * Первая осада на 25-й день (ThreatTable.SIEGE_FIRST_DAY) от луны не зависит.
+	 * How strongly the moon affects which day is picked (see scheduleNext). Day weight = moon brightness raised to this power:
+	 * full moon 1.0, waning 0.75, quarter 0.5, crescent 0.25, new moon 0 (no siege that day).
+	 * 1.0 = mild effect, 2.0 = full moon much more likely, 0 = moon ignored (except new moon still blocks).
+	 * First siege on ThreatTable.SIEGE_FIRST_DAY (25) ignores the moon.
 	 */
 	public static final double MOON_WEIGHT_POWER = 2.0;
 
 	/**
-	 * Во сколько начинается ночь осады, в тиках от начала дня. 13000 = как ночь в ванили.
-	 * 12000 = закат, 18000 = полночь, 24000 = следующее утро.
+	 * When siege night starts, ticks from start of day. 13000 = vanilla night.
+	 * 12000 = sunset, 18000 = midnight, 24000 = next morning.
 	 */
 	public static final int NIGHT_START_TICK = 13000;
 
-	/** Во сколько осада заканчивается. 23000 = перед самым рассветом. Должно быть больше NIGHT_START_TICK. */
+	/** When the siege ends. 23000 = just before dawn. Must be greater than NIGHT_START_TICK. */
 	public static final int DAWN_TICK = 23000;
 
 	/**
-	 * За сколько тиков до ночи предупреждать. 2400 = 2 минуты (20 тиков = 1 секунда).
-	 * С этого момента запрещён сон и вход в порталы.
+	 * Warn this many ticks before siege night. 2400 = 2 minutes (20 ticks = 1 second).
+	 * Sleep and Nether/End portals are blocked from this moment until dawn.
 	 */
 	public static final int WARNING_BEFORE_NIGHT_TICKS = 2400;
 
-	/** true — утром за день до осады приходит туманный намёк без точной даты. */
+	/** true — vague morning hint the day before the siege (no exact date). */
 	public static final boolean OMEN_ENABLED = true;
 
 	/**
-	 * За сколько дней до осады приходит намёк. 1 = утром накануне,
-	 * то есть осада будет через одну спокойную ночь. 2 = за два дня.
+	 * How many days before the siege the hint appears. 1 = morning before (one calm night left).
+	 * 2 = two days ahead.
 	 */
 	public static final int OMEN_DAYS_BEFORE = 1;
 
-	/** Во сколько утром приходит намёк, в тиках от начала дня. 1000 = вскоре после рассвета. */
+	/** Morning omen time, ticks from start of day. 1000 = shortly after sunrise. */
 	public static final int OMEN_TICK = 1000;
 
-	/** Сколько длится осада, если запустить её командой в тестовых целях, в тиках. 10000 = как ночь. */
+	/** Forced test siege length in ticks when started by command. 10000 ≈ one night. */
 	public static final int FORCED_NIGHT_LENGTH_TICKS = 10000;
 
 	/**
-	 * Как часто можно показывать игроку сообщение «портал не пускает», в тиках.
-	 * Пока игрок стоит в портале, игра проверяет его каждый тик, без паузы чат заспамит.
+	 * Cooldown between "portal blocked" chat messages, in ticks.
+	 * Portals are checked every tick; without this, chat spams while standing in a portal.
 	 */
 	public static final int PORTAL_MESSAGE_COOLDOWN_TICKS = 200;
 
-	// ---------- Звуки предупреждения (играют один раз, когда оно приходит) ----------
+	// ---------- Warning sounds (play once when warning starts) ----------
 
-	/** false — предупреждение без звуков. */
+	/** false — warning with no sounds. */
 	public static final boolean WARNING_SOUNDS_ENABLED = true;
 
-	/** Сколько раз бьёт колокол и с какой паузой, в тиках. 60 = раз в три секунды. */
+	/** Bell toll count and interval in ticks. 60 = every three seconds. */
 	public static final int BELL_TOLLS = 4;
 	public static final int BELL_INTERVAL_TICKS = 60;
 
-	/** Громкость и высота колокола. Громкость больше 1 слышна дальше. Высота ниже 1 = глуше и тяжелее. */
+	/** Bell volume and pitch. Volume above 1 carries farther. Pitch below 1 = lower and heavier. */
 	public static final float BELL_VOLUME = 4.0f;
 	public static final float BELL_PITCH = 0.7f;
 
-	/** Сколько раз раздаётся далёкий стон, с какого тика и с какой паузой. */
+	/** Distant moan count, start tick, and interval. */
 	public static final int MOAN_COUNT = 8;
 	public static final int MOAN_START_TICKS = 40;
 	public static final int MOAN_INTERVAL_TICKS = 50;
 
-	/** Громкость и высота стонов (высота берётся случайно между двумя числами). */
+	/** Moan volume and pitch (pitch random between min and max). */
 	public static final float MOAN_VOLUME = 3.0f;
 	public static final float MOAN_PITCH_MIN = 0.5f;
 	public static final float MOAN_PITCH_MAX = 0.8f;
 
-	/** На каком расстоянии от игрока «звучит» колокол и стоны, в блоках. Звук идёт откуда-то издалека. */
+	/** Distance in blocks where bell and moans seem to originate (random point around the player). */
 	public static final double SOUND_DISTANCE_MIN = 20.0;
 	public static final double SOUND_DISTANCE_MAX = 40.0;
 
-	// ---------- Тексты ----------
-	// Два списка на каждое событие: русский и английский.
-	// Язык берётся из настроек игры у каждого игрока отдельно.
-	// ru_ru (и любой ru_…) — русский список. Любой другой язык — английский.
-	// Строки идут парами: первая русская = первая английская. Можно добавлять свои,
-	// главное держать одинаковое число строк в паре списков.
+	// ---------- Player-facing text ----------
+	// Primary arrays are English. *_EN duplicates remain for locale helper compatibility.
 
-	/** Утренний намёк. Без точной даты, на случайный выбор. */
+	/** Morning hint. No exact date, random choice. */
 	public static final String[] OMEN_MESSAGES = {
-			"Что-то собирается там, за горизонтом.",
-			"Сегодня никто не удивится, если ночь окажется долгой.",
+			"Something is gathering over the horizon.",
+			"No one will be surprised if the night is long.",
 	};
 	public static final String[] OMEN_MESSAGES_EN = {
 			"Something is gathering past the horizon.",
 			"Nobody would be surprised if the night runs long.",
 	};
 
-	/** За 2 минуты до ночи. */
+	/** Two minutes before siege night. */
 	public static final String[] WARNING_MESSAGES = {
-			"Они идут. Спать нельзя.",
+			"They're coming. You can't sleep.",
 	};
 	public static final String[] WARNING_MESSAGES_EN = {
 			"They're coming. You can't sleep.",
 	};
 
-	/** Игрок пытается лечь в кровать. */
+	/** Player tries to sleep in a bed. */
 	public static final String[] SLEEP_BLOCKED_MESSAGES = {
-			"Спать нельзя. Они рядом.",
-			"Не ложись. Они уже близко.",
-			"Сейчас не до сна.",
+			"You can't sleep. They're close.",
+			"Don't lie down. They're already near.",
+			"Not the time for sleep.",
 	};
 	public static final String[] SLEEP_BLOCKED_MESSAGES_EN = {
 			"You can't sleep. They're close.",
@@ -168,19 +163,19 @@ public final class SiegeNight {
 			"Not the time for sleep.",
 	};
 
-	/** Игрок стоит в портале в Ад или Энд. */
+	/** Player in a Nether or End portal in the Overworld. */
 	public static final String[] PORTAL_BLOCKED_MESSAGES = {
-			"Портал не пускает.",
-			"Сейчас отсюда не уйти.",
+			"The portal won't let you through.",
+			"You can't leave right now.",
 	};
 	public static final String[] PORTAL_BLOCKED_MESSAGES_EN = {
 			"The portal won't let you through.",
 			"You can't leave right now.",
 	};
 
-	/** Рассвет. */
+	/** Dawn after the siege. */
 	public static final String[] DAWN_MESSAGES = {
-			"Рассвело. Они ушли, но думаю, они вернутся.",
+			"It's dawn. They left, but I think they'll be back.",
 	};
 	public static final String[] DAWN_MESSAGES_EN = {
 			"It's dawn. They left, but I think they'll be back.",
@@ -188,16 +183,16 @@ public final class SiegeNight {
 
 	// ========================================================================
 
-	/** Один игровой день. 24000 тиков = 20 минут. */
+	/** One game day. 24000 ticks = 20 minutes. */
 	private static final long TICKS_PER_DAY = 24000L;
 
-	/** true с предупреждения и до рассвета. Запрещён сон, порталы, нет мини-боссов, идёт подмена спавна. */
+	/** True from warning until dawn. No sleep, no portals, no mini-bosses, no spawning. */
 	private static boolean windowOpen;
 
-	/** true только когда ночь уже началась. Идут волны, обычные мобы мира тоже охотятся на игрока. */
+	/*True only when the night has already begun. The waves are coming, the usual mobs of the world are also hunting the player. */
 	private static boolean nightActive;
 
-	/** Начало звукового сценария предупреждения. -1 = не играет. */
+	/** Beginning of the warning sound script. -1 = not playing. */
 	private static long soundStartGameTime = -1L;
 
 	private static int soundMoansPlayed;
@@ -208,23 +203,23 @@ public final class SiegeNight {
 	}
 
 	// ------------------------------------------------------------------
-	// Вопросы «идёт ли осада», их задают mixin и другие механики мода
+	// Questions like “is there a siege” are asked by mixin and other fashion mechanics.
 	// ------------------------------------------------------------------
 
 	/**
-	 * true — осада в разгаре: от предупреждения до рассвета, и только в верхнем мире.
-	 * По этому признаку не работают мини-боссы и события мода, а обычный спавн подменяется.
+	 True is a siege in full swing: from warning until dawn, and only in the upper world.
+	 On this basis, mini-bosses and fashion events do not work, and the usual spawn is replaced.
 	 */
 	public static boolean isWindowOpen(Level level) {
 		return windowOpen && level.dimension() == Level.OVERWORLD;
 	}
 
-	/** true — ночь осады уже началась (волны идут). Только верхний мир. */
+	/*The night of the siege has already begun (the waves are coming). Just the upper world. */
 	public static boolean isNight(Level level) {
 		return nightActive && level.dimension() == Level.OVERWORLD;
 	}
 
-	/** Сброс при выключении сервера. Иначе в следующем мире на том же запуске игры осада «залипнет». */
+	/** Reset when the server is turned off. Otherwise, in the next world at the same launch of the game, the siege will stick. */
 	public static void clearRuntime() {
 		windowOpen = false;
 		nightActive = false;
@@ -235,10 +230,10 @@ public final class SiegeNight {
 	}
 
 	// ------------------------------------------------------------------
-	// Тик мира
+	// Tick of the world
 	// ------------------------------------------------------------------
 
-	/** Конец тика каждого мира. Работает только в верхнем. */
+	/*The end of the tick of every world. It only works on the top. */
 	public static void tick(ServerLevel level) {
 		if (level.dimension() != Level.OVERWORLD) {
 			return;
@@ -304,19 +299,19 @@ public final class SiegeNight {
 			return;
 		}
 		if (clock >= end) {
-			// Проспали или перемотали время командой. Осаду пропускаем, назначаем следующую.
+			// Overslept or rewinded time by the team. We skip the siege, set the next one.
 			scheduleNext(level, data, today);
 			return;
 		}
 		if (peaceful) {
-			// На мирной сложности мобов нет вообще. Ждём конца ночи, потом назначим новую.
+			// There are no mobs on peaceful complexity at all. We wait for the end of the night, then we'll schedule a new one.
 			return;
 		}
 		begin(level, data, nightStart, end,
 				clock >= nightStart ? SiegeData.PHASE_NIGHT : SiegeData.PHASE_WARNING, null, null);
 	}
 
-	/** Утренний намёк за день до осады (необязательно). */
+	/*Morning hint the day before the siege (optional). */
 	private static void tickOmen(ServerLevel level, SiegeData data, long clock) {
 		if (!OMEN_ENABLED || data.omenSentFor == data.nextSiegeDay) {
 			return;
@@ -331,15 +326,15 @@ public final class SiegeNight {
 	}
 
 	/**
-	 * Начинает осаду: сразу с предупреждения или (если время уже ночное) с самой ночи.
-	 * Здесь же выбирается состав осады (кто придёт и в каких долях), он держится до рассвета.
+	 * Begins the siege: with warning immediately, or straight to night if it is already dark.
+	 * Picks siege composition (mob mix) here; it holds until dawn.
 	 */
 	private static void begin(ServerLevel level, SiegeData data, long nightStart, long end, int phase,
 			@Nullable Faction forced, @Nullable Kind forcedKind) {
 		data.phase = phase;
 		data.nightStartClock = nightStart;
 		data.endClock = end;
-		// Команда проверки может задать один вид на 100%. Иначе состав случайный (фракция — по дню или по команде).
+		// Debug command can force one mob type at 100%. Otherwise random composition (faction by day or command).
 		data.shares = forcedKind != null
 				? SiegeComposition.only(forcedKind)
 				: SiegeComposition.roll(level.getRandom(), SiegeComposition.illagersAllowed(level),
@@ -358,7 +353,7 @@ public final class SiegeNight {
 		}
 	}
 
-	/** Заканчивает осаду и назначает следующую через DAYS_MIN–DAYS_MAX дней. */
+	/*Ends the siege and schedules the next one through DAYS MIN-DAYS MAX days. */
 	private static void finish(ServerLevel level, SiegeData data, long clock, boolean announceDawn) {
 		data.phase = SiegeData.PHASE_IDLE;
 		data.shares = new float[0];
@@ -370,15 +365,15 @@ public final class SiegeNight {
 	}
 
 	/**
-	 * Назначает следующую осаду.
-	 * 1) Пока мир не дошёл до дня ThreatTable.SIEGE_FIRST_DAY (25), осада назначается ровно на этот день.
-	 * 2) Дальше — через DAYS_MIN…DAYS_MAX дней, но день выбирается с учётом луны:
-	 *    чем светлее луна в тот день, тем вероятнее (вес = сила луны в степени MOON_WEIGHT_POWER),
-	 *    а в новолуние осады не бывает никогда.
+	 He sets the next siege.
+	 * 1) Until the world reaches ThreatTable.SIEGE FIRST DAY (25), the siege is scheduled for this day.
+	 2) DAYS MIN...DAYS MAX days, but the day is chosen according to the moon:
+	 The brighter the moon that day, the more likely it is (weight = moon power in MOON WEIGHT POWER)
+	 There is never a siege on the new moon.
 	 */
 	private static void scheduleNext(ServerLevel level, SiegeData data, long today) {
 		if (ThreatScale.ENABLED && ThreatScale.day(level) < ThreatTable.SIEGE_FIRST_DAY) {
-			// Осады считаются по дням мира, а 25-й день — это день ШКАЛЫ (от установки мода).
+			// Sieges are counted according to the days of peace, and the 25th day is Scale Day (from the fashion installation).
 			data.nextSiegeDay = Math.max(today, ThreatScale.worldDayOfThreatDay(ThreatTable.SIEGE_FIRST_DAY));
 			data.setDirty();
 			return;
@@ -408,7 +403,7 @@ public final class SiegeNight {
 		data.setDirty();
 	}
 
-	/** Поднимает из кроватей всех, кто уже лёг: иначе можно проспать вечер до начала запрета. */
+	/*He lifts everyone who has already gone to bed: otherwise you can sleep in the evening before the ban begins. */
 	private static void wakeSleepers(ServerLevel level) {
 		for (ServerPlayer player : level.players()) {
 			if (player.isSleeping()) {
@@ -418,12 +413,12 @@ public final class SiegeNight {
 	}
 
 	// ------------------------------------------------------------------
-	// Запрет сна и порталов
+	// Banning sleep and portals
 	// ------------------------------------------------------------------
 
 	/**
-	 * Событие Fabric «игрок пытается лечь в кровать». OTHER_PROBLEM — отказ без собственной надписи
-	 * над панелью быстрого доступа: сообщение мы отправляем сами, в чат.
+	 Fabric Event Player Trying to Go to Bed OTHER PROBLEM - rejection without its own inscription
+	 Over the quick access panel: we send the message ourselves to the chat.
 	 */
 	public static Player.BedSleepingProblem onAllowSleeping(Player player, BlockPos pos) {
 		if (player.level() instanceof ServerLevel level && isWindowOpen(level)) {
@@ -436,9 +431,9 @@ public final class SiegeNight {
 	}
 
 	/**
-	 * Вызывается из mixin на Entity.canUsePortal. true — портал игрока сейчас не пускает.
-	 * Блокируется только вход из верхнего мира (Ад и Энд). Кто уже в Аду или Энде, может вернуться.
-	 * Сообщение не чаще раза в PORTAL_MESSAGE_COOLDOWN_TICKS.
+	 * Called from mixin on Entity.canUsePortal. True - the player portal is not allowed.
+	 Only the entrance from the upper world is blocked (Hell and End). Those who are already in Hell or End may return.
+	 * Not more than once in PORTAL MESSAGE COOLDOWN TICKS.
 	 */
 	public static boolean blocksPortal(net.minecraft.world.entity.Entity entity) {
 		if (!(entity instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level)) {
@@ -457,19 +452,19 @@ public final class SiegeNight {
 	}
 
 	// ------------------------------------------------------------------
-	// Подмена обычного спавна
+	// Replacement of the usual spawn
 	// ------------------------------------------------------------------
 
 	/**
-	 * Что ставить вместо моба, которого выбрала игра. Любой ночной монстр заменяется на моба из состава
-	 * этой осады (по долям), см. {@link SiegeComposition}. Вызывается из NaturalMonsterSwap.
+	 What to put instead of the mob that the game chose? Any night monster is replaced by a mob.
+	 * of this siege, see {@link SiegeComposition}. Called from NaturalMonsterSwap.
 	 */
 	public static EntityType<?> swapForSiege(ServerLevel level, @Nullable BlockPos feet) {
 		return SiegeComposition.swapForSiege(level, feet);
 	}
 
 	// ------------------------------------------------------------------
-	// Звуки предупреждения
+	// Warning sounds
 	// ------------------------------------------------------------------
 
 	private static void tickWarningSounds(ServerLevel level) {
@@ -505,7 +500,7 @@ public final class SiegeNight {
 		}
 	}
 
-	/** Играет звук для каждого игрока верхнего мира, из случайной точки в SOUND_DISTANCE блоках от него. */
+	/*Plays a sound for each player of the upper world, from a random point in the SOUND DISTANCE blocks away. */
 	private static void playDistant(ServerLevel level, SoundEvent sound, float volume, float pitchMin, float pitchMax) {
 		RandomSource random = level.getRandom();
 		double min = Math.max(1.0, SOUND_DISTANCE_MIN);
@@ -521,36 +516,36 @@ public final class SiegeNight {
 	}
 
 	// ------------------------------------------------------------------
-	// Команды для проверки в игре (см. EvolvingThreatsCommands)
+	// In-game testing commands (see EvolvingThreatsCommands)
 	// ------------------------------------------------------------------
 
-	/** Короткая сводка для /evolvingthreats siege status. */
+	/*Short summary for /evolvingthreats siege status. */
 	public static String status(ServerLevel level) {
 		SiegeData data = SiegeData.get(level);
 		long clock = level.getOverworldClockTime();
 		long today = Math.floorDiv(clock, TICKS_PER_DAY);
 		String phase = switch (data.phase) {
-			case SiegeData.PHASE_WARNING -> "предупреждение (ночь скоро)";
-			case SiegeData.PHASE_NIGHT -> "идёт осада";
-			default -> "ожидание";
+			case SiegeData.PHASE_WARNING -> "warning (night soon)";
+			case SiegeData.PHASE_NIGHT -> "siege in progress";
+			default -> "idle";
 		};
 		String next = data.nextSiegeDay < 0
-				? "ещё не назначена"
-				: "день " + data.nextSiegeDay + " (через " + (data.nextSiegeDay - today) + " дн.)";
+				? "not scheduled yet"
+				: "day " + data.nextSiegeDay + " (in " + (data.nextSiegeDay - today) + " days)";
 		String mobs = data.phase == SiegeData.PHASE_IDLE
 				? ""
-				: "; состав: " + SiegeComposition.describe(SiegeComposition.current(level));
-		// Пока в Аду никто не был, в статусе видно, почему иссушителей в осаде нет.
+				: "; roster: " + SiegeComposition.describe(SiegeComposition.current(level));
+		// If nobody has visited the Nether yet, explain why wither skeletons are absent from random rosters.
 		String wither = SiegeComposition.witherSkeletonsAllowed(level)
 				? ""
-				: "; иссушители: после похода в Ад";
-		return "Siege: " + phase + "; сегодня день " + today + "; следующая: " + next + mobs + wither
-				+ (ENABLED ? "" : " [ВЫКЛЮЧЕНА, ENABLED = false]");
+				: "; wither skeletons: after a Nether visit";
+		return "Siege: " + phase + "; today day " + today + "; next: " + next + mobs + wither
+				+ (ENABLED ? "" : " [DISABLED, ENABLED = false]");
 	}
 
 	/**
-	 * Предупреждение сейчас: ночь осады начнётся через WARNING_BEFORE_NIGHT_TICKS.
-	 * faction — принудительная фракция для проверки (null = выбрать по обычным правилам).
+	 Warning now: the night of the siege will begin through WARNING BEFORE NIGHT TICKS.
+	 * faction - a forced faction for verification (null = choose according to the usual rules).
 	 */
 	public static void forceWarning(ServerLevel level, @Nullable Faction faction) {
 		SiegeData data = SiegeData.get(level);
@@ -559,7 +554,7 @@ public final class SiegeNight {
 		begin(level, data, start, start + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_WARNING, faction, null);
 	}
 
-	/** То же, но осада на 100% из одного вида. Для проверки в игре. */
+	/*Same, but a siege 100% of the same species. To test the game. */
 	public static void forceWarning(ServerLevel level, Kind kind) {
 		SiegeData data = SiegeData.get(level);
 		long clock = level.getOverworldClockTime();
@@ -567,21 +562,21 @@ public final class SiegeNight {
 		begin(level, data, start, start + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_WARNING, null, kind);
 	}
 
-	/** Ночь осады сразу, без предупреждения. Днём зомби и скелеты на солнце горят: это не ошибка. */
+	/*Night of siege immediately, without warning. During the day, zombies and skeletons burn in the sun: this is not a mistake. */
 	public static void forceStart(ServerLevel level, @Nullable Faction faction) {
 		SiegeData data = SiegeData.get(level);
 		long clock = level.getOverworldClockTime();
 		begin(level, data, clock, clock + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_NIGHT, faction, null);
 	}
 
-	/** Ночь осады сразу, на 100% из одного вида. День и шанс фракции не смотрим. */
+	/*Night of siege at once, 100% of one species. The day and chance of the faction are not watched. */
 	public static void forceStart(ServerLevel level, Kind kind) {
 		SiegeData data = SiegeData.get(level);
 		long clock = level.getOverworldClockTime();
 		begin(level, data, clock, clock + FORCED_NIGHT_LENGTH_TICKS, SiegeData.PHASE_NIGHT, null, kind);
 	}
 
-	/** Прекращает осаду сейчас и назначает следующую по обычному расписанию. */
+	/*Ends the siege now and appoints the next one according to the usual schedule. */
 	public static void forceStop(ServerLevel level) {
 		SiegeData data = SiegeData.get(level);
 		finish(level, data, level.getOverworldClockTime(), false);
@@ -590,8 +585,8 @@ public final class SiegeNight {
 	}
 
 	/**
-	 * Пересчитывает расписание осады по обычным правилам (например, после /evolvingthreats day set).
-	 * Если осада идёт прямо сейчас — ничего не меняет.
+	 Recalculates the schedule of the siege according to the usual rules (for example, after /evolvingthreats day set).
+	 If the siege is going on right now, it doesn’t change anything.
 	 */
 	public static void reschedule(ServerLevel level) {
 		SiegeData data = SiegeData.get(level);
@@ -604,8 +599,8 @@ public final class SiegeNight {
 	}
 
 	/**
-	 * Назначает осаду через указанное число игровых дней (0 = в ночь текущего дня).
-	 * false — сейчас осада идёт, сначала останови её командой stop.
+	 Assigns a siege through the specified number of game days (0 = on the night of the current day).
+	 False - now the siege is on, first stop her command stop.
 	 */
 	public static boolean scheduleIn(ServerLevel level, int days) {
 		SiegeData data = SiegeData.get(level);
@@ -620,16 +615,16 @@ public final class SiegeNight {
 	}
 
 	// ------------------------------------------------------------------
-	// Сообщения
+	// Communications
 	// ------------------------------------------------------------------
 
-	/** true — в настройках игры выбран русский (ru_ru и любой другой ru_…). */
+	/** True - in the game settings selected Russian (ru ru and any other en ..). */
 	private static boolean prefersRussian(ServerPlayer player) {
 		String language = player.clientInformation().language();
 		return language != null && language.toLowerCase(java.util.Locale.ROOT).startsWith("ru");
 	}
 
-	/** Одно сообщение этому игроку, на его языке. Пустой список заменяется вторым. */
+	/*One message to this player, in his language. The empty list is replaced by the second. */
 	private static void tell(ServerPlayer player, RandomSource random, String[] russian, String[] english) {
 		String[] lines = prefersRussian(player) ? russian : english;
 		if (lines.length == 0) {
@@ -646,8 +641,8 @@ public final class SiegeNight {
 	}
 
 	/**
-	 * Всем игрокам сервера, даже тем, кто сейчас в Аду.
-	 * Один и тот же вариант, но каждый читает его на своём языке.
+	 To all server players, even those in Hell.
+	 The same version, but everyone reads it in their own language.
 	 */
 	private static void broadcast(ServerLevel level, String[] russian, String[] english) {
 		int count = Math.max(russian.length, english.length);

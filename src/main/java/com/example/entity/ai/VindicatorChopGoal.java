@@ -17,10 +17,10 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 
 /**
- * Поборник рубит деревянный блок, если из-за него нет пути к цели.
- * Камень и землю не трогает. Если игрок уже под ударом — рубить не начинает.
- * Пока рубит, топор остаётся в руке. Как только путь открыт или цель рядом,
- * рубка отпускает его, и обычный удар топором снова работает.
+ The champion cuts a wooden block if there is no way to the goal because of it.
+ Stone and earth do not touch. If the player is already under attack, he does not start cutting.
+ As long as he cuts, the axe remains in his hand. As soon as the path is open or the goal is near,
+ * The chopping lets it go and the usual axe kick works again.
  */
 public class VindicatorChopGoal extends Goal {
 
@@ -30,7 +30,7 @@ public class VindicatorChopGoal extends Goal {
 	private long nextPathCheckGameTime;
 	private long lastStopGameTime;
 
-	/** true, пока эта рубка ещё нужна. false — отдать ход обычному удару. */
+	/** True, while we still need this cabin. False - to make a move to the usual blow. */
 	private boolean chopping;
 
 	private BlockPos breakPos;
@@ -67,7 +67,7 @@ public class VindicatorChopGoal extends Goal {
 		if (vindicator.distanceTo(target) > VindicatorWoodBreak.MAX_DISTANCE_TO_TARGET) {
 			return false;
 		}
-		// Рядом уже можно бить топором, рубка не должна это перехватывать.
+		// Nearby you can already beat with an axe, the cabin should not intercept it.
 		return !vindicator.isWithinMeleeAttackRange(target);
 	}
 
@@ -75,7 +75,7 @@ public class VindicatorChopGoal extends Goal {
 	public void start() {
 		chopping = true;
 		ticksSinceSwing = 0;
-		// Скрещённые руки прячут топор. Пока рубит, он остаётся в боевой стойке, топор виден.
+		// Crossed arms hide the axe. While he's chopping, he stays in the battle stand, the axe is visible.
 		vindicator.setAggressive(true);
 		long now = vindicator.level().getGameTime();
 		nextPathCheckGameTime = now + VindicatorWoodBreak.CHECK_INTERVAL_TICKS;
@@ -131,8 +131,8 @@ public class VindicatorChopGoal extends Goal {
 	public void stop() {
 		chopping = false;
 		lastStopGameTime = vindicator.level().getGameTime();
-		// Трещину на блоке не стираем сразу: если его отвлекли, прогресс ещё живёт несколько секунд.
-		// Цель ещё есть — обычный удар сам поднимет топор. Цели нет — руки снова скрещены.
+		// A crack on the block is not erased immediately: if it is distracted, progress still lives a few seconds.
+		// The goal is still there - a conventional strike will lift the axe itself. No target - arms crossed again.
 		if (vindicator.getTarget() == null) {
 			vindicator.setAggressive(false);
 		}

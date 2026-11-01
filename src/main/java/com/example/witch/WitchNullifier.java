@@ -25,56 +25,56 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Редкая ведьма. Время от времени бросает белое взрывное зелье.
- * Попадание в брызги снимает с игрока все эффекты сразу: и полезные, и вредные.
- * Между такими бросками она кидает обычные зелья ведьмы (яд, замедление, урон).
- * Союзникам в рейде по-прежнему кидает лечение — обнуление только по игроку.
+ Rare witch. From time to time throws a white explosive potion.
+ Getting into the spray removes all the effects from the player at once: both useful and harmful.
+ Between such throws she throws the usual witch potions (poison, slowdown, damage).
+ Allies in the raid still throws treatment - zeroing only for the player.
  */
 public final class WitchNullifier {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие ведьмы не появляются, и белое зелье ничего не снимает. */
+	/** Turn on the mechanics. False - such witches do not appear, and the white potion does not remove anything. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычная ведьма при появлении окажется обнуляющей. 0.15 = 15%.
-	 * Ведьм в мире меньше, чем блейзов, поэтому шанс выше, чем у блейза-алхимика (4%).
-	 * Хижина, рейд и спаунер бросают этот шанс. Команда спавна шанс не использует.
+	 * Chance (0.0-1.0) that an ordinary witch will appear to be null. 0.15 = 15%.
+	 There are fewer witches in the world than the Blazes, so the chance is higher than that of the Blaze Alchemist (4%).
+	 Hut, raid and spawner throw this chance. Spawn team doesn't take chances.
 	 */
 	public static final float SPAWN_CHANCE = 0.15f;
 
 	/**
-	 * Пауза между белыми зельями, секунды.
-	 * 15 = следующее обнуление не раньше чем через 15 секунд.
-	 * Обычная ведьма бросает примерно раз в 3 секунды, так что белым будет около каждого пятого броска.
-	 * 0 = каждый бросок по игроку снимает эффекты.
-	 * Первый бросок по игроку паузы не ждёт.
+	 Pause between white potions, seconds.
+	 * 15 = next zero no earlier than 15 seconds.
+	 The average witch throws about once every 3 seconds, so that white will be about every fifth throw.
+	 * 0 = each throw on the player removes the effects.
+	 The first shot on the player does not wait for a pause.
 	 */
 	public static final int THROW_COOLDOWN_SECONDS = 15;
 
 	/**
-	 * Цвет брызг, RGB. 0xF4F4F4 — почти белый, чтобы отличить от фиолетового яда и чёрного урона.
-	 * Можно поставить любой цвет, на снятие эффектов это не влияет.
+	 * Splash color, RGB. 0xF4F4F4 is almost white to distinguish from purple poison and black damage.
+	 You can put any color, it does not affect the removal of effects.
 	 */
 	public static final int POTION_COLOR = 0xF4F4F4;
 
 	/**
-	 * Насколько далеко по горизонтали достают брызги, в блоках. 4 — как у обычного взрывного зелья.
-	 * Облако частиц рисует сама игра и всегда около 4 блоков. Больше 4 — эффект снимется там, где брызг уже не видно.
+	 How far horizontally do the sprays reach in the blocks. 4 - like an ordinary explosive potion.
+	 The cloud of particles is drawn by the game itself and there are always about 4 blocks. More than 4 - the effect will be removed where the spray is no longer visible.
 	 */
 	public static final double SPLASH_RADIUS_BLOCKS = 4.0;
 
 	/**
-	 * Насколько брызги достают вверх и вниз, в блоках. 2 — как у обычного зелья.
+	 How much splashes reach up and down, in blocks. 2 - like a regular potion.
 	 */
 	public static final double SPLASH_VERTICAL_BLOCKS = 2.0;
 
 	// ========================================================================
 
 	/**
-	 * Метка внутри предмета зелья, чтобы отличить наш бросок от обычного.
-	 * В игре эта строка не показывается: ведьма бутылку в руке не держит, снаряд белый из-за POTION_COLOR.
+	 A label inside the potion to distinguish our throw from the usual.
+	 In the game, this line is not shown: the witch does not hold a bottle in his hand, the projectile is white due to POTION COLOR.
 	 */
 	private static final String POTION_MARKER = "evolvingthreats_nullify";
 
@@ -87,7 +87,7 @@ public final class WitchNullifier {
 				&& data.evolvingthreats$isNullifier();
 	}
 
-	/** Конец тика ведьмы. Убавляет паузу до следующего белого зелья. На клиенте не считается. */
+	/** The end of the witch's tick. Reduces the pause to the next white potion. The client doesn't count. */
 	public static void tickCooldown(Witch witch) {
 		if (witch.level().isClientSide() || !(witch instanceof NullifierWitchEntity data) || !data.evolvingthreats$isNullifier()) {
 			return;
@@ -99,9 +99,9 @@ public final class WitchNullifier {
 	}
 
 	/**
-	 * Начало броска. Если пауза прошла и цель — игрок, этот бросок станет белым зельем.
-	 * Пока ведьма пьёт зелье сама, она ничего не кидает — флаг не ставится.
-	 * Лечение союзника в рейде сюда не попадает: цель не игрок.
+	 * Throw start. If the pause has passed and the goal is the player, this throw will become a white potion.
+	 While the witch drinks the potion herself, she throws nothing - the flag is not put.
+	 Treatment of an ally in a raid does not fall here: the target is not a player.
 	 */
 	public static void armThrow(Witch witch, LivingEntity target) {
 		if (!(witch instanceof NullifierWitchEntity data)) {
@@ -118,8 +118,8 @@ public final class WitchNullifier {
 	}
 
 	/**
-	 * Ведьма только что создала взрывное зелье. true — подменить его на белое и начать паузу.
-	 * Вызывать из конструктора снаряда, пока бросок ещё «вооружён».
+	 The witch just created an explosive potion. Replace it with white and start a pause.
+	 Call out the projectile designer while the throw is still "armed".
 	 */
 	public static boolean consumeArmed(LivingEntity owner) {
 		if (!(owner instanceof Witch witch) || !(witch instanceof NullifierWitchEntity data)) {
@@ -133,7 +133,7 @@ public final class WitchNullifier {
 		return true;
 	}
 
-	/** Белое взрывное зелье без своих эффектов. Снятие делает попадание, не содержимое бутылки. */
+	/** White explosive potion without its effects. Removal makes a hit, not the contents of the bottle. */
 	public static ItemStack potionStack() {
 		ItemStack stack = new ItemStack(Items.SPLASH_POTION);
 		stack.set(DataComponents.POTION_CONTENTS, new PotionContents(
@@ -145,10 +145,10 @@ public final class WitchNullifier {
 	}
 
 	/**
-	 * Попадание взрывного зелья. Обычные зелья сюда тоже приходят и сразу выходят.
-	 * Белое снимает все значки эффектов у игроков в брызгах: зелья, яблоко, маяк.
-	 * Яд и иссушение тоже спадают. Щит взрывное зелье не ловит — как в обычной игре.
-	 * Других мобов не трогает: зомби рядом свои эффекты сохраняют.
+	 Explosive potion hit. Ordinary potions come and go here as well.
+	 White removes all the icons of effects from players in the spray: potion, apple, lighthouse.
+	 The poison and drying also subside. Shield explosive potion does not catch - as in a normal game.
+	 Other mobs do not touch: zombies retain their effects next to them.
 	 */
 	public static void onSplash(AbstractThrownPotion potion, HitResult hit) {
 		if (!(potion.level() instanceof ServerLevel level) || !ENABLED || !isNullifyPotion(potion.getItem())) {
@@ -182,7 +182,7 @@ public final class WitchNullifier {
 		}
 	}
 
-	/** Вызвать из finalizeSpawn. Командный спавн ставит флаг заранее и шанс не бросает. */
+	/** Call from finalizespace. The team spawn puts a flag in advance and doesn't throw up a chance. */
 	public static void rollOnSpawn(Witch witch, EntitySpawnReason reason) {
 		if (!ENABLED || !(witch instanceof NullifierWitchEntity data)) {
 			return;
@@ -196,7 +196,7 @@ public final class WitchNullifier {
 		data.evolvingthreats$setNullifier(true);
 	}
 
-	/** Команда: ведьма-обнулитель перед игроком. null — механика выключена. */
+	/** Team: Witch zero in front of the player. null - the mechanics are off. */
 	public static @Nullable Witch spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;

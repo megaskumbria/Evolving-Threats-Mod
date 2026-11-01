@@ -1,35 +1,35 @@
-ОПЫТ ЗА УБИЙСТВО
+KILL EXPERIENCE
 ================
 
-Тип: любой враждебный моб. Игра зовёт их монстрами:
-     зомби, скелеты, криперы, пауки, эндермены, ведьмы, бруты, слизни,
-     магмовые кубы, фантомы, блейзы, разбойники и остальные из этого списка.
-     Коровы, свиньи, жители и железный голем сюда не входят.
-     Парящий инструмент и повреждённый голем входят: мод записал их как монстров.
-Код: MobExperience.java (множитель),
-     mixin/MobExperienceMixin.java (в момент смерти).
+Type: any hostile mob. The game calls them monsters:
+     zombies, skeletons, creepers, spiders, endermen, witches, brutes, slimes,
+     magma cubes, phantoms, blazes, pillagers, and the rest of this list.
+     Cows, pigs, villagers, and iron golem are not included.
+     Floating tool and damaged golem are included: the mod registered them as monsters.
+Code: MobExperience.java (multiplier),
+     mixin/MobExperienceMixin.java (on death).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Опыт в MULTIPLIER раз больше, чем посчитала бы игра. Сейчас 2.
-   FIXED: от дня, шкалы угрозы и запаса жизней не зависит.
-2. Голый моб даёт 10 вместо обычных 5.
-   Если на нём есть оружие или броня, игра сама добавляет 1–3 опыта за каждую такую вещь.
-   Эта добавка тоже удваивается. Зомби с одним мечом даёт 12–16.
-   Надсмотрщик и якорь рейда тоже: у них было 5, станет 10, плюс добавка за топоры и броню.
-3. Детёныш зомби в игре и так даёт больше: сначала 5 превращаются в 12, потом мод удваивает до 24.
-   Вещи сверху считаются так же.
-4. Опыт падает, только если моба убил игрок. Так устроена сама игра.
-5. Своё число не меняется, множитель его не трогает:
-   Excalibur — 30, Mjölnir — 20, чародей — 15, ритуальная стая — 50, василиск — 100, Бастион — 200,
-   скелет «700 IQ» — 30, скелет-иссушитель — 25.
-6. Парящий инструмент в коде записан как 5, после множителя падает 10.
-   Повреждённый голем записан как 10, после множителя падает 20.
+1. XP is MULTIPLIER times what vanilla would give. Currently 2.
+   FIXED: does not depend on day, threat scale, or random health.
+2. Bare mob gives 10 instead of usual 5.
+   If it has weapon or armor, vanilla adds 1–3 XP per such item.
+   That bonus is doubled too. Zombie with one sword gives 12–16.
+   Overseer and raid anchor too: was 5, becomes 10, plus bonus for axes and armor.
+3. Baby zombie already gives more in vanilla: 5 becomes 12, then mod doubles to 24.
+   Extra gear counts the same.
+4. XP drops only if a player killed the mob. That is vanilla behavior.
+5. Custom numbers are unchanged; multiplier does not touch them:
+   Excalibur — 30, Mjölnir — 20, sorcerer — 15, ritual band — 50, Basilisk — 100, Bastion — 200,
+   “700 IQ” skeleton — 30, wither skeleton — 25.
+6. Floating tool is coded as 5; after multiplier drops 10.
+   Damaged golem is coded as 10; after multiplier drops 20.
 
 
 SETTINGS
 ---------
   MobExperience.java
-    ENABLED ...... true — выключить, и опыт снова как в обычной игре
-    MULTIPLIER ... 2 — во сколько раз. 1 = без надбавки, 3 = голый моб даёт 15
+    ENABLED ...... true — off returns vanilla XP
+    MULTIPLIER ... 2 — how many times. 1 = no bonus, 3 = bare mob gives 15

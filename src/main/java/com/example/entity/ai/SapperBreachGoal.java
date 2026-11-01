@@ -12,14 +12,14 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 /**
- * Подрывник идёт к блоку под ногами игрока и там взрывается. Взрывается ВСЕГДА:
+ The bomber goes to the block under the feet of the player and explodes there. Explodes ALWAYS:
  * <ul>
- *   <li>путь есть — подбегает к опоре (пол, верх башни) и рвёт её;</li>
- *   <li>башня без пути наверх — рвёт основание;</li>
- *   <li>пути нет (дом, стена) — подходит как можно ближе, упирается и через 8–10 секунд взрывается у стены,
- *       даже если игрок ушёл вглубь дома или скрылся из виду.</li>
+ The path is there - runs up to the support (floor, top of the tower) and tears it up; >>
+ * The tower without a way up - tears the base;</li >>
+ There is no way (house, wall) - comes as close as possible, rests and after 8-10 seconds explodes against the wall,
+ * Even if the player has gone deep into the house or is out of sight. </li/ >>
  * </ul>
- * Игрока помнит {@link SapperCreeper#MEMORY_SECONDS} секунд: ванильный ИИ быстро теряет цель без прямой видимости.
+ The player remembers {@link SapperCreeper#MEMORY SECONDS} seconds: vanilla AI quickly loses target without line of sight.
  */
 public class SapperBreachGoal extends Goal {
 
@@ -71,7 +71,7 @@ public class SapperBreachGoal extends Goal {
 		}
 	}
 
-	/** Цель крипера, а если он её потерял из виду — запомненный игрок (пока память не истекла). */
+	/*The target of the cryper, and if he lost sight of it - a remembered player (until the memory expires). */
 	private LivingEntity resolveTarget() {
 		long now = creeper.level().getGameTime();
 		LivingEntity current = creeper.getTarget();
@@ -125,8 +125,8 @@ public class SapperBreachGoal extends Goal {
 			cantReach = !SapperCreeper.canReach(creeper, target) && !SapperCreeper.canReach(creeper, support);
 		}
 
-		// Башня или блок под ногами. Шипение можно сбить, отойдя, как у обычного крипера.
-		// ignite() здесь не вызывается: после него запал уже не погасить, и удар с отходом всегда кончался взрывом.
+		// Tower or block underfoot. Hissing can be knocked down, moving away, like a regular cryper.
+		// ignite() is not called here: after it the fuse is no longer extinguished, and the blow with a departure always ended in an explosion.
 		boolean seesPlayer = SapperCreeper.canSee(creeper, target);
 		if ((elevated && horizontal <= SapperCreeper.DETONATE_HORIZONTAL) || (!cantReach && atSupport)) {
 			wallTimerStarted = false;
@@ -136,7 +136,7 @@ public class SapperBreachGoal extends Goal {
 		}
 
 		if (!cantReach || seesPlayer) {
-			// Чистое поле или игрок снова на виду: догоняем, у стены не ждём.
+			// Clear field or player again in sight: catch up, not waiting against the wall.
 			wallTimerStarted = false;
 			hiss(false);
 			if (recheckPath || creeper.getNavigation().isDone()) {
@@ -146,8 +146,8 @@ public class SapperBreachGoal extends Goal {
 			return;
 		}
 
-		// Пути нет и игрока не видно (дом, стена). Подходим как можем, упираемся — потом 8–10 секунд и взрыв.
-		// Пока идём, отсчёт не стартует: удар и короткая остановка в поле сюда не попадают.
+		// There is no way and the player is not visible (house, wall). Approach as we can, rest – then 8-10 seconds and explosion.
+		// While we go, the countdown does not start: the kick and short stop in the field do not fall here.
 		if (!wallTimerStarted && stuck) {
 			wallTimerStarted = true;
 			wallExplodeAt = now + SapperCreeper.randomWallDelayTicks(creeper);
@@ -168,14 +168,14 @@ public class SapperBreachGoal extends Goal {
 		}
 	}
 
-	/** Шипит, пока условие взрыва держится. Отошёл — сдувается. Уже подожжённый запал не трогаем. */
+	/*Hissing as long as the explosion condition holds. Moved away, deflated. We don't touch the burnt fuse. */
 	private void hiss(boolean swelling) {
 		if (!creeper.isIgnited()) {
 			creeper.setSwellDir(swelling ? 1 : -1);
 		}
 	}
 
-	/** Раз в секунду проверяет, сдвинулся ли крипер. Не сдвинулся — упёрся в стену. */
+	/*Once a second checks if the cryper has moved. I didn't move, I hit the wall. */
 	private void updateStuck() {
 		if (ticksUntilStuckCheck-- > 0) {
 			return;

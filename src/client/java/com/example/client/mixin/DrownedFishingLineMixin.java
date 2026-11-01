@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Леска и крючок рисуются только от руки игрока.
- * Здесь та же леска от руки утопленника, если удочку бросил он.
+ * The line and hook are drawn only by the player's hand.
+ * Here is the same line from the hand of the drowned man, if he threw the fishing rod.
  */
 @Mixin(FishingHookRenderer.class)
 public class DrownedFishingLineMixin {
@@ -44,7 +44,7 @@ public class DrownedFishingLineMixin {
 		state.lineOriginOffset = hand.subtract(bobber);
 	}
 
-	/** Точка у правой руки, как у игрока с удочкой, когда камера не от первого лица. */
+	/** Point in the right hand, like a player with a fishing rod, when the camera is not in the first person. */
 	private static Vec3 hand(Drowned drowned, float partialTicks) {
 		float body = Mth.lerp(partialTicks, drowned.yBodyRotO, drowned.yBodyRot) * (float) (Math.PI / 180.0);
 		double sin = Mth.sin(body);

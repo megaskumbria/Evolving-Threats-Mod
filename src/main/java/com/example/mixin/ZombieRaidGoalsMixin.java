@@ -16,7 +16,7 @@ public class ZombieRaidGoalsMixin {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$registerRaidGoals(CallbackInfo ci) {
 		Zombie self = (Zombie) (Object) this;
-		// Осада: цель и поход к игроку. На обычного зомби не действуют, пока нет метки осады.
+		// Siege: target and march toward the player. Ignored on normal zombies until siege-tagged.
 		((MobTargetSelectorAccessor) self).evolvingthreats$getTargetSelector().addGoal(0, new SiegeTargetGoal(self));
 		self.getGoalSelector().addGoal(1, new SiegeMarchGoal(self));
 		if (!(self instanceof RaidParticipantEntity raid) || !raid.evolvingthreats$isRaidParticipant()) {

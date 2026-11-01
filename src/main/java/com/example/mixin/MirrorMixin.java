@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Любой моб помнит флаг Mirror. Шанс бросают появления зомби, скелета и остальных из списка.
- * Запись в мире общая: свой finalizeSpawn есть не у всех видов из списка.
+ Every mob remembers the Mirror flag. Chance thrown by the appearance of zombies, skeleton and the rest of the list.
+ The record in the world is common: not all species on the list have their finalizeSpawn.
  */
 @Mixin(Mob.class)
 public class MirrorMixin implements MirrorEntity {

@@ -19,30 +19,30 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий моб Mirror. Игра его не добавляет: это обычный моб из списка ниже.
- * Удар игрока в упор возвращается ему же: то же число, что ушло в моба до его брони.
- * Дальше это число режет уже броня игрока. Стрела, взрыв, огонь и шипы не возвращаются.
+ A rare Mirror mob. The game does not add it: it is a regular mob from the list below.
+ The player's point-blank shot returns to him: the same number that went into the mob before his armor.
+ Next, this number is cut by the player's armor. Arrow, explosion, fire and thorns do not return.
  */
 public final class Mirror {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — новые Mirror не появляются, команда тоже не спавнит. Уже живые остаются как есть. */
+	/*False - new Mirror does not appear, the team does not spawn. The living remain as they are. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) при появлении подходящего моба. 0.003 = 0,3%.
-	 * FIXED: с первого дня, от шкалы и луны не меняется.
-	 * Бросается отдельно у каждого вида из списка. Команда этот шанс не бросает.
+	 * Chance (0.0-1.0) when a suitable mob appears. 0.003 = 0.3%.
+	 FIXED: From day one, the scale and moon do not change.
+	 * Dropped separately for each species from the list. The team doesn't give up that chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.003f;
 
-	/** Имя над головой. По-английски, как у остальных именных мобов. */
+	/** Name overhead. In English, like the other mobs. */
 	public static final String NAME = "Mirror";
 
 	// ========================================================================
 
-	/** Чтобы возврат удара не вызвал второй возврат в том же ударе. */
+	/*So that the return of the blow does not cause a second return in the same blow. */
 	private static boolean reflecting;
 
 	private Mirror() {
@@ -53,9 +53,9 @@ public final class Mirror {
 	}
 
 	/**
-	 * Появление ифрита, ведьмы, крипера, пиглина, эндермена и чешуйницы.
-	 * У них нет своего появления, шанс бросается в общем коде моба.
-	 * Зомби, скелет, паук и брут сюда не входят: иначе шанс бросился бы дважды.
+	 The appearance of ifrite, witch, cryper, piglin, enderman and scales.
+	 They do not have their appearance, the chance is thrown in the general code of the mob.
+	 Zombies, skeleton, spider and brute are not included: otherwise the chance would be thrown twice.
 	 */
 	public static void tryRollSharedSpawn(Mob mob, EntitySpawnReason reason) {
 		if (!isSharedSpawnType(mob)) {
@@ -65,8 +65,8 @@ public final class Mirror {
 	}
 
 	/**
-	 * Один раз при появлении. Если у моба уже есть своё имя (Бастион, Василиск и остальные),
-	 * этот шанс не бросается: имя не затираем.
+	 * Once upon appearance. If the mob already has its own name (Bastion, Basilisk and others),
+	 This opportunity is not thrown: the name is not erased.
 	 */
 	public static void tryRoll(Mob mob, EntitySpawnReason reason) {
 		if (!ENABLED || !(mob instanceof MirrorEntity data) || !(mob.level() instanceof ServerLevel)) {
@@ -87,8 +87,8 @@ public final class Mirror {
 	}
 
 	/**
-	 * Удар уже дошёл до Mirror. Вернуть игроку то же число урона, что игра насчитала до брони моба.
-	 * Острота, сила и критический удар в этом числе уже есть: их посчитала атака игрока.
+	 The strike has already reached the Mirror. Return the player the same amount of damage that the game counted before the Mob armor.
+	 The sharpness, strength and critical impact are already there: they were considered by the player’s attack.
 	 */
 	public static void onHurt(LivingEntity mob, ServerLevel level, DamageSource source, float damage, boolean landed) {
 		if (!landed || reflecting || damage <= 0.0f || !(mob instanceof Mob mirror) || !isMirror(mirror)) {
@@ -97,7 +97,7 @@ public final class Mirror {
 		if (!(source.getEntity() instanceof Player player) || !player.isAlive() || player.isSpectator()) {
 			return;
 		}
-		// В упор бьёт сам игрок. Стрела, трезубец и взрыв приходят отдельной сущностью.
+		// The player is point-blank. Arrow, trident and explosion come as a separate entity.
 		if (source.getDirectEntity() != player) {
 			return;
 		}
@@ -109,8 +109,8 @@ public final class Mirror {
 		}
 		reflecting = true;
 		try {
-			// Удар как от этого моба: в сообщении о смерти будет имя Mirror.
-			// Число то же, броня и Защита игрока режут его сами.
+			// A blow like this mob: the death message will have the name Mirror.
+			// The number is the same, the armor and the player's defense cut it themselves.
 			player.hurtServer(level, level.damageSources().mobAttack(mirror), damage);
 		} finally {
 			reflecting = false;
@@ -118,8 +118,8 @@ public final class Mirror {
 	}
 
 	/**
-	 * Команда. kind: zombie, skeleton, wither, blaze, spider, piglin, brute, enderman, silverfish, creeper, witch.
-	 * Пустая строка — зомби. false — выключен или такого вида нет.
+	 * Team. kind: zombie, skeleton, wither, blaze, spider, piglin, brute, enderman, silverfish, creeper, witch.
+	 * The empty line is zombies. False is turned off or not.
 	 */
 	public static boolean spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt, String kind) {
 		if (!ENABLED) {
@@ -150,7 +150,7 @@ public final class Mirror {
 		return true;
 	}
 
-	/** После загрузки: имя снова прячется, пока на моба не наведутся. Здоровье не трогает. */
+	/*After download: the name is hidden again until the mob is hovered. Health doesn't matter. */
 	public static void refresh(Mob mob) {
 		if (!isMirror(mob)) {
 			return;

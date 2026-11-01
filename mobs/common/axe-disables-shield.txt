@@ -1,38 +1,38 @@
-ТОПОР СБИВАЕТ ЩИТ
+AXE DISABLES SHIELD
 ==================
 
-Тип: удар зомби, скелета и брутального пиглина. Не новый моб.
-Код: axe/AxeShieldDisable.java (кто, какие топоры, секунды),
-     mixin/AxeShieldDisableMixin.java (момент, когда удар попал в щит).
+Type: hit by a zombie, a skeleton and a brutal piglin. Not a new mob.
+Code: axe/AxeShieldDisable.java (who, what axes, seconds),
+     mixin/AxeShieldDisableMixin.java (the moment when the blow hit the shield).
 
-Поборник сюда не входит: железный топор у него щит и так сбивает.
-У брута золотой топор тоже сбивал щит, если он в основной руке.
-Теперь топор во второй руке считается так же. Деревянный — нет.
-От дней не зависит (FIXED).
+The champion is not included here: he already knocks down a shield with an iron axe.
+At the brute, the gold axe also knocked down the shield if it was in the main hand.
+Now the axe in the second hand is considered the same. Wooden — no.
+It does not depend on days (FIXED).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Удар попал в поднятый щит, и в любой руке топор не из дерева.
-   Щит нельзя поднять 5 секунд. Слышен тот же звук, что от топора поборника.
-   Камень, медь, золото, железо, алмаз и незерит — все так.
-2. Деревянный топор щит не сбивает, даже если он в основной руке.
-   Если в другой руке топор покрепче, щит всё равно сбивается.
-3. Меч, лук, кирка и пустые руки щит не сбивают.
-4. Это любой зомби и любой скелет, у кого такой топор есть:
-   надсмотрщик с алмазными топорами тоже. Утопленник — только если топор у него в руке.
-5. Удар, который щит не поймал, кулдаун не даёт.
+1. The blow hit the raised shield, and the axe in either hand was not made of wood.
+   The shield cannot be raised for 5 seconds. The same sound is heard from the axe of the defender.
+   Stone, copper, gold, iron, diamond and Netherite — everything is like that.
+2. The wooden axe does not knock down the shield, even if it is in the main hand.
+   If the axe is stronger in the other hand, the shield still gets knocked down.
+3. The sword, bow, pickaxe and empty hands do not knock down the shield.
+4. This is any zombie and any skeleton that has such an axe:
+   a supervisor with diamond axes, too. A drowned man — only if he has an axe in his hand.
+5. A blow that the shield did not catch does not give a cooldown.
 
 
 SETTINGS (AxeShieldDisable.java)
 ---------------------------------
-  ENABLED ...................... true — false, и щит снова сбивает только сама игра
-  COOLDOWN_SECONDS ............. 5 — секунды, как у поборника. 2 = короче. 0 = не сбивать
+  ENABLED ...................... true — false, and only the game itself knocks down the shield again
+  COOLDOWN_SECONDS ............. 5 — seconds like a champion. 2 = shorter. 0 = do not shoot down
 
 
-ТЕСТ
+TEST
 ----
-1. Дай зомби железный топор и закройся щитом. После удара щит не поднимается около 5 секунд.
-2. То же с топором во второй руке и мечом в первой.
-3. Деревянный топор щит не сбивает.
-4. Брут с золотым топором по-прежнему сбивает щит на те же 5 секунд.
+1. Give the zombie an iron axe and cover yourself with a shield. After hitting, the shield does not rise for about 5 seconds.
+2. The same with the axe in the second hand and the sword in the first.
+3. Wooden axe shield does not knock down.
+4. The brute with the gold axe still knocks down the shield for the same 5 seconds.

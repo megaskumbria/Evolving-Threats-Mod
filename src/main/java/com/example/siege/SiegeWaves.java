@@ -22,127 +22,127 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Волны осады. Группа мобов появляется на поверхности далеко от игрока
- * (как налётчики перед рейдом на деревню), и идёт к нему. Звуков при появлении нет.
- * Кто именно в группе — решает состав осады {@link SiegeComposition} (нежить и твари или иллагеры, в случайных долях).
+ Waves of siege. A group of mobs appears on the surface far from the player.
+ * (like raiders before raiding the village), and goes to him. No sounds when it appears.
+ * Who exactly is in the group decides the composition of the siege {@link SiegeComposition} (undead and creatures or llagers, in random fractions).
  *
- * Как мобы находят игрока — отдельные цели, не этот класс:
- *   {@link com.example.entity.ai.SiegeTargetGoal} держит игрока целью,
- *   {@link com.example.entity.ai.SiegeMarchGoal} ведёт к нему отрезками, пока он далеко,
- *   и по дороге держит боевую стойку (смотрит на игрока, у зомби подняты руки).
- * Вблизи включается обычная драка или стрельба.
+ How Mobs Find Players – Individual Goals, Not This Class
+ * {@link com.example.entity.ai.SiegeTargetGoal} holds the player a target,
+ * {@link com.example.entity.ai.SiegeMarchGoal} leads to him while he's away,
+ * and on the way holds a battle stand (looks at the player, zombies raised hands).
+ * In the vicinity includes a regular fight or shooting.
  *
- * Метка мобов осады — обычный тег сущности {@link #TAG}. Он сохраняется вместе с мобом сам.
- * Мобы с тегом слушаются осаду только пока она идёт.
+ * Siege mobs tag is a common entity tag {@link #TAG}. It stays with the mob itself.
+ Mobs with a tag obey the siege only while it goes.
  *
- * Не ставит парящие инструменты, големов, мини-боссов и события мода — только мобов из состава осады.
+ Does not put soaring tools, golems, mini-bosses and fashion events - only mobs from the siege.
  */
 public final class SiegeWaves {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Через сколько тиков после начала ночи приходит первая волна. 600 = 30 секунд. */
+	/*How many tics after the beginning of the night comes the first wave. 600 = 30 seconds. */
 	public static final int FIRST_WAVE_DELAY_TICKS = 600;
 
 	/**
-	 * Пауза между волнами: случайное число тиков от минимума до максимума.
-	 * 1200 и 1800 = от 60 до 90 секунд. Ночь длится около 8 минут, так что выходит 6-8 волн.
+	 Pause between waves: random number of ticks from minimum to maximum.
+	 1200 and 1800 = 60 to 90 seconds. The night lasts about 8 minutes, so there are 6-8 waves.
 	 */
 	public static final int WAVE_PAUSE_MIN_TICKS = 1200;
 	public static final int WAVE_PAUSE_MAX_TICKS = 1800;
 
-	/** Если место под волну не нашли или рядом слишком много мобов, пробуем снова через столько тиков. */
+	/*If the place under the wave is not found or there are too many mobs nearby, try again through so many ticks. */
 	public static final int RETRY_TICKS = 100;
 
 	/**
-	 * Размер обычной волны, от и до. Считается в «цене» мобов (см. SiegeComposition.Kind):
-	 * обычный моб стоит 1, вызыватель 2, разоритель 3. Так в волну из 12 влезет 12 зомби или 4 разорителя.
+	 The size of the normal wave, from and to. Considered in the "price" of mobs (see SiegeComposition.Kind):
+	 A regular mob costs 1, caller 2, ruiner 3. So in the wave of 12 fit 12 zombies or 4 ruiners.
 	 */
 	public static final int WAVE_SIZE_MIN = 8;
 	public static final int WAVE_SIZE_MAX = 15;
 
 	/**
-	 * Ночь делится на доли от 0.0 (начало) до 1.0 (рассвет).
-	 * До этой доли волны слабее: размер умножается на EARLY_SIZE_FACTOR. 0.30 = первая треть ночи.
+	 Night is divided into fractions from 0.0 (early) to 1.0 (dawn).
+	 Up to this fraction, the waves are weaker: the size is multiplied by EARLY SIZE FACTOR. 0.30 = first third of the night.
 	 */
 	public static final float EARLY_UNTIL = 0.30f;
 
-	/** Во сколько раз меньше волны в начале ночи. 0.6 = 60% от обычного размера. 1.0 = без разницы. */
+	/*How many times less wave at the beginning of the night. 0.6 = 60% of normal size. 1.0 = whatever. */
 	public static final float EARLY_SIZE_FACTOR = 0.6f;
 
-	/** С какой доли ночи волны идут с двух сторон сразу (клещи). 0.50 = с полуночи. 1.1 = никогда. */
+	/*From what fraction of the night the waves come from both sides at once (ticks). 0.50 = from midnight. 1.1 = never. */
 	public static final float TWO_SIDES_FROM = 0.50f;
 
-	/** С какой доли ночи приходит одна последняя большая волна (с двух сторон). 0.85 = перед рассветом. */
+	/*From what fraction of the night comes the last great wave (on both sides). 0.85 = before dawn. */
 	public static final float FINAL_WAVE_FROM = 0.85f;
 
-	/** Во сколько раз последняя волна больше обычной. 1.5 = на половину больше. */
+	/*How many times is the last wave larger than the usual one? 1.5 = half more. */
 	public static final float FINAL_WAVE_SIZE_FACTOR = 1.5f;
 
 	/**
-	 * Сколько мобов осады может быть живо вокруг одного игрока (в радиусе CONTROL_RADIUS).
-	 * Больше — страшнее, но сильнее нагрузка на сервер: у каждого моба поиск пути.
-	 * Если мобов уже столько, новая волна ждёт.
+	 How many mobs of siege can be alive around one player (within CONTROL RADIUS radius).
+	 More is scarier, but more load on the server: each mob has a search for a path.
+	 If there are so many mobs, a new wave is waiting.
 	 */
 	public static final int MAX_ALIVE_PER_PLAYER = 80;
 
-	/** Если свободных мест меньше, волну не зовём, ждём (чтобы не приходили по одному-двое). */
+	/*If there are fewer free seats, we do not call the wave, wait (so that one or two do not come). */
 	public static final int MIN_FREE_SLOTS = 4;
 
 	/**
-	 * true — игроки в творческом режиме тоже считаются целью осады: волны приходят к ним, мобы идут к ним.
-	 * Удобно для проверки в творческом режиме. Мобы творческого игрока всё равно не бьют (так устроена игра).
-	 * false — как в обычной игре: творческого режима для осады «не существует», волн рядом с ним нет
-	 * и мобы осады стоят на месте. Наблюдатели (spectator) не считаются никогда.
+	 Players in creative mode are also considered the target of the siege: waves come to them, mobs go to them.
+	 * Convenient to check in creative mode. The creative player’s mobs still don’t beat (that’s how the game works).
+	 False - as in a normal game: the creative mode for the siege "does not exist", there are no waves next to it
+	 * and the mobs of siege stand still. The spectator is never considered.
 	 */
 	public static final boolean INCLUDE_CREATIVE_PLAYERS = true;
 
-	/** На каком расстоянии от игрока появляется волна, в блоках. Дальше дистанции прогрузки нельзя. */
+	/*At what distance from the player the wave appears in blocks. No further loading distance is allowed. */
 	public static final int SPAWN_DISTANCE_MIN = 50;
 	public static final int SPAWN_DISTANCE_MAX = 70;
 
-	/** Разброс направления одной группы, в радианах. 0.35 = примерно ±20 градусов. */
+	/** Dispersion of direction of one group, in radians. 0.35 = approximately ± 20 degrees. */
 	public static final double SIDE_SPREAD_RADIANS = 0.35;
 
-	/** Ближе этого к любому игроку волна не появляется, в блоках. 24 = как у обычного спавна игры. */
+	/** There is no wave closer to any player, in blocks. 24 = like a regular spawn game. */
 	public static final int MIN_PLAYER_DISTANCE = 24;
 
-	/** В каком радиусе от центра волны встают мобы, в блоках. */
+	/*In what radius from the center of the wave stand mobs in blocks. */
 	public static final int CLUSTER_RADIUS = 5;
 
-	/** Сколько точек перебрать для центра волны и для каждого моба. */
+	/*How many points to pick for the center of the wave and for each mob? */
 	public static final int SPOT_TRIES = 24;
 	public static final int MEMBER_TRIES = 12;
 
-	/** Как часто можно заново строить путь к игроку, в тиках. 10 = не чаще двух раз в секунду.
-	 *  Каждый пересчёт на миг останавливает моба. 1 = рывки и лаг, стрелы тоже летят скачками. */
+	/*How often can you build a new path to the player, in ticks? 10 = no more than twice per second.
+	 Each count stops the mob for a moment. 1 = jerks and lag, arrows also fly in leaps. */
 	public static final int REPATH_COOLDOWN_TICKS = 10;
 
-	/** В каком радиусе от игрока искать и вести мобов осады, в блоках. */
+	/*In what radius from the player to look for and lead mobs of siege, in blocks. */
 	public static final double CONTROL_RADIUS = 110.0;
 
-	/** Радиус обзора мобов осады (атрибут игры). Обычный зомби — 35. Больше — дальше строится путь, но тяжелее. */
+	/** The radius of view of the siege mobs (attribute of the game). A typical zombie is 35. More is the way, but harder. */
 	public static final double FOLLOW_RANGE = 96.0;
 
-	/** Ближе этого моб перестаёт идти отрезками и начинает драться или стрелять, в блоках. */
+	/*Closer to this mob stops going in segments and begins to fight or shoot, in blocks. */
 	public static final double MARCH_STOP_DISTANCE = 16.0;
 
 	/**
-	 * Дальше этого он снова идёт к игроку, если тот убежал.
-	 * Должно быть больше MARCH_STOP_DISTANCE. Если числа равны, моб дёргается на границе:
-	 * то идёт, то стреляет, и стрела срывается.
+	 Then he goes back to the player if he ran away.
+	 There should be more MARCH STOP DISTANCE. If the numbers are equal, the mob twitches at the boundary:
+	 It goes, it shoots, and the arrow falls off.
 	 */
 	public static final double MARCH_RESUME_DISTANCE = 28.0;
 
-	/** Длина одного отрезка пути, когда цель далеко, в блоках. */
+	/*The length of one leg of the path, when the target is far away, in blocks. */
 	public static final double MARCH_STEP_BLOCKS = 24.0;
 
-	/** Скорость отрезка. 1.0 = обычный шаг моба. Больше — быстрее. */
+	/*Speed of the segment. 1.0 = normal mob pitch. More is faster. */
 	public static final double MARCH_SPEED = 1.0;
 
 	// ========================================================================
 
-	/** Метка мобов осады. Сохраняется вместе с мобом. */
+	/** Siege mob tag. Save with the mob. */
 	public static final String TAG = "evolvingthreats_siege";
 
 	private static int waveCountdown = -1;
@@ -151,26 +151,26 @@ public final class SiegeWaves {
 	private SiegeWaves() {
 	}
 
-	/** Новая ночь осады: первая волна через FIRST_WAVE_DELAY_TICKS, последняя ещё не была. */
+	/*New Siege Night: The first wave through FIRST WAVE DELAY TICKS, the last one not yet. */
 	public static void reset() {
 		waveCountdown = Math.max(1, FIRST_WAVE_DELAY_TICKS);
 		finalWaveDone = false;
 	}
 
-	/** Выключение сервера. */
+	/*Shutting down the server. */
 	public static void clearRuntime() {
 		waveCountdown = -1;
 		finalWaveDone = false;
 	}
 
-	/** true — моб из осады (волна или обычный ночной спавн во время осады). */
+	/*True - mob from the siege (wave or usual night spawn during the siege). */
 	public static boolean isSiegeMob(Entity entity) {
 		return entity.isAlive() && entity.entityTags().contains(TAG);
 	}
 
 	/**
-	 * Помечает моба как мобов осады и даёт ему большой радиус обзора.
-	 * Вызывается и для волны, и для зомби и скелетов, что появились сами во время осады.
+	 Marks the mob as a siege mob and gives it a large radius of view.
+	 Called for the wave, and for zombies and skeletons that appeared during the siege.
 	 */
 	public static void enlist(Mob mob) {
 		mob.addTag(TAG);
@@ -181,7 +181,7 @@ public final class SiegeWaves {
 	}
 
 	/**
-	 * Каждый тик ночи осады. progress — доля ночи от 0.0 до 1.0.
+	 Every tick night of siege. Progress is the proportion of night from 0.0 to 1.0.
 	 */
 	public static void tick(ServerLevel level, double progress) {
 		RandomSource random = level.getRandom();
@@ -200,17 +200,17 @@ public final class SiegeWaves {
 		return random.nextIntBetweenInclusive(min, max);
 	}
 
-	/** Правила игры «спавн мобов» и «спавн монстров» выключены — волн нет (как и обычного ночного спавна). */
+	/*The rules of the game "spawn mobs" and "spawn monsters" are turned off - there are no waves (as well as the usual night spawn). */
 	private static boolean canSpawnWaves(ServerLevel level) {
 		return Boolean.TRUE.equals(level.getGameRules().get(GameRules.SPAWN_MOBS))
 				&& Boolean.TRUE.equals(level.getGameRules().get(GameRules.SPAWN_MONSTERS));
 	}
 
 	// ------------------------------------------------------------------
-	// Появление волны
+	// The appearance of a wave
 	// ------------------------------------------------------------------
 
-	/** true — хотя бы одна группа появилась. */
+	/** True - at least one group appeared. */
 	private static boolean spawnWave(ServerLevel level, double progress) {
 		RandomSource random = level.getRandom();
 		boolean finalWave = !finalWaveDone && progress >= FINAL_WAVE_FROM;
@@ -247,8 +247,8 @@ public final class SiegeWaves {
 	}
 
 	/**
-	 * Ставит одну группу в направлении angle от игрока. budget — размер группы в «цене» мобов
-	 * (обычный моб стоит 1, разоритель 3). Возвращает, сколько мобов реально появилось.
+	 * Puts one group in the direction of the angle from the player. budget - group size in the "price" of mobs
+	 * (a regular mob costs 1, ruiner 3). Returns how many mobs have actually appeared.
 	 */
 	private static int spawnGroup(ServerLevel level, ServerPlayer player, double angle, int budget, float[] shares) {
 		BlockPos center = findCenter(level, player, angle);
@@ -258,7 +258,7 @@ public final class SiegeWaves {
 		RandomSource random = level.getRandom();
 		int spawned = 0;
 		int remaining = budget;
-		// Не все точки подходят (особенно крупным мобам), поэтому попыток вдвое больше размера.
+		// Not all dots fit (especially large mobs), so attempts are twice the size.
 		for (int attempt = 0; attempt < budget * 2 && remaining > 0; attempt++) {
 			BlockPos pos = findMemberSpot(level, center, player);
 			if (pos == null) {
@@ -283,7 +283,7 @@ public final class SiegeWaves {
 			int x = Mth.floor(player.getX() + Math.cos(a) * distance);
 			int z = Mth.floor(player.getZ() + Math.sin(a) * distance);
 			BlockPos column = new BlockPos(x, 0, z);
-			// Не трогаем чужие и незагруженные куски мира: иначе игра начнёт их генерировать.
+			// Do not touch alien and unloaded pieces of the world: otherwise the game will begin to generate them.
 			if (!level.isPositionEntityTicking(column)) {
 				continue;
 			}
@@ -331,13 +331,13 @@ public final class SiegeWaves {
 		}
 		float yaw = (float) (Mth.atan2(player.getZ() - z, player.getX() - x) * (180.0 / Math.PI)) - 90.0f;
 		mob.snapTo(x, y, z, yaw, 0.0f);
-		// Крупные мобы (разоритель, паук) не влезают в тесные места: такой точке пробуем другого моба.
+		// Large mobs (ravageer, spider) do not get into cramped places: we try another mob at this point.
 		if (!level.noCollision(mob)) {
 			return false;
 		}
 
-		// NATURAL = как ночной спавн игры: броня, оружие, чары и особые роли мода выдаются как обычно.
-		// Мини-боссы в это время не выпадают, их выключает SiegeNight.isWindowOpen.
+		// Natural = like night spawn games: armor, weapons, charms and special mod roles are issued as usual.
+		// Mini-bosses do not fall out at this time, they are turned off by SiegeNight.isWindowOpen.
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.NATURAL, null);
 		enlist(mob);
 		mob.setTarget(player);
@@ -346,12 +346,12 @@ public final class SiegeWaves {
 	}
 
 	// ------------------------------------------------------------------
-	// Кого вести к игроку (используют SiegeTargetGoal и SiegeMarchGoal)
+	// Who to lead to the player (using SiegeTargetGoal and SiegeMarchGoal)
 	// ------------------------------------------------------------------
 
 	/**
-	 * Ближайший живой игрок в выживании или приключении, не дальше {@link #CONTROL_RADIUS}.
-	 * Наблюдатели не считаются, творческий режим — по INCLUDE_CREATIVE_PLAYERS. null — рядом никого нет.
+	 * The nearest live player in survival or adventure, no further {@link #CONTROL RADIUS}
+	 Observers do not count, creative mode - according to INCLUDE CREATIVE PLAYERS. null - there's no one around.
 	 */
 	public static ServerPlayer nearestHuntTarget(Mob mob) {
 		if (!(mob.level() instanceof ServerLevel level)) {
@@ -374,15 +374,15 @@ public final class SiegeWaves {
 	}
 
 	// ------------------------------------------------------------------
-	// Помощники
+	// Assistants
 	// ------------------------------------------------------------------
 
-	/** Считает ли осада этого игрока целью: жив, не наблюдатель, и (если INCLUDE_CREATIVE_PLAYERS = false) не в творческом. */
+	/*Does the siege of this player count as a goal: alive, not an observer, and (if INCLUDE CREATIVE PLAYERS = false) not creative? */
 	private static boolean isHuntable(ServerPlayer player) {
 		return player.isAlive() && !player.isSpectator() && (INCLUDE_CREATIVE_PLAYERS || !player.isCreative());
 	}
 
-	/** Кого осада считает целью, см. {@link #isHuntable}. */
+	/** See @link #isHuntable. */
 	private static List<ServerPlayer> eligiblePlayers(ServerLevel level) {
 		List<ServerPlayer> result = new ArrayList<>();
 		for (ServerPlayer player : level.players()) {
@@ -408,7 +408,7 @@ public final class SiegeWaves {
 		return true;
 	}
 
-	/** Можно ли поставить моба на эту клетку: твёрдый пол, нет воды, тело ни во что не упирается. */
+	/*Is it possible to put a mob on this cage: hard floor, no water, the body does not rest on anything. */
 	private static boolean canStand(ServerLevel level, BlockPos feet, EntityType<?> type) {
 		if (!level.isLoaded(feet) || !level.getWorldBorder().isWithinBounds(feet)) {
 			return false;

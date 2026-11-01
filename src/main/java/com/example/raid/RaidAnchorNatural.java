@@ -12,39 +12,39 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.Level;
 
 /**
- * Естественное появление Рейдового якоря (без команды /etraid).
+ * Natural raid anchor spawn (no /etraid command).
  *
- * <p>Как это работает: когда в верхнем мире ночью на поверхности появляется обычный зомби,
- * у него есть крошечный шанс не стать обычным, а превратиться в якорь. Вокруг сразу
- * появляются 12–15 прислуг (их число и снаряжение настраиваются в {@link RaidAnchor}).
- * Вызывается из ZombieMixin при спавне зомби — тот же приём, что у Гнилого надсмотрщика.
+ * <p>When a normal zombie spawns on the surface at night in the Overworld,
+ * it has a tiny chance to become an anchor instead. Minions appear around it immediately:
+ * 12–15 servants (count and gear in {@link RaidAnchor}).
+ * Called from ZombieMixin on zombie spawn — same pattern as the zombie overseer.
  *
- * <p>Шанс от дня НЕ растёт (метка FIXED в mobs.txt): с 80-го дня он просто «включается».
+ * <p>Chance does not grow by day (FIXED in mobs.txt): from day 80 it simply turns on.
  */
 public final class RaidAnchorNatural {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — якорь больше не появляется сам (команда /etraid продолжает работать). */
+	/** false — anchors no longer spawn naturally (/etraid still works). */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс, что появившийся ночью на поверхности обычный зомби станет якорем.
-	 * 0.001 = 0,1% (примерно один якорь на ~1000 зомби). Диапазон 0.0–1.0.
-	 * Для сравнения: у надсмотрщика 0.002 (0,2%). Увеличишь — якоря пойдут чаще.
-	 * Пауза ниже всё равно не даст им идти подряд.
+	 * Chance (0.0–1.0) that a surface-night zombie becomes an anchor.
+	 * 0.001 = 0.1% (~one anchor per 1000 zombies).
+	 * Overseer is 0.002 (0.2%). Raising this spawns anchors more often;
+	 * {@link #MIN_DAYS_BETWEEN} still prevents back-to-back anchors.
 	 */
 	public static final float SPAWN_CHANCE = 0.001f;
 
 	/**
-	 * Минимум дней между двумя естественными якорями на весь мир.
-	 * 5 = следующий не раньше, чем через 5 игровых дней. 0 = без паузы.
+	 * Minimum game days between two natural anchors for the whole world.
+	 * 5 = next anchor not before 5 days later. 0 = no cooldown.
 	 */
 	public static final int MIN_DAYS_BETWEEN = 5;
 
 	/**
-	 * С какого дня якорь вообще может появиться — берётся из ThreatTable.RAID_ANCHOR_DAY (сейчас 80).
-	 * Менять день нужно там, вместе с остальными порогами.
+	 * First day anchors can appear — from ThreatTable.RAID_ANCHOR_DAY (80).
+	 * Change that table entry to move the threshold with other features.
 	 */
 	public static final int FROM_DAY = ThreatTable.RAID_ANCHOR_DAY;
 
@@ -54,14 +54,14 @@ public final class RaidAnchorNatural {
 	}
 
 	/**
-	 * Пробует превратить только что заспавненного зомби в якорь.
+	 * Try to convert a freshly spawned zombie into an anchor.
 	 *
-	 * <p>Условия (все сразу): включено; естественный спавн игрой (не спавнер, не яйцо, не ритуал);
-	 * верхний мир; ночь; зомби под открытым небом (в пещерах и данжах якорь не нужен — рейд там не развернуться);
-	 * это именно обычный зомби (не житель, не хаск, не утопленник, не ребёнок); день не раньше {@link #FROM_DAY};
-	 * не ночь осады; прошла пауза после прошлого якоря; выпал шанс.
+	 * <p>All required: enabled; NATURAL spawn (not spawner, egg, or ritual);
+	 * Overworld; dark outside; open sky (no caves or dungeons);
+	 * plain zombie (not villager, husk, drowned, or baby); day ≥ {@link #FROM_DAY};
+	 * not siege night; cooldown elapsed; chance roll succeeded.
 	 *
-	 * @return true — зомби стал якорем, дальше ему обычное снаряжение выдавать не нужно
+	 * @return true — zombie became an anchor; skip normal equipment rolls
 	 */
 	public static boolean tryConvertOnSpawn(Zombie zombie, ServerLevel level, EntitySpawnReason reason) {
 		if (!ENABLED || reason != EntitySpawnReason.NATURAL) {
@@ -83,7 +83,7 @@ public final class RaidAnchorNatural {
 
 		RaidAnchorData data = RaidAnchorData.get(level);
 		int today = ThreatScale.day(level);
-		// last > today бывает, если день перемотали командой назад. Тогда паузу не считаем.
+		// last > today when day was rewound by command — ignore cooldown then.
 		boolean pauseOver = data.lastNaturalAnchorDay < 0
 				|| data.lastNaturalAnchorDay > today
 				|| today - data.lastNaturalAnchorDay >= MIN_DAYS_BETWEEN;

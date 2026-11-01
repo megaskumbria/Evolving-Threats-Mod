@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Вместо обычной стрелы «700 IQ» выпускает свою: слабость, замедление и слепота. */
+/*Instead of the usual arrow, the 700 IQ releases its own: weakness, slowdown and blindness. */
 @Mixin(AbstractSkeleton.class)
 public class TacticianSkeletonAttackMixin {
 

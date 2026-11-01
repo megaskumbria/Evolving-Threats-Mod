@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Бирка Mjölnir и редкий молот. Выпадение вещей объявлено у Mob, у Zombie своей копии нет.
- * Сама игра молот не роняет: шанс выпадения руки стоит 0, бросок делает {@link ZombieMjolnir}.
+ * Mjölnir name tag and rare hammer drop. Loot hooks live on Mob; Zombie has no separate override.
+ * Vanilla never drops the hammer: hand drop chance is 0; {@link ZombieMjolnir} rolls the bonus.
  */
 @Mixin(net.minecraft.world.entity.Mob.class)
 public class ZombieMjolnirLootMixin {

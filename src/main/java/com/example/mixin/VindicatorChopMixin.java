@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Поборник получает цель «рубить дерево на пути».
- * Что считается деревом и как быстро — {@link com.example.illager.VindicatorWoodBreak}.
+ The goal is to cut down a tree along the way.
+ * What counts as a tree and how fast - {@link com.example.illager.VindicatorWoodBreak}
  */
 @Mixin(Vindicator.class)
 public class VindicatorChopMixin {
@@ -17,7 +17,7 @@ public class VindicatorChopMixin {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$chopWood(CallbackInfo ci) {
 		Vindicator self = (Vindicator) (Object) this;
-		// 4 — выше обычного удара (5), ниже ломания дверей в рейде (2).
+		// 4 - above the usual impact (5), below the breaking of doors in the raid (2).
 		self.getGoalSelector().addGoal(4, new VindicatorChopGoal(self));
 	}
 }

@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Чары на оружии разбойника (арбалет) и громилы (топор) при появлении.
- * Один и тот же код вешается на оба класса — у обоих свой finalizeSpawn, после которого оружие уже в руке.
- * Разбойник из рейда здесь пропускается: игра следом выдаёт арбалет заново,
- * и чары вешает {@link PillagerRaidEnchantMixin} уже на него.
+ Charms on the weapon of the robber (crossbow) and the thug (axe) when appearing.
+ The same code is hung on both classes - both have their finalizeSpawn, after which the weapon is already in hand.
+ The robber from the raid is missed here: the game next gives out the crossbow again,
+ * and the spell hangs {@link PillagerRaidEnchantMixin} already on him.
  */
 @Mixin({ Pillager.class, Vindicator.class })
 public class IllagerWeaponEnchantMixin {

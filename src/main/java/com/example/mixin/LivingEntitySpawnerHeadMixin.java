@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Считает удары игрока по носителю спавнера (после успешного hurtServer).
+ * Counts the player's strikes on the spawner carrier (after a successful hurtServer).
  */
 @Mixin(LivingEntity.class)
 public class LivingEntitySpawnerHeadMixin {

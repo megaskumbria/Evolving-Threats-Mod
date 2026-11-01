@@ -16,46 +16,46 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий крипер, от которого нельзя убежать.
- * Бежит заметно быстрее спринта: по прямой догоняет и игрока, и прыжки в спринте.
- * Шипит полсекунды и взрывается. У обычного крипера шипение 1,5 секунды.
- * Подрывником, метателем динамита и обманкой не бывает: у тех свой способ добраться до игрока.
+ A rare cryper from which you can not escape.
+ Runs much faster than the sprint: in a straight line catches up with the player and jumps in the sprint.
+ Hisses for half a second and explodes. A normal cryper has a hissing of 1.5 seconds.
+ There is no such thing as a bomber, a dynamite thrower and a deception: they have their own way of getting to the player.
  */
 public final class FastCreeper {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — такие криперы не появляются, команда тоже не спавнит. */
+	/** Turn on the mechanics. False - such crypers do not appear, the team does not spawn either. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный крипер окажется супербыстрым. 0.03 = 3%.
-	 * FIXED: с первого дня, от шкалы угрозы и луны не зависит.
-	 * Это стартовое число. У подрывника и ломателя щита 5%, у заряженного 1%.
-	 * 0 = только команда. 1 = каждый крипер такой.
-	 * Команда этот шанс не бросает.
+	 Chance (0.0–1.0) that a regular cryper will be super fast. 0.03 = 3%.
+	 FIXED: From day one, the threat scale and the moon do not depend.
+	 * That's the starting number. The bomber and shield breaker have 5%, the loaded 1%.
+	 * 0 = commands only. 1 = every cryper is like this.
+	 The team skip this roll.
 	 */
 	public static final float SPAWN_CHANCE = 0.03f;
 
 	/**
-	 * Скорость погони. У обычного крипера 0.25 — спринт игрока от него уходит.
-	 * 0.50 = вдвое быстрее обычного: спринт и прыжки в спринте его не обгоняют, по прямой он догоняет.
-	 * 0.35 — на ровном поле ещё можно оторваться. 0.70 — почти не увернуться.
+	 Speed of chase. The usual cryper 0.25 - the player's sprint away from him.
+	 0.50 = twice as fast as usual: the sprint and jumps in the sprint do not overtake it, in a straight line it catches up.
+	 * 0.35 - you can still come off on a flat field. 0.70 - barely dodge.
 	 */
 	public static final double CHASE_SPEED = 0.50;
 
 	/**
-	 * Как далеко (блоки) помнит игрока и продолжает бежать.
-	 * У обычного крипера около 16: выбежал из этой зоны — он бросает погоню.
-	 * 48 = убежать «за угол видимости» не выйдет, он всё равно догоняет.
-	 * 16 = как у обычного. 0 = почти сразу теряет цель.
+	 How far (blocks) the player remembers and keeps running.
+	 The usual cryper is about 16: he ran out of this zone - he throws a chase.
+	 48 = to escape "a corner of sight" will not work, he still catches up.
+	 * 16 = normal. 0 = loses the target almost immediately.
 	 */
 	public static final double FOLLOW_RANGE = 48.0;
 
 	/**
-	 * Сколько секунд шипит, прежде чем взорваться. 0.5 = полсекунды.
-	 * У обычного крипера 1.5. Сила взрыва та же.
-	 * 0 и меньше игра считает как один миг, иначе взрыв случится в тот же тик, что и шипение.
+	 How many seconds does it hiss before it explodes? 0.5 = half a second.
+	 * A normal cryper has 1.5. Same force of explosion.
+	 The game counts 0 and less as one moment, otherwise the explosion will occur in the same tick as the hiss.
 	 */
 	public static final float FUSE_SECONDS = 0.5f;
 
@@ -70,7 +70,7 @@ public final class FastCreeper {
 				&& data.evolvingthreats$isFastCreeper();
 	}
 
-	/** Конец появления крипера. Командный спавн шанс не бросает: флаг ставят заранее. */
+	/*End of the creeper. Team spawn does not throw a chance: the flag is put in advance. */
 	public static void rollOnSpawn(Creeper creeper, EntitySpawnReason reason) {
 		if (!ENABLED || !(creeper instanceof FastCreeperEntity data)) {
 			return;
@@ -79,7 +79,7 @@ public final class FastCreeper {
 			apply(creeper);
 			return;
 		}
-		// Подрывник и метатель догоняют по-своему. Обманка быстрая только вблизи. Скорость им не подменяем.
+		// The bomber and the thrower catch up in their own way. The deception is quick only up close. We can't substitute for speed.
 		if (creeper instanceof SapperCreeperEntity sapper && sapper.evolvingthreats$isSapperCreeper()) {
 			return;
 		}
@@ -98,7 +98,7 @@ public final class FastCreeper {
 		apply(creeper);
 	}
 
-	/** Скорость, дальность погони и короткое шипение. Вызывать и при появлении, и когда крипер загрузился из мира. */
+	/*Speed, chase range and short hissing. Call both when it appears and when the cryper is loaded from the world. */
 	public static void apply(Creeper creeper) {
 		if (!(creeper instanceof FastCreeperEntity data)) {
 			return;
@@ -117,12 +117,12 @@ public final class FastCreeper {
 		}
 	}
 
-	/** Тики шипения. 20 тиков = 1 секунда. 0.5 секунды = 10 тиков. */
+	/*Tics of hissing. 20 ticks = 1 second. 0.5 seconds = 10 ticks. */
 	public static int fuseTicks() {
 		return Math.max(1, Math.round(FUSE_SECONDS * 20.0f));
 	}
 
-	/** Команда: быстрый крипер перед игроком. null — механика выключена. */
+	/*Team: A quick cryper in front of the player. null - the mechanics are off. */
 	public static @Nullable Creeper spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;

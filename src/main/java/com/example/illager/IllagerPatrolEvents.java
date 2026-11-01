@@ -3,7 +3,7 @@ package com.example.illager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
 /**
- * Отряд проверяется в конце тика каждого мира.
+ The squad is tested at the end of each world tick.
  */
 public final class IllagerPatrolEvents {
 

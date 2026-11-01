@@ -1,18 +1,18 @@
 package com.example.entity;
 
-/** Крипер-обманка: издалека обычный, вблизи срывается в рывок. Ника нет. */
+/** Feint creeper: looks normal from afar, bursts into a rush up close. No custom name. */
 public interface FeintCreeperEntity {
 
 	boolean evolvingthreats$isFeintCreeper();
 
 	void evolvingthreats$setFeintCreeper(boolean feint);
 
-	/** На каком расстоянии (блоки) этот крипер срывает маскировку. 0 — ещё не выбрал. */
+	/** At what distance (blocks) this creeper drops the disguise. 0 — not chosen yet. */
 	double evolvingthreats$getTriggerDistance();
 
 	void evolvingthreats$setTriggerDistance(double blocks);
 
-	/** Маскировка уже сорвана: дальше он быстрый, даже если игрок отбежал. */
+	/** Disguise already dropped: stays fast even if the player runs away. */
 	boolean evolvingthreats$isFeintRevealed();
 
 	void evolvingthreats$setFeintRevealed(boolean revealed);

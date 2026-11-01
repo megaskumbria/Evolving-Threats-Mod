@@ -12,7 +12,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 /**
- * Держит цель на «закреплённом» игроке, пока тот в радиусе охоты.
+ Keeps the target on the "fixed" player while he is in the range of the hunt.
  */
 public class OverseerHuntGoal extends Goal {
 

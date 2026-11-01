@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Добавляет зомби цель «идти на свет». Приоритет 5: ниже атаки (3), выше прогулки (7).
- * Кого исключить (утопленник, пиглин, босс), решает {@link com.example.light.LightSeeking#isEligible}.
+ * Adds the move-toward-light goal. Priority 5: below attack (3), above wander (7).
+ * Exclusions (drowned, piglin, bosses) — {@link com.example.light.LightSeeking#isEligible}.
  */
 @Mixin(Zombie.class)
 public class ZombieLightSeekGoalsMixin {

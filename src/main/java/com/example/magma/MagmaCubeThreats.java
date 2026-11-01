@@ -15,112 +15,112 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
 
 /**
- * Магмовый куб: больше здоровья и урона, поджог игрока, магма под ногами
- * и стадия перегрева — быстрее прыгает и бьёт гораздо сильнее.
- * Маленький куб (размер 1) по правилам игры ударом не бьёт, поэтому огонь и перегрев его не касаются.
+ Magma cube: more health and damage, arson player, magma underfoot
+ * and the overheating stage - jumps faster and hits much harder.
+ A small cube (size 1) does not hit with a blow according to the rules of the game, so fire and overheating do not touch it.
  */
 public final class MagmaCubeThreats {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — куб снова как в обычной игре: без огня, магмы и перегрева, со своими цифрами. */
+	/*False - the cube again as in a normal game: without fire, magma and overheating, with its own numbers. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Во сколько раз больше здоровья, чем в обычной игре.
-	 * 2 = вдвое. Большой куб: было 16 (8 сердец), станет 32 (16 сердец).
-	 * Средний: было 4, станет 8. Маленький: было 1, станет 2.
-	 * Свежий куб появляется с полной полоской. Уже живущий при загрузке чанка
-	 * получает новый потолок, но текущие сердца сами не восполняются.
+	 How many times more health than in a normal game.
+	 * 2 = double. Big cube: was 16 (8 hearts), will be 32 (16 hearts).
+	 * Medium: was 4, will be 8. Small: was 1, will be 2.
+	 A fresh cube appears with a full strip. Already alive at loading the chunk
+	 Gets a new ceiling, but current hearts are not replenished.
 	 */
 	public static final double HEALTH_MULTIPLIER = 2.0;
 
 	/**
-	 * Во сколько раз сильнее обычный удар (до перегрева).
-	 * 1.5 = на половину больнее. Большой: было 6, станет 9. Средний: было 4, станет 6.
-	 * 1 = урон как в игре. Маленький куб по-прежнему не бьёт.
+	 How many times stronger is the usual shock (before overheating).
+	 1.5 = half as painful. Big: was 6, will be 9. Medium: was 4, will be 6.
+	 * 1 = game damage. The little cube still doesn't hit.
 	 */
 	public static final double DAMAGE_MULTIPLIER = 1.5;
 
 	/**
-	 * Шанс (0.0–1.0), что прошедший удар подожжёт игрока.
-	 * 1.0 = 100%, каждый удар. 0.5 = каждый второй. 0 = огня нет.
-	 * Щит и короткое мигание после удара шанс не бросают.
+	 * Chance (0.0–1.0) that a hit will set the player on fire.
+	 * 1.0 = 100%, each stroke. 0.5 = every other. 0 = no fire.
+	 Shield and short blinking after impact do not throw a chance.
 	 */
 	public static final float FIRE_CHANCE = 1.0f;
 
 	/**
-	 * Сколько секунд горит игрок. 4 = четыре секунды.
-	 * Новый удар обновляет время. 0 = не поджигает.
+	 How many seconds does the player burn? 4 = four seconds.
+	 A new strike updates time. 0 = doesn't burn.
 	 */
 	public static final int FIRE_SECONDS = 4;
 
-	/** false — куб больше не ставит под собой магму. */
+	/*False: The cube no longer puts magma under it. */
 	public static final boolean PLACE_MAGMA = true;
 
 	/**
-	 * Шанс (0.0–1.0) поставить магму, когда подошла очередь.
-	 * 0.45 = 45%. 0 = никогда. 1 = каждый раз, как пройдёт пауза.
+	 Chance (0.0-1.0) to put the magma when the turn comes.
+	 * 0.45 = 45%. 0 = never. 1 = every time a pause passes.
 	 */
 	public static final float PLACE_CHANCE = 0.45f;
 
 	/**
-	 * Пауза между попытками поставить магму, секунды.
-	 * 4 = не чаще раза в четыре секунды, и только если куб стоит на земле.
+	 A pause between trying to deliver magma, seconds.
+	 4 = no more than once every four seconds, and only if the cube is on the ground.
 	 */
 	public static final int PLACE_INTERVAL_SECONDS = 4;
 
 	/**
-	 * true — магма не ставится, если в мире выключено правило «мобы разрушают блоки».
-	 * false — ставит даже при выключенном правиле.
+	 True - magma is not placed if the rule "mobs break blocks" is turned off in the world.
+	 * False - even when the rule is turned off.
 	 */
 	public static final boolean RESPECT_MOB_GRIEFING = true;
 
-	/** false — стадия перегрева выключена. Здоровье, урон, огонь и магма остаются. */
+	/** False - the overheating stage is turned off. Health, damage, fire and magma remain. */
 	public static final boolean OVERHEAT_ENABLED = true;
 
 	/**
-	 * С этого размера куб может перегреться. 2 = средний и большой.
-	 * 1 = ещё и маленький, но он ударом не бьёт, так что быстрее только прыгает.
+	 From this size, the cube can overheat. 2 = medium and large.
+	 1 = also small, but he does not hit, so he only jumps faster.
 	 */
 	public static final int OVERHEAT_MIN_SIZE = 2;
 
 	/**
-	 * Сколько секунд куб должен преследовать цель, прежде чем бросить шанс перегрева.
-	 * 6 = шесть секунд погони. Пока цели нет, время сбрасывается.
+	 How many seconds should the cube chase the target before throwing the chance of overheating?
+	 6 = six seconds chase. While there is no goal, time is reset.
 	 */
 	public static final int OVERHEAT_WARMUP_SECONDS = 6;
 
 	/**
-	 * Шанс (0.0–1.0) войти в перегрев, когда прогрев набрался.
-	 * 0.50 = 50%. Если не вышло, через прогрев бросает снова.
+	 * Chance (0.0-1.0) to get into overheating when the warming has gained.
+	 * 0.50 = 50%. If it doesn't work out, he throws it again.
 	 */
 	public static final float OVERHEAT_CHANCE = 0.50f;
 
-	/** Сколько секунд длится перегрев. 8 = восемь секунд. */
+	/** How many seconds does the overheating last? 8 = eight seconds. */
 	public static final int OVERHEAT_SECONDS = 8;
 
 	/**
-	 * Пауза после перегрева, секунды. 16 = раньше чем через 16 секунд снова не начнёт.
-	 * В эту паузу он обычный: прежний урон и прежняя скорость.
+	 Pause after overheating, seconds. 16 = does not start again after 16 seconds.
+	 During this pause, it is normal: the previous damage and the previous speed.
 	 */
 	public static final int OVERHEAT_COOLDOWN_SECONDS = 16;
 
 	/**
-	 * Во сколько раз быстрее бег во время перегрева.
-	 * 1.7 = на 70% быстрее. Прыжки отдельно, см. {@link #OVERHEAT_JUMP_DIVISOR}.
+	 How much faster is running during overheating?
+	 1.7 = 70% faster. Jump separately, see {@link #OVERHEAT JUMP DIVISOR}.
 	 */
 	public static final double OVERHEAT_SPEED_MULTIPLIER = 1.7;
 
 	/**
-	 * На сколько делится пауза между прыжками в перегреве.
-	 * 2 = прыгает вдвое чаще. Игра и так укорачивает паузу, когда куб уже дерётся.
+	 How much is the pause between jumps in overheating divided.
+	 2 = jumps twice as often. The game already shortens the pause when the cube is already fighting.
 	 */
 	public static final int OVERHEAT_JUMP_DIVISOR = 2;
 
 	/**
-	 * Во сколько раз больнее удар именно в перегреве, сверх обычного усиления.
-	 * 2 = вдвое больнее уже усиленного удара. Большой: 9 становится 18. Средний: 6 становится 12.
+	 How many times more painful is the blow in overheating, in excess of the usual amplification.
+	 2 = twice as painful as an already intensified stroke. Big: 9 becomes 18. Mean: 6 becomes 12.
 	 */
 	public static final double OVERHEAT_DAMAGE_MULTIPLIER = 2.0;
 
@@ -131,7 +131,7 @@ public final class MagmaCubeThreats {
 	private MagmaCubeThreats() {
 	}
 
-	/** Здоровье и скорость после того, как игра выставила размер. */
+	/*Health and speed after the game has set the size. */
 	public static void onSize(MagmaCube cube, boolean fillHealth) {
 		if (!ENABLED || HEALTH_MULTIPLIER <= 0.0) {
 			return;
@@ -147,7 +147,7 @@ public final class MagmaCubeThreats {
 		applySpeed(cube);
 	}
 
-	/** Урон удара, который уже дошёл до расчёта. Маленький куб сюда не попадает. */
+	/** Impact damage that has already reached the calculation. The little cube doesn't get in here. */
 	public static float scaleHit(MagmaCube cube, float damage) {
 		if (!ENABLED) {
 			return damage;
@@ -159,7 +159,7 @@ public final class MagmaCubeThreats {
 		return (float) scaled;
 	}
 
-	/** Удар снял здоровье. Поджёг только игрока. */
+	/*The impact took health away. Only set fire to the player. */
 	public static void onHit(MagmaCube cube, LivingEntity target) {
 		if (!ENABLED || FIRE_SECONDS <= 0 || FIRE_CHANCE <= 0.0f || !(target instanceof Player)) {
 			return;
@@ -170,7 +170,7 @@ public final class MagmaCubeThreats {
 		target.igniteForSeconds(FIRE_SECONDS);
 	}
 
-	/** Пауза между прыжками. Вне перегрева число игры не трогаем. */
+	/*Pause between jumps. Outside of overheating, we do not touch the number of games. */
 	public static int jumpDelay(MagmaCube cube, int vanillaDelay) {
 		if (!ENABLED || !OVERHEAT_ENABLED || OVERHEAT_JUMP_DIVISOR <= 1 || !isOverheated(cube)) {
 			return vanillaDelay;
@@ -178,7 +178,7 @@ public final class MagmaCubeThreats {
 		return Math.max(4, vanillaDelay / OVERHEAT_JUMP_DIVISOR);
 	}
 
-	/** Каждый тик на сервере: перегрев и магма под ногами. */
+	/*Every tick on the server: overheating and magma underfoot. */
 	public static void tick(MagmaCube cube) {
 		if (!ENABLED || cube.level().isClientSide()) {
 			return;
@@ -262,8 +262,8 @@ public final class MagmaCubeThreats {
 	}
 
 	/**
-	 * Только обычная земля, которую не жалко.
-	 * Сундуки, обсидиан, руды, дерево и уже стоящая магма не заменяются.
+	 Only ordinary land, which is not sorry.
+	 Chests, obsidian, ores, wood and already standing magma are not replaced.
 	 */
 	private static boolean canBecomeMagma(BlockState state) {
 		if (state.hasBlockEntity() || state.is(Blocks.MAGMA_BLOCK)) {

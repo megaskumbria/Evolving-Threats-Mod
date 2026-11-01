@@ -5,23 +5,23 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.monster.Creeper;
 
 /**
- * Обычный крипер изредка появляется уже заряженным, как после молнии.
- * Взрыв вдвое сильнее, с него может выпасть голова.
- * Динамит такой крипер не бросает. Подрывником или ломателем щита быть может.
+ The usual cryper occasionally appears already charged, as after lightning.
+ The explosion is twice as strong, it can fall head.
+ Dynamite does not throw such a cryper. Could be a bomber or a shield breaker.
  */
 public final class ChargedCreeper {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — заряженные сами не появляются. Молния по-прежнему заряжает крипера. */
+	/*False – charged do not appear on their own. Lightning is still charging the cryper. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что крипер при появлении в мире уже заряжен.
-	 * 0.01 = 1%, примерно один из ста. Это реже подрывника и ломателя щита (у тех 5%).
-	 * Бросок отдельный: заряженный может ещё оказаться подрывником или ломателем щита.
-	 * Метателем динамита он не становится.
-	 * 0 = сам не появляется. 1 = каждый крипер заряжен.
+	 The chance (0.0–1.0) that the cryper is already charged when it appears in the world.
+	 0.01 = 1%, about one in a hundred. This is less than a bomber and a shield breaker (in those 5%).
+	 Separate throw: charged can still be a bomber or a shield breaker.
+	 He does not become a dynamite thrower.
+	 * 0 = doesn't appear. 1 = each cryper is charged.
 	 */
 	public static final float SPAWN_CHANCE = 0.01f;
 
@@ -30,7 +30,7 @@ public final class ChargedCreeper {
 	private ChargedCreeper() {
 	}
 
-	/** Вызвать из появления крипера, до броска «метатель динамита». Команда спавна шанс не бросает. */
+	/** Call from the appearance of the cryper, before the throw "dynamite thrower". The Spawn team doesn't give up. */
 	public static void rollOnSpawn(Creeper creeper, EntitySpawnReason reason) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f || reason == EntitySpawnReason.COMMAND) {
 			return;

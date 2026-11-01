@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Обычный зомби или скелет, который стал Бастионом. Реализация — mixin, не новый моб. */
+/*Ordinary zombie or skeleton that became Bastion. The implementation is mixin, not a new mob. */
 public interface BastionEntity {
 
 	boolean evolvingthreats$isBastion();

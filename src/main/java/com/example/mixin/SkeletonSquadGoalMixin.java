@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Поводок отряда вешается на всех обычных скелетов, но молчит, пока скелет не капитан и не помощник.
- * Цель регистрируется здесь: у странника и иссушителя своего registerGoals, но список целей общий.
+ The lead of the squad is hung on all ordinary skeletons, but remains silent until the skeleton is captain and assistant.
+ The target is registered here: the wanderer and dryer have their registerGoals, but the list of goals is shared.
  */
 @Mixin(AbstractSkeleton.class)
 public class SkeletonSquadGoalMixin {

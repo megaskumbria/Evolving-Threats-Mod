@@ -26,33 +26,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Событие «Рейдовый якорь»: якорь с золотой мотыгой + 12–15 прислуг с {@link RaidEliteLoadout}.
+ * Raid anchor event: Golden hoe anchor + 12-15 servants with {@link RaidEliteLoadout}
  */
 public final class RaidAnchor {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Здоровье якоря. 100 = 50 сердец. Оружие по-прежнему золотая мотыга. */
+	/** Anchor max health. 100 = 50 hearts. Weapon is always a golden hoe. */
 	public static final float ANCHOR_MAX_HEALTH = 100.0f;
 
-	/** Минимум и максимум прислуг (включительно). */
+	/** Minimum and maximum minion count (inclusive). */
 	public static final int MINION_COUNT_MIN = 12;
 	public static final int MINION_COUNT_MAX = 15;
 
-	/** Доля зомби среди прислуг; остальное — скелеты. 0.60 = 60% зомби. */
+	/** Fraction of minions that are zombies; the rest are skeletons. 0.60 = 60% zombies. */
 	public static final float MINION_ZOMBIE_FRACTION = 0.60f;
 
-	/** Радиус разброса прислуг вокруг якоря (блоки). */
+	/** Minion spawn radius around the anchor (blocks). */
 	public static final double MINION_SPAWN_RADIUS_MIN = 6.0;
 	public static final double MINION_SPAWN_RADIUS_MAX = 14.0;
 
-	/** Как далеко от якоря/прислуг ещё работает «GPS» на игрока (блоки). */
+	/** How far from anchor/minions hunt GPS still tracks a player (blocks). */
 	public static final double HUNT_MAX_DISTANCE = 128.0;
 
-	/** После смерти якоря: Slowness II на прислуг, секунды × 20 = тики. */
+	/** After anchor death: Slowness II on minions. Seconds × 20 = ticks. */
 	public static final int MINION_SLOWNESS_TICKS = 30 * 20;
 
-	/** Уровень Slowness: 0 = I, 1 = II. */
+	/** Slowness amplifier: 0 = I, 1 = II. */
 	public static final int MINION_SLOWNESS_AMPLIFIER = 1;
 
 	// ========================================================================
@@ -89,12 +89,12 @@ public final class RaidAnchor {
 	}
 
 	/**
-	 * Естественное появление: обычный зомби, который только что заспавнился, сам становится якорем
-	 * (так же, как зомби становится надсмотрщиком), а прислуги появляются вокруг него.
-	 * Вызывается из {@link RaidAnchorNatural}. Прислуги ставятся на поверхность земли, а не на высоту якоря.
+	 * Natural spawn: a plain zombie that just spawned becomes an anchor
+	 * (like a zombie becoming an overseer) and minions appear around it.
+	 * Called from {@link RaidAnchorNatural}. Minions are placed on the surface, not at anchor height.
 	 *
-	 * @param zombie свежий зомби, ещё не добавленный в мир (его добавит сама игра)
-	 * @param hunter ближайший игрок — цель рейда; может быть null
+	 * @param zombie fresh zombie not yet added to the world (the game adds it)
+	 * @param hunter nearest player — raid target; may be null
 	 */
 	public static void convertToAnchor(ServerLevel level, Zombie zombie, @Nullable ServerPlayer hunter) {
 		UUID raidId = UUID.randomUUID();
@@ -110,7 +110,7 @@ public final class RaidAnchor {
 		}
 	}
 
-	/** Создаёт прислуг кольцом вокруг якоря. surface=true — ставить на поверхность земли (для естественного рейда). */
+	/** Spawns minions in a ring around the anchor. surface=true — ground height (natural raid). */
 	private static void spawnMinions(ServerLevel level, Vec3 anchorPos, UUID raidId, @Nullable UUID huntId, boolean surface) {
 		var random = level.getRandom();
 		int count = MINION_COUNT_MIN + random.nextInt(MINION_COUNT_MAX - MINION_COUNT_MIN + 1);
@@ -122,7 +122,7 @@ public final class RaidAnchor {
 			double z = anchorPos.z + Math.sin(angle) * radius;
 			double y = anchorPos.y;
 			if (surface) {
-				// Без этого на холмистой местности прислуги оказывались бы внутри склона или в воздухе.
+				// Without this, on hilly terrain, the servants would be inside the slope or in the air.
 				y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(x, y, z)).getY();
 			}
 			Vec3 minionPos = new Vec3(x, y, z);
@@ -148,7 +148,7 @@ public final class RaidAnchor {
 		return anchor;
 	}
 
-	/** Превращает зомби в якорь: метки рейда, здоровье, имя, золотая мотыга. В мир его не добавляет. */
+	/** Configures a zombie as anchor: raid flags, health, name, golden hoe. Does not add to the world. */
 	private static void setupAnchor(Zombie anchor, UUID raidId, @Nullable UUID huntId) {
 		if (anchor instanceof RaidParticipantEntity raid) {
 			raid.evolvingthreats$setRaidAnchor(true);
@@ -168,9 +168,9 @@ public final class RaidAnchor {
 	}
 
 	/**
-	 * Уже живущий якорь при загрузке мира.
-	 * Если запас меньше {@link #ANCHOR_MAX_HEALTH}, поднимает его.
-	 * Сколько сердец уже сняли — столько и остаётся снятым.
+	 * Existing anchor when the world loads.
+	 * If max health is below {@link #ANCHOR_MAX_HEALTH}, raises it.
+	 * Missing health stays missing (hearts already lost remain lost).
 	 */
 	public static void raiseStoredHealth(Zombie anchor) {
 		var maxHealth = anchor.getAttribute(Attributes.MAX_HEALTH);
@@ -218,7 +218,7 @@ public final class RaidAnchor {
 		mob.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(HUNT_MAX_DISTANCE);
 	}
 
-	/** Вызывается при смерти якоря: Slowness прислугам, сброс GPS и цели. */
+	/** Called when an anchor dies: slowness on minions, GPS off, targets cleared. */
 	public static void disbandRaidNear(ServerLevel level, UUID raidId, Vec3 center) {
 		RaidRegistry.unregister(raidId);
 

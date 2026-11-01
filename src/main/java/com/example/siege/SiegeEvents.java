@@ -8,9 +8,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.world.level.Level;
 
 /**
- * Подключение осады к игре: тик мира, попытка лечь в кровать и выключение сервера.
- * Запрет порталов — в mixin/EntityPortalSiegeMixin, спавн — в NaturalMonsterSwap и mixin/SiegeMobMixin.
- * Вход в Ад запоминается здесь: без него скелеты-иссушители в осаду не попадают.
+ * Wires siege into the game: world tick, sleep attempts, and server shutdown.
+ * Portal block — mixin/EntityPortalSiegeMixin; spawn swap — NaturalMonsterSwap and mixin/SiegeMobMixin.
+ * Nether visits are tracked here: without that, wither skeletons are excluded from siege composition.
  */
 public final class SiegeEvents {
 
@@ -21,7 +21,7 @@ public final class SiegeEvents {
 		ServerTickEvents.END_LEVEL_TICK.register(SiegeNight::tick);
 		EntitySleepEvents.ALLOW_SLEEPING.register(SiegeNight::onAllowSleeping);
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> SiegeNight.clearRuntime());
-		// Уже был в Аду до этого обновления — достижение игры. Новый заход — смена мира.
+		// Already visited the Nether before this update — vanilla advancement. Fresh visit — dimension change.
 		ServerPlayerEvents.JOIN.register(SiegeComposition::notePlayer);
 		ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
 			if (destination.dimension() == Level.NETHER) {

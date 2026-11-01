@@ -11,14 +11,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Удар по живому существу. Число в начале метода — до брони того, кого ударили.
- * Если удар дошёл и это Mirror, то же число возвращается игроку, и уже его броня его режет.
- * Щит мода гасит удар в начале другого mixin: тогда сюда приходит «удар не дошёл».
+ * Hitting a living thing. The number at the beginning of the method is before the armor of the person hit.
+ If the strike comes and it is Mirror, the same number is returned to the player, and his armor cuts him.
+ Shield fashion extinguishes the blow at the beginning of another mixin: then here comes the "blow did not come."
  */
 @Mixin(LivingEntity.class)
 public class MirrorHitMixin {
 
-	/** Урон до брони цели. Игра дальше может уменьшить местную переменную, это число не трогает. */
+	/*Damage to target armor. The game can reduce the local variable, this number does not touch. */
 	@Unique
 	private float evolvingthreats$mirrorIncoming;
 

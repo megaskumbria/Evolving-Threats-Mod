@@ -20,34 +20,34 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Скелет на костяной лошади.
- * В ванили такая лошадь-ловушка выходит только в грозу и очень редко.
- * Здесь обычный скелет ночью на поверхности иногда сразу садится на лошадь.
- * Наездник — тот же скелет, что и пеший: щит, зелья, стрелы, броня и оружие уже выданы.
- * Грозовая ловушка по-прежнему может выйти. Её наездников игра больше не переодевает:
- * не надевает железный шлем поверх нашего и не стирает чары с лука и шлема.
+ * Skeleton on a skeleton horse.
+ * Vanilla trap horses only appear in thunderstorms and are very rare.
+ * Here a normal skeleton on the surface at night sometimes spawns already mounted.
+ * The rider is the same skeleton as on foot: shield, potions, arrows, armor, and weapons already applied.
+ * Thunder trap horses can still spawn. The game no longer re-equips those riders:
+ * it does not put an iron helmet over ours or strip bow/helmet enchants.
  */
 public final class SkeletonHorseman {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Включить и ночной спавн наездника, и запрет грозовой ловушке переодевать скелета.
-	 * false — наездники снова только из грозы, и ловушка одевает их по-ванильному.
+	 * Enables both night horseman spawn and blocking thunder traps from re-equipping the rider.
+	 * false — horsemen only from thunderstorms again, and traps dress riders vanilla-style.
 	 */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет ночью на поверхности окажется на лошади.
-	 * 0.05 = 5%. Бросается после брони и оружия, только в обычном мире и только если над головой небо.
-	 * Пещеры, спаунер, ад и грозовая ловушка этот шанс не бросают.
+	 * Chance (0.0–1.0) that a normal surface-night skeleton spawns on a horse.
+	 * 0.05 = 5%. Rolled after armor and weapons, Overworld only, open sky above.
+	 * Caves, spawners, Nether, and thunder traps skip this roll.
 	 */
 	public static final float SPAWN_CHANCE = 0.05f;
 
 	/**
-	 * Дальше этого расстояния (в блоках) лошадь и всадник исчезают, как обычный скелет.
-	 * 128 — то же, что у монстров. 0 — не исчезать, пока их не убьют.
-	 * Костяная лошадь сама по себе не пропадает, поэтому без этого мир заполнится наездниками.
+	 * Beyond this distance (blocks) horse and rider despawn like a normal skeleton.
+	 * 128 — same as monsters. 0 — never despawn until killed.
+	 * Skeleton horses alone do not despawn, so without this the world fills with horsemen.
 	 */
 	public static final double DESPAWN_DISTANCE_BLOCKS = 128.0;
 
@@ -57,8 +57,8 @@ public final class SkeletonHorseman {
 	}
 
 	/**
-	 * Конец появления скелета. Лошадь создаётся здесь, скелет на неё садится.
-	 * Если шанс не выпал — скелет остаётся пешим.
+	 * End of skeleton spawn. Horse is created here and the skeleton mounts it.
+	 * If the roll fails — skeleton stays on foot.
 	 */
 	public static void tryMount(AbstractSkeleton skeleton, ServerLevelAccessor level, EntitySpawnReason reason) {
 		if (!canMountNaturally(skeleton, level, reason)) {
@@ -70,7 +70,7 @@ public final class SkeletonHorseman {
 		mount((ServerLevel) level, skeleton);
 	}
 
-	/** Команда: уже одетый скелет на лошади. null — механика выключена. */
+	/** Command: already equipped skeleton on a horse. null — mechanic disabled. */
 	public static @Nullable Skeleton spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -108,9 +108,9 @@ public final class SkeletonHorseman {
 	}
 
 	/**
-	 * Лошадь мода не должна жить вечно. Далеко от игрока пропадают оба.
-	 * Если всадник умер, лошадь тоже пропадает: это не питомец.
-	 * Игрок успел сесть сам — лошадь остаётся.
+	 * Mod horses should not live forever. Far from players, both despawn.
+	 * If the rider died, the horse despawns too — not a pet.
+	 * If a player mounted in time, the horse stays.
 	 */
 	public static void tickMount(SkeletonHorse horse) {
 		if (!ENABLED) {

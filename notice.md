@@ -1,59 +1,60 @@
-Исходники Minecraft для удобного просмотра (первый раз долго)
+Generate Minecraft sources for browsing (slow the first time):
 .\gradlew genSources
 
-Запуск Minecraft с модом
+Run Minecraft with the mod:
 .\gradlew runClient
 
 ================================================
-Чтобы чаще видеть dual-wield для теста, временно поставь SKELETON_DUAL_WIELD_CHANCE = 1.0f.
+To test dual-wield more often, temporarily set SKELETON_DUAL_WIELD_CHANCE = 1.0f.
 
-Примерно 1 из 390 625. У обычного зомби и у скелета (и странника) шанс одинаковый: 0,000256%.
+About 1 in 390,625. Zombies and skeletons (and strays) share the same chance: 0.000256%.
 
-Каждый из четырёх слотов бросается отдельно. Чтобы получился полный алмазный сет, все четыре раза должно совпасть сразу два условия:
+Each of the four armor slots rolls separately. For a full diamond set, all four must pass two checks:
 
-слот вообще получает броню — 50%;
-из материалов выпадает алмаз — 8 из 100 (веса: кожа 28, золото 12, кольчуга 18, медь 12, железо 22, алмаз 8).
-Один слот оказывается алмазным с шансом 50% × 8% = 4%. Четыре слота сразу: 4% × 4% × 4% × 4% = 1 / 390 625.
+- the slot gets armor at all — 50%;
+- diamond is chosen among materials — 8 of 100 (weights: leather 28, gold 12, chain 18, copper 12, iron 22, diamond 8).
+
+One diamond slot: 50% × 8% = 4%. All four: 4%^4 = 1 / 390,625.
 
 ================================================
-тактический скелет:
+Tactician skeleton:
 /ettactician
 
-патруль у дома:
+Patrol near home:
 /etpatrol
 
-блейз-алхимик:
+Blaze alchemist:
 /etalchemist
 
-ведьма-обнулитель:
+Nullifier witch:
 /etwitch
 
-иссушитель со спавнером:
+Wither skeleton with spawner:
 /etwitherspawner
 
-капитан скелетов:
+Skeleton captain:
 /etcaptain
 
-скелет наездник:
+Skeleton horseman:
 /ethorseman
 
-зомби с динамитом:
+TNT zombie:
 /ettnt
 
-зомби-чародей:
+Sorcerer zombie:
 /etsorcerer
 
-ритуальная стая (случайная голова, или player / creeper / piglin / wither):
+Ritual band (random head, or player / creeper / piglin / wither):
 /etritual
 /etritual wither
 /etritual creeper
 /etritual piglin
 
-парящий инструмент:
+Floating tool:
 /ettool
 
-повреждённый голем:
+Damaged golem:
 /etgolem
 
-Крипер ускоряющийся вблизи
-/etfeint 
+Feint creeper (speed burst when close):
+/etfeint

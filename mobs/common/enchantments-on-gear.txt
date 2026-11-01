@@ -1,64 +1,64 @@
-ЧАРЫ НА ОРУЖИИ, ИНСТРУМЕНТАХ И БРОНЕ МОБОВ
+Magic on Weapons, Instruments and Mob Armour
 ==========================================
 
-Тип: общая механика для зомби, скелетов, странников, разбойников и громил.
-Оружие и инструменты: меч, топор, кирка, лопата, мотыга, лук, арбалет.
-Броня: шлем, нагрудник, поножи, ботинки у зомби, скелетов и странников (разбойники брони не носят).
-Код: MobEnchantments.java (настройки и вся логика),
-     RandomArmor.java (isModArmor: что считается бронёй мода),
-     mixin/ZombieMixin.java, mixin/SkeletonMixin.java (вызов для зомби и скелетов),
-     mixin/IllagerWeaponEnchantMixin.java (разбойник с арбалетом и громила с топором),
-     mixin/PillagerRaidEnchantMixin.java (арбалет разбойника уже в рейде).
+Type: General mechanics for zombies, skeletons, wanderers, robbers and thugs.
+Weapons and tools: sword, axe, pickax, shovel, hoe, bow, crossbow.
+Armor: helmet, breastplate, knives, boots of zombies, skeletons and wanderers (robbers do not wear armor).
+Code: MobEnchantments.java (settings and all logic)
+RandomArmor.java (isModArmor: what is considered fashion armor)
+mixin/ZombieMixin.java, mixin/SkeletonMixin.java (a challenge for zombies and skeletons)
+mixin/IllagerWeaponEnchantMixin.java (robber with crossbow and thug with axe),
+mixin/PillagerRaidEnchantMixin.java (the crossbow of the robber is already in the raid).
 
 
-КАК РАБОТАЕТ
+How it works
 ------------
-1. Моб появляется и получает оружие и броню (как раньше, см. RandomWeapons.java и RandomArmor.java).
-2. Для КАЖДОГО предмета бросается шанс «зачаровать»: оружие по умолчанию 30%, каждый кусок брони 25%.
-3. Если выпало — выбирается от 1 до 5 чар (оружие) или от 1 до 4 (броня), чаще всего 1–2.
-   Только подходящих этому предмету: меч и топор — острота, огненный заговор...; кирка — эффективность, удача...;
-   лук — сила, пламя...; арбалет — быстрая перезарядка, многозарядный...;
-   шлем — подводное дыхание, подводник; ботинки — невесомость, подводная ходьба; поножи — проворство и т.д.
-4. Несовместимые чары вместе не бывают (как в обычном Майнкрафте): острота / небесная кара / бич — только одна;
-   защита / защита от огня / от взрыва / от снарядов — только одна; шёлковое касание и удача — одна из двух и т.д.
-5. Уровень чары от I до максимума, но высокие уровни редкие: острота V бывает на деревянном мече,
-   защита IV на кожаном шлеме, но выпадают редко (примерно у 2–3% предметов с этой чарой).
-   Чаще всего будет защита I или II. Одна «защита IV» на куске брони — вполне возможный вариант.
-6. Разбойник в рейде получает тот же бросок на арбалет, уже после чар самой игры.
-   Если бросок не выпал, остаётся быстрая перезарядка рейда (I или II, на поздних волнах).
-   Громила в рейде и гнилой надсмотрщик по-прежнему со своими чарами игры.
-7. Особые «головы» (блок спавнера, тыква-маяк, раздатчик) не зачаровываются.
-8. Выпадает такой предмет с моба с обычным шансом (около 8.5%), чары сохраняются.
-   Исключение: лук с Откидыванием V или VI не падает никогда. См. mobs/skeletons/skeleton.txt, раздел «ЛУК С ОТКИДЫВАНИЕМ V И VI».
+1. A mob appears and receives weapons and armor (as before, see RandomWeapons.java and RandomArmor.java).
+2. Every item has a chance to be charmed: the weapon defaults 30%, each piece of armor 25%.
+3. If it falls out - from 1 to 5 chars (weapons) or from 1 to 4 (armor), most often 1-2.
+Only suitable for this subject: the sword and the axe - sharpness, a fiery conspiracy ...; pickaxe - efficiency, luck ... ;
+bow - force, flame ...; crossbow - fast recharging, multi-charged ... ;
+helmet - underwater breathing, submariner; shoes - weightlessness, underwater walking; knife - agility, etc.
+4. Incompatible charms do not come together (as in ordinary Minecraft): sharpness / heavenly punishment / scourge - only one;
+Protection/protection from fire/explosion/projectiles is only one; silk touch and luck are one of the two, etc.
+5. Charm level is from I to maximum, but high levels are rare: sharpness V occurs on a wooden sword.
+protection IV on a leather helmet, but rarely fall out (about 2-3% of items with this charm).
+Most often there will be protection I or II. One "protection IV" on a piece of armor is a possible option.
+6. The robber in the raid gets the same throw on the crossbow, after the spell of the game itself.
+If the throw does not fall, there is a quick reload of the raid (I or II, in late waves).
+The thug in the raid and the rotten overseer is still with his spell of play.
+7. Special "heads" (spawner block, beacon pumpkin, distributor) are not fascinated.
+8. Such an object falls off the mob with the usual chance (about 8.5%), the charm is preserved.
+Exception: A bow with a folding V or VI never falls. See mobs/skeletons/skeleton.txt, section “Onions with Rejection V and VI”.
 
-Что работает у самого моба в бою:
-  - оружие: острота, огненный заговор, отбрасывание, сила, пламя, быстрая перезарядка и т.д.
-  - броня: все виды защиты (моба труднее убить), шипы (бьют игрока в ответ), невесомость,
-    подводная ходьба и скорость души.
-Небесная кара и бич членистоногих урон по игроку НЕ усиливают — они просто красивый лут.
-Добыча, эффективность, удача, шёлковое касание, прочность, починка, проклятия, подводное дыхание, подводник,
-проворство: на моба не влияют, нужны как ценный лут для игрока.
-Проклятие несъёмности на броне: игрок, надев такую броню с моба, не сможет её снять без смерти.
+What works for the mob in combat:
+- weapons: sharpness, fiery plot, discard, force, flame, rapid reload, etc.
+Armor: all types of protection (mob harder to kill), thorns (beat the player back), weightlessness,
+underwater walking and the speed of the soul.
+Heavenly punishment and the scourge of arthropod damage to the player do not increase - they are just a beautiful loot.
+Extraction, efficiency, luck, silk touch, strength, repair, curse, underwater breathing, submariner,
+Agility: the mob is not affected, needed as a valuable lute for the player.
+The curse of removability on armor: a player wearing such armor from a mob cannot remove it without death.
 
-Ледоход выключен по умолчанию (вес 0): иначе моб замораживал бы воду под ногами.
+The icebreaker is off by default (weight 0): otherwise the mob would freeze the water underfoot.
 
 
 SETTINGS (MobEnchantments.java)
 ---------------------------------
   ENABLED ...................... true
-  ZOMBIE_ENCHANT_CHANCE ........ 0.30 — шанс зачаровать оружие зомби (30%)
-  SKELETON_ENCHANT_CHANCE ...... 0.30 — то же для скелета/странника (лук и меч бросаются отдельно)
-  ILLAGER_ENCHANT_CHANCE ....... 0.30 — разбойник (арбалет, в том числе в рейде), громила (топор, не в рейде)
-  ZOMBIE_ARMOR_ENCHANT_CHANCE .. 0.25 — шанс зачаровать КАЖДЫЙ кусок брони зомби
-  SKELETON_ARMOR_ENCHANT_CHANCE  0.25 — то же для брони скелета/странника
-  COUNT_WEIGHTS ................ {55, 28, 12, 4, 1} — сколько чар на оружии
-  ARMOR_COUNT_WEIGHTS .......... {60, 28, 10, 2} — сколько чар на куске брони
-  LEVEL_BIAS ................... 2.0 — чем больше, тем реже высокие уровни
-  CANDIDATES ................... список чар и их веса; вес 0 = чара выключена
+ZOMBIE ENCHANT CHANCE - 0.30 - chance to enchant zombie weapons (30%)
+SKELETON ENCHANT CHANCE - 0.30 - the same for the skeleton / wanderer (bow and sword are thrown separately)
+ILLAGER ENCHANT CHANCE....... 0.30 – robber (crossbow, including in the raid), thug (axe, not in the raid)
+ZOMBIE ARMOR ENCHANT CHANCE 0.25 – a chance to enchant EVERY piece of zombie armor
+SKELETON ARMOR ENCHANT CHANCE 0.25 - Same for skeleton/wanderer armor
+COUNT WEIGHTS . . . {55, 28, 12, 4, 1} - how many spells on a weapon
+ARMOR COUNT WEIGHTS {60, 28, 10, 2} - how many spells on a piece of armor
+LEVEL BIAS . . . 2.0 – The more, the less high the levels
+Candidates ........................... list of charms and their weights; weight 0 = charm off
 
-ПРОВЕРКА В ИГРЕ
+A game check.
 ---------------
-Поставь шанс 1.0f у ZOMBIE_ENCHANT_CHANCE, ZOMBIE_ARMOR_ENCHANT_CHANCE, RandomWeapons.ZOMBIE_WEAPON_CHANCE
-и RandomArmor.ZOMBIE_ARMOR_PIECE_CHANCE, перезапусти игру, призови зомби:
-зачарованные предметы на нём переливаются.
-Чтобы увидеть сами чары, подними предмет с выпавшего моба (не забудь потом вернуть 0.30, 0.25, 0.40 и 0.50).
+Put a 1.0f chance on ZOMBIE ENCHANT CHANCE, ZOMBIE ARMOR ENCHANT CHANCE, RandomWeapons. ZOMBIE WEAPON CHANCE
+and RandomArmor.ZOMBIE ARMOR PIECE CHANCE, restart the game, call the zombies:
+Enchanted objects on it shimmer.
+To see the spell itself, pick up the object from the fallen mob (do not forget to return 0.30, 0.25, 0.40 and 0.50).

@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** У этого существа текущее отравление может снять последнее здоровье. */
+/*In this creature, current poisoning can take away the last health. */
 public interface LethalPoisonEntity {
 
 	boolean evolvingthreats$isLethalCavePoison();

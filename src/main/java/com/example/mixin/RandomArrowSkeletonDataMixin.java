@@ -5,7 +5,7 @@ import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-/** Пометка и очередь эффектов. Очередь нужна только серверу, на экране её нет. */
+/** Mark and queue of effects. The server only needs a queue, it is not on the screen. */
 @Mixin(AbstractSkeleton.class)
 public class RandomArrowSkeletonDataMixin implements RandomArrowSkeletonEntity {
 

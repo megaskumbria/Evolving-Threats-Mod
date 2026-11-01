@@ -12,50 +12,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Что игра помнит об осадах между перезапусками: когда следующая и на каком этапе мы сейчас.
- * Лежит в папке мира (data/evolving-threats/siege.dat). Здесь нет настроек для баланса:
- * числа и тексты меняются в {@link SiegeNight} и {@link SiegeWaves}.
+ * What the game remembers about sieges between restarts: when the next one is and which phase we are in.
+ * Stored in the world folder (data/evolving-threats/siege.dat). No balance tunables here:
+ * change numbers and chat text in {@link SiegeNight} and {@link SiegeWaves}.
  *
- * Время здесь везде в «часах мира»: это общий счётчик тиков, он не обнуляется каждый день.
- * Один игровой день = 24000 таких тиков.
+ * Time here is in "world time": the global tick counter, not reset each day.
+ * One game day = 24000 ticks.
  */
 public final class SiegeData extends SavedData {
 
-	/** Осады нет, ждём назначенный день. */
+	/** No siege active; waiting for the scheduled day. */
 	public static final int PHASE_IDLE = 0;
 
-	/** Предупреждение: ночь ещё не наступила, но спать и ходить в порталы уже нельзя. */
+	/** Warning: night not started yet, but sleep and portals are already blocked. */
 	public static final int PHASE_WARNING = 1;
 
-	/** Сама осада: идут волны мобов. */
+	/** Active siege: mob waves are running. */
 	public static final int PHASE_NIGHT = 2;
 
-	/** Номер игрового дня, в ночь которого будет следующая осада. -1 = ещё не назначена. */
+	/** Game day number when the next siege night happens. -1 = not scheduled yet. */
 	public long nextSiegeDay = -1L;
 
-	/** Один из PHASE_*. */
+	/** One of PHASE_*. */
 	public int phase = PHASE_IDLE;
 
-	/** Когда начинается ночь осады (часы мира). Нужно, чтобы понять, когда волны стартуют. */
+	/** World time when siege night begins. Used to know when waves start. */
 	public long nightStartClock;
 
-	/** Когда осада заканчивается (часы мира). */
+	/** World time when the siege ends. */
 	public long endClock;
 
-	/** Для какой осады уже показали утренний намёк. Чтобы он не повторялся. */
+	/** Which siege already received the morning omen. Prevents repeating the hint. */
 	public long omenSentFor = -1L;
 
 	/**
-	 * Состав текущей осады: доли видов мобов (в сумме 1.0), по порядку {@link SiegeComposition.Kind}.
-	 * Пусто — состав ещё не выбран (выбирается при начале осады). Хранится, чтобы после перезапуска
-	 * игры осада продолжилась с теми же мобами.
+	 * Current siege composition: mob type shares (sum 1.0), in {@link SiegeComposition.Kind} order.
+	 * Empty — not chosen yet (chosen at siege start). Saved so after restart
+	 * the siege continues with the same mob mix.
 	 */
 	public float[] shares = new float[0];
 
 	/**
-	 * Кто-то из игроков этого мира уже был в Аду.
-	 * Пока false, скелеты-иссушители в случайный состав осады не попадают.
-	 * Обратно не сбрасывается. Команда проверки одного вида это не смотрит.
+	 * Some player on this world has visited the Nether.
+	 * While false, wither skeletons are excluded from random siege composition.
+	 * Never resets to false. Debug force-single-type commands ignore this.
 	 */
 	public boolean netherVisited = false;
 
@@ -101,7 +101,7 @@ public final class SiegeData extends SavedData {
 		return list;
 	}
 
-	/** Данные хранятся один раз на весь мир, в верхнем мире. Можно передать любой мир сервера. */
+	/** Saved once per world in the Overworld. Any server level can be passed. */
 	public static SiegeData get(ServerLevel anyLevel) {
 		return anyLevel.getServer().overworld().getDataStorage().computeIfAbsent(TYPE);
 	}

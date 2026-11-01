@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
- * Момент броска ведьмы, когда бутылка уже выбрана и вылетает.
- * Здесь она может стать новым эффектом или туманной.
- * Лечение союзника и белое зелье этот вызов не трогает: их возвращают как есть.
+ * Witch ranged attack when the potion stack is chosen and launched.
+ * Here it may become a custom effect or a fog potion.
+ * Ally healing and plain white potions pass through unchanged.
  */
 @Mixin(Witch.class)
 public class WitchThrownPotionMixin {

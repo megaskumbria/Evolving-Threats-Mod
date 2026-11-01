@@ -1,96 +1,96 @@
-ЯД СЛИЗНЕЙ
-===========
+SLIME POISON
+=============
 
-Тип: удар обычного слизня. Магмовый куб яд не вешает.
-Код: slime/SlimePoison.java (шансы и сила эффекта),
-     mixin/SlimePoisonMixin.java (момент удара).
+Type: hit from a normal slime. Magma cube does not apply poison.
+Code: slime/SlimePoison.java (chances and effect strength),
+     mixin/SlimePoisonMixin.java (moment of the hit).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-Шанс бросается, когда удар слизня снял здоровье.
-Щит, который отбил удар, и короткое мигание после удара новый шанс не дают.
+The chance is rolled when a slime hit actually removed health.
+A shield that blocked the hit, and brief invulnerability right after a hit, do not roll again.
 
-Большой (размер 4, и любой больше 2):
-  30% — Отравление II на 15 секунд.
-Средний (размер 2):
-  20% — Отравление I на 15 секунд.
-Маленький (размер 1):
-  яд не вешает. Он и урон почти не наносит.
+Large (size 4, and any size greater than 2):
+  30% — Poison II for 15 seconds.
+Medium (size 2):
+  20% — Poison I for 15 seconds.
+Small (size 1):
+  no poison. It barely deals damage anyway.
 
-Если на игроке уже есть отравление сильнее или длиннее, более слабый удар его не затирает.
+If the player already has poison that is stronger or lasts longer, a weaker hit does not overwrite it.
 
 
 SETTINGS (SlimePoison.java)
 -----------------------------
   ENABLED ...................... true
-  LARGE_CHANCE ................. 0.30 — шанс большого (30%)
-  MEDIUM_CHANCE ................ 0.20 — шанс среднего (20%)
-  POISON_SECONDS ............... 15 — сколько секунд длится яд
+  LARGE_CHANCE ................. 0.30 — large slime chance (30%)
+  MEDIUM_CHANCE ................ 0.20 — medium slime chance (20%)
+  POISON_SECONDS ............... 15 — how many seconds poison lasts
   MEDIUM_SIZE .................. 2
-  LARGE_MIN_SIZE ............... 3 — с этого размера слизень большой
-  MEDIUM_AMPLIFIER ............. 0 — Отравление I
-  LARGE_AMPLIFIER .............. 1 — Отравление II
+  LARGE_MIN_SIZE ............... 3 — slime counts as large from this size up
+  MEDIUM_AMPLIFIER ............. 0 — Poison I
+  LARGE_AMPLIFIER .............. 1 — Poison II
 
 
-ТЕСТ
+TEST
 ----
-1. Призови большого слизня и дай ему ударить несколько раз. Примерно каждый третий удар — Отравление II.
-2. Убей его, дождись средних. Их удар иногда даёт Отравление I.
-3. Маленькие яд не вешают.
-4. Магмовый куб яд не вешает.
+1. Summon a large slime and let it hit you several times. About every third hit — Poison II.
+2. Kill it, wait for mediums. Their hits sometimes give Poison I.
+3. Small slimes do not apply poison.
+4. Magma cube does not apply poison.
 
 ==============================================================================================
 
-МАГМОВЫЙ КУБ
-=============
+MAGMA CUBE
+==========
 
-Тип: обычный магмовый куб. Слизень это не трогает и яд по-прежнему не вешает.
-Код: magma/MagmaCubeThreats.java (все числа),
-     mixin/MagmaCubeThreatMixin.java (здоровье при размере и прыжки в перегреве),
-     mixin/MagmaCubeTickMixin.java (перегрев и магма каждый тик),
-     mixin/SlimePoisonMixin.java (удар: сильнее бьёт и поджигает; яд слизня там же).
+Type: normal magma cube. Does not change the slime; slime poison still does not apply.
+Code: magma/MagmaCubeThreats.java (all numbers),
+     mixin/MagmaCubeThreatMixin.java (health by size and jumps while overheated),
+     mixin/MagmaCubeTickMixin.java (overheat and magma each tick),
+     mixin/SlimePoisonMixin.java (on hit: harder hits and sets fire; slime poison lives here too).
 
 
-ЧТО ПРОИСХОДИТ
---------------
-Здоровье вдвое больше, чем в обычной игре.
-  Большой: 32 (16 сердец) вместо 16.
-  Средний: 8 вместо 4.
-  Маленький: 2 вместо 1.
-Удар в полтора раза больнее.
-  Большой: 9 вместо 6. Средний: 6 вместо 4.
-  Маленький по правилам игры ударом не бьёт.
+WHAT HAPPENS
+------------
+Twice as much health as in vanilla.
+  Large: 32 (16 hearts) instead of 16.
+  Medium: 8 instead of 4.
+  Small: 2 instead of 1.
+Hits deal one and a half times normal damage.
+  Large: 9 instead of 6. Medium: 6 instead of 4.
+  Small does not hit with melee under vanilla rules.
 
-Каждый прошедший удар поджигает игрока на 4 секунды.
-Щит, который отбил удар, огонь не даёт.
+Each hit that lands sets the player on fire for 4 seconds.
+A shield that blocked the hit does not set fire.
 
-Стоя на земле, примерно раз в 4 секунды с шансом 45%
-заменяет блок под собой на раскалённую магму.
-Магма остаётся. Подходят незеррак, нилий, песок душ, чернит, базальт,
-земля, дёрн, песок, гравий, камень, глубинный сланец и снежный блок.
-Сундуки, дерево, обсидиан и руды не трогает.
-Если в мире выключено «мобы разрушают блоки», магму не ставит.
+While standing on the ground, about every 4 seconds with a 45% chance
+it replaces the block under itself with heated magma.
+The magma stays. Works on netherrack, nylium, soul sand, blackstone, basalt,
+dirt, grass block, sand, gravel, stone, deepslate, and snow block.
+Does not touch chests, wood, obsidian, or ores.
+If the world has “mob griefing” turned off, it does not place magma.
 
-Перегрев. Средний и большой, прогоняв цель 6 секунд, с шансом 50%
-входят в стадию на 8 секунд. Видны вспышки лавы, звук как у выстрела блейза.
-В стадии он на 70% быстрее, прыгает вдвое чаще, а удар ещё вдвое больнее:
-большой бьёт на 18, средний на 12. Потом 16 секунд остывает.
-Маленький в перегрев не входит.
+Overheat. Medium and large cubes, after chasing the target for 6 seconds, have a 50% chance
+to enter a stage for 8 seconds. Lava flash particles show; sound like a blaze shooting.
+In that stage it is 70% faster, jumps twice as often, and hits deal double damage:
+large hits for 18, medium for 12. Then 16 seconds of cooldown.
+Small cubes do not overheat.
 
 
 SETTINGS (MagmaCubeThreats.java)
 ---------------------------------
-ENABLED — false возвращает обычного куба.
-HEALTH_MULTIPLIER — 2.0, во сколько раз больше здоровья.
-DAMAGE_MULTIPLIER — 1.5, во сколько раз больнее обычный удар.
-FIRE_CHANCE — 1.0, шанс поджога (100%).
+ENABLED — false restores the vanilla cube.
+HEALTH_MULTIPLIER — 2.0, health multiplier vs vanilla.
+DAMAGE_MULTIPLIER — 1.5, normal hit damage multiplier.
+FIRE_CHANCE — 1.0, chance to ignite (100%).
 FIRE_SECONDS — 4.
-PLACE_MAGMA — false убирает магму под ногами.
+PLACE_MAGMA — false removes magma under feet.
 PLACE_CHANCE — 0.45.
 PLACE_INTERVAL_SECONDS — 4.
-RESPECT_MOB_GRIEFING — true слушает правило мира.
-OVERHEAT_ENABLED — false убирает только стадию.
+RESPECT_MOB_GRIEFING — true respects the world game rule.
+OVERHEAT_ENABLED — false removes only the overheat stage.
 OVERHEAT_MIN_SIZE — 2.
 OVERHEAT_WARMUP_SECONDS — 6.
 OVERHEAT_CHANCE — 0.50.
@@ -101,9 +101,9 @@ OVERHEAT_JUMP_DIVISOR — 2.
 OVERHEAT_DAMAGE_MULTIPLIER — 2.0.
 
 
-ТЕСТ
+TEST
 ----
-1. Призови большого магмового куба. Полоска здоровья длиннее обычной.
-2. Дай ему ударить: игрок загорается, урон заметно выше.
-3. Постой на незерраке несколько секунд. Под кубом иногда появляется магма.
-4. Дай ему гнаться секунд десять. С шансом около половины он вспыхнет и станет быстрее и больнее.
+1. Summon a large magma cube. Health bar is longer than usual.
+2. Let it hit you: the player catches fire, damage is noticeably higher.
+3. Stand on netherrack for several seconds. Magma sometimes appears under the cube.
+4. Let it chase you for about ten seconds. About half the time it flares up and gets faster and deadlier.

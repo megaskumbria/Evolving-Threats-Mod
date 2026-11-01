@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Попадание особой стрелы включает меч. Щит удар не пропускает — тогда этот код не вызывается. */
+/*The hit of a special arrow includes a sword. The shield does not miss the impact - then this code is not called. */
 @Mixin(Arrow.class)
 public class TacticianArrowMixin {
 

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
 
-/** Скелет помнит, что он из ритуальной стаи. Запись в мир объявлена у Skeleton. */
+/*The skeleton remembers that he is from a ritual pack. Recording in the world announced at Skeleton. */
 @Mixin(Skeleton.class)
 public class RitualSkeletonMixin implements RitualMember {
 

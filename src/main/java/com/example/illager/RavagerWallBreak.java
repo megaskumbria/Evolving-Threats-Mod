@@ -16,79 +16,79 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Разоритель пробивает стену ударом головы, если из-за неё нет пути к цели.
- * Один удар сразу сносит мягкие блоки в проёме. Камень и всё такое же твёрдое
- * трескается и падает со второго удара. Обсидиан и бедрок не берёт.
+ The destroyer punches the wall with a blow of the head, if because of it there is no way to the goal.
+ One blow immediately demolishes soft blocks in the opening. Stone and all that hard.
+ * cracks and falls from the second impact. Obsidian doesn't take a thigh.
  */
 public final class RavagerWallBreak {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — стены не пробивает, ходит как в обычной игре. */
+	/*False - the walls do not break, walks like in a normal game. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Минимальная пауза между ударами головы, в секундах.
-	 * 20 = двадцать секунд. После удара пауза случайная, от этого числа до {@link #COOLDOWN_MAX_SECONDS}.
+	 Minimum pause between head impacts, in seconds.
+	 * 20 = twenty seconds. After hitting, the pause is random, from this number to {@link #COOLDOWN MAX SECONDS}.
 	 */
 	public static final int COOLDOWN_MIN_SECONDS = 20;
 
 	/**
-	 * Максимальная пауза между ударами головы, в секундах.
-	 * 25 = двадцать пять секунд. Если равно минимуму, пауза всегда одна и та же.
+	 Maximum pause between head impacts, in seconds.
+	 * 25 = twenty-five seconds. If it is the minimum, the pause is always the same.
 	 */
 	public static final int COOLDOWN_MAX_SECONDS = 25;
 
 	/**
-	 * Сколько ударов нужно камню. 2 = первый удар только трещины, второй ломает.
-	 * 1 = камень падает сразу, как земля. Сюда же попадают булыжник, глубинный сланец,
-	 * кирпичи, руды и металлические блоки: их ломают киркой и они не мягче камня.
+	 How many strokes does the stone need? 2 = the first blow only cracks, the second breaks.
+	 1 = the stone falls as soon as the earth. And there's a cobblestone, a deep slate.
+	 bricks, ores and metal blocks: they are broken with a pickaxe and they are not softer than stone.
 	 */
 	public static final int STONE_HITS = 2;
 
 	/**
-	 * Ширина проёма в блоках. 3 = блок прямо перед мордой, один слева и один справа.
-	 * Туша разорителя шире одного блока, в дыру из одного блока он не пролезает.
-	 * 1 = только центральный столбец.
+	 * Block width. 3 = block directly in front of the muzzle, one on the left and one on the right.
+	 The carcass of the destroyer is wider than one block, it does not fit into the hole from one block.
+	 * 1 = central column only.
 	 */
 	public static final int HOLE_WIDTH = 3;
 
 	/**
-	 * Высота проёма в блоках, снизу от ног. 3 = ноги, тело и голова.
-	 * Рост разорителя больше двух блоков, проём в два блока ему низок.
+	 The height of the opening in the blocks, below the legs. 3 = legs, body and head.
+	 The growth of the destroyer is more than two blocks, the opening in two blocks is low.
 	 */
 	public static final int HOLE_HEIGHT = 3;
 
 	/**
-	 * На сколько блоков вперёд смотрит удар. 2 = стена вплотную или на блок дальше.
-	 * Ломается только ближайший слой, не вся толща сразу. Дальше этого стену не бьёт.
+	 How many blocks does the strike look forward to? 2 = wall close or block further.
+	 Only the nearest layer breaks, not the entire thickness at once. It doesn't hit the wall any further.
 	 */
 	public static final int REACH = 2;
 
-	/** Дальше этого (блоки) от цели стену не пробивает. 32 = как далеко он вообще видит цель. */
+	/*Next to this (blocks) from the target wall does not break. 32 = how far he sees the target. */
 	public static final double MAX_DISTANCE_TO_TARGET = 32.0;
 
-	/** Как часто проверять, открылся ли путь. 10 тиков = полсекунды. */
+	/*How often do you check if the path has opened? 10 tics = half a second. */
 	public static final int CHECK_INTERVAL_TICKS = 10;
 
 	/**
-	 * Выпадает ли сам блок предметом. false — стена исчезает, доски и камень на землю не падают.
-	 * Вещи из сундука, бочки и печи всё равно высыпаются: блок ломается, содержимое остаётся подобрать.
+	 * Whether the block itself falls out. False - the wall disappears, boards and stone do not fall to the ground.
+	 Things from the chest, barrels and ovens still fall out: the block breaks, the contents remain to pick up.
 	 */
 	public static final boolean DROP_ITEMS = false;
 
 	/**
-	 * true — команда /gamerule mobGriefing false запрещает пробивать стены.
-	 * false — пробивает даже при выключенном правиле.
+	 * True - the command /gamerule mobGriefing false prohibits breaking through walls.
+	 * False - breaks even when the rule is turned off.
 	 */
 	public static final boolean RESPECT_MOB_GRIEFING = true;
 
 	// ========================================================================
 
-	/** Твёрдость обычного камня. Блок кирки не мягче этого считается камнем. */
+	/** Hardness of ordinary stone. A pickaxe block is not softer than this is considered a stone. */
 	private static final float STONE_HARDNESS = 1.5f;
 
-	/** В одной секунде 20 тиков. */
+	/** 20 ticks in one second. */
 	private static final int TICKS_PER_SECOND = 20;
 
 	private RavagerWallBreak() {
@@ -105,7 +105,7 @@ public final class RavagerWallBreak {
 		return true;
 	}
 
-	/** Случайная пауза после удара, в тиках. */
+	/*Accidental pause after impact, in ticks. */
 	public static int cooldownTicks(Ravager ravager) {
 		int min = Math.max(0, COOLDOWN_MIN_SECONDS);
 		int max = Math.max(min, COOLDOWN_MAX_SECONDS);
@@ -114,8 +114,8 @@ public final class RavagerWallBreak {
 	}
 
 	/**
-	 * Ближайший слой стены перед разорителем. Пустой список — впереди ломать нечего
-	 * (воздух, обсидиан или бедрок). Сундук, бочка и печь ломаются как обычная стена.
+	 The nearest layer of the wall before the destroyer. Empty list - there is nothing to break ahead
+	 * (air, obsidian or thigh). The chest, barrel and stove break like a normal wall.
 	 */
 	public static List<BlockPos> nearestWall(Level level, BlockPos feet, Direction forward) {
 		if (forward.getAxis().isVertical()) {
@@ -126,17 +126,17 @@ public final class RavagerWallBreak {
 			if (!layerBlocksMovement(level, center, forward)) {
 				continue;
 			}
-			// Первый сплошной слой. Обсидиан в нём остаётся, ломается только остальное.
-			// Сквозь обсидиан к блокам дальше удар не проходит.
+			// First solid layer. Obsidian remains in it, only the rest breaks down.
+			// Through obsidian to the blocks further impact does not pass.
 			return layer(level, center, forward);
 		}
 		return List.of();
 	}
 
 	/**
-	 * Сколько ударов нужно этому блоку.
-	 * 0 = не трогать: воздух, обсидиан, бедрок и неломаемое.
-	 * Сундук и бочка — один удар. Печь твёрдая, как камень: ей нужно {@link #STONE_HITS}.
+	 How many punches does this block need?
+	 * 0 = do not touch: air, obsidian, thigh and non-breakable.
+	 Chest and barrel, one punch. The stove is hard as a rock: it needs {@link #STONE HITS}.
 	 */
 	public static int hitsNeeded(Level level, BlockPos pos, BlockState state) {
 		if (!isObstacle(level, pos, state) || isNeverBroken(state)) {
@@ -151,12 +151,12 @@ public final class RavagerWallBreak {
 		return 1;
 	}
 
-	/** Блок мешает пройти: есть коллизия. Бедрок и барьер тоже, хотя сломать их нельзя. */
+	/*Block prevents to pass: there is a collision. The hip and the barrier, too, although they cannot be broken. */
 	private static boolean blocksMovement(Level level, BlockPos pos, BlockState state) {
 		return !state.isAir() && !state.getCollisionShape(level, pos).isEmpty();
 	}
 
-	/** Стена, забор, земля, дерево: мешает пройти и блок вообще можно сломать. */
+	/*Wall, fence, earth, wood: prevents to pass and the block can be broken. */
 	private static boolean isObstacle(Level level, BlockPos pos, BlockState state) {
 		if (!blocksMovement(level, pos, state)) {
 			return false;
@@ -164,14 +164,14 @@ public final class RavagerWallBreak {
 		return state.getDestroySpeed(level, pos) >= 0.0f;
 	}
 
-	/** Обсидиан, плачущий обсидиан и бедрок. Барьер и усиленный глубинный сланец отсекаются твёрдостью ниже нуля. */
+	/*Obsidian, crying obsidian and thigh. The barrier and reinforced deep slate are cut off with a hardness below zero. */
 	private static boolean isNeverBroken(BlockState state) {
 		return state.is(Blocks.OBSIDIAN) || state.is(Blocks.CRYING_OBSIDIAN) || state.is(Blocks.BEDROCK);
 	}
 
 	/**
-	 * Ломает блок. Сам блок предметом не падает, если {@link #DROP_ITEMS} выключен.
-	 * Сундук, бочка и печь при этом высыпают вещи на землю, иначе содержимое пропало бы вместе с блоком.
+	 Breaks the block. The block itself does not fall if {@link #DROP ITEMS} is off.
+	 The chest, barrel and stove at the same time pour things onto the ground, otherwise the contents would disappear with the block.
 	 */
 	public static void breakBlock(Level level, BlockPos pos, Ravager ravager) {
 		if (!DROP_ITEMS && level.getBlockEntity(pos) instanceof Container container) {
@@ -180,7 +180,7 @@ public final class RavagerWallBreak {
 		level.destroyBlock(pos, DROP_ITEMS, ravager);
 	}
 
-	/** Есть ли в этом слое хоть один блок, который мешает пройти, даже обсидиан. */
+	/*Is there at least one block in this layer that prevents you from passing, even obsidian? */
 	private static boolean layerBlocksMovement(Level level, BlockPos center, Direction forward) {
 		Direction left = forward.getCounterClockWise();
 		int half = Math.max(0, HOLE_WIDTH - 1) / 2;

@@ -54,15 +54,15 @@ public class SkeletonMixin {
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
 		try {
 
-		// Чем выше шкала угрозы, тем чаще к ночному скелету добавляются ещё такие же (ThreatPack).
+		// The higher the threat scale, the more often the same ones are added to the night skeleton (ThreatPack).
 		if (level instanceof ServerLevel packLevel) {
 			ThreatPack.tryAddExtras(skeleton, packLevel, spawnReason);
 		}
 
-		// Скелет-иссушитель и так сильный. Бафы и набор мода ему не выдаём.
-		// Спавнер на голове — отдельно: каждые 2 удара зовёт двоих таких же.
+		// The dehumidifier skeleton is already strong. We don't give him buffs and fashion sets.
+		// Spavner on the head - separately: every 2 strokes calls two of the same.
 		if (skeleton instanceof WitherSkeleton wither) {
-			// Носитель спавнера меч не меняет. Остальным в аду — незерит и чары.
+			// The spawner does not change the sword. The rest of us in hell are enchanted and enchanted.
 			if (!SpawnerHeadMob.tryEquipWitherSkeleton(wither)) {
 				WitherSkeletonSword.tryApply(wither);
 			}
@@ -73,41 +73,41 @@ public class SkeletonMixin {
 			return;
 		}
 
-		// Команда уже пометила Бастиона или Spiky. Редкие роли их не забирают: им нужен обычный набор.
+		// The team has already tagged Bastion or Spiky. Rare roles don't take them away: they need a regular set.
 		boolean bastion = Bastion.isBastion(skeleton);
 		boolean spiky = Spiky.isSpiky(skeleton);
 
-		// Ритуальная стая раньше капитана: свой набор, без лука и без чар.
+		// Ritual pack before captain: his set, without bow and without charm.
 		if (!bastion && !spiky && skeleton instanceof Skeleton plain && RitualBand.tryClaim(plain, spawnReason)) {
 			return;
 		}
 
-		// Василиск раньше капитана: свой незерит и лук. Обычный набор мода ему не выдаём.
+		// Basilisk before the captain: his nezerite and bow. We don't give him the usual fashion set.
 		if (!bastion && !spiky && BasiliskSkeleton.tryClaim(skeleton, spawnReason)) {
 			return;
 		}
 
-		// Капитан и его помощники: свой набор и свой отряд. Зелья и случайное оружие им не выдаём.
+		// The captain and his assistants: his set and his squad. We don't give them potions and random weapons.
 		if (!bastion && !spiky && SkeletonCaptain.tryClaim(skeleton, level, spawnReason)) {
 			return;
 		}
 
-		// Обычный скелет, странник, болотный и пустынный. Оружие мода — только у первых двух.
+		// Ordinary skeleton, wanderer, marsh and desert. Weapon fashion - only the first two.
 		MobPotionBuffs.tryApply(skeleton);
 		if (!(skeleton instanceof Skeleton || skeleton instanceof Stray)) {
 			return;
 		}
 
-		// «700 IQ» — свой набор: шлем, лук и меч. Остальные варианты скелета ему не выдаём.
+		// “700 IQ” – his set: helmet, bow and sword. The rest of the skeleton is not given to him.
 		if (!bastion && !spiky && TacticianSkeleton.tryRoll(skeleton)) {
 			skeleton.reassessWeaponGoal();
 			SkeletonHorseman.tryMount(skeleton, level, spawnReason);
 			return;
 		}
 
-		// Снайпер раньше маленького и двух мечей: лук ему обязателен.
+		// A sniper before a small sword and two swords: a bow is mandatory for him.
 		boolean sniper = !bastion && !spiky && SniperSkeleton.tryRoll(skeleton);
-		// Маленький скелет быстрее и с малым здоровьем. Бастиону, Spiky и снайперу это не выдаём.
+		// A small skeleton is faster and in poor health. Bastion, Spiky and a sniper can't do that.
 		if (!bastion && !spiky && !sniper) {
 			bastion = Bastion.tryRoll(skeleton, spawnReason);
 		}
@@ -119,13 +119,13 @@ public class SkeletonMixin {
 				&& RandomWeapons.tryEquipDualMelee(skeleton, RandomWeapons.SKELETON_DUAL_MELEE_CHANCE);
 		boolean totem = !sniper && !dualMelee && !small && MobTotem.tryEquip(skeleton);
 		boolean handsTaken = dualMelee || totem;
-		// Случайные стрелы: лук остаётся, стрелу с эффектом в руку не кладём.
-		// Два меча лук убирают — такой скелет этот шанс не бросает.
+		// Accidental arrows: the bow remains, the arrow with effect is not placed in the hand.
+		// Two swords are removed from the bow - this skeleton does not give this chance.
 		if (!sniper && !dualMelee && !bastion && !spiky) {
 			RandomArrowSkeleton.tryRoll(skeleton);
 		}
 		boolean randomArrows = RandomArrowSkeleton.isActive(skeleton);
-		// Два оружия ближнего боя убирают лук. Иначе тотем, стрела или меч занимают вторую руку.
+		// Two melee weapons remove the bow. The totem, arrow, or sword occupy the other hand.
 		if (!sniper && !handsTaken && !randomArrows && !HarmfulArrowSkeleton.tryEquip(skeleton)) {
 			RandomWeapons.rollSkeletonLoadout(skeleton);
 			MobShields.tryEquip(skeleton);
@@ -142,31 +142,31 @@ public class SkeletonMixin {
 			SniperSkeleton.equip(skeleton);
 		}
 		MobEnchantments.rollForSkeleton(skeleton);
-		// Откидывание V/VI поверх обычных чар. Капитан и «700 IQ» сюда не доходят.
+		// Rejection of V/VI over normal spells. The captain and 700 IQ don't get there.
 		SkeletonPunchBow.tryApply(skeleton);
 		boolean fullSet = RandomArmor.rollForSkeleton(skeleton);
 		MobEnchantments.rollArmorForSkeleton(skeleton);
-		// Одна «особая» голова: спавнер → маяк (jack) → раздатчик.
-		// Полный комплект шлем не отдаёт.
+		// One “special” head: spawner → beacon (jack) → distributor.
+		// The full set doesn't give up.
 		if (!fullSet && !SpawnerHeadMob.tryEquipOnSpawn(skeleton)) {
 			if (!JackLanternBeacon.tryEquipOnSpawn(skeleton)) {
 				RandomDispenserSkull.tryEquipDispenserHead(skeleton);
 			}
 		}
-		// Дальний лук только у взрослого и только если лук остался.
+		// Long-distance onions only in adults and only if the onions remain.
 		if (!small) {
 			FastBowSkeleton.tryRoll(skeleton);
 		}
 		skeleton.reassessWeaponGoal();
 		SkeletonHorseman.tryMount(skeleton, level, spawnReason);
-		// После брони, чар и лука. Бастион и Spiky вместе не бывают.
+		// After armor, charm and bow. Bastion and Spiky aren't together.
 		if (bastion) {
 			Bastion.apply(skeleton);
 		} else if (spiky) {
 			Spiky.apply(skeleton);
 		}
 		} finally {
-			// Скелет и скелет-иссушитель. Василиск и капитан уже с именем — шанс их не трогает.
+			// Skeleton and exhumerator skeleton. Basilisk and the captain already have a name - the chance does not touch them.
 			Mirror.tryRoll(skeleton, spawnReason);
 		}
 	}

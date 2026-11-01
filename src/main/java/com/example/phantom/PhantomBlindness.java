@@ -8,34 +8,34 @@ import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Часть фантомов вешает слепоту, когда укус снял здоровье.
- * Кто умеет — решается один раз при появлении, отдельно от слабости.
- * Один фантом может уметь и то и другое, только одно или ничего.
- * Щит, который отбил удар, и короткое мигание после удара слепоту не дают.
- * Шанс не растёт с днями: какой записан ниже, такой и остаётся.
+ Part of the phantom hangs blindness when the bite relieved health.
+ He who can, is decided once upon appearance, apart from weakness.
+ One phantom can do both, one thing or nothing.
+ A shield that repulsed the blow, and a short blink after the blow do not give blindness.
+ The chance does not grow with the days: what is written below, and remains.
  */
 public final class PhantomBlindness {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — укус снова без слепоты, даже у уже помеченных фантомов. Слабость при этом остаётся. */
+	/*False - Bite again without blindness, even in already labeled phantoms. Weakness remains. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что фантом при появлении умеет вешать слепоту.
-	 * 0.20 = 20%, примерно каждый пятый. Бросок один и отдельно от слабости:
-	 * ночная стая, яйцо и команда спавна.
-	 * Такой фантом слепит каждым укусом, который прошёл. Остальные — никогда.
-	 * От дней мира не зависит. 0 = слепоты нет. 1 = её вешает каждый фантом.
+	 * Chance (0.0-1.0) that the phantom can hang blindness when it appears.
+	 * 0.20 = 20%, approximately one in five. Throw one and separate from weakness:
+	 Night pack, egg and team spawn.
+	 This phantom blinds every bite that has passed. The rest never.
+	 The days of peace do not depend. 0 = no blindness. 1 = each phantom hangs it.
 	 */
 	public static final float SPAWN_CHANCE = 0.20f;
 
 	/**
-	 * Слепота, секунды. Случайное число от меньшего до большего включительно.
-	 * 7 и 12 = от 7 до 12 секунд. Экран темнеет, фантома плохо видно.
-	 * Повторный укус обновляет время, если на игроке слепота уже короче или такая же.
-	 * Более долгая слепота (например от зелья) этим укусом не укорачивается.
-	 * Молоко снимает эффект сразу. Оба числа 0 или меньше = эффект не появится.
+	 Blind, seconds. A random number from less to more inclusive.
+	 *7 and 12 = 7 to 12 seconds. The screen is getting dark, the phantom is not visible.
+	 Repeated bite updates the time if the player's blindness is already shorter or the same.
+	 Longer blindness (for example, from a potion) is not shortened by this bite.
+	 Milk removes the effect immediately. Both numbers 0 or less = no effect.
 	 */
 	public static final int BLINDNESS_MIN_SECONDS = 7;
 	public static final int BLINDNESS_MAX_SECONDS = 12;
@@ -45,7 +45,7 @@ public final class PhantomBlindness {
 	private PhantomBlindness() {
 	}
 
-	/** Один раз при появлении фантома. Повторный вызов уже помеченного не перебрасывает шанс. */
+	/** Once when a phantom appears. Repeated call already marked does not throw the chance. */
 	public static void rollOnSpawn(Phantom phantom) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f || !(phantom instanceof BlindingPhantomEntity data)) {
 			return;
@@ -60,8 +60,8 @@ public final class PhantomBlindness {
 	}
 
 	/**
-	 * Укус уже снял здоровье.
-	 * Не игрок сюда не попадает: голем, животное и другой моб слепоту не получают.
+	 The bite has taken its toll.
+	 The player does not get here: golem, animal and other mob do not get blindness.
 	 */
 	public static void onBite(Phantom phantom, LivingEntity target) {
 		if (!ENABLED || !(target instanceof Player)) {
@@ -83,7 +83,7 @@ public final class PhantomBlindness {
 				true), phantom);
 	}
 
-	/** Меньшее и большее из двух настроек. Если оба не больше нуля — слепоты нет. */
+	/*The smaller and larger of the two settings. If both are no more than zero, there is no blindness. */
 	private static int rollSeconds(Phantom phantom) {
 		int low = Math.min(BLINDNESS_MIN_SECONDS, BLINDNESS_MAX_SECONDS);
 		int high = Math.max(BLINDNESS_MIN_SECONDS, BLINDNESS_MAX_SECONDS);

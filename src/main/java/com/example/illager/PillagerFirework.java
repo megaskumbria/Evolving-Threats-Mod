@@ -19,55 +19,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Разбойник иногда заряжает в арбалет ракету.
- * Ракета кладётся в арбалет в момент, когда он начинает тянуть тетиву,
- * поэтому на арбалете сразу виден фейерверк.
- * Стрела в этот залп не заряжается.
- * Ракета со звездой взрывается при попадании и снимает здоровье.
+ The robber sometimes loads a missile into the crossbow.
+ The rocket is placed in the crossbow as it begins to pull the bowstring.
+ * Therefore, fireworks are immediately visible on the crossbow.
+ The arrow in this volley is not charged.
+ A rocket with a star explodes upon hitting and relieves health.
  */
 public final class PillagerFirework {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — разбойник всегда стреляет стрелой. */
+	/*False: The thief always shoots an arrow. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что очередная зарядка будет ракетой.
-	 * 0.20 = 20%, примерно каждый пятый залп. Остальные залпы — обычная стрела.
-	 * Бросок в начале зарядки. 0 = ракет нет. 1 = каждый выстрел ракета.
+	 Chance (0.0-1.0) that the next charge will be a rocket.
+	 0.20 = 20%, approximately one in five volleys. The rest of the volleys are an ordinary arrow.
+	 * Throw at the start of charging. 0 = no missiles. 1 = each shot a rocket.
 	 */
 	public static final float SHOT_CHANCE = 0.20f;
 
 	/**
-	 * Сколько звёзд в ракете. От этого урон, без брони, на нормальной сложности.
-	 * 1 = 7 здоровья (3,5 сердца). 2 = 9. 3 = 11. Каждая звезда после первой добавляет 2.
-	 * 7 = предел, который можно собрать в игре, 19 здоровья.
-	 * 0 = ракету не заряжать, остаётся стрела.
-	 * На лёгкой удар слабее, на сложной сильнее. Броня уменьшает.
-	 * Взрыв задевает всех рядом, около пяти блоков, в том числе самого разбойника.
+	 How many stars are in the rocket. This damage, no armor, normal difficulty.
+	 1 = 7 health (3.5 hearts). 2 = 9. 3 = 11. Each star after the first adds 2.
+	 7 = the limit that can be collected in the game, 19 health.
+	 0 = Do not load the rocket, there is an arrow.
+	 A light stroke is weaker, a difficult one stronger. Reduces armor.
+	 The explosion affects everyone nearby, about five blocks, including the robber himself.
 	 */
 	public static final int STAR_COUNT = 1;
 
 	/**
-	 * Куда по росту цели летит ракета. 0.0 — в ноги, 1.0 — в макушку.
-	 * 0.45 — в грудь. Выше 0.7 снова часто проходит над головой:
-	 * ракета летит прямо и не падает, в отличие от стрелы.
+	 * Where the missile is flying in the height of the target. 0.0 in the legs, 1.0 in the top.
+	 0.45 in the chest. Above 0.7 is often overhead again:
+	 The rocket flies straight and does not fall, unlike an arrow.
 	 */
 	public static final double AIM_BODY = 0.45;
 
 	// ========================================================================
 
-	/** Больше семи звёзд в обычной ракете не бывает. */
+	/*There are no more than seven stars in a conventional rocket. */
 	private static final int MAX_STARS = 7;
 
 	private PillagerFirework() {
 	}
 
 	/**
-	 * Разбойник только начал тянуть арбалет.
-	 * Ракета уже лежит в нём: модель арбалета показывает фейерверк всю зарядку.
-	 * Игрока и пиглина не трогает.
+	 The robber just started pulling the crossbow.
+	 The rocket is already in it: the crossbow model shows the fireworks all charging.
+	 The player and the piglin don't touch.
 	 */
 	public static void onChargeStart(LivingEntity shooter, InteractionHand hand) {
 		if (!(shooter instanceof Pillager) || shooter.level().isClientSide() || shooter.isUsingItem()) {
@@ -89,9 +89,9 @@ public final class PillagerFirework {
 	}
 
 	/**
-	 * Игра целится так, будто снаряд упадёт, как стрела: чем дальше цель, тем выше дуга.
-	 * Ракета не падает и улетает над головой. Здесь дуга убирается, цель — грудь.
-	 * Скорость и разброс остаются теми, что дала игра. Стрелы не трогает.
+	 The game aims as if the projectile will fall like an arrow: the further the target, the higher the arc.
+	 The missile does not fall and flies overhead. Here the arc is removed, the target is the chest.
+	 Speed and scatter remain what the game gave. The arrow doesn't touch.
 	 */
 	public static void correctAim(LivingEntity shooter, Projectile projectile, LivingEntity target, float power, float uncertainty, float angle) {
 		if (!ENABLED || target == null || !(shooter instanceof Pillager) || !(projectile instanceof FireworkRocketEntity)) {
@@ -112,7 +112,7 @@ public final class PillagerFirework {
 		projectile.shoot(toTarget.x, toTarget.y, toTarget.z, power, uncertainty);
 	}
 
-	/** Убирает ракету, оставшуюся с прошлого залпа, чтобы этот залп зарядил стрелу. */
+	/*Remove the rocket left over from the last volley so that this volley will charge the arrow. */
 	private static void clearRocket(ItemStack crossbow) {
 		ChargedProjectiles charged = crossbow.get(DataComponents.CHARGED_PROJECTILES);
 		if (charged != null && charged.contains(Items.FIREWORK_ROCKET)) {

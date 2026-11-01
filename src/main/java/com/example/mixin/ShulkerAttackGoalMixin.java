@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
- * Момент, когда шалкер выпускает снаряд.
- * Цель атаки — внутренний класс шалкера, своего файла у неё нет.
+ The moment when the shalker releases the projectile.
+ The target of the attack is the inner class of the shalker, it does not have its own file.
  */
 @Mixin(targets = "net.minecraft.world.entity.monster.Shulker$ShulkerAttackGoal")
 public class ShulkerAttackGoalMixin {

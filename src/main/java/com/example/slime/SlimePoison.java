@@ -7,52 +7,52 @@ import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Удар слизня может отравить игрока.
- * Большой — Отравление II, средний — Отравление I. Маленький яд не вешает.
- * Магмовый куб сюда не попадает: это не слизень, у него свой удар.
+ * Slime melee hits can poison the player.
+ * Large slimes — Poison II, medium — Poison I. Small slimes never apply poison.
+ * Magma cubes are excluded: not a slime, they use their own attack.
  */
 public final class SlimePoison {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить яд. false — удары слизней снова только с уроном, без отравления. */
+	/** Enable poison. false — slime hits deal damage only, no poison. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что удар большого слизня повесит Отравление II.
-	 * 0.30 = 30%. Бросается один раз за удар, который прошёл (щит и мигание после удара не считают).
-	 * 0 = большой слизень яд не вешает.
+	 * Chance (0.0–1.0) that a large slime hit applies Poison II.
+	 * 0.30 = 30%. One roll per hit that actually landed (shield blocks and iframes do not count).
+	 * 0 = large slimes never poison.
 	 */
 	public static final float LARGE_CHANCE = 0.30f;
 
 	/**
-	 * Шанс (0.0–1.0), что удар среднего слизня повесит Отравление I.
-	 * 0.20 = 20%. 0 = средний слизень яд не вешает.
+	 * Chance (0.0–1.0) that a medium slime hit applies Poison I.
+	 * 0.20 = 20%. 0 = medium slimes never poison.
 	 */
 	public static final float MEDIUM_CHANCE = 0.20f;
 
 	/**
-	 * Сколько секунд длится отравление. 15 = пятнадцать секунд.
-	 * И для большого, и для среднего. 0 = эффект не появится.
+	 * Poison duration in seconds. 15 = fifteen seconds.
+	 * Same for large and medium. 0 = effect never appears.
 	 */
 	public static final int POISON_SECONDS = 15;
 
 	/**
-	 * Размер среднего слизня. 2 = средний, как в обычной игре.
-	 * 1 и меньше — маленький: яд не вешает, даже если шанс выше нуля.
+	 * Size value for a medium slime. 2 = medium, as in vanilla.
+	 * 1 and below = small: no poison even if chance is above zero.
 	 */
 	public static final int MEDIUM_SIZE = 2;
 
 	/**
-	 * С этого размера слизень считается большим.
-	 * Обычный большой имеет размер 4. 3 и выше тоже получают Отравление II.
+	 * From this size upward the slime counts as large.
+	 * Vanilla large is size 4. Size 3+ also gets Poison II.
 	 */
 	public static final int LARGE_MIN_SIZE = 3;
 
-	/** Сила эффекта: 0 = Отравление I, 1 = Отравление II. */
+	/** Effect strength: 0 = Poison I, 1 = Poison II. */
 	public static final int MEDIUM_AMPLIFIER = 0;
 
-	/** Сила эффекта большого слизня. 1 = Отравление II. */
+	/** Large slime effect strength. 1 = Poison II. */
 	public static final int LARGE_AMPLIFIER = 1;
 
 	// ========================================================================
@@ -60,7 +60,7 @@ public final class SlimePoison {
 	private SlimePoison() {
 	}
 
-	/** Удар уже прошёл. Маленький слизень, магмовый куб и не-игрок сюда не попадают. */
+	/** Hit already landed. Small slime, magma cube, and non-players do not reach here. */
 	public static void onHit(Slime slime, LivingEntity target) {
 		if (!ENABLED || !(target instanceof Player)) {
 			return;

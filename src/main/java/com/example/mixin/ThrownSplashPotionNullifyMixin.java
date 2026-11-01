@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Момент, когда ведьма создала взрывное зелье.
- * Если этот бросок обнуляющий, бутылка яда или урона подменяется на белую без своих эффектов.
- * Попадание разбирает {@link AbstractThrownPotionNullifyMixin}.
+ The moment the witch created the explosive potion.
+ If this throw is nullifying, a bottle of poison or damage is replaced with a white one without its effects.
+ * Hit by {@link AbstractThrownPotionNullifyMixin}.
  */
 @Mixin(ThrownSplashPotion.class)
 public class ThrownSplashPotionNullifyMixin {

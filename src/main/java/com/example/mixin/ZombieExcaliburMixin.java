@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Обычный зомби помнит, что он Excalibur, и после загрузки мира не теряет это.
- * Бирка — {@link ZombieExcaliburLootMixin}. Меч и имя выдаёт {@link ZombieExcalibur}.
+ * Marks a normal zombie as Excalibur and persists that after world reload.
+ * Name tag — {@link ZombieExcaliburLootMixin}. Sword and name — {@link ZombieExcalibur}.
  */
 @Mixin(Zombie.class)
 public class ZombieExcaliburMixin implements ZombieExcaliburEntity {

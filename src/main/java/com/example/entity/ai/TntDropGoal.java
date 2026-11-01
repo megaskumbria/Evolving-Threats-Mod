@@ -5,8 +5,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
- * Зомби с динамитом проверяет путь и здоровье.
- * Сам не ломает блоки и не отменяет удар: динамит появляется под ногами.
+ Zombies with dynamite check the path and health.
+ He does not break blocks and does not cancel the impact: dynamite appears under the feet.
  */
 public class TntDropGoal extends Goal {
 

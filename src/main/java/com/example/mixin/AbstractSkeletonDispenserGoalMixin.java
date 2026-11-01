@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Подключает цель «залп из раздатчика» ко всем скелетам; сама цель активна только с раздатчиком на голове.
+ * Connects the target to all skeletons; the target is only active with a dispenser on its head.
  */
 @Mixin(AbstractSkeleton.class)
 public class AbstractSkeletonDispenserGoalMixin {

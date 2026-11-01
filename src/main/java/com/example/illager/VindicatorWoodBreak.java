@@ -10,48 +10,48 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
 
 /**
- * Поборник рубит дерево, если оно стоит между ним и целью.
- * Забор, калитка, дверь, люк, доски, брёвна, ступеньки, плиты, таблички.
- * Камень, незерский забор и земля не трогает.
- * Сундук и бочка тоже нет: иначе пропадали бы вещи внутри.
+ A champion cuts a tree if it stands between him and the goal.
+ * Fence, gate, door, hatch, boards, logs, steps, plates, plates.
+ Stone, Nezer fence and the ground does not touch.
+ There is no chest and barrel either: otherwise things would disappear inside.
  */
 public final class VindicatorWoodBreak {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — поборник дерево не рубит. Двери в рейде игра ломает по-своему. */
+	/** False - the champion does not cut a tree. Doors in the raid the game breaks in its own way. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Доля скорости игрока с таким же топором. 0.2 = 20%.
-	 * Материал топора уже внутри этой скорости: железо быстрее руки, алмаз быстрее железа.
-	 * Эффективность на топоре тоже ускоряет, острота — нет, она только про удар.
-	 * Дубовый забор (твёрдость 2): железный топор около 2.5 сек, алмазный около 1.9 сек.
-	 * 1.0 = как игрок. 0 = дерево не ломается.
+	 Share of the speed of a player with the same axe. 0.2 = 20%.
+	 The material of the axe is already within this speed: iron is faster than the hand, diamond is faster than iron.
+	 Efficiency on the axe also accelerates, sharpness - no, it is only about the blow.
+	 Oak fence (hardness 2): iron axe about 2.5 seconds, diamond about 1.9 seconds.
+	 * 1.0 = as a player. 0 = the tree does not break.
 	 */
 	public static final float SPEED_MULTIPLIER = 0.2f;
 
-	/** Выпадает ли дерево предметом. false — блок просто исчезает. */
+	/** Whether the tree falls out. False: The block just disappears. */
 	public static final boolean DROP_ITEMS = false;
 
-	/** Дальше этого (блоки) от цели забор не рубят. */
+	/** Beyond this (blocks) from the target fence is not cut. */
 	public static final double MAX_DISTANCE_TO_TARGET = 32.0;
 
-	/** Как часто проверять, открылся ли путь. 10 тиков = полсекунды. */
+	/*How often do you check if the path has opened? 10 tics = half a second. */
 	public static final int CHECK_INTERVAL_TICKS = 10;
 
 	/**
-	 * Сколько тиков трещина не сбрасывается, если поборник отвлёкся и вернулся.
-	 * 100 = 5 секунд.
+	 How many tics the crack does not shed if the champion is distracted and returned.
+	 * 100 = 5 seconds.
 	 */
 	public static final int KEEP_PROGRESS_TICKS = 100;
 
-	/** Дальность руки (блоки). Дальше этого блок не рубит. */
+	/** Arm range (blocks). Beyond that, the block doesn't cut. */
 	public static final double REACH = 3.5;
 
 	/**
-	 * true — команда /gamerule mobGriefing false запрещает рубку.
-	 * false — рубят даже при выключенном правиле.
+	 * True - the command /gamerule mobGriefing false prohibits cutting.
+	 * False - cut even when the rule is turned off.
 	 */
 	public static final boolean RESPECT_MOB_GRIEFING = true;
 
@@ -71,7 +71,7 @@ public final class VindicatorWoodBreak {
 		return true;
 	}
 
-	/** Дерево, которое мешает пройти: есть коллизия и это деревянный блок. */
+	/*A tree that prevents you from passing: there is a collision and it is a wooden block. */
 	public static boolean isWoodenObstacle(BlockGetter level, BlockPos pos, BlockState state) {
 		if (!isWood(state) || state.getCollisionShape(level, pos).isEmpty()) {
 			return false;
@@ -81,8 +81,8 @@ public final class VindicatorWoodBreak {
 	}
 
 	/**
-	 * Доски, брёвна, деревянный забор и калитка, дверь, люк, ступеньки, плиты,
-	 * кнопка, плита, полка, табличка, бамбук.
+	 * Boards, logs, wooden fence and gate, door, hatch, steps, plates,
+	 * button, stove, shelf, sign, bamboo.
 	 */
 	public static boolean isWood(BlockState state) {
 		return state.is(BlockTags.PLANKS)
@@ -101,8 +101,8 @@ public final class VindicatorWoodBreak {
 	}
 
 	/**
-	 * Прогресс за один тик, 1.0 = блок сломан.
-	 * Формула как у игрока: скорость топора / твёрдость / 30, потом {@link #SPEED_MULTIPLIER}.
+	 Progress in one tick, 1.0 = block broken.
+	 * Formula like a player: axe speed / hardness / 30, then {@link #SPEED MULTIPLIER}
 	 */
 	public static float progressPerTick(Vindicator vindicator, BlockGetter level, BlockPos pos, BlockState state) {
 		float hardness = state.getDestroySpeed(level, pos);

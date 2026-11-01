@@ -1,27 +1,27 @@
-СКЕЛЕТ С ДАЛЬНИМ БЫСТРЫМ ЛУКОМ
-================================
+SKELETON WITH A FAST LONG-RANGE BOW
+===================================
 
-Тип: обычный скелет и странник, у которых остался лук.
-Код: skeleton/FastBowSkeleton.java (шанс, дальность, пауза, скорость стрелы),
-     mixin/SkeletonMixin.java (бросок при появлении),
-     mixin/AbstractSkeletonFastBowMixin.java (дальность и скорость стрелы),
-     mixin/RangedBowAttackGoalMixin.java (короткое натяжение).
+Type: regular skeleton and stray that still have a bow.
+Code: skeleton/FastBowSkeleton.java (chance, range, pause, arrow speed),
+     mixin/SkeletonMixin.java (roll at spawn),
+     mixin/AbstractSkeletonFastBowMixin.java (range and arrow speed),
+     mixin/RangedBowAttackGoalMixin.java (short draw time).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (15%), и только если в руках лук.
-   Два меча лук убирают — такой скелет этот шанс не получает.
-2. Стреляет с 30 блоков вместо 15. Замечает игрока с 36 блоков вместо 16.
-3. Натягивает лук полсекунды вместо секунды. Стрела всё равно полная, не слабая.
-4. Пауза после выстрела вдвое короче: на сложной сложности полсекунды вместо секунды,
-   на обычной — секунда вместо двух. В сумме стреляет примерно в два раза чаще.
-5. Стрела летит быстрее (2.4 вместо 1.6), чтобы долетать до новой дальности.
-   Прицел при этом ниже, чем у обычного скелета: быстрая стрела меньше падает,
-   и со старым прицелом пролетала над головой. Насколько задирать — считается
-   само из скорости, отдельного числа нет.
-6. Не бывает у скелета-иссушителя, болотного и пустынного скелетов, у скелетов из рейда,
-   у маленького скелета и у скелета «700 IQ».
+1. Chance SPAWN_CHANCE (15%), and only if it holds a bow.
+   Two swords take the bow away — such a skeleton does not get this chance.
+2. Shoots from 30 blocks instead of 15. Notices the player from 36 blocks instead of 16.
+3. Draws the bow for half a second instead of a full second. The arrow is still full-strength, not weak.
+4. The pause after a shot is half as long: on hard difficulty half a second instead of a second,
+   on normal — a second instead of two. In total it shoots roughly twice as often.
+5. The arrow flies faster (2.4 instead of 1.6) so it reaches the new range.
+   The aim is lower than a regular skeleton's: a fast arrow drops less,
+   and with the old aim it flew over the head. How much to raise the aim is calculated
+   automatically from the speed, there is no separate number.
+6. Does not occur on a wither skeleton, bogged or parched skeletons, raid skeletons,
+   the small skeleton and the "700 IQ" skeleton.
 
 
 SETTINGS
@@ -29,49 +29,49 @@ SETTINGS
   FastBowSkeleton.java
     ENABLED .................... true
     SPAWN_CHANCE ............... 0.15 — 15%
-    ATTACK_RANGE_BLOCKS ........ 30 — с какого расстояния стреляет
-    FOLLOW_RANGE ............... 36 — с какого расстояния видит
-    DRAW_TICKS ................. 10 — натяжение, 20 тиков = 1 секунда
-    HARD_PAUSE_TICKS ........... 10 — пауза на сложной сложности
-    OTHER_PAUSE_TICKS .......... 20 — пауза на лёгкой и нормальной
-    ARROW_SPEED ................ 2.4 — скорость стрелы, у обычного 1.6
+    ATTACK_RANGE_BLOCKS ........ 30 — distance it shoots from
+    FOLLOW_RANGE ............... 36 — distance it sees from
+    DRAW_TICKS ................. 10 — bow draw time, 20 ticks = 1 second
+    HARD_PAUSE_TICKS ........... 10 — pause on hard difficulty
+    OTHER_PAUSE_TICKS .......... 20 — pause on easy and normal
+    ARROW_SPEED ................ 2.4 — arrow speed, 1.6 for a regular one
 
 ==============================================================================================
 
-СКЕЛЕТ С ВРЕДНОЙ СТРЕЛОЙ
-=======================
+SKELETON WITH A HARMFUL ARROW
+=============================
 
-Тип: вариант обычного скелета и странника.
-Код: skeleton/HarmfulArrowSkeleton.java (шанс, список стрел, длительность),
-     skeleton/SpectralArrowHunt.java (охота после спектральной),
-     mixin/SkeletonMixin.java (выдача при появлении, до меча и щита),
-     mixin/SpectralArrowHuntMixin.java (попадание спектральной),
-     mixin/MobSpectralHuntMixin.java (мобы не забывают цель).
+Type: variant of the regular skeleton and stray.
+Code: skeleton/HarmfulArrowSkeleton.java (chance, arrow list, duration),
+     skeleton/SpectralArrowHunt.java (hunt after a spectral arrow),
+     mixin/SkeletonMixin.java (given at spawn, before the sword and shield),
+     mixin/SpectralArrowHuntMixin.java (spectral arrow hit),
+     mixin/MobSpectralHuntMixin.java (mobs do not forget the target).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (20%). Во второй руке одна вредная стрела, в основной — лук.
-2. Скелет стреляет только ей. Обычную стрелу при этом не берёт.
-   Стрела не кончается. Меч во вторую руку и щит этому скелету не выдаются.
-3. Какая стрела выпадет — случайно и поровну. Список: замедление, мгновенный урон, яд, слабость
-   (обычная, долгая и сильная, где они есть), заряд ветра, плетение, слизь, заражение, спектральная,
-   слепота, иссушение, голод, тошнота и левитация. Полезные зелья и черепашья мощь не используются.
-   Слепота красится цветом слабости (тёмно-серая), иссушение — цветом плетения (коричневая).
-   Голод — оливковый, тошнота — фиолетовый, левитация — бледно-голубая. Это их собственные цвета.
-   Своих стрел у этих эффектов в игре нет.
-   Слепота около 8 сек, иссушение I около 7 сек.
-   Голод и тошнота длятся случайно от 1 до 10 минут, уровень I.
-   Левитация 8 секунд: подъём примерно на 8 блоков, потом падение.
-4. Эффекты длятся в два раза дольше ванильной стрелы (EFFECT_DURATION_SCALE 0.25 вместо 0.125).
-   Яд II — около 5.4 сек. Мгновенный урон от длительности не зависит.
-5. Спектральная стрела скелета, попавшая в игрока: все враждебные мобы в радиусе 80 блоков
-   идут на него 30 секунд, даже если он за стеной. Мирные животные не реагируют.
-   Подсветка от спектральной остаётся ванильной (около 10 секунд).
-6. Не бывает у скелета «700 IQ»: у того своя стрела.
-   Не бывает у скелета со случайными стрелами: тот не держит стрелу в руке.
-7. Обычная вредная стрела падает с шансом около 8.5%.
-   Слепота, иссушение, голод, тошнота и левитация не падают никогда, даже с добычей.
+1. Chance SPAWN_CHANCE (20%). One harmful arrow in the off-hand, a bow in the main hand.
+2. The skeleton shoots only that arrow. It does not take a regular arrow.
+   The arrow never runs out. No sword in the off-hand and no shield are given to this skeleton.
+3. Which arrow it gets is random and equal. The list: slowness, instant damage, poison, weakness
+   (regular, long and strong, where they exist), wind charge, weaving, oozing, infestation, spectral,
+   blindness, wither, hunger, nausea and levitation. Helpful potions and turtle master are not used.
+   Blindness is tinted with the weakness colour (dark gray), wither — with the weaving colour (brown).
+   Hunger is olive, nausea is purple, levitation is pale blue. These are their own colours.
+   These effects have no arrows of their own in the game.
+   Blindness about 8 sec, wither I about 7 sec.
+   Hunger and nausea last a random 1 to 10 minutes, level I.
+   Levitation 8 seconds: a rise of about 8 blocks, then a fall.
+4. Effects last twice as long as a vanilla arrow (EFFECT_DURATION_SCALE 0.25 instead of 0.125).
+   Poison II — about 5.4 sec. Instant damage does not depend on duration.
+5. A skeleton's spectral arrow that hits the player: all hostile mobs within 80 blocks
+   go for them for 30 seconds, even if the player is behind a wall. Peaceful animals do not react.
+   The glow from the spectral arrow stays vanilla (about 10 seconds).
+6. Does not occur on the "700 IQ" skeleton: it has its own arrow.
+   Does not occur on the random-arrow skeleton: it does not hold an arrow in its hand.
+7. A regular harmful arrow drops with a chance of about 8.5%.
+   Blindness, wither, hunger, nausea and levitation arrows never drop, even with Looting.
 
 
 SETTINGS
@@ -79,269 +79,269 @@ SETTINGS
   HarmfulArrowSkeleton.java
     ENABLED .................... true
     SPAWN_CHANCE ............... 0.20 — 20%
-    EFFECT_DURATION_SCALE ...... 0.25 — длительность зелья на стреле. Больше = дольше
-    DROP_CHANCE ................ 0.085 — не действует на стрелы без ванильного зелья
-    BLINDNESS_SECONDS .......... 8 — секунды слепоты
-    WITHER_SECONDS ............. 7 — секунды иссушения I
-    HUNGER_MIN_MINUTES ......... 1 — голод, от скольки минут
-    HUNGER_MAX_MINUTES ......... 10 — голод, до скольки минут
-    NAUSEA_MIN_MINUTES ......... 1 — тошнота, от скольки минут
-    NAUSEA_MAX_MINUTES ......... 10 — тошнота, до скольки минут
-    LEVITATION_SECONDS ......... 8 — секунды левитации
+    EFFECT_DURATION_SCALE ...... 0.25 — duration of the potion on the arrow. Higher = longer
+    DROP_CHANCE ................ 0.085 — does not apply to arrows without a vanilla potion
+    BLINDNESS_SECONDS .......... 8 — seconds of blindness
+    WITHER_SECONDS ............. 7 — seconds of wither I
+    HUNGER_MIN_MINUTES ......... 1 — hunger, minimum minutes
+    HUNGER_MAX_MINUTES ......... 10 — hunger, maximum minutes
+    NAUSEA_MIN_MINUTES ......... 1 — nausea, minimum minutes
+    NAUSEA_MAX_MINUTES ......... 10 — nausea, maximum minutes
+    LEVITATION_SECONDS ......... 8 — seconds of levitation
 
   SpectralArrowHunt.java
-    AGGRO_RADIUS ............... 80 — блоки
-    HUNT_SECONDS ............... 30 — сколько мобы идут на игрока
+    AGGRO_RADIUS ............... 80 — blocks
+    HUNT_SECONDS ............... 30 — how long mobs go for the player
 
 ==============================================================================================
 
-СКЕЛЕТ СО СЛУЧАЙНЫМИ СТРЕЛАМИ
-==============================
+SKELETON WITH RANDOM ARROWS
+===========================
 
-Тип: обычный скелет и странник. Отдельный вариант, не смесь «700 IQ».
-Код: skeleton/RandomArrowSkeleton.java (шанс, круг эффектов, выстрел, команда),
-     mixin/RandomArrowSkeletonDataMixin.java (память очереди),
-     mixin/RandomArrowSkeletonSaveMixin.java (запись в мир),
-     mixin/RandomArrowSkeletonAttackMixin.java (выстрел вместо обычной стрелы),
-     mixin/RandomArrowHitMixin.java (длительность поджога),
-     mixin/SkeletonMixin.java (шанс при появлении, без стрелы в руке).
+Type: regular skeleton and stray. A separate variant, not a mix with "700 IQ".
+Code: skeleton/RandomArrowSkeleton.java (chance, effect cycle, shot, command),
+     mixin/RandomArrowSkeletonDataMixin.java (queue memory),
+     mixin/RandomArrowSkeletonSaveMixin.java (saving to the world),
+     mixin/RandomArrowSkeletonAttackMixin.java (shot instead of a regular arrow),
+     mixin/RandomArrowHitMixin.java (burn duration),
+     mixin/SkeletonMixin.java (chance at spawn, no arrow in hand).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (1%). FIXED: с первого дня, от шкалы угрозы не растёт.
-   Только обычный скелет и странник, и только если лук не забрали два меча.
-   Кадавр, болотный, пустынный, иссушитель и рейд этот шанс не бросают.
-2. В руке лук, стрелы с эффектом там нет. Эффект выбирается в момент выстрела.
-   Броня, чары на луке, щит, второе оружие, быстрый лук и особые головы —
-   как у обычного скелета. Вредная стрела во вторую руку ему не выдаётся.
-3. Круг из десяти, порядок случайный: поджог, слепота, яд, голод,
-   замедление, слабость, иссушение, тошнота, левитация, мгновенный урон.
-   Один и тот же эффект не выходит дважды, пока не вышли остальные.
-   Новый круг не начинает с того, что только что выстрелило.
-4. Поджог 5 секунд. Слепота 8, яд 5, голод 30, замедление 15, слабость 15,
-   иссушение 7, тошнота 8, левитация 8. Всё это уровень I.
-   Мгновенный урон — уровень I, три сердца, без длительности.
-   Стрела игроку не достаётся.
-5. Быстрый лук может выпасть отдельно, с его обычным шансом.
-   Тогда этот скелет стреляет тот же круг, только чаще и дальше.
-   Маленький скелет быстрый лук не получает, как и остальные маленькие.
-6. Раздатчик на голове, если выпал, стреляет обычным залпом. Круг — только лук.
+1. Chance SPAWN_CHANCE (1%). FIXED: from day one, does not grow with the threat scale.
+   Only the regular skeleton and stray, and only if the bow was not taken by two swords.
+   Cadaver, bogged, parched, wither and raid skeletons do not roll this chance.
+2. A bow in hand, no effect arrow there. The effect is chosen at the moment of the shot.
+   Armor, enchantments on the bow, shield, second weapon, fast bow and special heads —
+   as on a regular skeleton. A harmful arrow is not given to its off-hand.
+3. A cycle of ten, in random order: fire, blindness, poison, hunger,
+   slowness, weakness, wither, nausea, levitation, instant damage.
+   The same effect does not come up twice until all the others have.
+   A new cycle does not start with the effect that was just shot.
+4. Fire 5 seconds. Blindness 8, poison 5, hunger 30, slowness 15, weakness 15,
+   wither 7, nausea 8, levitation 8. All of these are level I.
+   Instant damage — level I, three hearts, no duration.
+   The player does not get the arrow.
+5. The fast bow can drop separately, with its usual chance.
+   Then this skeleton shoots the same cycle, only more often and from farther away.
+   The small skeleton does not get a fast bow, like all other small ones.
+6. A dispenser on the head, if it dropped, shoots a regular volley. The cycle is for the bow only.
 
 
-КОМАНДА
+COMMAND
 -------
   /etarrows
   /evolvingthreats spawn random_arrow
-Появляется в 4 блоках по взгляду, сразу с луком. Шанс не бросается.
-Нужны права оператора.
+Appears 4 blocks away in the direction you look, with a bow right away. The chance is not rolled.
+Operator permissions required.
 
 
 SETTINGS (RandomArrowSkeleton.java)
 ------------------------------------
-  ENABLED ...................... true — false выключает таких скелетов
-  SPAWN_CHANCE ................. 0.01 — 1%, один из ста. FIXED с первого дня. 0 = только команда
-  FIRE_SECONDS ................. 5 — поджог, секунды
-  BLINDNESS_SECONDS ............ 8 — слепота, секунды
-  POISON_SECONDS ............... 5 — яд I, секунды
-  HUNGER_SECONDS ............... 30 — голод I, секунды
-  SLOWNESS_SECONDS ............. 15 — замедление I, секунды
-  WEAKNESS_SECONDS ............. 15 — слабость I, секунды
-  WITHER_SECONDS ............... 7 — иссушение I, секунды
-  NAUSEA_SECONDS ............... 8 — тошнота I, секунды
-  LEVITATION_SECONDS ........... 8 — левитация I, секунды
-  HARM_LEVEL ................... 0 — мгновенный урон I (три сердца). 1 = II, шесть сердец
+  ENABLED ...................... true — false turns these skeletons off
+  SPAWN_CHANCE ................. 0.01 — 1%, one in a hundred. FIXED from day one. 0 = command only
+  FIRE_SECONDS ................. 5 — fire, seconds
+  BLINDNESS_SECONDS ............ 8 — blindness, seconds
+  POISON_SECONDS ............... 5 — poison I, seconds
+  HUNGER_SECONDS ............... 30 — hunger I, seconds
+  SLOWNESS_SECONDS ............. 15 — slowness I, seconds
+  WEAKNESS_SECONDS ............. 15 — weakness I, seconds
+  WITHER_SECONDS ............... 7 — wither I, seconds
+  NAUSEA_SECONDS ............... 8 — nausea I, seconds
+  LEVITATION_SECONDS ........... 8 — levitation I, seconds
+  HARM_LEVEL ................... 0 — instant damage I (three hearts). 1 = II, six hearts
 
-  Быстрый лук — свои числа в FastBowSkeleton.java, этот скелет их не меняет.
+  Fast bow — its own numbers are in FastBowSkeleton.java, this skeleton does not change them.
 
 
-ТЕСТ
+TEST
 ----
-1. /etarrows. В руке лук, во второй руке нет стрелы с эффектом.
-   Броня и чары на луке могут быть, как у обычного скелета.
-2. Десять попаданий подряд — десять разных эффектов. Одиннадцатый не повторяет десятый.
-3. Если вместе выпал быстрый лук, пауза между выстрелами короче.
+1. /etarrows. A bow in the main hand, no effect arrow in the off-hand.
+   Armor and bow enchantments may be present, as on a regular skeleton.
+2. Ten hits in a row — ten different effects. The eleventh does not repeat the tenth.
+3. If a fast bow dropped together with it, the pause between shots is shorter.
 
 ==============================================================================================
 
-СКЕЛЕТ-СНАЙПЕР
+SNIPER SKELETON
 ===============
 
-Тип: обычный скелет и странник. Лук у него всегда.
-Код: skeleton/SniperSkeleton.java (шанс, дальность, скорость стрелы, команда),
-     mixin/SniperSkeletonDataMixin.java (пометка),
-     mixin/SniperSkeletonSaveMixin.java (запись в мир),
-     mixin/AbstractSkeletonFastBowMixin.java (скорость, прицел, разброс, дальность),
-     mixin/SkeletonMixin.java (появление: лук обязателен, оружие во второй руке).
+Type: regular skeleton and stray. It always has a bow.
+Code: skeleton/SniperSkeleton.java (chance, range, arrow speed, command),
+     mixin/SniperSkeletonDataMixin.java (marker),
+     mixin/SniperSkeletonSaveMixin.java (saving to the world),
+     mixin/AbstractSkeletonFastBowMixin.java (speed, aim, spread, range),
+     mixin/SkeletonMixin.java (spawn: bow is mandatory, weapon in the off-hand).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (0,2%, один из пятисот). FIXED: с первого дня, от шкалы угрозы не растёт.
-   Только обычный скелет и странник.
-   Кадавр, болотный, пустынный, иссушитель, рейд, «700 IQ» и маленький скелет им не становятся.
-2. В основной руке всегда лук. Два меча ему не выдаются: иначе это уже не снайпер.
-   Во второй руке случайное оружие, как у скелета с луком и мечом.
-   Броня и чары на луке и на этом оружии — как у обычного скелета.
-   Щит, тотем и вредная стрела вторую руку не занимают.
-3. Стреляет с 128 блоков. Замечает игрока с 140.
-   Стрела летит со скоростью 10 (у обычного 1.6), иначе падает в землю раньше.
-   Прицел считается на каждый выстрел и целится в середину тела.
-   Одно и то же число задира на дальней дистанции поднимало стрелу над головой.
-   Разброс маленький: обычный разброс на 128 блоках промахивается на несколько блоков.
-   Урон не растёт от скорости: 6 сердец до брони.
-   Сила на луке добавляет урон сверху, как у любой стрелы.
-4. Вплотную берёт оружие из второй руки, как скелет с луком и мечом.
-5. Быстрый лук может выпасть отдельно, с его обычным шансом.
-   Тогда снайпер натягивает лук чаще. Дальность и скорость стрелы остаются снайперскими,
-   быстрый лук их не урезает до своих 30 блоков.
-6. Если в мире мобы засыпают ближе восьми чанков, с 128 блоков он не выстрелит,
-   пока не подойдёшь. Чанк — 16 блоков. Это настройка мира, не число снайпера.
+1. Chance SPAWN_CHANCE (0.2%, one in five hundred). FIXED: from day one, does not grow with the threat scale.
+   Only the regular skeleton and stray.
+   Cadaver, bogged, parched, wither, raid, "700 IQ" and small skeletons do not become snipers.
+2. A bow is always in the main hand. Two swords are not given to it: otherwise it would not be a sniper.
+   The off-hand holds a random weapon, like on the skeleton with a bow and a sword.
+   Armor and enchantments on the bow and on this weapon — as on a regular skeleton.
+   A shield, totem and harmful arrow do not occupy the off-hand.
+3. Shoots from 128 blocks. Notices the player from 140.
+   The arrow flies at speed 10 (1.6 for a regular one), otherwise it would hit the ground sooner.
+   The aim is calculated for every shot and targets the middle of the body.
+   A single fixed lift value at long range sent the arrow over the head.
+   The spread is small: the regular spread at 128 blocks misses by several blocks.
+   Damage does not grow with speed: 6 hearts before armor.
+   Power on the bow adds damage on top, like on any arrow.
+4. At close range it takes the weapon from the off-hand, like the skeleton with a bow and a sword.
+5. The fast bow can drop separately, with its usual chance.
+   Then the sniper draws the bow more often. The range and arrow speed stay sniper-level,
+   the fast bow does not cut them down to its own 30 blocks.
+6. If in the world mobs fall asleep (despawn/freeze) closer than eight chunks, it will not shoot from 128 blocks
+   until you come closer. A chunk is 16 blocks. This is a world setting, not a sniper number.
 
 
-КОМАНДА
+COMMAND
 -------
   /etsniper
   /evolvingthreats spawn sniper
-Появляется в 4 блоках по взгляду, сразу с луком и оружием во второй руке.
-Шанс не бросается. Нужны права оператора.
-Чтобы проверить даль, отойди сам: рядом он тоже стреляет, но смысл — на дистанции.
+Appears 4 blocks away in the direction you look, with a bow and a weapon in the off-hand right away.
+The chance is not rolled. Operator permissions required.
+To test the range, walk away yourself: it also shoots up close, but the point is the distance.
 
 
 SETTINGS (SniperSkeleton.java)
 -------------------------------
-  ENABLED ...................... true — false выключает снайперов и команду
-  SPAWN_CHANCE ................. 0.002 — один из пятисот. FIXED с первого дня. 0 = только команда
-  ATTACK_RANGE_BLOCKS .......... 128 — с какого расстояния стреляет
-  FOLLOW_RANGE ................. 140 — с какого расстояния видит
-  ARROW_SPEED .................. 10 — скорость стрелы. Прицел подстраивается сам
-  AIM_HEIGHT ................... 0.5 — куда по высоте тела. 0 = ступни, 1 = макушка, 0.5 = середина
-  INACCURACY ................... 0.15 — разброс. 0 = в точку. 2 = как сложная сложность, на 128 мимо
-  DAMAGE_HEARTS ................ 6 — сердца до брони, если на луке нет Силы. Скорость полёта это не увеличивает
+  ENABLED ...................... true — false turns off snipers and the command
+  SPAWN_CHANCE ................. 0.002 — one in five hundred. FIXED from day one. 0 = command only
+  ATTACK_RANGE_BLOCKS .......... 128 — distance it shoots from
+  FOLLOW_RANGE ................. 140 — distance it sees from
+  ARROW_SPEED .................. 10 — arrow speed. The aim adjusts itself
+  AIM_HEIGHT ................... 0.5 — where on the body height. 0 = feet, 1 = top of the head, 0.5 = middle
+  INACCURACY ................... 0.15 — spread. 0 = pinpoint. 2 = like hard difficulty, a miss at 128
+  DAMAGE_HEARTS ................ 6 — hearts before armor, if the bow has no Power. Flight speed does not increase this
 
-  Быстрый лук — свои числа в FastBowSkeleton.java. У снайпера он меняет только как часто
-  натягивается лук.
+  Fast bow — its own numbers are in FastBowSkeleton.java. On the sniper it only changes how often
+  the bow is drawn.
 
 
-ТЕСТ
+TEST
 ----
-1. /etsniper. В руке лук, во второй — меч или топор, не стрела и не щит.
-   Броня и чары могут быть.
-2. Отойди далеко, но чтобы между вами не было холма. Стрела должна попасть в тело, а не пройти над головой.
-3. Подойди вплотную: он берёт оружие из второй руки.
+1. /etsniper. A bow in the main hand, a sword or axe in the off-hand, not an arrow and not a shield.
+   Armor and enchantments may be present.
+2. Walk far away, but with no hill between you. The arrow should hit the body, not pass over the head.
+3. Come up close: it takes the weapon from the off-hand.
 
 ==============================================================================================
 
-СКЕЛЕТ: СТРЕЛА ВЫБИВАЕТ ВЕЩИ ИЗ РУК
-======================================
+SKELETON: ARROW KNOCKS ITEMS OUT OF HANDS
+=========================================
 
-Тип: обычный скелет, странник и болотный (не новый моб).
-Код: skeleton/SkeletonDisarm.java (шанс),
-     mixin/SkeletonDisarmMixin.java (момент попадания стрелы).
+Type: regular skeleton, stray and bogged (not a new mob).
+Code: skeleton/SkeletonDisarm.java (chance),
+     mixin/SkeletonDisarmMixin.java (moment the arrow hits).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Стрела, которая уже сняла здоровье, с шансом 5% выбивает вещи из рук.
-   Это примерно каждая двадцатая такая стрела.
-2. Один бросок на попадание. Если заняты обе руки, вылетают обе стопки сразу.
-   Пустая рука ничего не роняет.
-3. Вещь летит вперёд, куда смотрит игрок, как при кнопке Q.
-   Около двух секунд её нельзя подобрать, потом она лежит на земле.
-4. Броня и остальной инвентарь остаются.
-5. Щит, который отбил стрелу, и короткое мигание после удара шанс не дают.
-   В креативе здоровье не снимается, но попавшая стрела всё равно может выбить руки.
-   Наблюдателя это не касается. Стрела, которая убила игрока, руки отдельно не выбивает:
-   вещи и так выпадут со смертью.
-6. Стреляет скелет, странник или болотный, в том числе с раздатчика на голове.
-   Стрела игрока и трезубец утопленника руки не выбивают.
+1. An arrow that has already removed health has a 5% chance to knock items out of the hands.
+   That is roughly every twentieth such arrow.
+2. One roll per hit. If both hands are occupied, both stacks fly out at once.
+   An empty hand drops nothing.
+3. The item flies forward, where the player is looking, as with the Q key.
+   For about two seconds it cannot be picked up, then it lies on the ground.
+4. Armor and the rest of the inventory stay.
+5. A shield that blocked the arrow, and the short invulnerability flash after a hit, do not give the chance.
+   In creative mode health is not removed, but an arrow that hits can still knock the hands out.
+   Spectators are not affected. An arrow that killed the player does not knock the hands out separately:
+   the items drop with death anyway.
+6. The shooter is a skeleton, stray or bogged, including from a dispenser on the head.
+   A player's arrow and a drowned's trident do not knock the hands out.
 
 
 SETTINGS (SkeletonDisarm.java)
 -------------------------------
-ENABLED — false выключает выбивание.
-DISARM_CHANCE — 0.05 = 5%. 0.02 = почти не заметно. 0.15 = слишком часто. 0 = никогда. 1 = каждая стрела.
+ENABLED — false turns the knocking out off.
+DISARM_CHANCE — 0.05 = 5%. 0.02 = barely noticeable. 0.15 = too often. 0 = never. 1 = every arrow.
 
 ==============================================================================================
 
-ЛУК С ОТКИДЫВАНИЕМ V И VI
-===========================
+BOW WITH PUNCH V AND VI
+=======================
 
-Тип: редкая чара на луке обычного скелета и странника. Не новый моб.
-Код: skeleton/SkeletonPunchBow.java (шанс, уровень, запрет дропа),
-     mixin/SkeletonMixin.java (выдача после обычных чар),
-     mixin/SkeletonPunchBowMixin.java (перед смертью шанс дропа этого лука = 0).
+Type: rare enchantment on the bow of a regular skeleton and stray. Not a new mob.
+Code: skeleton/SkeletonPunchBow.java (chance, level, drop ban),
+     mixin/SkeletonMixin.java (given after the regular enchantments),
+     mixin/SkeletonPunchBowMixin.java (before death the drop chance of this bow = 0).
 
-Капитан скелетов сюда не входит: у него свой лук с Откидыванием IV, он тоже не падает.
-«700 IQ» и помощники капитана этот шанс не бросают.
+The skeleton captain is not included: it has its own bow with Punch IV, which does not drop either.
+"700 IQ" and the captain's helpers do not roll this chance.
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Скелет или странник получает обычный набор и обычные чары (Сила, Горящая стрела, Откидывание I–II).
-2. Если лук остался в руке, шанс CHANCE (12%), что Откидывание станет V или VI.
-   Из таких луков 75% получают V и 25% получают VI.
-   Сила и Горящая стрела, если уже были, остаются на этом же луке.
-3. V бьёт дальше, чем IV у капитана. VI бьёт ещё дальше.
-4. Этот лук не падает. Ни с обычным шансом, ни с чарой Добыча.
-   В бою лук может переехать во вторую руку (меч в основную). Проверка смотрит обе руки в момент смерти.
-   Кости и стрелы из обычного лута скелета падают как раньше.
-   Откидывание I и II по-прежнему может выпасть.
+1. A skeleton or stray gets the regular kit and regular enchantments (Power, Flame, Punch I–II).
+2. If the bow stayed in the hand, there is a CHANCE (12%) that Punch becomes V or VI.
+   Of such bows 75% get V and 25% get VI.
+   Power and Flame, if already present, stay on the same bow.
+3. V knocks back farther than the captain's IV. VI knocks back even farther.
+4. This bow does not drop. Neither with the regular chance nor with the Looting enchantment.
+   In combat the bow may move to the off-hand (sword into the main hand). The check looks at both hands at the moment of death.
+   Bones and arrows from the skeleton's regular loot drop as before.
+   Punch I and II can still drop.
 
 
 SETTINGS (SkeletonPunchBow.java)
 ---------------------------------
-  ENABLED ...................... true — false не выдаёт новые луки. Старые V/VI всё равно не падают
-  CHANCE ....................... 0.12 — шанс на скелета с луком (12%). 1.0 = у каждого
+  ENABLED ...................... true — false does not hand out new bows. Existing V/VI bows still do not drop
+  CHANCE ....................... 0.12 — chance per skeleton with a bow (12%). 1.0 = every one
   PUNCH_LEVEL_V ................ 5
   PUNCH_LEVEL_VI ............... 6
-  LEVEL_V_WEIGHT ............... 3 — насколько часто V
-  LEVEL_VI_WEIGHT .............. 1 — насколько часто VI. 0 = всегда только V
-  MIN_LEVEL_THAT_NEVER_DROPS ... 5 — с этого уровня лук не падает
+  LEVEL_V_WEIGHT ............... 3 — how often V
+  LEVEL_VI_WEIGHT .............. 1 — how often VI. 0 = always only V
+  MIN_LEVEL_THAT_NEVER_DROPS ... 5 — from this level the bow does not drop
 
 
-КОМАНДА
+COMMAND
 -------
   /etpunch
   /evolvingthreats spawn punch
-Скелет в 6 блоках по взгляду, в руке лук с Откидыванием VI. Шанс не бросается.
+A skeleton 6 blocks away in the direction you look, with a Punch VI bow in hand. The chance is not rolled.
   /etpunch v
   /evolvingthreats spawn punch v
-То же, но Откидывание V. Нужны права оператора. Лук по-прежнему не падает.
+The same, but Punch V. Operator permissions required. The bow still does not drop.
 
 
-ТЕСТ
+TEST
 ----
-1. /etpunch — на луке Откидывание VI. /etpunch v — Откидывание V.
-2. Призови скелета или дождись ночи. На луке должно быть Откидывание V или VI.
-3. Пусть попадёт. Игрок улетает дальше, чем от капитанского IV.
-4. Убей скелета. Лука на земле нет. Кости и стрелы могут быть.
-5. Верни CHANCE = 0.12f.
+1. /etpunch — the bow has Punch VI. /etpunch v — Punch V.
+2. Summon a skeleton or wait for night. The bow should have Punch V or VI.
+3. Let it hit. The player is flung farther than by the captain's IV.
+4. Kill the skeleton. There is no bow on the ground. Bones and arrows may be there.
+5. Restore CHANCE = 0.12f.
 
 ==============================================================================================
 
-МАЛЕНЬКИЙ СКЕЛЕТ
-=================
+SMALL SKELETON
+==============
 
-Тип: обычный скелет и странник.
-Код: skeleton/SmallSkeleton.java (шанс, рост, скорость, здоровье),
-     mixin/SkeletonMixin.java (бросок при появлении, после общего здоровья).
+Type: regular skeleton and stray.
+Code: skeleton/SmallSkeleton.java (chance, size, speed, health),
+     mixin/SkeletonMixin.java (roll at spawn, after the common health).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (10%). Решается один раз при появлении.
-2. Рост 0.5 — вдвое меньше обычного. Уменьшаются и модель, и место, куда попадают удары.
-3. Бегает в 1.5 раза быстрее обычного скелета (как детёныш зомби относительно взрослого).
-4. Здоровье 10–16 вместо 20–40 у взрослого. Общий бросок здоровья срабатывает раньше
-   и здесь перезаписывается.
-5. Лук обычный: стреляет с тех же 15 блоков и с той же паузой.
-   Дальний быстрый лук, тотем и два оружия ближнего боя ему не выдаются.
-   Вредная стрела, щит, броня, чары и зелья — как у обычного скелета.
-6. На солнце горит. При загрузке мира остаётся маленьким: рост, скорость и здоровье
-   уже записаны в самого моба.
-7. Не бывает у скелета-иссушителя, болотного и пустынного скелетов, у скелетов из рейда
-   и у скелета «700 IQ».
+1. Chance SPAWN_CHANCE (10%). Decided once at spawn.
+2. Scale 0.5 — half the size of a regular one. Both the model and the place where hits land get smaller.
+3. Runs 1.5 times faster than a regular skeleton (like a baby zombie relative to an adult).
+4. Health 10–16 instead of the adult's 20–40. The common health roll happens earlier
+   and is overwritten here.
+5. The bow is regular: shoots from the same 15 blocks and with the same pause.
+   The long-range fast bow, totem and two melee weapons are not given to it.
+   Harmful arrow, shield, armor, enchantments and potions — as on a regular skeleton.
+6. Burns in sunlight. When the world loads it stays small: size, speed and health
+   are already written into the mob itself.
+7. Does not occur on a wither skeleton, bogged or parched skeletons, raid skeletons
+   and the "700 IQ" skeleton.
 
 
 SETTINGS
@@ -349,93 +349,93 @@ SETTINGS
   SmallSkeleton.java
     ENABLED .................... true
     SPAWN_CHANCE ............... 0.10 — 10%
-    SCALE ...................... 0.5 — рост, 1.0 = обычный
-    SPEED_MULTIPLIER ........... 1.5 — во сколько раз быстрее
+    SCALE ...................... 0.5 — size, 1.0 = regular
+    SPEED_MULTIPLIER ........... 1.5 — how many times faster
     HEALTH_MIN ................. 10
     HEALTH_MAX ................. 16
 
 
-ТЕСТ
+TEST
 ----
-Позови несколько скелетов: /summon skeleton
-Примерно каждый десятый должен быть заметно ниже и быстрее.
-Убей его: сердец меньше, чем у стоящего рядом взрослого.
+Summon several skeletons: /summon skeleton
+Roughly every tenth should be noticeably shorter and faster.
+Kill it: fewer hearts than an adult standing next to it.
 
 ==============================================================================================
 
-СКЕЛЕТ НАЕЗДНИК
-===============
+SKELETON HORSEMAN
+=================
 
-Тип: обычный скелет на костяной лошади. Не новый моб в меню.
-Код: skeleton/SkeletonHorseman.java (шанс, лошадь, команда),
-     mixin/SkeletonMixin.java (сажает уже одетого скелета),
-     mixin/SkeletonHorseMixin.java (лошадь пропадает далеко от игрока),
-     mixin/SkeletonTrapRiderMixin.java (гроза не переодевает наездника).
+Type: regular skeleton on a skeleton horse. Not a new mob in the menu.
+Code: skeleton/SkeletonHorseman.java (chance, horse, command),
+     mixin/SkeletonMixin.java (seats the already-equipped skeleton),
+     mixin/SkeletonHorseMixin.java (the horse despawns far from the player),
+     mixin/SkeletonTrapRiderMixin.java (thunderstorm does not re-equip the rider).
 
-Всадник получает всё, что получает пеший скелет: щит, зелья, стрелы, броню и оружие.
-Капитан, его помощники, скелет-иссушитель и участник рейда на лошадь не садятся.
+The rider gets everything a skeleton on foot gets: shield, potions, arrows, armor and weapon.
+The captain, his helpers, the wither skeleton and a raid participant do not mount a horse.
 
 
-ГДЕ ПОЯВЛЯЕТСЯ
+WHERE IT SPAWNS
 --------------
-Ночью в обычном мире, если над скелетом открытое небо.
-Пещеры, спаунер, ад и край этот шанс не бросают.
-Шанс 5% (SPAWN_CHANCE). Это один всадник, не отряд из четырёх лошадей.
+At night in the regular world, if there is open sky above the skeleton.
+Caves, spawners, the Nether and the End do not roll this chance.
+Chance 5% (SPAWN_CHANCE). This is a single rider, not a squad of four horses.
 
-Грозовая ловушка ванили остаётся. Её скелеты тоже одевает мод.
-Раньше гроза после этого надевала железный шлем и заново чаровала лук и шлем.
-Теперь этого нет: набор мода остаётся.
+The vanilla thunder trap stays. Its skeletons are also equipped by the mod.
+Previously the thunder trap then put on an iron helmet and re-enchanted the bow and helmet.
+Now it does not: the mod's kit stays.
 
 
-ЛОШАДЬ
+HORSE
 ------
-Приручена, поэтому скелет едет и бежит к игроку. Это не ловушка и не молния.
-Далеко от игрока (128 блоков) пропадают и лошадь, и всадник.
-Если всадник убит, лошадь тоже пропадает. Сел сам — лошадь остаётся.
+Tamed, so the skeleton rides and runs toward the player. It is not a trap and not lightning.
+Far from the player (128 blocks) both the horse and the rider vanish.
+If the rider is killed, the horse vanishes too. If it dismounted by itself — the horse stays.
 
 
-КОМАНДА
+COMMAND
 -------
 /ethorseman
-или /evolvingthreats spawn horseman
-Скелет появляется в 8 блоках перед тобой, уже на лошади, и смотрит на тебя.
-Шанс спавна команда не бросает.
+or /evolvingthreats spawn horseman
+The skeleton appears 8 blocks in front of you, already on the horse, and looks at you.
+The command does not roll the spawn chance.
 
 ==============================================================================================
 
-СКЕЛЕТ «700 IQ»
-================
+"700 IQ" SKELETON
+=================
 
-Тип: обычный скелет и странник. Отдельный вариант, не смесь остальных.
-Код: skeleton/TacticianSkeleton.java (шанс, меч, стрела, смена оружия, здоровье),
-     mixin/SkeletonMixin.java (появление, раньше брони и другого оружия),
-     mixin/TacticianSkeletonAttackMixin.java (особая стрела),
-     mixin/TacticianArrowMixin.java (попадание включает меч),
-     mixin/TacticianSkeletonMobMixin.java (тик, сохранение, выпадение со спины),
-     mixin/MeleeAttackGoalMixin.java (бежит, даже если игрок за углом),
-     client/.../TacticianBackItemLayer.java (меч или лук на спине).
+Type: regular skeleton and stray. A separate variant, not a mix of the others.
+Code: skeleton/TacticianSkeleton.java (chance, sword, arrow, weapon swap, health),
+     mixin/SkeletonMixin.java (spawn, before armor and other weapons),
+     mixin/TacticianSkeletonAttackMixin.java (special arrow),
+     mixin/TacticianArrowMixin.java (a hit switches on the sword),
+     mixin/TacticianSkeletonMobMixin.java (tick, saving, drop from the back),
+     mixin/MeleeAttackGoalMixin.java (runs even if the player is around a corner),
+     client/.../TacticianBackItemLayer.java (sword or bow on the back).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (5%). Решается один раз при появлении.
-2. Брони нет, кроме шлема. Шлем выпадает с тем же шансом 50%, что у обычного скелета,
-   материал любой из кожа…алмаз, без незерита. Кожаный может быть крашеным.
-3. Всегда лук и один меч. Меч: дерево, камень, золото, медь, железо или алмаз.
-   Незерита нет. Что не в руке — видно на спине.
-4. Зелья на самом скелете бывают, как у обычного. Чары на мече — с шансом оружия скелета,
-   чары на шлеме — с шансом брони скелета. Лук без чар.
-5. Стреляет всегда одной стрелой: слабость 20 секунд, замедление 20 секунд, слепота 5 секунд.
-   Уровень I. Стрела игроку не достаётся.
-6. Попал — лук на спину, меч в руку, бежит на этого игрока, даже за угол.
-   Щит принял стрелу или промах — эффектов нет, остаётся с луком.
-7. С мечом, пока на игроке есть хотя бы одно из трёх. Слепота кончается через 5 секунд,
-   слабость и замедление через 20, поэтому меч обычно 20 секунд.
-   Молоко снимает эффекты раньше — сразу снова лук.
-8. Здоровье всегда 50. С пола вещи не подбирает, чтобы не надеть броню.
-   За убийство падает 30 опыта. Общий множитель опыта это число не увеличивает.
-9. Не бывает вместе с маленьким скелетом, дальним луком, тотемом, двумя оружиями,
-   вредной стрелой и щитом. Нет у иссушителя, болотного, пустынного и скелетов рейда.
+1. Chance SPAWN_CHANCE (5%). Decided once at spawn.
+2. No armor except a helmet. The helmet drops with the same 50% chance as on a regular skeleton,
+   any material from leather to diamond, no netherite. Leather may be dyed.
+3. Always a bow and one sword. Sword: wood, stone, gold, copper, iron or diamond.
+   No netherite. Whatever is not in the hand is visible on the back.
+4. Potions on the skeleton itself occur, as on a regular one. Enchantments on the sword — with the skeleton weapon chance,
+   enchantments on the helmet — with the skeleton armor chance. The bow has no enchantments.
+5. Always shoots a single arrow type: weakness 20 seconds, slowness 20 seconds, blindness 5 seconds.
+   Level I. The player does not get the arrow.
+6. A hit — bow goes to the back, sword into the hand, runs at that player, even around a corner.
+   A shield took the arrow or a miss — no effects, stays with the bow.
+7. It keeps the sword while the player has at least one of the three effects. Blindness ends after 5 seconds,
+   weakness and slowness after 20, so the sword is usually out for 20 seconds.
+   Milk removes the effects earlier — the bow comes right back.
+8. Health is always 50. It does not pick up items from the floor, so it cannot put on armor.
+   Killing it drops 30 experience. The common experience multiplier does not increase this number.
+9. Does not occur together with the small skeleton, long-range bow, totem, two weapons,
+   harmful arrow and shield. Not on the wither, bogged, parched and raid skeletons.
 
 
 SETTINGS
@@ -443,373 +443,373 @@ SETTINGS
   TacticianSkeleton.java
     ENABLED .................... true
     SPAWN_CHANCE ............... 0.05 — 5%
-    HEALTH_MIN ................. 50 — всегда 50, если совпадает с HEALTH_MAX
-    HEALTH_MAX ................. 50 — 25 сердец
-    XP_REWARD .................. 30 — ровно столько, множитель опыта не трогает
+    HEALTH_MIN ................. 50 — always 50 if equal to HEALTH_MAX
+    HEALTH_MAX ................. 50 — 25 hearts
+    XP_REWARD .................. 30 — exactly this much, the experience multiplier does not touch it
     WEAKNESS_SECONDS ........... 20
     SLOWNESS_SECONDS ........... 20
     BLINDNESS_SECONDS .......... 5
-    SWORD_WEIGHTS .............. дерево 30, камень 25, золото 10, медь 10, железо 15, алмаз 10
+    SWORD_WEIGHTS .............. wood 30, stone 25, gold 10, copper 10, iron 15, diamond 10
 
-  Шлем и его чары — общие числа скелетов:
-    RandomArmor.SKELETON_ARMOR_PIECE_CHANCE ... 0.50 — шанс шлема
-    MobEnchantments.SKELETON_ENCHANT_CHANCE ... 0.30 — шанс чар на мече
-    MobEnchantments.SKELETON_ARMOR_ENCHANT_CHANCE ... 0.25 — шанс чар на шлеме
+  The helmet and its enchantments — common skeleton numbers:
+    RandomArmor.SKELETON_ARMOR_PIECE_CHANCE ... 0.50 — helmet chance
+    MobEnchantments.SKELETON_ENCHANT_CHANCE ... 0.30 — chance of enchantments on the sword
+    MobEnchantments.SKELETON_ARMOR_ENCHANT_CHANCE ... 0.25 — chance of enchantments on the helmet
 
-  Если меч или лук на спине сидит криво — TacticianBackItemLayer.java:
-    OFFSET_X, OFFSET_Y, OFFSET_Z — сдвиг
-    ROT_X, ROT_Y, ROT_Z — поворот
-    SCALE — размер
+  If the sword or bow sits crooked on the back — TacticianBackItemLayer.java:
+    OFFSET_X, OFFSET_Y, OFFSET_Z — shift
+    ROT_X, ROT_Y, ROT_Z — rotation
+    SCALE — size
 
 
-ТЕСТ
+TEST
 ----
-Команда, без поиска среди обычных скелетов: /ettactician
-То же самое: /evolvingthreats spawn tactician
-Он появляется в паре блоков перед тобой, с луком в руке и мечом на спине.
+Command, without searching among regular skeletons: /ettactician
+The same: /evolvingthreats spawn tactician
+It appears a couple of blocks in front of you, with a bow in hand and a sword on the back.
 
-Встань так, чтобы стрела попала. Должны прийти слабость, замедление и короткая слепота,
-а скелет — добежать с мечом. Выпей молоко: он снова должен взять лук.
+Stand so that the arrow hits. Weakness, slowness and short blindness should arrive,
+and the skeleton should run up with the sword. Drink milk: it should take the bow again.
 
 ==============================================================================================
 
-КАПИТАН СКЕЛЕТОВ
+SKELETON CAPTAIN
 ================
 
-Тип: редкий обычный скелет и два помощника. Не новый моб в меню.
-Код: skeleton/SkeletonCaptain.java (набор, отряд, лут, команда),
-     entity/ai/SkeletonSquadLeashGoal.java (помощники не отходят далеко),
-     mixin/SkeletonMixin.java (шанс при появлении),
-     mixin/SkeletonSquadMixin.java (кто капитан и кто в отряде, сохранение),
-     mixin/SkeletonSquadGoalMixin.java (охота капитана и поводок),
-     entity/ai/CaptainHuntGoal.java (капитан сам идёт к игроку),
-     mixin/SquadFriendlyFireMixin.java (свои не бьют своих),
-     mixin/SquadHurtByMixin.java (свой удар не делает врагом),
-     mixin/SkeletonSquadMobMixin.java (общая цель и дополнительный лут).
+Type: a rare regular skeleton and two helpers. Not a new mob in the menu.
+Code: skeleton/SkeletonCaptain.java (kit, squad, loot, command),
+     entity/ai/SkeletonSquadLeashGoal.java (helpers do not wander far),
+     mixin/SkeletonMixin.java (chance at spawn),
+     mixin/SkeletonSquadMixin.java (who is the captain and who is in the squad, saving),
+     mixin/SkeletonSquadGoalMixin.java (captain's hunt and leash),
+     entity/ai/CaptainHuntGoal.java (the captain walks to the player himself),
+     mixin/SquadFriendlyFireMixin.java (allies do not hit allies),
+     mixin/SquadHurtByMixin.java (a friendly hit does not make an enemy),
+     mixin/SkeletonSquadMobMixin.java (shared target and extra loot).
 
-Зелья мода, случайное оружие и спавнер на голове этому отряду не выдаются.
+The mod's potions, random weapon and a spawner on the head are not given to this squad.
 
 
-КАК ВЫГЛЯДИТ
+HOW IT LOOKS
 ------------
-Капитан. Над головой имя Captain of the Skeletons.
-  Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-  Алмазный шлем, нагрудник, поножи, ботинки.
-  Лук: Сила V и Откидывание IV. Откидывание IV в обычном выживании не получить.
-  Алмазный меч: Острота V, Заговор огня II, Отдача II.
-  На расстоянии стреляет, вплотную бьёт мечом.
-Помощники, двое.
-  Полный железный сет и железный меч в каждой руке. Лука у них нет.
-Броня капитана и помощников, и мечи помощников, чаруются по отдельности.
-Кусок может остаться без чар, может зачароваться один, могут все.
-Чары капитанских лука и меча всегда одни и те же, случайность их не заменяет.
+The captain. Above his head the name Captain of the Skeletons.
+  Visible only when the crosshair is on him and he is no farther than about 64 blocks.
+  Diamond helmet, chestplate, leggings, boots.
+  Bow: Power V and Punch IV. Punch IV cannot be obtained in regular survival.
+  Diamond sword: Sharpness V, Fire Aspect II, Knockback II.
+  At range he shoots, up close he hits with the sword.
+The helpers, two.
+  A full iron set and an iron sword in each hand. They have no bow.
+The armor of the captain and helpers, and the helpers' swords, are enchanted separately.
+A piece may stay without enchantments, one may be enchanted, all may be.
+The enchantments on the captain's bow and sword are always the same, randomness does not replace them.
 
 
-КАК ДЕЙСТВУЕТ
+HOW IT ACTS
 -------------
-1. Капитан сам идёт к ближайшему игроку, как гнилой надсмотрщик.
-   Радиус 128 блоков. Стена между вами ему не мешает начать путь.
-   Дальше 128 блоков он эту цель бросает. Наблюдатель не закрепляет.
-   Креатив тоже идёт (HUNT_CREATIVE). Поставь false, если креатив трогать не надо.
-   Помощники бегут за капитаном и подхватывают ту же цель, когда подходят ближе 32 блоков.
-2. Свои не дерутся. Стрела капитана по охраннику и меч охранника по капитану
-   не наносят урон и не заставляют ответить. Чужой отряд — уже враг.
-3. Помощники держатся рядом с капитаном.
-   Без боя дальше 6 блоков — догоняют.
-   В бою можно отойти на 14 блоков, чтобы достать игрока мечом, и дальше поводок тянет назад.
-4. Капитан за помощниками не бегает: отряд строится вокруг него, а он идёт к игроку.
-   Если капитан умер, помощники держатся друг за друга и сами игрока издалека не ищут.
-5. Имя не даёт капитану исчезнуть самому. Помощники тоже не исчезают, пока жив отряд.
+1. The captain walks to the nearest player himself, like the Rotten Overseer.
+   Radius 128 blocks. A wall between you does not stop him from setting out.
+   Beyond 128 blocks he drops that target. A spectator is not locked on.
+   Creative is also pursued (HUNT_CREATIVE). Set false if creative players should be left alone.
+   The helpers run after the captain and pick up the same target when they get closer than 32 blocks.
+2. Allies do not fight each other. The captain's arrow hitting a guard and a guard's sword hitting the captain
+   do no damage and do not make them respond. A foreign squad is still an enemy.
+3. The helpers stay near the captain.
+   Out of combat, farther than 6 blocks — they catch up.
+   In combat they can go 14 blocks away to reach the player with a sword, and beyond that the leash pulls them back.
+4. The captain does not run after the helpers: the squad forms around him, and he goes to the player.
+   If the captain died, the helpers stick together and do not look for the player from afar on their own.
+5. The name does not let the captain despawn on his own. The helpers do not despawn either while the squad is alive.
 
 
-ЛУТ
----
-Лук капитана не падает никогда. Ни с каким шансом.
-С капитана:
-  меч с его чарами ........... 15%
-  каждый кусок брони ........ 8.5%, чары на куске сохраняются
-  всегда .................... 1 бирка
-  ещё ....................... 20% один алмаз
-С помощника:
-  каждый меч и каждый кусок железа ... 8.5%
-  бирку и алмаз помощник не роняет.
-Кости и стрелы игра роняет как с обычного скелета, это сверху.
+LOOT
+----
+The captain's bow never drops. With no chance at all.
+From the captain:
+  sword with his enchantments ........ 15%
+  each piece of armor ................ 8.5%, enchantments on the piece are kept
+  always ............................. 1 name tag
+  also ............................... 20% one diamond
+From a helper:
+  each sword and each piece of iron .. 8.5%
+  a helper does not drop a name tag or a diamond.
+Bones and arrows are dropped by the game as from a regular skeleton, on top of this.
 
 
-КОМАНДА
+COMMAND
 -------
   /etcaptain
   /evolvingthreats spawn captain
-Отряд появляется в 6 блоках по взгляду. Шанс не бросается.
-Нужны права оператора.
+The squad appears 6 blocks away in the direction you look. The chance is not rolled.
+Operator permissions required.
 
 
 SETTINGS (SkeletonCaptain.java)
 --------------------------------
   ENABLED ...................... true
-  SPAWN_CHANCE ................. 0.002 — шанс у обычного скелета (0.2%)
+  SPAWN_CHANCE ................. 0.002 — chance for a regular skeleton (0.2%)
   HELPER_COUNT ................. 2
   CAPTAIN_NAME ................. Captain of the Skeletons
-  ARMOR_ENCHANT_CHANCE ......... 0.45 — шанс чар на каждый кусок брони
-  HELPER_SWORD_ENCHANT_CHANCE .. 0.55 — шанс чар на каждый меч помощника
-  BOW_PUNCH_LEVEL .............. 4 — откидывание лука (IV). Ванильный потолок 2
+  ARMOR_ENCHANT_CHANCE ......... 0.45 — chance of enchantments on each piece of armor
+  HELPER_SWORD_ENCHANT_CHANCE .. 0.55 — chance of enchantments on each helper sword
+  BOW_PUNCH_LEVEL .............. 4 — bow punch (IV). Vanilla cap is 2
   BOW_POWER_LEVEL .............. 5
   SWORD_SHARPNESS_LEVEL ........ 5
   SWORD_FIRE_ASPECT_LEVEL ...... 2
   SWORD_KNOCKBACK_LEVEL ........ 2
-  IDLE_FOLLOW_BLOCKS ........... 6 — поводок без боя
-  COMBAT_LEASH_BLOCKS .......... 14 — поводок в бою
-  CALL_RANGE_BLOCKS ............ 32 — как далеко передаётся цель
-  CAPTAIN_FOLLOW_RANGE ......... 112 — как далеко капитан держит игрока
-  HUNT_ABANDON_DISTANCE ........ 128 — дальше этого охота сбрасывается
-  HUNT_CREATIVE ................ true — идти и за креативом. false = креатив не закреплять
+  IDLE_FOLLOW_BLOCKS ........... 6 — leash out of combat
+  COMBAT_LEASH_BLOCKS .......... 14 — leash in combat
+  CALL_RANGE_BLOCKS ............ 32 — how far the target is passed on
+  CAPTAIN_FOLLOW_RANGE ......... 112 — how far the captain keeps track of the player
+  HUNT_ABANDON_DISTANCE ........ 128 — beyond this the hunt is dropped
+  HUNT_CREATIVE ................ true — pursue creative players too. false = do not lock onto creative
   SWORD_DROP_CHANCE ............ 0.15
   ARMOR_DROP_CHANCE ............ 0.085
   DIAMOND_DROP_CHANCE .......... 0.20
-  NAME_TAG_COUNT ............... 1 — 0 выключает бирку из лута
+  NAME_TAG_COUNT ............... 1 — 0 turns off the name tag from the loot
   HELPER_DROP_CHANCE ........... 0.085
 
 
-ТЕСТ
+TEST
 ----
-1. /etcaptain. Имя над капитаном, алмаз, два железных скелета с мечами в обеих руках.
-2. Отойди блоков на 40, можно за стену. Капитан идёт к тебе, помощники за ним.
-3. Встань так, чтобы стрела капитана попала в помощника. Помощник не разворачивается на капитана.
-4. Убей капитана. Лука на земле нет. Бирка есть. Меч и алмаз — не каждый раз.
-5. Убей помощника. Бирки и алмаза нет.
+1. /etcaptain. The name above the captain, diamond, two iron skeletons with swords in both hands.
+2. Move about 40 blocks away, possibly behind a wall. The captain comes to you, the helpers follow him.
+3. Stand so that the captain's arrow hits a helper. The helper does not turn on the captain.
+4. Kill the captain. There is no bow on the ground. There is a name tag. The sword and diamond — not every time.
+5. Kill a helper. No name tag and no diamond.
 
 ==============================================================================================
 
-ВАСИЛИСК
+BASILISK
 ========
 
-Тип: редкий обычный скелет. Не новый моб в меню.
-Код: skeleton/BasiliskSkeleton.java (набор, дальность, лут, команда),
-     mixin/BasiliskSkeletonMixin.java (помнит, что он Василиск),
-     mixin/BasiliskBowMixin.java (стреляет издалека),
-     mixin/BasiliskLootMixin.java (опыт, бирка, череп, лук и броня не падают),
-     mixin/SkeletonMixin.java (шанс при появлении),
-     mixin/AbstractSkeletonFastBowMixin.java (скорость стрелы, чтобы долетала),
-     mixin/BasiliskShieldMixin.java (стрела копит урон по щиту).
+Type: a rare regular skeleton. Not a new mob in the menu.
+Code: skeleton/BasiliskSkeleton.java (kit, range, loot, command),
+     mixin/BasiliskSkeletonMixin.java (remembers that it is a Basilisk),
+     mixin/BasiliskBowMixin.java (shoots from afar),
+     mixin/BasiliskLootMixin.java (experience, name tag, skull, bow and armor do not drop),
+     mixin/SkeletonMixin.java (chance at spawn),
+     mixin/AbstractSkeletonFastBowMixin.java (arrow speed, so it reaches the target),
+     mixin/BasiliskShieldMixin.java (arrows accumulate damage on the shield).
 
-Капитан, «700 IQ», случайное оружие и спавнер на голове ему не выдаются.
+The captain, "700 IQ", random weapon and a spawner on the head are not given to it.
 
 
-КАК ВЫГЛЯДИТ
+HOW IT LOOKS
 ------------
-Над головой имя Basilisk. Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-Здоровье 100 (50 сердец). Случайные 20–40 обычного скелета ему не остаются.
-Полный незеритовый сет без чар. Днём не горит: шлем закрывает от солнца.
-Во второй руке чёрный щит без узора. Не падает.
-Удар по нему с шансом 10% гасится целиком — это общий щит мода (MobShields), не отдельная способность.
-Лук: Горящая стрела, Сила V, Откидывание XX.
-Откидывание XX сильнее и капитанского IV, и редкого VI. Игрока уносит очень далеко.
+Above the head the name Basilisk. Visible only when the crosshair is on it and it is no farther than about 64 blocks.
+Health 100 (50 hearts). The random 20–40 of a regular skeleton does not remain.
+A full netherite set without enchantments. Does not burn in daylight: the helmet shields from the sun.
+In the off-hand a black shield with no pattern. It does not drop.
+A hit on it is fully absorbed with a 10% chance — this is the mod's common shield (MobShields), not a separate ability.
+Bow: Flame, Power V, Punch XX.
+Punch XX is stronger than both the captain's IV and the rare VI. It carries the player very far.
 
 
-КАК ДЕЙСТВУЕТ
+HOW IT ACTS
 -------------
-1. Замечает игрока на 64 блока, если между вами нет стены. Обычный скелет видит примерно на 16.
-2. Стрелять начинает с 48 блоков, не подходит вплотную.
-3. Стрела летит быстрее обычной, чтобы долетать. Попадает — поджигает и сильно отбрасывает.
-4. Если закрыться щитом, каждая отбитая стрела копится. Четвёртая ломает щит целиком.
-   Прочность на щите это не растягивает. Промах не считается. Другой щит считает заново.
-5. Имя не даёт ему исчезнуть самому.
+1. Notices the player from 64 blocks if there is no wall between you. A regular skeleton sees about 16.
+2. Starts shooting from 48 blocks, does not come up close.
+3. The arrow flies faster than a regular one, to reach the target. On a hit it sets on fire and knocks back hard.
+4. If you cover yourself with a shield, every blocked arrow accumulates. The fourth breaks the shield outright.
+   This does not stretch the shield's durability. A miss does not count. A different shield counts from scratch.
+5. The name does not let it despawn on its own.
 
 
-ЛУТ
----
-Лук не падает никогда. Незерит не падает никогда. Щит не падает никогда.
-Всегда: 1 бирка с именем Basilisk.
-Ещё: 100 опыта. Обычный скелет даёт 5.
-Ещё: череп скелета с шансом 2.5%.
-Кости и стрелы игра роняет как с обычного скелета, это сверху.
+LOOT
+----
+The bow never drops. Netherite never drops. The shield never drops.
+Always: 1 name tag with the name Basilisk.
+Also: 100 experience. A regular skeleton gives 5.
+Also: a skeleton skull with a 2.5% chance.
+Bones and arrows are dropped by the game as from a regular skeleton, on top of this.
 
 
-КОМАНДА
+COMMAND
 -------
   /etbasilisk
   /evolvingthreats spawn basilisk
-Появляется в 6 блоках по взгляду. Шанс не бросается.
-Нужны права оператора.
+Appears 6 blocks away in the direction you look. The chance is not rolled.
+Operator permissions required.
 
 
 SETTINGS (BasiliskSkeleton.java)
 ---------------------------------
   ENABLED ..................... true
-  SPAWN_CHANCE ................ 0.002 — шанс у обычного скелета (0.2%)
+  SPAWN_CHANCE ................ 0.002 — chance for a regular skeleton (0.2%)
   NAME ........................ Basilisk
-  MAX_HEALTH .................. 100 — здоровье, 50 сердец
+  MAX_HEALTH .................. 100 — health, 50 hearts
   XP_REWARD ................... 100
   NAME_TAG_COUNT .............. 1
-  SKULL_DROP_CHANCE ........... 0.025 — 2.5% череп скелета
-  BOW_FLAME_LEVEL ............. 1 — Горящая стрела
+  SKULL_DROP_CHANCE ........... 0.025 — 2.5% skeleton skull
+  BOW_FLAME_LEVEL ............. 1 — Flame
   BOW_POWER_LEVEL ............. 5
-  BOW_PUNCH_LEVEL ............. 20 — Откидывание XX
-  SIGHT_BLOCKS ................ 64 — как далеко видит
-  ATTACK_RANGE_BLOCKS ......... 48 — с какого расстояния стреляет
-  ARROW_SPEED ................. 3.2 — скорость стрелы. Меньше — не долетает
-  SHIELD_HITS_TO_BREAK ........ 4 — столько отбитых стрел ломают щит. 0 = не ломает
+  BOW_PUNCH_LEVEL ............. 20 — Punch XX
+  SIGHT_BLOCKS ................ 64 — how far it sees
+  ATTACK_RANGE_BLOCKS ......... 48 — distance it shoots from
+  ARROW_SPEED ................. 3.2 — arrow speed. Lower — it does not reach
+  SHIELD_HITS_TO_BREAK ........ 4 — this many blocked arrows break the shield. 0 = never breaks
 
 ==============================================================================================
 
-МАЯК (Jack o'Lantern на голове)
-================================
+BEACON (Jack o'Lantern on the head)
+===================================
 
-Тип: редкий зомби или скелет (не отдельный моб).
-Код: beacon/JackLanternBeacon.java,
-     beacon/JackLanternLight.java (свет вокруг головы),
-     entity/ai/JackBeaconAuraGoal.java (зомби),
-     entity/ai/JackLanternFireShotGoal.java (скелет),
+Type: rare zombie or skeleton (not a separate mob).
+Code: beacon/JackLanternBeacon.java,
+     beacon/JackLanternLight.java (light around the head),
+     entity/ai/JackBeaconAuraGoal.java (zombie),
+     entity/ai/JackLanternFireShotGoal.java (skeleton),
      mixin/ZombieMixin.java, SkeletonMixin.java,
      mixin/ZombieJackBeaconGoalsMixin.java, AbstractSkeletonJackLanternGoalMixin.java.
 
 
-КАК ВЫГЛЯДИТ
+HOW IT LOOKS
 ------------
-Светящаяся тыква (JACK_O_LANTERN) в слоте HEAD.
-Сама картинка на голове мир не освещает, поэтому рядом с головой едет невидимый свет
-уровня LIGHT_LEVEL (15 — как блок-фонарь). Тыква снята или моб умер — свет гаснет.
-Обычная вырезанная тыква (без света) этой механикой НЕ используется.
+A glowing pumpkin (JACK_O_LANTERN) in the HEAD slot.
+The picture on the head does not light up the world by itself, so an invisible light of
+level LIGHT_LEVEL (15 — like a lantern block) travels next to the head. Pumpkin removed or mob dead — the light goes out.
+A regular carved pumpkin (without light) is NOT used by this mechanic.
 
 
-КТО МОЖЕТ ПОЛУЧИТЬ ГОЛОВУ
--------------------------
-  Да:   зомби, хаск, зомби-житель, скелет, странник.
-  Нет:  утопленник, зомби-пиглин, надсмотрщик, рейд.
+WHO CAN GET THE HEAD
+--------------------
+  Yes:  zombie, husk, zombie villager, skeleton, stray.
+  No:   drowned, zombified piglin, Overseer, raid.
 
-  На одной голове только одно: спавнер ИЛИ маяк ИЛИ (у скелета) раздатчик.
-
-
-ЗОМБИ — МАЯК СТАИ
------------------
-1. Не идёт ломать факелы (исключён из LightSeeking / LightSeekGoal).
-2. Если видит игрока (прямая видимость) — раз в ~1 сек «пульс» в радиусе BEACON_RADIUS:
-   соседние зомби получают Speed и (если включено) цель на того же игрока, если у них не было цели.
+  Only one thing per head: a spawner OR a beacon OR (on a skeleton) a dispenser.
 
 
-СКЕЛЕТ — ОГНЕННЫЙ ВЫСТРЕЛ
---------------------------
-Раз в 8–14 сек (случайно) одна огненная стрела по цели, если в дистанции и есть LOS.
-Дополнительно к обычному луку (не заменяет раздатчик и не залп).
+ZOMBIE — PACK BEACON
+--------------------
+1. Does not go to break torches (excluded from LightSeeking / LightSeekGoal).
+2. If it sees the player (line of sight) — about once per second a "pulse" within BEACON_RADIUS:
+   neighboring zombies get Speed and (if enabled) a target on the same player, if they had no target.
+
+
+SKELETON — FIRE SHOT
+--------------------
+Once every 8–14 sec (random) one fire arrow at the target, if within range and with line of sight.
+In addition to the regular bow (does not replace the dispenser and is not a volley).
 
 
 SETTINGS (JackLanternBeacon.java)
 ----------------------------------
   ENABLED ...................... true
-  JACK_HEAD_DROP_CHANCE ........ 0.085 — шанс выпадения тыквы
-  LIGHT_LEVEL .................. 15 — яркость вокруг головы, 0 = не светить. Это в JackLanternLight.java
-  CARRIER_SPAWN_CHANCE ......... 0.01 — шанс при спавне на 100-й день (1%). В начале игры в 10 раз меньше
-  BEACON_RADIUS ................ 20 — радиус ускорения стаи
-  BEACON_PULSE_INTERVAL_TICKS .. 20 — как часто пульс
+  JACK_HEAD_DROP_CHANCE ........ 0.085 — chance the pumpkin drops
+  LIGHT_LEVEL .................. 15 — brightness around the head, 0 = no light. This is in JackLanternLight.java
+  CARRIER_SPAWN_CHANCE ......... 0.01 — chance at spawn on day 100 (1%). At the start of the game 10 times lower
+  BEACON_RADIUS ................ 20 — radius of the pack speed-up
+  BEACON_PULSE_INTERVAL_TICKS .. 20 — how often the pulse
   ALLY_SPEED_AMPLIFIER ......... 0 — Speed I
-  SHARE_TARGET_WITH_ALLIES ..... true — передать агро союзникам без цели
-  FIRE_SHOT_COOLDOWN_* ......... 8–14 сек между огненными стрелами
+  SHARE_TARGET_WITH_ALLIES ..... true — pass the aggro to allies without a target
+  FIRE_SHOT_COOLDOWN_* ......... 8–14 sec between fire arrows
 
 
-ТЕСТ
+TEST
 ----
-1. CARRIER_SPAWN_CHANCE = 1.0 — проверить голову и поведение.
-2. Зомби-маяк + стая: убить свет, атаковать — соседние зомби должны бежать быстрее, когда маяк вас видит.
-3. Скелет-маяк: ждать огненную стрелу между обычными выстрелами.
+1. CARRIER_SPAWN_CHANCE = 1.0 — check the head and the behavior.
+2. Zombie beacon + pack: kill the light, attack — neighboring zombies should run faster while the beacon sees you.
+3. Skeleton beacon: wait for the fire arrow between regular shots.
 
 ==============================================================================================
 
-НОСИТЕЛЬ СПАВНЕРА (Spawner Head)
-================================
+SPAWNER CARRIER (Spawner Head)
+==============================
 
-Тип: редкий вариант обычного зомби или скелета (не отдельный моб в меню).
-Код: spawnerhead/SpawnerHeadMob.java,
+Type: rare variant of the regular zombie or skeleton (not a separate mob in the menu).
+Code: spawnerhead/SpawnerHeadMob.java,
      mixin/ZombieMixin.java, SkeletonMixin.java,
-     mixin/LivingEntitySpawnerHeadMixin.java (удары игрока).
+     mixin/LivingEntitySpawnerHeadMixin.java (player hits).
 
 
-КАК ВЫГЛЯДИТ
+HOW IT LOOKS
 ------------
-На голове блок спавнера (как у скелета с раздатчиком — предмет в слоте HEAD).
-Перекрывает шлем. У скелета спавнер и раздатчик на голове не выпадают вместе:
-если выпал спавнер — раздатчик не надевается.
+A spawner block on the head (like the skeleton with a dispenser — an item in the HEAD slot).
+Overrides the helmet. On a skeleton the spawner and the dispenser on the head do not drop together:
+if a spawner dropped — the dispenser is not put on.
 
-Дым и огонь над головой (как у настоящего spawner) — только на клиенте,
-код: client/spawnerhead/SpawnerHeadParticles.java (ENABLED, высота HEAD_CENTER_ABOVE_FEET).
+Smoke and fire above the head (like a real spawner) — client side only,
+code: client/spawnerhead/SpawnerHeadParticles.java (ENABLED, height HEAD_CENTER_ABOVE_FEET).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При обычном спавне шанс стать носителем — CARRIER_SPAWN_CHANCE (0.5% на 100-й день).
-2. Каждые 2 удара игрока (меч, лук, любой урон от игрока) рядом появляется 1–2 таких же моба
-   (зомби зовёт зомби, скелет — скелета, хаск — хаска…). Счётчик ударов после призыва сбрасывается.
-3. Призванная подмога НИКОГДА не может получить спавнер на голове (нет цепочки «имба»).
-4. Подмога — обычный finalizeSpawn (броня/оружие по правилам мода), но без роли носителя.
+1. On a regular spawn the chance to become a carrier is CARRIER_SPAWN_CHANCE (0.5% on day 100).
+2. Every 2 player hits (sword, bow, any damage from the player) 1–2 mobs of the same kind appear nearby
+   (a zombie calls a zombie, a skeleton a skeleton, a husk a husk…). The hit counter resets after the summon.
+3. The summoned reinforcements can NEVER get a spawner on the head (no "overpowered" chain).
+4. Reinforcements go through a regular finalizeSpawn (armor/weapon by the mod's rules), but without the carrier role.
 
 
-КТО МОЖЕТ БЫТЬ НОСИТЕЛЕМ
-------------------------
-  Да:   зомби, хаск, зомби-житель, скелет, странник.
-  Нет:  утопленник, зомби-пиглин, босс надсмотрщик, прислуга рейда.
-  Скелет-иссушитель — отдельно, раздел «СКЕЛЕТ-ИСУШИТЕЛЬ СО СПАВНЕРОМ» ниже.
-  (всегда двое за призыв, свой шанс).
+WHO CAN BE A CARRIER
+--------------------
+  Yes:  zombie, husk, zombie villager, skeleton, stray.
+  No:   drowned, zombified piglin, Overseer boss, raid minions.
+  The wither skeleton is separate, see the section "WITHER SKELETON WITH A SPAWNER" below.
+  (always two per summon, its own chance).
 
 
 SETTINGS (SpawnerHeadMob.java)
 -------------------------------
-  ENABLED ...................... true — вкл/выкл
-  CARRIER_SPAWN_CHANCE ......... 0.005 — шанс при спавне на 100-й день (0.5%). В начале игры в 10 раз меньше
-  HITS_TO_SUMMON ............... 2 — ударов игрока до призыва
-  SUMMON_COUNT_MIN / MAX ....... 1 / 2 — сколько мобов призвать
-  SUMMON_RADIUS ................ 3.0 — радиус появления (блоки)
-  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — дроп спавнера с головы
+  ENABLED ...................... true — on/off
+  CARRIER_SPAWN_CHANCE ......... 0.005 — chance at spawn on day 100 (0.5%). At the start of the game 10 times lower
+  HITS_TO_SUMMON ............... 2 — player hits before the summon
+  SUMMON_COUNT_MIN / MAX ....... 1 / 2 — how many mobs to summon
+  SUMMON_RADIUS ................ 3.0 — spawn radius (blocks)
+  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — drop of the spawner from the head
 
 
-ТЕСТ
+TEST
 ----
-1. Ночь, подожди зомби/скелетов или /summon — смотри на голову (очень редко, 0.5% к 100-му дню).
-2. Ударь носителя 2 раза — рядом должны появиться 1–2 таких же.
-3. Чтобы чаще видеть: временно поставь CARRIER_SPAWN_CHANCE = 1.0.
+1. Night, wait for zombies/skeletons or /summon — look at the head (very rare, 0.5% by day 100).
+2. Hit the carrier 2 times — 1–2 of the same kind should appear nearby.
+3. To see it more often: temporarily set CARRIER_SPAWN_CHANCE = 1.0.
 
 ==============================================================================================
 
-РИТУАЛЬНАЯ СТАЯ
-===============
+RITUAL BAND
+===========
 
-Тип: редкая группа, не отдельный моб. 1–2 обычных зомби и 1–2 обычных скелета.
-Код: ritual/RitualBand.java (настройки, поведение, лут, команда),
-     mixin/RitualZombieMixin.java и RitualSkeletonMixin.java (память и запись в мир),
-     mixin/RitualMobMixin.java (опыт и лишние вещи),
-     mixin/RitualHuntMixin.java (голова игрока чует сквозь стены, солнце пиглина тушится),
-     mixin/RitualHurtMixin.java (свои не бьют своих, огонь пиглина, иссушение),
-     mixin/RitualDeathMixin.java (хлопок головы крипера).
+Type: a rare group, not a separate mob. 1–2 regular zombies and 1–2 regular skeletons.
+Code: ritual/RitualBand.java (settings, behavior, loot, command),
+     mixin/RitualZombieMixin.java and RitualSkeletonMixin.java (memory and saving to the world),
+     mixin/RitualMobMixin.java (experience and extra items),
+     mixin/RitualHuntMixin.java (the player head senses through walls, the piglin sun is put out),
+     mixin/RitualHurtMixin.java (allies do not hit allies, piglin fire, wither),
+     mixin/RitualDeathMixin.java (creeper head pop).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (0,2%, один из пятисот) у обычного взрослого зомби и у обычного скелета.
-   FIXED: с первого дня, от шкалы угрозы не растёт.
-   Кадавр, странник, детёныш, надсмотрщик и рейд стаей не становятся.
-   Призванный согруппник шанс заново не бросает.
-2. У всех в стае одна и та же голова. Какая выпадет — решает поведение.
-   Кожа тёмно-зелёная, шлема нет. В руке красный факел или кость, и то и то в стае есть.
-   Чары, случайное оружие и зелья мода не выдаются. Блоки не ломают.
-3. Здоровье каждого 50. Удар любого в стае снимает 4 сердца до брони.
-   У обычного зомби полтора, у скелета с костью одно.
-   Без брони игрок переживает два удара.
-4. Любой в стае замечает игрока с 52 блоков, если видит его.
-   Голова игрока на тех же 52 блоках чует сквозь стены.
-   Голова не падает. Если убил игрок — компас падает с шансом 2,5%, как остальные головы.
-   Добыча I/II/III поднимает до 3,5% / 4,5% / 5,5%.
-5. Голова крипера. При смерти небольшой взрыв: больно рядом, блоки почти не ломает.
-   Своих не ранит и не раскидывает. Голова падает редко, как череп со скелета-иссушителя.
-   Ещё падает порох, в том числе с зомби.
-6. Голова пиглина. Лава, огонь и солнце не берут: зомби на открытом месте не загорается.
-   Голова падает редко, как череп со скелета-иссушителя. Ещё падает один золотой слиток.
-7. Череп иссушителя. Удар вешает иссушение на 4 секунды.
-   Пока оно ещё держится, следующий удар его не обновляет.
-   Череп падает редко, как со скелета-иссушителя. Ещё падают уголь и роза визера.
-8. Кусок тёмно-зелёной кожи иногда падает, как обычная броня (около 8,5%).
-   Красный факел из руки — с шансом 35%. Кость из руки не падает.
-   Опыта с каждого 50. У обычного зомби и скелета в этом моде 10, и общий множитель стаю не удваивает.
+1. Chance SPAWN_CHANCE (0.2%, one in five hundred) for a regular adult zombie and a regular skeleton.
+   FIXED: from day one, does not grow with the threat scale.
+   Cadaver, stray, baby, Overseer and raid mobs do not become a band.
+   A summoned band-mate does not roll the chance again.
+2. Everyone in the band has the same head. Which one it is decides the behavior.
+   Dark green skin, no helmet. In hand a red torch or a bone, both are present in the band.
+   Enchantments, random weapon and the mod's potions are not given. They do not break blocks.
+3. Health of each is 50. A hit from anyone in the band removes 4 hearts before armor.
+   A regular zombie does one and a half, a skeleton with a bone one.
+   Without armor the player survives two hits.
+4. Anyone in the band notices the player from 52 blocks if it sees them.
+   The player head senses through walls at the same 52 blocks.
+   The head does not drop. If a player killed it — a compass drops with a 2.5% chance, like the other heads.
+   Looting I/II/III raises it to 3.5% / 4.5% / 5.5%.
+5. Creeper head. On death a small explosion: hurts nearby, barely breaks blocks.
+   Does not hurt or fling its allies. The head drops rarely, like the skull from a wither skeleton.
+   Gunpowder also drops, including from zombies.
+6. Piglin head. Lava, fire and sunlight do not harm it: a zombie in the open does not catch fire.
+   The head drops rarely, like the skull from a wither skeleton. One gold ingot also drops.
+7. Wither skull. A hit applies wither for 4 seconds.
+   While it is still active, the next hit does not refresh it.
+   The skull drops rarely, like from a wither skeleton. Coal and a wither rose also drop.
+8. A piece of dark green leather sometimes drops, like regular armor (about 8.5%).
+   A red torch from the hand — with a 35% chance. A bone from the hand does not drop.
+   Experience from each is 50. A regular zombie and skeleton give 10 in this mod, and the common multiplier does not double the band.
 
 
-КОМАНДА
+COMMAND
 -------
   /etritual
   /etritual player
@@ -818,165 +818,165 @@ SETTINGS (SpawnerHeadMob.java)
   /etritual wither
   /evolvingthreats spawn ritual
   /evolvingthreats spawn ritual wither
-Без слова в конце голова случайная. Стая появляется в 6 блоках по взгляду.
-Нужны права оператора.
+Without a word at the end the head is random. The band appears 6 blocks away in the direction you look.
+Operator permissions required.
 
 
 SETTINGS (RitualBand.java)
 ---------------------------
-  ENABLED ...................... true — false выключает стаю
-  SPAWN_CHANCE ................. 0.002 — 0,2%, один из пятисот. FIXED с первого дня. 0 = только команда
-  XP_REWARD .................... 50 — опыт с каждого. Множитель опыта не трогает. 0 = опыта нет
-  LEATHER_COLOR ................ 0x1B4F2A — тёмно-зелёная кожа
-  LEATHER_DROP_CHANCE .......... 0.085 — шанс куска кожи
-  TORCH_DROP_CHANCE ............ 0.35 — шанс факела из руки
-  HEAD_DROP_CHANCE ............. 0.025 — 2,5% у головы и у компаса.
-                                 Добыча I/II/III = 3,5% / 4,5% / 5,5%
-  MAX_HEALTH ................... 50 — 25 сердец у каждого в стае
-  ATTACK_DAMAGE ................ 8 — четыре сердца до брони. 2 урона = 1 сердце
-  GUNPOWDER_COUNT .............. 1 — порох
-  GOLD_INGOT_COUNT ............. 1 — золотой слиток
-  COAL_COUNT ................... 1 — уголь
-  ROSE_COUNT ................... 1 — роза визера
-  SENSE_BLOCKS ................. 52 — с какого расстояния замечают. Голова игрока на этой же дистанции чует сквозь стены
-  EXPLOSION_POWER .............. 1.5 — хлопок, у крипера 3
-  WITHER_SECONDS ............... 4 — длительность иссушения
-  WITHER_REFRESH_IF_BELOW_SECONDS  1 — пока эффект длиннее, удар его не обновляет
+  ENABLED ...................... true — false turns the band off
+  SPAWN_CHANCE ................. 0.002 — 0.2%, one in five hundred. FIXED from day one. 0 = command only
+  XP_REWARD .................... 50 — experience from each. Does not touch the experience multiplier. 0 = no experience
+  LEATHER_COLOR ................ 0x1B4F2A — dark green leather
+  LEATHER_DROP_CHANCE .......... 0.085 — chance of a piece of leather
+  TORCH_DROP_CHANCE ............ 0.35 — chance of the torch from the hand
+  HEAD_DROP_CHANCE ............. 0.025 — 2.5% for the head and for the compass.
+                                 Looting I/II/III = 3.5% / 4.5% / 5.5%
+  MAX_HEALTH ................... 50 — 25 hearts for each in the band
+  ATTACK_DAMAGE ................ 8 — four hearts before armor. 2 damage = 1 heart
+  GUNPOWDER_COUNT .............. 1 — gunpowder
+  GOLD_INGOT_COUNT ............. 1 — gold ingot
+  COAL_COUNT ................... 1 — coal
+  ROSE_COUNT ................... 1 — wither rose
+  SENSE_BLOCKS ................. 52 — distance from which they notice. The player head at this same distance senses through walls
+  EXPLOSION_POWER .............. 1.5 — the pop, a creeper's is 3
+  WITHER_SECONDS ............... 4 — duration of wither
+  WITHER_REFRESH_IF_BELOW_SECONDS  1 — while the effect is longer than this, a hit does not refresh it
 
 
-ТЕСТ
+TEST
 ----
-1. /etritual player — у всех голова игрока. Отойди за стену ближе 52 блоков: идут к тебе.
-   Убей. Компас — редко, около 2,5%. Голов игрока нет.
-2. /etritual creeper — смерть хлопает. Сосед из стаи остаётся на месте. Порох падает.
-   Голова — редко, около 2,5%.
-3. /etritual piglin — лава не жжёт. Днём на солнце зомби не загорается. Слиток падает.
-   Голова — редко, около 2,5%.
-4. /etritual wither — удар вешает иссушение и не обновляет его каждый тычок.
-   Уголь и роза падают. Череп — редко, около 2,5%.
-   Удар любой стаи снимает 4 сердца до брони. У каждого 50 жизней.
+1. /etritual player — everyone has the player head. Step behind a wall closer than 52 blocks: they come to you.
+   Kill them. A compass — rarely, about 2.5%. No player heads.
+2. /etritual creeper — death pops. A neighbor from the band stays in place. Gunpowder drops.
+   The head — rarely, about 2.5%.
+3. /etritual piglin — lava does not burn. In daylight in the sun the zombie does not catch fire. An ingot drops.
+   The head — rarely, about 2.5%.
+4. /etritual wither — a hit applies wither and does not refresh it on every poke.
+   Coal and a rose drop. The skull — rarely, about 2.5%.
+   A hit from any band member removes 4 hearts before armor. Each has 50 health.
 
 ==============================================================================================
 
-СКЕЛЕТ-ИССУШИТЕЛЬ: МЕЧ И ОПЫТ
-=================================
+WITHER SKELETON: SWORD AND EXPERIENCE
+=====================================
 
-Тип: обычный скелет-иссушитель (не новый моб).
-Код: skeleton/WitherSkeletonSword.java (шанс меча, чары, опыт),
-     mixin/SkeletonMixin.java (момент появления),
-     mixin/MobExperienceMixin.java (своё число опыта).
+Type: regular wither skeleton (not a new mob).
+Code: skeleton/WitherSkeletonSword.java (sword chance, enchantments, experience),
+     mixin/SkeletonMixin.java (moment of spawn),
+     mixin/MobExperienceMixin.java (its own experience number).
 
-Кто получает незерит и чары: иссушитель, который появился в аду.
-Носитель спавнера на голове — нет, у него остаётся каменный меч без чар мода.
-Осада в обычном мире — тоже нет.
-Опыт 25 — у любого иссушителя, и в аду, и в осаде.
+Who gets netherite and enchantments: a wither skeleton that spawned in the Nether.
+A spawner carrier on the head — no, it keeps a stone sword without the mod's enchantments.
+A siege in the regular world — no either.
+Experience 25 — for any wither skeleton, in the Nether and in a siege.
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. В аду при появлении шанс незеритового меча вместо каменного.
-   GROWING: в начале около 1,5%, к 100-му дню 15%. Луна чуть двигает шанс.
-   Остальные остаются с каменным мечом.
-2. На оба меча мод может повесить чары. Шанс и сила растут со шкалой угрозы,
-   как у меча зомби: в начале около 1%, к 100-му дню 70%.
-   Чары те же: острота, отбрасывание, заговор огня, добыча и остальные с меча.
-   Если чары мода выпали, они заменяют те, что уже повесила игра.
-   Если не выпали — на каменном мече остаются чары самой игры.
-3. Незеритовый меч не выпадает, даже с Добычей.
-   Каменный выпадает как раньше, около 8,5%, и чары на нём тоже.
-4. Если убил игрок — опыта 25. Раньше было около 12–16.
-   Общий множитель это число второй раз не удваивает.
-   Если иссушитель сгорел сам — опыта нет.
+1. In the Nether at spawn there is a chance of a netherite sword instead of a stone one.
+   GROWING: at the start about 1.5%, by day 100 15%. The moon shifts the chance slightly.
+   The rest keep the stone sword.
+2. The mod may put enchantments on both swords. The chance and strength grow with the threat scale,
+   like on the zombie's sword: at the start about 1%, by day 100 70%.
+   The enchantments are the same: sharpness, knockback, fire aspect, looting and the rest from the sword.
+   If the mod's enchantments rolled, they replace those the game already put on.
+   If they did not — the stone sword keeps the game's own enchantments.
+3. The netherite sword does not drop, even with Looting.
+   The stone one drops as before, about 8.5%, and its enchantments too.
+4. If a player killed it — experience 25. Before it was about 12–16.
+   The common multiplier does not double this number a second time.
+   If the wither skeleton burned to death by itself — no experience.
 
 
 SETTINGS (WitherSkeletonSword.java)
 ------------------------------------
-  ENABLED ...................... true — false убирает незерит и чары мода. Опыт остаётся
-  NETHERITE_CHANCE ............. 0.15 — 15% на 100-й день. В начале около 1,5%. 0 = незерита нет
-  ENCHANT_CHANCE ............... 0.70 — 70% чар на 100-й день. В начале около 1%. 0 = чар мода нет
-  XP_REWARD .................... 25 — опыт. -1 = снова как у обычного моба. 0 = опыта нет
-  Стартовая доля опасного шанса . ThreatTable.DANGEROUS_START_RATIO = 0.10
-  Стартовый шанс чар ........... ThreatTable.WEAPON_ENCHANT_CHANCE_START = 0.01
+  ENABLED ...................... true — false removes netherite and the mod's enchantments. Experience stays
+  NETHERITE_CHANCE ............. 0.15 — 15% on day 100. At the start about 1.5%. 0 = no netherite
+  ENCHANT_CHANCE ............... 0.70 — 70% enchantments on day 100. At the start about 1%. 0 = no mod enchantments
+  XP_REWARD .................... 25 — experience. -1 = as a regular mob again. 0 = no experience
+  Starting share of the dangerous chance . ThreatTable.DANGEROUS_START_RATIO = 0.10
+  Starting enchantment chance .. ThreatTable.WEAPON_ENCHANT_CHANCE_START = 0.01
 
 
-ТЕСТ
+TEST
 ----
-1. Чтобы увидеть незерит сразу, временно поставь NETHERITE_CHANCE = 1.0.
-   Призови скелета-иссушителя в аду. В руке незеритовый меч.
-   Убей. Меч не падает. Опыта 25, если убил ты.
-2. Поставь NETHERITE_CHANCE = 0 и ENCHANT_CHANCE = 1.0.
-   В руке каменный меч с чарами. Он может выпасть.
-3. Верни 0.15 и 0.70. Призови в обычном мире: незерита и чар мода нет, опыт всё равно 25.
-   Носитель спавнера в аду тоже остаётся с каменным мечом.
+1. To see netherite right away, temporarily set NETHERITE_CHANCE = 1.0.
+   Summon a wither skeleton in the Nether. A netherite sword in hand.
+   Kill it. The sword does not drop. Experience 25 if you killed it.
+2. Set NETHERITE_CHANCE = 0 and ENCHANT_CHANCE = 1.0.
+   A stone sword with enchantments in hand. It may drop.
+3. Restore 0.15 and 0.70. Summon in the regular world: no netherite and no mod enchantments, experience is still 25.
+   A spawner carrier in the Nether also keeps a stone sword.
 
 ==============================================================================================
 
-СКЕЛЕТ-ИСУШИТЕЛЬ СО СПАВНЕРОМ
-================================
+WITHER SKELETON WITH A SPAWNER
+==============================
 
-Тип: редкий вариант обычного скелета-иссушителя. Не новый моб.
-Код: spawnerhead/SpawnerHeadMob.java (шанс, сколько зовёт, команда),
-     mixin/SkeletonMixin.java (надевает спавнер при появлении),
-     mixin/LivingEntitySpawnerHeadMixin.java (считает удары — общий с зомби и скелетом).
+Type: rare variant of the regular wither skeleton. Not a new mob.
+Code: spawnerhead/SpawnerHeadMob.java (chance, how many it summons, command),
+     mixin/SkeletonMixin.java (puts on the spawner at spawn),
+     mixin/LivingEntitySpawnerHeadMixin.java (counts hits — shared with the zombie and skeleton).
 
-Броня, оружие и зелья мода ему не выдаются. Каменный меч и иссушение с удара — как в обычной игре.
-На голове блок спавнера. Дым над ним чуть выше, чем у зомби: он сам выше.
-Высота дыма: client/spawnerhead/SpawnerHeadParticles.java, WITHER_HEAD_CENTER_ABOVE_FEET.
+The mod's armor, weapon and potions are not given to it. A stone sword and wither from the hit — as in the regular game.
+A spawner block on the head. The smoke above it is slightly higher than the zombie's: it is taller itself.
+Smoke height: client/spawnerhead/SpawnerHeadParticles.java, WITHER_HEAD_CENTER_ABOVE_FEET.
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При появлении в крепости или в долине песка душ шанс WITHER_CARRIER_SPAWN_CHANCE (0.5% на 100-й день).
-2. Каждые 2 удара игрока (меч, лук, любой урон от игрока) рядом появляются ровно 2
-   скелета-иссушителя. Счётчик после призыва сбрасывается.
-3. Призванные спавнер на голову не получают. Цепочки «спавнер зовёт спавнер» нет.
-4. Удар не от игрока (лава, другой моб) счётчик не увеличивает.
-5. У зомби и обычного скелета по-прежнему 1–2 помощника, не всегда двое.
-   Число ударов общее: HITS_TO_SUMMON.
+1. On spawn in a fortress or in a soul sand valley the chance is WITHER_CARRIER_SPAWN_CHANCE (0.5% on day 100).
+2. Every 2 player hits (sword, bow, any damage from the player) exactly 2
+   wither skeletons appear nearby. The counter resets after the summon.
+3. The summoned ones do not get a spawner on the head. There is no "spawner calls spawner" chain.
+4. A hit not from a player (lava, another mob) does not increase the counter.
+5. The zombie and the regular skeleton still have 1–2 helpers, not always two.
+   The hit count is shared: HITS_TO_SUMMON.
 
 
-КОМАНДА
+COMMAND
 -------
   /etwitherspawner
   /evolvingthreats spawn wither_spawner
-Появляется в 4 блоках по взгляду, сразу со спавнером. Шанс не бросается.
-Нужны права оператора.
+Appears 4 blocks away in the direction you look, with a spawner right away. The chance is not rolled.
+Operator permissions required.
 
 
 SETTINGS (SpawnerHeadMob.java)
 -------------------------------
-  ENABLED ...................... true — false выключает и этого, и носителей в обычном мире
-  WITHER_CARRIER_SPAWN_CHANCE .. 0.005 — шанс в аду на 100-й день (0.5%). В начале игры в 10 раз меньше. Команда шанс не бросает
-  HITS_TO_SUMMON ............... 2 — ударов игрока до призыва (общее с зомби и скелетом)
-  WITHER_SUMMON_COUNT .......... 2 — сколько иссушителей призвать за раз
-  SUMMON_RADIUS ................ 3.0 — радиус появления (блоки)
-  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — дроп спавнера с головы
+  ENABLED ...................... true — false turns off both this and the carriers in the regular world
+  WITHER_CARRIER_SPAWN_CHANCE .. 0.005 — chance in the Nether on day 100 (0.5%). At the start of the game 10 times lower. The command does not roll the chance
+  HITS_TO_SUMMON ............... 2 — player hits before the summon (shared with the zombie and skeleton)
+  WITHER_SUMMON_COUNT .......... 2 — how many wither skeletons to summon at once
+  SUMMON_RADIUS ................ 3.0 — spawn radius (blocks)
+  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — drop of the spawner from the head
 
 
-ТЕСТ
+TEST
 ----
-1. /etwitherspawner. На голове блок спавнера, над ним дым.
-2. Ударь два раза. Рядом двое скелетов-иссушителей без спавнера на голове.
-3. Ударь призванного. Новых он не зовёт.
-4. Ещё два удара по носителю — снова двое.
+1. /etwitherspawner. A spawner block on the head, smoke above it.
+2. Hit it twice. Two wither skeletons without a spawner on the head appear nearby.
+3. Hit a summoned one. It does not call new ones.
+4. Two more hits on the carrier — two again.
 
 ==============================================================================================
 
-ОБЩИЕ ВАРИАНТЫ, КОТОРЫЕ БЫВАЮТ И У СКЕЛЕТА
-==========================================
+COMMON VARIANTS THAT ALSO OCCUR ON THE SKELETON
+===============================================
 
-Полное описание этих механик — отдельными файлами в mobs/common/.
+The full description of these mechanics is in separate files in mobs/common/.
 
-Бастион. 1000 здоровья, удар не откидывает, зелье скорости не действует, опыт 200.
-Броня и чары как у обычного скелета. С 60-го дня, шанс не растёт. Файл: бастион.txt
+Bastion. 1000 health, hits do not knock it back, the speed potion has no effect, experience 200.
+Armor and enchantments as on a regular skeleton. From day 60, the chance does not grow. File: bastion.txt
 
-Spiky. Один кусок брони колет на 7–8 сердец сквозь броню и Защиту. Остальная броня обычная.
-С 40-го дня, шанс 0,2%. Файл: spiky.txt
+Spiky. One piece of armor stings for 7–8 hearts through armor and Protection. The rest of the armor is regular.
+From day 40, chance 0.2%. File: spiky.txt
 
-Зеркало. Удар в упор возвращается игроку. Шанс 0,3% с первого дня. Файл: mirror.txt
+Mirror. A hit at point-blank range is returned to the player. Chance 0.3% from day one. File: mirror.txt
 
-Прислуги рейдового якоря бывают и скелетами. Сам якорь — зомби. Файл: raid-anchor.txt
-Осада может привести скелетов волнами. Файл: siege.txt
+Raid anchor minions can also be skeletons. The anchor itself is a zombie. File: raid-anchor.txt
+A siege can bring skeletons in waves. File: siege.txt
 
-Случайные здоровье, оружие, броня, щит, тотем, зелья и опыт за убийство — тоже файлы в mobs/common/.
-От чего растут шансы: threat-scale.txt
+Random health, weapon, armor, shield, totem, potions and experience for a kill — also files in mobs/common/.
+What makes the chances grow: threat-scale.txt

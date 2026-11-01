@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Грозовая ловушка после нашего набора заново чарует лук и шлем и, если голова пустая,
- * надевает железный шлем. Из-за этого щит и зелья остаются, а броня с оружием — нет.
- * Здесь этот второй проход выключен: наездник остаётся тем скелетом, которого одел мод.
+ The thunder trap after our set again enchants the bow and helmet and, if the head is empty,
+ * puts on an iron helmet. Because of this, the shield and potions remain, but the armor with weapons does not.
+ Here this second passage is off: the rider remains the skeleton that the fashion put on.
  */
 @Mixin(SkeletonTrapGoal.class)
 public class SkeletonTrapRiderMixin {

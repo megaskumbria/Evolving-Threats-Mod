@@ -13,8 +13,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Предмет для тестов: ПКМ по блоку — спавн Rotten Overseer.
- * Не ванильное яйцо, но работает так же удобно.
+ Subject for tests: PKM on the block - Rotten Overseer spawn.
+ Not a vanilla egg, but it works just as comfortably.
  */
 public class RottenOverseerSpawnEggItem extends Item {
 

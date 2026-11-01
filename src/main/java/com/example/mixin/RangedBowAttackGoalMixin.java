@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Dual-wield скелет: не стреляет в упор; при начале стрельбы лук снова в основной руке (анимация).
+ Dual-wield skeleton: does not shoot at point-blank range; at the beginning of shooting, the bow is again in the main hand (animation).
  */
 @Mixin(net.minecraft.world.entity.ai.goal.RangedBowAttackGoal.class)
 public class RangedBowAttackGoalMixin {
@@ -46,7 +46,7 @@ public class RangedBowAttackGoalMixin {
 		}
 	}
 
-	/** Обычное натяжение — 20 тиков. У дальнего скелета короче, стрела при этом всё равно полная. */
+	/*The usual tension is 20 ticks. The distant skeleton is shorter, the arrow is still full. */
 	@ModifyConstant(
 			method = "tick",
 			constant = @Constant(intValue = 20),

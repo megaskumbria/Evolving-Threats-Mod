@@ -11,22 +11,22 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Попадание спектральной стрелы скелета: враждебные мобы рядом бросают свои дела и идут на этого игрока.
- * Мирные животные не реагируют. Цель принудительно обновляется, иначе моб забывает игрока, как только теряет его из виду.
+ * When a skeleton's spectral arrow hits a player, nearby hostile mobs drop what they were doing and chase that player.
+ * Peaceful animals ignore it. Target is refreshed each tick so mobs do not forget the player after losing line of sight.
  */
 public final class SpectralArrowHunt {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
-	 * Радиус (блоки) вокруг попавшего игрока. Мобы дальше этого в момент попадания не узнают о нём.
-	 * Кто был внутри, идёт на игрока, даже если потом вышел из радиуса.
+	 * Radius (blocks) around the hit player. Mobs farther away at the moment of the hit are not alerted.
+	 * Mobs that were inside still chase even if they later leave the radius.
 	 */
 	public static final double AGGRO_RADIUS = 80.0;
 
 	/**
-	 * Сколько секунд мобы помнят игрока после попадания. 30 = полминуты.
-	 * Пока время не вышло, они не переключаются на другую цель.
+	 * How long (seconds) mobs remember the player after the hit. 30 = half a minute.
+	 * Until this expires they will not switch to another target.
 	 */
 	public static final int HUNT_SECONDS = 30;
 
@@ -40,7 +40,7 @@ public final class SpectralArrowHunt {
 	private SpectralArrowHunt() {
 	}
 
-	/** Вызвать, когда спектральная стрела скелета попала в игрока. */
+	/** Call when a skeleton spectral arrow hits a player. */
 	public static void alert(Player player) {
 		if (!(player.level() instanceof ServerLevel level)) {
 			return;
@@ -56,7 +56,7 @@ public final class SpectralArrowHunt {
 		}
 	}
 
-	/** Перед шагом навигации: вернуть цель, если охота ещё идёт. */
+	/** Before navigation step: restore target while the hunt is still active. */
 	public static void keepChasing(Mob mob) {
 		Hunt hunt = HUNTS.get(mob.getUUID());
 		if (hunt == null || !(mob.level() instanceof ServerLevel level)) {
@@ -76,7 +76,7 @@ public final class SpectralArrowHunt {
 		}
 	}
 
-	/** Моб исчез — не держать его в списке охоты. */
+	/** Mob despawned or died — drop from hunt list. */
 	public static void forget(Mob mob) {
 		HUNTS.remove(mob.getUUID());
 	}

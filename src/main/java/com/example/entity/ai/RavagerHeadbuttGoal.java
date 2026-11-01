@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Удар головой по стене, если до цели нет прохода.
- * Мягкие блоки проёма исчезают сразу. Камень копится по ударам и падает, когда ударов хватило.
+ Hitting the head on the wall if there is no passage to the target.
+ The soft blocks of the opening disappear immediately. The stone accumulates on the blows and falls when the blows were enough.
  */
 public class RavagerHeadbuttGoal extends Goal {
 
@@ -114,7 +114,7 @@ public class RavagerHeadbuttGoal extends Goal {
 		}
 	}
 
-	/** Стена перед мордой, если цели жива, она далеко для укуса и путь до неё не строится. */
+	/*The wall in front of the muzzle, if the target is alive, it is far away for a bite and the way to it is not built. */
 	private List<BlockPos> wallInFront() {
 		LivingEntity target = ravager.getTarget();
 		if (target == null || !target.isAlive()) {

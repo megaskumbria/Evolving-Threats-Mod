@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Блейз хранит флаг «алхимик» и паузу между шарами, которые срезают стойкость.
- * Шанс при появлении и запись в мир — {@link BlazeAlchemistMobMixin}.
- * Сам шар — {@link SmallFireballAlchemyMixin}.
+ Blaze keeps the flag "Alchemist" and a pause between the balls that cut resistance.
+ * Chance to appear and record in the world - {@link BlazeAlchemistMobMixin}
+ * The ball itself — {@link SmallFireballAlchemyMixin}
  */
 @Mixin(Blaze.class)
 public class BlazeAlchemistMixin implements AlchemistBlazeEntity {

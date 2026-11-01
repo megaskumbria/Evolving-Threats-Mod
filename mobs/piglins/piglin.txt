@@ -1,50 +1,50 @@
-БРУТАЛЬНЫЙ ПИГЛИН: ЗДОРОВЬЕ
+PIGLIN BRUTE: HEALTH
 =============================
 
-Тип: обычный брутальный пиглин (не новый моб).
-Код: piglin/PiglinBruteHealth.java (число здоровья),
-     mixin/PiglinBruteHealthMixin.java (момент появления).
+Type: vanilla piglin brute (not a new mob).
+Code: piglin/PiglinBruteHealth.java (health value),
+     mixin/PiglinBruteHealthMixin.java (on spawn).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Новый брут появляется с 60 здоровья (30 сердец). В обычной игре у него 50 (25 сердец).
-2. Обычный пиглин и зомби-пиглин не меняются.
-3. Брут, который уже стоял в мире, остаётся со старым здоровьем, пока не появится заново.
+1. A newly spawned brute has 60 health (30 hearts). In vanilla it is 50 (25 hearts).
+2. Regular piglins and zombified piglins are unchanged.
+3. A brute already in the world keeps its old health until it despawns and respawns.
 
 
 SETTINGS (PiglinBruteHealth.java)
 ----------------------------------
-ENABLED — false снова 50.
-MAX_HEALTH — 60 = 30 сердец.
+ENABLED — false restores vanilla 50.
+MAX_HEALTH — 60 = 30 hearts.
 
 ==============================================================================================
 
-БРУТАЛЬНЫЙ ПИГЛИН: ПОРТИТ БРОНЮ
+PIGLIN BRUTE: ARMOR DAMAGE
 =================================
 
-Тип: обычный брутальный пиглин (не новый моб). Обычный пиглин и зомби-пиглин так не бьют.
-Код: piglin/PiglinBruteArmorHit.java (шанс, доля прочности, головокружение),
-     mixin/PiglinBruteArmorMixin.java (момент удара).
+Type: vanilla piglin brute (not a new mob). Regular piglin and zombified piglin do not do this.
+Code: piglin/PiglinBruteArmorHit.java (chance, durability fraction, nausea),
+     mixin/PiglinBruteArmorMixin.java (on hit).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Примерно каждый двадцатый удар, который уже снял здоровье, портит одну вещь в броне.
-2. Списывается половина её максимальной прочности. Незеритовый нагрудник теряет половину шкалы
-   даже с чарой «Прочность»: чара этот удар не уменьшает.
-3. Какая вещь — случайно среди надетых: шлем, нагрудник, поножи, ботинки.
-   Черепаший шлем тоже. Тыква и элитры не считаются.
-4. Если у вещи осталось меньше половины, она ломается и пропадает.
-5. В тот же момент слышен треск сломанной брони и на 10 секунд головокружение.
-   Экран плывёт, так понятно, что удар был особый. Треск есть и если вещь ещё не развалилась.
-6. Если брони нет, ничего не происходит. Игрок в творческом режиме тоже не теряет прочность.
-   Щит, который отбил удар, и мигание после удара шанс не дают.
+1. About every twentieth hit that already dealt health damage also damages one armor piece.
+2. Half of that piece’s maximum durability is removed. Netherite chestplates lose half the bar
+   even with Unbreaking: the enchant does not reduce this hit.
+3. Which piece is random among equipped slots: helmet, chestplate, leggings, boots.
+   Turtle shell counts. Carved pumpkin and elytra do not.
+4. If less than half durability remains, the item breaks and is destroyed.
+5. At the same moment you hear armor crack and get 10 seconds of nausea.
+   The screen wobbles so the special hit is obvious. Crack plays even if the item did not break yet.
+6. With no armor, nothing happens. Creative players do not lose durability either.
+   A shield block and post-hit invulnerability do not roll the chance.
 
 
 SETTINGS (PiglinBruteArmorHit.java)
 -------------------------------------
-ENABLED — false снова обычный удар.
-HIT_CHANCE — 0.05 = каждый двадцатый прошедший удар. 0 = никогда. 1 = каждый удар.
-DURABILITY_FRACTION — 0.5 = половина шкалы. 1 = вещь сразу ломается.
-NAUSEA_SECONDS — 10 = десять секунд головокружения. 0 = эффекта нет.
+ENABLED — false restores normal hits.
+HIT_CHANCE — 0.05 = about every twentieth damaging hit. 0 = never. 1 = every hit.
+DURABILITY_FRACTION — 0.5 = half the bar. 1 = item breaks immediately.
+NAUSEA_SECONDS — 10 = ten seconds of nausea. 0 = no effect.

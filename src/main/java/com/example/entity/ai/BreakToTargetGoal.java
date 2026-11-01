@@ -21,15 +21,15 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * Зомби ломает блоки, только если к игроку нет пути и впереди реальная стена (не «ошибка» pathfinder).
- * Не копает, если игрок уже в зоне удара. Может ломать до {@link BlockBreaking#DIG_UP_MAX_BLOCKS_ABOVE_SELF}
- * блоков выше себя в клетке к игроку (игрок на подставке).
+ Zombie breaks blocks only if there is no way to the player and there is a real wall ahead (not a pathfinder error).
+ Do not dig if the player is already in the impact zone. Can break to {@link BlockBreaking#DIG UP MAX BLOCKS ABOVE SELF}
+ Blocks above themselves in the cage to the player (player on the stand).
  */
 public class BreakToTargetGoal extends Goal {
 
 	/**
-	 * Зомби, которые сейчас ломают стену. Пока зомби тут, обычная атака его не перебивает:
-	 * иначе она раз в секунду находит обрывок пути до стены и уводит его от блока.
+	 The zombies that are breaking the wall. While the zombies are here, the usual attack doesn't stop him:
+	 Otherwise, once a second she finds a fragment of the path to the wall and leads him away from the block.
 	 */
 	private static final Set<Zombie> DIGGING = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -44,14 +44,14 @@ public class BreakToTargetGoal extends Goal {
 	private float progress;
 	private int ticksSinceSwing;
 
-	/** Ломает ли этот зомби сейчас стену к игроку. */
+	/*Does this zombie now break the wall to the player? */
 	public static boolean isDigging(Zombie zombie) {
 		return DIGGING.contains(zombie);
 	}
 
 	public BreakToTargetGoal(Zombie zombie) {
 		this.zombie = zombie;
-		// MOVE: не работает параллельно с атакой (приоритет 3) — иначе зомби стоит и ломает, хотя может ударить.
+		// MOVE: does not work in parallel with the attack (priority 3) - otherwise the zombie stands and breaks, although it can strike.
 		this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 	}
 
@@ -68,7 +68,7 @@ public class BreakToTargetGoal extends Goal {
 		return isBlockedFromTarget();
 	}
 
-	/** Сам путь пересчитывается в tick() не каждый тик, а раз в STUCK_CHECK_INTERVAL_TICKS. */
+	/** The path itself is recalculated to tick() not every tick, but once in STUCK CHECK INTERVAL TICKS. */
 	@Override
 	public boolean canContinueToUse() {
 		LivingEntity target = resolveDigTarget();
@@ -81,7 +81,7 @@ public class BreakToTargetGoal extends Goal {
 		ticksSinceSwing = 0;
 		long now = zombie.level().getGameTime();
 		nextPathCheckGameTime = now + BlockBreaking.STUCK_CHECK_INTERVAL_TICKS;
-		// Короткая пауза (ударили, отвлёкся) не сбрасывает трещину на том же блоке.
+		// A short pause (hit, distracted) does not shed a crack on the same block.
 		if (breakPos != null && now - lastStopGameTime > BlockBreaking.KEEP_PROGRESS_TICKS) {
 			clearCracks();
 			breakPos = null;
@@ -99,13 +99,13 @@ public class BreakToTargetGoal extends Goal {
 		Level level = zombie.level();
 		long now = level.getGameTime();
 
-		// Игрок в зоне удара или ушёл далеко — бросаем копать.
+		// The player is in the strike zone or has gone far - throw digging.
 		if (zombie.distanceTo(target) > BlockBreaking.DIG_MAX_DISTANCE_TO_TARGET
 				|| BlockBreaking.shouldPreferMeleeOverDig(zombie, target)) {
 			finishDigging();
 			return;
 		}
-		// Путь к игроку проверяется раз в полсекунды: появился — идём по нему.
+		// The path to the player is checked once in half a second: there is - go on it.
 		if (now >= nextPathCheckGameTime) {
 			nextPathCheckGameTime = now + BlockBreaking.STUCK_CHECK_INTERVAL_TICKS;
 			if (hasReachablePath(target)) {
@@ -128,7 +128,7 @@ public class BreakToTargetGoal extends Goal {
 			breakPos = pickBlockToBreak(target);
 			progress = 0.0f;
 			if (breakPos == null) {
-				// Ломать нечего — отпускаем зомби к обычной атаке, а не держим его тут вечно.
+				// There is nothing to break - let the zombies go to the usual attack, not keep him here forever.
 				finishDigging();
 				zombie.getNavigation().moveTo(target, 1.0);
 				return;
@@ -145,7 +145,7 @@ public class BreakToTargetGoal extends Goal {
 		DIGGING.remove(zombie);
 	}
 
-	/** Стена больше не мешает: убрать трещину и отпустить зомби к обычной атаке. */
+	/*The wall no longer interferes: remove the crack and release the zombies to the usual attack. */
 	private void finishDigging() {
 		blocked = false;
 		clearCracks();
@@ -191,7 +191,7 @@ public class BreakToTargetGoal extends Goal {
 		return PlayerGrudge.resolveGrudgePlayer(zombie);
 	}
 
-	/** Нужно ли вообще копать к этому игроку. */
+	/*Do I have to dig into this player at all? */
 	private boolean isBlockedFromTarget() {
 		LivingEntity target = resolveDigTarget();
 		if (target == null || !target.isAlive()) {
@@ -215,8 +215,8 @@ public class BreakToTargetGoal extends Goal {
 	}
 
 	/**
-	 * Впереди по направлению к игроку есть блок с коллизией (стена/ступенька под игроком),
-	 * а не пустой проход — иначе pathfinder иногда ошибается, а зомби зря ломает землю.
+	 In front of the player there is a collision block (wall / step under the player),
+	 Not an empty passage, otherwise the pathfinder is sometimes wrong, and zombies are wasting their time breaking the earth.
 	 */
 	private boolean hasWallTowardPlayer(LivingEntity target) {
 		Level level = zombie.level();
@@ -253,7 +253,7 @@ public class BreakToTargetGoal extends Goal {
 		return dz > 0 ? Direction.SOUTH : Direction.NORTH;
 	}
 
-	/** Клетки «столбиком» перед зомби к игроку (снизу вверх), которые можно ломать. */
+	/*Cells "bar" in front of the zombie to the player (bottom up), which can be broken. */
 	private BlockPos[] frontColumnTowardPlayer(LivingEntity target, BlockPos feet) {
 		Direction dir = horizontalDirectionTo(target);
 		BlockPos front = feet.relative(dir);
@@ -281,7 +281,7 @@ public class BreakToTargetGoal extends Goal {
 		return !state.getCollisionShape(level, pos).isEmpty() && BlockBreaking.canBreak(level, pos, state);
 	}
 
-	/** Можно ли ломать этот блок (не под ногами на ровной местности). */
+	/*Is it possible to break this block (not underfoot on flat terrain). */
 	private boolean isValidBreakTarget(Level level, BlockPos pos, BlockState state, LivingEntity target) {
 		if (!isObstacle(level, pos, state)) {
 			return false;
@@ -335,7 +335,7 @@ public class BreakToTargetGoal extends Goal {
 			if (maxY < minY) {
 				maxY = minY;
 			}
-			// Сначала нижний блок столбика — подставка, потом выше.
+			// First, the lower block of the column is a stand, then higher.
 			for (int y = minY; y <= maxY; y++) {
 				BlockPos candidate = new BlockPos(front.getX(), y, front.getZ());
 				BlockState state = level.getBlockState(candidate);

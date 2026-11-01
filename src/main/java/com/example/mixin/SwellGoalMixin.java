@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Метатель динамита и подрывник не используют обычное «надуться вплотную».
- * Подрывник взрывается своей целью, метатель кидает TNT.
- * Огниво по-прежнему поджигает крипера: это делает сам крипер в tick(), не эта цель.
+ Dynamite thrower and bomber do not use the usual “inflated close”.
+ The bomber explodes its target, the thrower throws TNT.
+ The fire still sets fire to the cryper: it does the cryper in the tick(), not this target.
  */
 @Mixin(SwellGoal.class)
 public class SwellGoalMixin {

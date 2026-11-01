@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Крипер: флаг «метатель динамита», цель ИИ и сохранение в мире.
- * Шанс при появлении — в {@link MobDynamiteCreeperSpawnMixin}: у Creeper нет своего finalizeSpawn.
- * Подрыв вплотную выключен отдельно в {@link SwellGoalMixin}.
+ Kreeper: Dynamite Thrower Flag, AI Target and World Conservation.
+ * Opportunity to appear at {@link MobDynamiteCreeperSpawnMixin}: Creeper doesn't have its own finalizeSpawn.
+ * The blast is off separately at {@link SwellGoalMixin}.
  */
 @Mixin(Creeper.class)
 public class CreeperDynamiteMixin implements DynamiteCreeperEntity {
@@ -35,7 +35,7 @@ public class CreeperDynamiteMixin implements DynamiteCreeperEntity {
 	@Inject(method = "registerGoals", at = @At("RETURN"))
 	private void evolvingthreats$registerDynamiteGoal(CallbackInfo ci) {
 		Creeper self = (Creeper) (Object) this;
-		// Приоритет 2 — как у ванильного подрыва. Подрыв для метателя выключен, поэтому слот занимает бросок.
+		// Priority 2 is like vanilla detonation. The blast for the thrower is off, so the slot takes a throw.
 		self.getGoalSelector().addGoal(2, new DynamiteThrowGoal(self));
 	}
 

@@ -1,680 +1,680 @@
-ЗОМБИ: ВОРУЕТ ВЕЩЬ ИЗ РУК
-===========================
+ZOMBIE: STEALS AN ITEM FROM YOUR HANDS
+======================================
 
-Тип: обычный зомби, кадавр и зомби-житель (не новый моб).
-Код: zombie/ZombieTheft.java (шанс и выпадение),
-     mixin/ZombieTheftMixin.java (момент удара).
+Type: regular zombie, cadaver and zombie villager (not a new mob).
+Code: zombie/ZombieTheft.java (chance and drop),
+     mixin/ZombieTheftMixin.java (moment of the hit).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Удар, который уже снял здоровье, с шансом 4% забирает одну вещь из рук игрока.
-   Сначала основную руку (меч). Если она пустая — вторую (щит или тотем).
-2. Вещь оказывается в основной руке зомби. Он бьёт ею: незеритовый меч бьёт больнее голой руки.
-3. Если в основной руке зомби уже что-то есть, он ничего не забирает.
-   Удочка, трезубец, мотыга, динамит и случайное оружие мода руку занимают.
-4. Украденная вещь выпадает всегда, когда зомби умирает. Прочность не портится.
-   Пока вещь у него, он не исчезает сам и не подбирает другую с земли.
-5. Утопленник и зомби-пиглин не воруют.
-   Щит, который отбил удар, и мигание после удара шанс не дают.
+1. A hit that has already removed health has a 4% chance to take one item from the player's hands.
+   Main hand first (sword). If it is empty — the off-hand (shield or totem).
+2. The item ends up in the zombie's main hand. It hits with it: a netherite sword hurts more than a bare hand.
+3. If the zombie already has something in its main hand, it takes nothing.
+   A fishing rod, trident, hoe, TNT and the mod's random weapon all count as occupying the hand.
+4. The stolen item always drops when the zombie dies. Durability is not damaged.
+   While the zombie holds it, it does not despawn on its own and does not pick up another item from the ground.
+5. Drowned and zombified piglins do not steal.
+   A hit blocked by a shield, and the invulnerability flash after a hit, do not give a chance to steal.
 
 
 SETTINGS (ZombieTheft.java)
 ----------------------------
-ENABLED — false выключает воровство.
-STEAL_CHANCE — 0.04 = 4%, примерно каждый двадцать пятый прошедший удар. 0 = никогда.
-DROP_CHANCE — 1 = вещь всегда выпадает и прочность цела. 0 = пропадает вместе с зомби.
+ENABLED — false turns stealing off.
+STEAL_CHANCE — 0.04 = 4%, roughly every twenty-fifth hit that lands. 0 = never.
+DROP_CHANCE — 1 = the item always drops and its durability is intact. 0 = it vanishes together with the zombie.
 
 ==============================================================================================
 
-ЗОМБИ ИДУТ НА СВЕТ (Light Seeking)
-==================================
+ZOMBIES GO TOWARD LIGHT (Light Seeking)
+=======================================
 
-Тип: поведение обычных зомби (не отдельный моб).
-Код: light/LightSeeking.java (настройки + поиск света),
-     entity/ai/LightSeekGoal.java (идти / стоять / идти дальше),
-     mixin/ZombieLightSeekGoalsMixin.java (подключение к зомби).
+Type: behavior of regular zombies (not a separate mob).
+Code: light/LightSeeking.java (settings + light search),
+     entity/ai/LightSeekGoal.java (walk / stand / walk on),
+     mixin/ZombieLightSeekGoalsMixin.java (hooks it into the zombie).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Зомби БЕЗ цели раз в ~2 секунды ищет свет в зоне: ±60 блоков по X/Z, ±16 по высоте
-   (по прямой до ~60 блоков, по диагонали до ~85). Берёт ближайший подходящий блок.
-2. Находит ближайший яркий источник света (яркость 12+), который видит прямой линией
-   (не через стены) — идёт к нему.
-3. Дошёл (ближе ~2.5 блока) — ЛОМАЕТ его с той же скоростью, что и обычные блоки
-   (на блоке растут трещины; факел — сразу, светокамень — за пару секунд) (см. раздел «ЗОМБИ ЛОМАЮТ БЛОКИ» ниже). Если свет сломать нельзя (бедрок/обсидиан)
-   или ломание выключено — стоит ~4 секунды и уходит.
-4. Если свет остался, он считается «посещённым» на 2 минуты, зомби ищет другой или гуляет как обычно.
-5. Как только зомби замечает игрока — атака на игрока. Пока он помнит игрока
-   (PlayerGrudge, до 32 блоков), на свет не идёт даже если спрятался под землёй.
-6. ЖИТЕЛИ ВАЖНЕЕ СВЕТА: если в радиусе 40 блоков (±16 по высоте, сквозь стены) есть житель,
-   зомби берёт его в цель и идёт убивать/заражать. Это проверяется и перед походом к свету,
-   и каждые полсекунды по пути/у света — зомби бросает факел на полпути.
+1. A zombie WITHOUT a target searches for light about every 2 seconds in an area: ±60 blocks in X/Z, ±16 in height
+   (in a straight line up to ~60 blocks, diagonally up to ~85). It picks the nearest suitable block.
+2. It finds the nearest bright light source (brightness 12+) that it can see in a straight line
+   (not through walls) — and walks to it.
+3. When it arrives (closer than ~2.5 blocks) it BREAKS it at the same speed as ordinary blocks
+   (cracks grow on the block; a torch breaks at once, glowstone in a couple of seconds) (see the section "ZOMBIES BREAK BLOCKS" below). If the light cannot be broken (bedrock/obsidian)
+   or breaking is turned off — it stands for ~4 seconds and leaves.
+4. If the light is still there, it counts as "visited" for 2 minutes, and the zombie looks for another one or wanders as usual.
+5. As soon as the zombie notices a player — it attacks the player. While it remembers the player
+   (PlayerGrudge, up to 32 blocks), it does not go to light even if the player hid underground.
+6. VILLAGERS MATTER MORE THAN LIGHT: if there is a villager within 40 blocks (±16 in height, through walls),
+   the zombie targets it and goes to kill/infect it. This is checked both before heading to a light
+   and every half second on the way / at the light — the zombie abandons the torch halfway.
 
 
-КТО УЧАСТВУЕТ
+WHO TAKES PART
 -------------
-  Да:   обычный зомби, хаск, зомби-житель.
-  Нет:  утопленник (в воде), зомби-пиглин, Гнилой надсмотрщик, прислуга рейда.
+  Yes:  regular zombie, husk, zombie villager.
+  No:   drowned (in water), zombified piglin, Rotten Overseer, raid minions.
 
 
-ЧТО СЧИТАЕТСЯ СВЕТОМ
+WHAT COUNTS AS LIGHT
 --------------------
-Любой блок с яркостью >= MIN_LIGHT_LEVEL (по умолчанию 12):
-  факел, светокамень, фонарь, морской фонарь, костёр, огонь и т.п.
-ЛАВА (и котёл с лавой) и СВЕТОЯГОДЫ (пещерные лозы) исключены всегда.
+Any block with brightness >= MIN_LIGHT_LEVEL (default 12):
+  torch, glowstone, lantern, sea lantern, campfire, fire, etc.
+LAVA (and a lava cauldron) and GLOW BERRIES (cave vines) are always excluded.
 
-Важно: игра не помнит, кто поставил блок. Деревенские факелы тоже привлекают зомби.
-Если мешает — подними MIN_LIGHT_LEVEL до 15.
+Important: the game does not remember who placed a block. Village torches attract zombies too.
+If that is a problem — raise MIN_LIGHT_LEVEL to 15.
 
 
 SETTINGS (LightSeeking.java)
 -----------------------------
-  ENABLED ................... true / false — включить/выключить всё поведение
-  MIN_LIGHT_LEVEL ........... 12 — минимальная яркость источника
-  SEARCH_RADIUS_HORIZONTAL .. 60 — радиус «зрения» вокруг (блоки)
-  SEARCH_RADIUS_VERTICAL .... 16 — вверх/вниз (блоки)
-  REQUIRE_LINE_OF_SIGHT ..... true — свет за стеной не замечают
-  SCAN_INTERVAL_TICKS ....... 40 — пауза между поисками (20 тиков = 1 сек)
-  MOVE_SPEED ................ 1.0 — скорость хода к свету
-  ARRIVE_DISTANCE ........... 2.5 — «дошёл», если ближе (блоки)
-  WAIT_AT_LIGHT_TICKS ....... 80 — сколько стоять у света
-  IGNORE_VISITED_LIGHT_TICKS  2400 — сколько не возвращаться к тому же свету
-  MAX_WALK_TICKS ............ 600 — максимум на один поход (30 сек)
-  VILLAGER_BEATS_LIGHT ...... true — житель рядом важнее света (false — как раньше)
-  VILLAGER_SENSE_RADIUS ..... 40 — на каком расстоянии зомби чувствует жителя (блоки)
-  VILLAGER_SENSE_VERTICAL ... 16 — вверх/вниз (в ваниле только ±4)
-  VILLAGER_RECHECK_TICKS .... 10 — как часто проверять жителя по пути к свету
+  ENABLED ................... true / false — turn the whole behavior on/off
+  MIN_LIGHT_LEVEL ........... 12 — minimum brightness of the light source
+  SEARCH_RADIUS_HORIZONTAL .. 60 — "vision" radius around the zombie (blocks)
+  SEARCH_RADIUS_VERTICAL .... 16 — up/down (blocks)
+  REQUIRE_LINE_OF_SIGHT ..... true — light behind a wall is not noticed
+  SCAN_INTERVAL_TICKS ....... 40 — pause between searches (20 ticks = 1 sec)
+  MOVE_SPEED ................ 1.0 — walking speed toward the light
+  ARRIVE_DISTANCE ........... 2.5 — counts as "arrived" when closer than this (blocks)
+  WAIT_AT_LIGHT_TICKS ....... 80 — how long to stand at the light
+  IGNORE_VISITED_LIGHT_TICKS  2400 — how long before returning to the same light
+  MAX_WALK_TICKS ............ 600 — maximum for one trip (30 sec)
+  VILLAGER_BEATS_LIGHT ...... true — a villager nearby matters more than light (false — as before)
+  VILLAGER_SENSE_RADIUS ..... 40 — distance at which the zombie senses a villager (blocks)
+  VILLAGER_SENSE_VERTICAL ... 16 — up/down (in vanilla only ±4)
+  VILLAGER_RECHECK_TICKS .... 10 — how often to check for a villager on the way to the light
 
 
-ТЕСТ В ИГРЕ
+TEST IN GAME
 -----------
-1. Создай мир с читами, ночь: /time set night, /gamerule doMobSpawning true (по умолчанию).
-2. Отойди от зомби на ~15 блоков так, чтобы он тебя не видел (за холмом/домом).
-3. Поставь факел или светокамень на открытом месте в поле зрения зомби.
-4. Зомби без цели должен медленно подойти к факелу, постоять и пойти дальше.
-5. Быстрый тест: /summon minecraft:zombie ~ ~ ~ рядом с факелом на расстоянии 10 блоков.
+1. Create a cheats-enabled world, night: /time set night, /gamerule doMobSpawning true (default).
+2. Move ~15 blocks away from the zombie so it cannot see you (behind a hill/house).
+3. Place a torch or glowstone in the open, in the zombie's field of view.
+4. A zombie without a target should slowly walk up to the torch, stand, and move on.
+5. Quick test: /summon minecraft:zombie ~ ~ ~ near the torch at a distance of 10 blocks.
 
 ==============================================================================================
 
-ЗОМБИ ЛОМАЮТ БЛОКИ (Block Breaking)
-===================================
+ZOMBIES BREAK BLOCKS (Block Breaking)
+=====================================
 
-Тип: поведение зомби (не отдельный моб).
-Код: digging/BlockBreaking.java (настройки и правила),
-     entity/ai/BreakToTargetGoal.java (копать к игроку),
-     entity/ai/LightSeekGoal.java (ломать свет),
-     mixin/ZombieBreakGoalsMixin.java (подключение).
+Type: zombie behavior (not a separate mob).
+Code: digging/BlockBreaking.java (settings and rules),
+     entity/ai/BreakToTargetGoal.java (dig toward the player),
+     entity/ai/LightSeekGoal.java (break light),
+     mixin/ZombieBreakGoalsMixin.java (hook).
 
 
-1) ЛОМАТЬ БЛОКИ, ЧТОБЫ ДОБРАТЬСЯ ДО ИГРОКА
+1) BREAKING BLOCKS TO REACH THE PLAYER
 ------------------------------------------
-Когда работает: у зомби есть цель-игрок (он её заметил), она в пределах 32 блоков,
-а обычного пути до неё нет И впереди реальная стена (блок на уровне головы).
-  - Игрок на 3+ блока ниже и не дальше 8 блоков по горизонтали — копает ВНИЗ под ногами.
-  - Иначе — ломает только стену на уровне головы; один блок у ног впереди не ломает (перешагнет).
-  - На ровной дороге под собой и «просто впереди» не копает, если pathfinder ошибся.
-  - Путь к игроку снова находится (проверка раз в 0.5 сек) — идёт, не докапывает зря.
-  - Пока ломает стену, обычная атака его не перебивает; ударит, только если игрок в зоне удара.
-  - Если зомби отвлёкся и вернулся к тому же блоку в течение 5 сек, трещина не сбрасывается.
-  - ВВЕРХ зомби не копают (подняться по туннелю не могут).
-Видны трещины на блоке, зомби машет рукой и издаёт звук удара. Предметы из блоков НЕ выпадают.
+When it works: the zombie has a player target (it noticed the player), the player is within 32 blocks,
+there is no ordinary path to them AND there is a real wall ahead (a block at head level).
+  - Player 3+ blocks lower and no more than 8 blocks away horizontally — digs DOWN under its feet.
+  - Otherwise — it breaks only the wall at head level; a single block at foot level ahead is not broken (it steps over it).
+  - On a flat road below it and "just ahead" it does not dig, if the pathfinder made a mistake.
+  - If a path to the player is found again (checked every 0.5 sec) — it walks, and does not keep digging for nothing.
+  - While it breaks a wall, a normal attack does not interrupt it; it strikes only if the player is within hit range.
+  - If the zombie gets distracted and returns to the same block within 5 sec, the cracks are not reset.
+  - Zombies do NOT dig UP (they cannot climb a tunnel).
+Cracks are visible on the block, the zombie waves its arm and makes a hit sound. Items from blocks do NOT drop.
 
-ПАМЯТЬ ОБ ИГРОКЕ (PlayerGrudge):
-  Зомби, который заметил или ударил игрока, запоминает его и держит цель до 32 блоков
-  (даже без прямой видимости — под землёй, за стеной). Пока память активна, на факелы
-  не отвлекается. Код: grudge/PlayerGrudge.java, entity/ai/ZombiePlayerGrudgeGoal.java
-  (приоритет 0 — выше света и копания).
-  Надсмотрщик и рейд — своя охота, память им не нужна.
+PLAYER MEMORY (PlayerGrudge):
+  A zombie that noticed or hit a player remembers them and keeps the target up to 32 blocks
+  (even without direct line of sight — underground, behind a wall). While the memory is active, it is
+  not distracted by torches. Code: grudge/PlayerGrudge.java, entity/ai/ZombiePlayerGrudgeGoal.java
+  (priority 0 — higher than light and digging).
+  The Overseer and raid zombies hunt on their own; they do not need the memory.
 
 
-2) СКОРОСТЬ ЛОМАНИЯ
+2) BREAKING SPEED
 -------------------
-Как у игрока (твёрдость блока + инструмент в руке зомби), но умножается на 0.3.
-  Земля голой рукой ........... ~2.5 сек
-  Камень голой рукой .......... ~25 сек (без кирки очень медленно)
-  Камень железной киркой ...... ~1.5 сек
-  Земля железной лопатой ...... почти мгновенно
-Инструменты зомби берут из случайного оружия (RandomWeapons): кирка/лопата/топор/меч/мотыга
-всех материалов. Материал важен: железо быстрее дерева.
+Same as the player's (block hardness + the tool in the zombie's hand), but multiplied by 0.3.
+  Dirt with a bare hand ............ ~2.5 sec
+  Stone with a bare hand ........... ~25 sec (very slow without a pickaxe)
+  Stone with an iron pickaxe ....... ~1.5 sec
+  Dirt with an iron shovel ......... almost instant
+Zombies get tools from the random weapons (RandomWeapons): pickaxe/shovel/axe/sword/hoe
+of all materials. Material matters: iron is faster than wood.
 
 
-3) ЛОМАТЬ СВЕТ
+3) BREAKING LIGHT
 --------------
-Зомби, пришедший к свету (LightSeeking) и не видящий игрока:
-  - ломает его с той же скоростью, что и обычные блоки (твёрдость + инструмент в руке, на блоке растут трещины):
-    факел — сразу, светокамень/фонарь — за пару секунд голой рукой,
-  - ломает любой свет, кроме лавы и светоягод,
-  - заметил игрока или жителя раньше — бросает свет и идёт на цель.
-Свет из бедрока/обсидиана не ломают — просто постоят 4 сек и уйдут.
+A zombie that came to a light (LightSeeking) and does not see a player:
+  - breaks it at the same speed as ordinary blocks (hardness + the tool in hand, cracks grow on the block):
+    a torch — at once, glowstone/lantern — in a couple of seconds with a bare hand,
+  - breaks any light except lava and glow berries,
+  - if it notices a player or villager earlier — it drops the light and goes for the target.
+Light from bedrock/obsidian is not broken — they just stand for 4 sec and leave.
 
 
-4) ЧТО НЕЛЬЗЯ ЛОМАТЬ
+4) WHAT CANNOT BE BROKEN
 --------------------
-  Бедрок, обсидиан, воздух/жидкости, и блоки с «вечной» твёрдостью (барьер, командный блок...).
-  Остальное (в т.ч. сундуки, печи, стекло) — можно. Кристальный (плачущий) обсидиан сейчас ломается.
-  Чтобы запретить ещё блоки — UNBREAKABLE_BLOCKS в BlockBreaking.java.
+  Bedrock, obsidian, air/liquids, and blocks with "infinite" hardness (barrier, command block...).
+  Everything else (including chests, furnaces, glass) can be broken. Crying obsidian is currently breakable.
+  To forbid more blocks — UNBREAKABLE_BLOCKS in BlockBreaking.java.
 
 
 SETTINGS (BlockBreaking.java)
 ------------------------------
-  ENABLED ........................ true — включить/выключить всё ломание
-  BREAKER_FRACTION ............... 1.0 — доля зомби-ломателей (1.0 все, 0.3 = 30%)
-  SPEED_MULTIPLIER ............... 0.3 — множитель скорости относительно игрока
-  DROP_ITEMS ..................... false — выпадают ли предметы
-  UNBREAKABLE_BLOCKS ............. бедрок, обсидиан
-  DIG_MAX_DISTANCE_TO_TARGET ..... 32 — дальше этого от игрока не копают
-  STUCK_CHECK_INTERVAL_TICKS ..... 10 — как часто проверяют «застрял?» и «путь появился?»
-  KEEP_PROGRESS_TICKS ............ 100 — сколько тиков (5 сек) трещина ждёт, если зомби отвлёкся
-  DIG_DOWN_MIN_BLOCKS_BELOW .... 3 — копать вниз только если игрок ниже на 3+ блока
-  DIG_DOWN_MAX_HORIZONTAL ...... 8 — и игрок не дальше 8 блоков по горизонтали
-  REACH .......................... 3.5 — дальность руки
-  RESPECT_MOB_GRIEFING ........... true — учитывать /gamerule mobGriefing
+  ENABLED ........................ true — turn all breaking on/off
+  BREAKER_FRACTION ............... 1.0 — share of zombies that are breakers (1.0 = all, 0.3 = 30%)
+  SPEED_MULTIPLIER ............... 0.3 — speed multiplier relative to the player
+  DROP_ITEMS ..................... false — whether items drop
+  UNBREAKABLE_BLOCKS ............. bedrock, obsidian
+  DIG_MAX_DISTANCE_TO_TARGET ..... 32 — they do not dig farther than this from the player
+  STUCK_CHECK_INTERVAL_TICKS ..... 10 — how often to check "stuck?" and "did a path appear?"
+  KEEP_PROGRESS_TICKS ............ 100 — how many ticks (5 sec) the cracks wait if the zombie got distracted
+  DIG_DOWN_MIN_BLOCKS_BELOW .... 3 — dig down only if the player is 3+ blocks lower
+  DIG_DOWN_MAX_HORIZONTAL ...... 8 — and the player is no more than 8 blocks away horizontally
+  REACH .......................... 3.5 — arm reach
+  RESPECT_MOB_GRIEFING ........... true — honor /gamerule mobGriefing
 
 (LightSeeking.java)
-  BREAK_LIGHT .................... true — ломать ли свет
-  (скорость ломания света отдельной настройки не имеет — берётся SPEED_MULTIPLIER из BlockBreaking)
+  BREAK_LIGHT .................... true — whether to break light
+  (light breaking speed has no setting of its own — SPEED_MULTIPLIER from BlockBreaking is used)
 
 
-КТО ЛОМАЕТ
+WHO BREAKS
 ----------
-  Да:   все зомби верхнего мира (обычный, хаск, зомби-житель), надсмотрщик, прислуга-зомби рейда.
-  Нет:  утопленник, зомби-пиглин, зомби с динамитом; скелеты (не зомби).
-  Свет ломают только обычные зомби (у надсмотрщика/рейда нет поведения «идти на свет»).
-  Если /gamerule mobGriefing false — блоки не ломаются.
+  Yes:  all Overworld zombies (regular, husk, zombie villager), the Overseer, raid zombie minions.
+  No:   drowned, zombified piglin, zombie with TNT; skeletons (not zombies).
+  Only regular zombies break light (the Overseer/raid have no "go to light" behavior).
+  If /gamerule mobGriefing is false — blocks are not broken.
 
 
-ТЕСТ
+TEST
 ----
-1) Построй рядом с зомби стеклянную клетку или стену из земли и встань за ней так,
-   чтобы зомби тебя видел (через стекло). Он должен начать ломать преграду.
-2) Дай зомби кирку: /summon zombie ~ ~ ~ {equipment:{mainhand:{id:"minecraft:iron_pickaxe"}}}
-3) Для света: факел вдали от тебя, зомби подойдёт и сломает его (факел сразу, светокамень за пару секунд).
-4) Прислуга рейда: /etraid, затем спрячься в яме под землёй.
+1) Build a glass cage or a dirt wall next to a zombie and stand behind it
+   so that the zombie sees you (through the glass). It should start breaking the barrier.
+2) Give the zombie a pickaxe: /summon zombie ~ ~ ~ {equipment:{mainhand:{id:"minecraft:iron_pickaxe"}}}
+3) For light: a torch far from you, the zombie will come and break it (torch at once, glowstone in a couple of seconds).
+4) Raid minions: /etraid, then hide in a pit underground.
 
 ==============================================================================================
 
-МАЯК (Jack o'Lantern на голове)
-================================
+BEACON (Jack o'Lantern on the head)
+===================================
 
-Тип: редкий зомби или скелет (не отдельный моб).
-Код: beacon/JackLanternBeacon.java,
-     beacon/JackLanternLight.java (свет вокруг головы),
-     entity/ai/JackBeaconAuraGoal.java (зомби),
-     entity/ai/JackLanternFireShotGoal.java (скелет),
+Type: rare zombie or skeleton (not a separate mob).
+Code: beacon/JackLanternBeacon.java,
+     beacon/JackLanternLight.java (light around the head),
+     entity/ai/JackBeaconAuraGoal.java (zombie),
+     entity/ai/JackLanternFireShotGoal.java (skeleton),
      mixin/ZombieMixin.java, SkeletonMixin.java,
      mixin/ZombieJackBeaconGoalsMixin.java, AbstractSkeletonJackLanternGoalMixin.java.
 
 
-КАК ВЫГЛЯДИТ
+WHAT IT LOOKS LIKE
 ------------
-Светящаяся тыква (JACK_O_LANTERN) в слоте HEAD.
-Сама картинка на голове мир не освещает, поэтому рядом с головой едет невидимый свет
-уровня LIGHT_LEVEL (15 — как блок-фонарь). Тыква снята или моб умер — свет гаснет.
-Обычная вырезанная тыква (без света) этой механикой НЕ используется.
+A glowing pumpkin (JACK_O_LANTERN) in the HEAD slot.
+The picture on the head does not light up the world, so an invisible light of level LIGHT_LEVEL
+(15 — like a lantern block) travels next to the head. If the pumpkin is removed or the mob dies — the light goes out.
+An ordinary carved pumpkin (without light) is NOT used by this mechanic.
 
 
-КТО МОЖЕТ ПОЛУЧИТЬ ГОЛОВУ
+WHO CAN GET THE HEAD
 -------------------------
-  Да:   зомби, хаск, зомби-житель, скелет, странник.
-  Нет:  утопленник, зомби-пиглин, надсмотрщик, рейд.
+  Yes:  zombie, husk, zombie villager, skeleton, stray.
+  No:   drowned, zombified piglin, Overseer, raid.
 
-  На одной голове только одно: спавнер ИЛИ маяк ИЛИ (у скелета) раздатчик.
+  Only one thing per head: spawner OR beacon OR (for a skeleton) dispenser.
 
 
-ЗОМБИ — МАЯК СТАИ
+ZOMBIE — PACK BEACON
 -----------------
-1. Не идёт ломать факелы (исключён из LightSeeking / LightSeekGoal).
-2. Если видит игрока (прямая видимость) — раз в ~1 сек «пульс» в радиусе BEACON_RADIUS:
-   соседние зомби получают Speed и (если включено) цель на того же игрока, если у них не было цели.
+1. It does not go to break torches (excluded from LightSeeking / LightSeekGoal).
+2. If it sees a player (direct line of sight) — about once per second a "pulse" within BEACON_RADIUS:
+   nearby zombies get Speed and (if enabled) a target on the same player, if they had no target.
 
 
-СКЕЛЕТ — ОГНЕННЫЙ ВЫСТРЕЛ
+SKELETON — FIRE SHOT
 --------------------------
-Раз в 8–14 сек (случайно) одна огненная стрела по цели, если в дистанции и есть LOS.
-Дополнительно к обычному луку (не заменяет раздатчик и не залп).
+Once every 8–14 sec (random) one fire arrow at the target, if within range and there is line of sight.
+In addition to the normal bow (does not replace the dispenser and is not a volley).
 
 
 SETTINGS (JackLanternBeacon.java)
 ----------------------------------
   ENABLED ...................... true
-  JACK_HEAD_DROP_CHANCE ........ 0.085 — шанс выпадения тыквы
-  LIGHT_LEVEL .................. 15 — яркость вокруг головы, 0 = не светить. Это в JackLanternLight.java
-  CARRIER_SPAWN_CHANCE ......... 0.01 — шанс при спавне на 100-й день (1%). В начале игры в 10 раз меньше
-  BEACON_RADIUS ................ 20 — радиус ускорения стаи
-  BEACON_PULSE_INTERVAL_TICKS .. 20 — как часто пульс
+  JACK_HEAD_DROP_CHANCE ........ 0.085 — chance the pumpkin drops
+  LIGHT_LEVEL .................. 15 — brightness around the head, 0 = no light. This is in JackLanternLight.java
+  CARRIER_SPAWN_CHANCE ......... 0.01 — chance on spawn at day 100 (1%). Early in the game it is 10 times lower
+  BEACON_RADIUS ................ 20 — pack speed-boost radius
+  BEACON_PULSE_INTERVAL_TICKS .. 20 — how often the pulse happens
   ALLY_SPEED_AMPLIFIER ......... 0 — Speed I
-  SHARE_TARGET_WITH_ALLIES ..... true — передать агро союзникам без цели
-  FIRE_SHOT_COOLDOWN_* ......... 8–14 сек между огненными стрелами
+  SHARE_TARGET_WITH_ALLIES ..... true — pass aggro to allies without a target
+  FIRE_SHOT_COOLDOWN_* ......... 8–14 sec between fire arrows
 
 
-ТЕСТ
+TEST
 ----
-1. CARRIER_SPAWN_CHANCE = 1.0 — проверить голову и поведение.
-2. Зомби-маяк + стая: убить свет, атаковать — соседние зомби должны бежать быстрее, когда маяк вас видит.
-3. Скелет-маяк: ждать огненную стрелу между обычными выстрелами.
+1. CARRIER_SPAWN_CHANCE = 1.0 — check the head and the behavior.
+2. Beacon zombie + pack: kill the light, attack — nearby zombies should run faster while the beacon sees you.
+3. Beacon skeleton: wait for a fire arrow between the normal shots.
 
 ==============================================================================================
 
-НОСИТЕЛЬ СПАВНЕРА (Spawner Head)
-================================
+SPAWNER CARRIER (Spawner Head)
+==============================
 
-Тип: редкий вариант обычного зомби или скелета (не отдельный моб в меню).
-Код: spawnerhead/SpawnerHeadMob.java,
+Type: rare variant of a regular zombie or skeleton (not a separate mob in the menu).
+Code: spawnerhead/SpawnerHeadMob.java,
      mixin/ZombieMixin.java, SkeletonMixin.java,
-     mixin/LivingEntitySpawnerHeadMixin.java (удары игрока).
+     mixin/LivingEntitySpawnerHeadMixin.java (player hits).
 
 
-КАК ВЫГЛЯДИТ
+WHAT IT LOOKS LIKE
 ------------
-На голове блок спавнера (как у скелета с раздатчиком — предмет в слоте HEAD).
-Перекрывает шлем. У скелета спавнер и раздатчик на голове не выпадают вместе:
-если выпал спавнер — раздатчик не надевается.
+A spawner block on the head (like the skeleton with a dispenser — an item in the HEAD slot).
+It overrides a helmet. A skeleton's spawner and dispenser on the head do not drop together:
+if the spawner was rolled — the dispenser is not put on.
 
-Дым и огонь над головой (как у настоящего spawner) — только на клиенте,
-код: client/spawnerhead/SpawnerHeadParticles.java (ENABLED, высота HEAD_CENTER_ABOVE_FEET).
+Smoke and fire above the head (like a real spawner) — client side only,
+code: client/spawnerhead/SpawnerHeadParticles.java (ENABLED, height HEAD_CENTER_ABOVE_FEET).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При обычном спавне шанс стать носителем — CARRIER_SPAWN_CHANCE (0.5% на 100-й день).
-2. Каждые 2 удара игрока (меч, лук, любой урон от игрока) рядом появляется 1–2 таких же моба
-   (зомби зовёт зомби, скелет — скелета, хаск — хаска…). Счётчик ударов после призыва сбрасывается.
-3. Призванная подмога НИКОГДА не может получить спавнер на голове (нет цепочки «имба»).
-4. Подмога — обычный finalizeSpawn (броня/оружие по правилам мода), но без роли носителя.
+1. On a normal spawn the chance to become a carrier is CARRIER_SPAWN_CHANCE (0.5% on day 100).
+2. Every 2 player hits (sword, bow, any damage from the player) 1–2 mobs of the same kind appear nearby
+   (a zombie calls a zombie, a skeleton — a skeleton, a husk — a husk…). The hit counter is reset after a summon.
+3. The summoned help can NEVER get a spawner on its head (no overpowered chain).
+4. The help uses a normal finalizeSpawn (armor/weapon by the mod's rules), but without the carrier role.
 
 
-КТО МОЖЕТ БЫТЬ НОСИТЕЛЕМ
+WHO CAN BE A CARRIER
 ------------------------
-  Да:   зомби, хаск, зомби-житель, скелет, странник.
-  Нет:  утопленник, зомби-пиглин, босс надсмотрщик, прислуга рейда.
-  Скелет-иссушитель — отдельно: mobs/skeletons/skeleton.txt, раздел «СКЕЛЕТ-ИСУШИТЕЛЬ СО СПАВНЕРОМ»
-  (всегда двое за призыв, свой шанс).
+  Yes:  zombie, husk, zombie villager, skeleton, stray.
+  No:   drowned, zombified piglin, boss Overseer, raid minions.
+  The wither skeleton is separate: mobs/skeletons/skeleton.txt, section "WITHER SKELETON WITH SPAWNER"
+  (always two per summon, its own chance).
 
 
 SETTINGS (SpawnerHeadMob.java)
 -------------------------------
-  ENABLED ...................... true — вкл/выкл
-  CARRIER_SPAWN_CHANCE ......... 0.005 — шанс при спавне на 100-й день (0.5%). В начале игры в 10 раз меньше
-  HITS_TO_SUMMON ............... 2 — ударов игрока до призыва
-  SUMMON_COUNT_MIN / MAX ....... 1 / 2 — сколько мобов призвать
-  SUMMON_RADIUS ................ 3.0 — радиус появления (блоки)
-  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — дроп спавнера с головы
+  ENABLED ...................... true — on/off
+  CARRIER_SPAWN_CHANCE ......... 0.005 — chance on spawn at day 100 (0.5%). Early in the game it is 10 times lower
+  HITS_TO_SUMMON ............... 2 — player hits before a summon
+  SUMMON_COUNT_MIN / MAX ....... 1 / 2 — how many mobs are summoned
+  SUMMON_RADIUS ................ 3.0 — spawn radius (blocks)
+  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — chance the spawner drops from the head
 
 
-ТЕСТ
+TEST
 ----
-1. Ночь, подожди зомби/скелетов или /summon — смотри на голову (очень редко, 0.5% к 100-му дню).
-2. Ударь носителя 2 раза — рядом должны появиться 1–2 таких же.
-3. Чтобы чаще видеть: временно поставь CARRIER_SPAWN_CHANCE = 1.0.
+1. At night, wait for zombies/skeletons or /summon — look at the head (very rare, 0.5% by day 100).
+2. Hit the carrier 2 times — 1–2 of the same kind should appear nearby.
+3. To see it more often: temporarily set CARRIER_SPAWN_CHANCE = 1.0.
 
 ==============================================================================================
 
-ЗОМБИ С ДИНАМИТОМ
-=================
+ZOMBIE WITH TNT
+===============
 
-Тип: редкий обычный зомби. Не новый моб в меню.
-Код: zombie/TntZombie.java (шанс, бросок, команда),
-     entity/ai/TntDropGoal.java (когда ронять),
-     mixin/ZombieMixin.java (вместо меча),
-     mixin/TntZombieMixin.java (флаг и пауза, сохранение),
-     mixin/TntZombieGoalMixin.java (цель).
+Type: rare regular zombie. Not a new mob in the menu.
+Code: zombie/TntZombie.java (chance, throw, command),
+     entity/ai/TntDropGoal.java (when to drop),
+     mixin/ZombieMixin.java (instead of a sword),
+     mixin/TntZombieMixin.java (flag and pause, saving),
+     mixin/TntZombieGoalMixin.java (target).
 
-Оружие — динамит в руке. Меч, щит и тотем этому зомби не выдаются.
-Броня, зелья и особая голова мода остаются.
-Блоки не ломает: ни стену к игроку, ни факел. Если пути нет, он роняет TNT.
+The weapon is TNT in hand. This zombie is not given a sword, shield or totem.
+Armor, potions and the mod's special head item stay.
+It does not break blocks: neither a wall toward the player nor a torch. If there is no path, it drops TNT.
 
 
-КОГДА РОНЯЕТ
+WHEN IT DROPS
 ------------
-Под ноги появляется обычный подожжённый динамит. Запал 4 секунды, взрыв как у ванильного TNT.
-Блок ломает, только если это разрешено правилом игры (tntExplodes).
-Зомби сам от взрыва не защищён.
+An ordinary lit TNT appears under its feet. The fuse is 4 seconds, the explosion is like vanilla TNT.
+It breaks blocks only if the game rule allows it (tntExplodes).
+The zombie itself is not protected from the explosion.
 
-1. Здоровья меньше 3 (полтора сердца). Даже если игрок рядом и путь свободен.
-2. Путь к игроку не находится, игрок не дальше 32 блоков, ударить его нельзя,
-   и прямо перед зомби есть блок. На пустой дороге и если игрок просто далеко — не роняет.
-Следующий динамит не раньше чем через 4 секунды.
+1. Health below 3 (a heart and a half). Even if the player is nearby and the path is clear.
+2. No path to the player is found, the player is no farther than 32 blocks, it cannot hit them,
+   and there is a block right in front of the zombie. On an empty road, or if the player is just far away — it does not drop.
+The next TNT comes no sooner than 4 seconds later.
 
 
-КОМАНДА
+COMMAND
 -------
   /ettnt
   /evolvingthreats spawn tnt_zombie
-Зомби появляется в 6 блоках по взгляду. Шанс не бросается.
+The zombie appears 6 blocks away in the direction you look. The chance is not rolled.
 
 
 SETTINGS (TntZombie.java)
 --------------------------
   ENABLED ...................... true
-  SPAWN_CHANCE ................. 0.04 — шанс у обычного зомби (4%)
-  LOW_HEALTH ................... 3 — меньше этого здоровья роняет динамит
-  PATH_CHECK_BLOCKS ............ 32 — дальше этого «нет пути» не считается
-  PATH_CHECK_INTERVAL_TICKS .... 10 — как часто проверять путь
-  THROW_COOLDOWN_SECONDS ....... 4 — пауза между динамитами
-  FUSE_TICKS ................... 80 — запал, 80 = 4 секунды
-  TNT_DROP_CHANCE .............. 0.085 — шанс, что динамит из руки упадёт при смерти
+  SPAWN_CHANCE ................. 0.04 — chance for a regular zombie (4%)
+  LOW_HEALTH ................... 3 — below this health it drops TNT
+  PATH_CHECK_BLOCKS ............ 32 — farther than this "no path" is not counted
+  PATH_CHECK_INTERVAL_TICKS .... 10 — how often to check the path
+  THROW_COOLDOWN_SECONDS ....... 4 — pause between TNTs
+  FUSE_TICKS ................... 80 — fuse, 80 = 4 seconds
+  TNT_DROP_CHANCE .............. 0.085 — chance that the TNT in hand drops on death
 
 
-ТЕСТ
+TEST
 ----
-1. /ettnt. В руке динамит, меча нет.
-2. Поставь его за стеной из земли и встань с другой стороны. Через пару секунд под ним зашипит TNT.
-3. Доведи его почти до смерти (меньше полтора сердца). Он роняет динамит, даже если путь свободен.
-4. Стену он не копает.
+1. /ettnt. TNT in hand, no sword.
+2. Put it behind a dirt wall and stand on the other side. After a couple of seconds TNT will start hissing under it.
+3. Bring it almost to death (below a heart and a half). It drops TNT even if the path is clear.
+4. It does not dig through the wall.
 
 ==============================================================================================
 
-ЗОМБИ-ЧАРОДЕЙ
-=============
+ZOMBIE SORCERER
+===============
 
-Тип: редкий вариант обычного зомби. Чёрная кожа на все четыре слота, в руке незеритовая мотыга.
-Код: zombie/ZombieSorcerer.java (настройки, приёмы, лут, команда),
-     mixin/ZombieSorcererMixin.java (флаг, пауза, опыт),
-     mixin/ZombieSorcererGoalMixin.java (когда колдует),
-     mixin/ZombieSorcererLootMixin.java (лишняя вещь),
-     mixin/ZombieMixin.java (шанс при спавне, без чар и случайной брони).
+Type: rare variant of a regular zombie. Black leather on all four slots, a netherite hoe in hand.
+Code: zombie/ZombieSorcerer.java (settings, spells, loot, command),
+     mixin/ZombieSorcererMixin.java (flag, pause, experience),
+     mixin/ZombieSorcererGoalMixin.java (when it casts),
+     mixin/ZombieSorcererLootMixin.java (extra item),
+     mixin/ZombieMixin.java (chance on spawn, without enchantments and random armor).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При спавне шанс SPAWN_CHANCE (0,1%, один из тысячи). FIXED: с 40-го дня, от шкалы угрозы не растёт.
-   Только обычный взрослый зомби.
-   Кадавр, утопленник, зомби-житель, детёныш, надсмотрщик и рейд чародеями не становятся.
-2. Кожа покрашена в чёрный, как красителем. Мотыга без чар.
-   Случайные чары, щит, тотем, тыква и спавнер на голову ему не выдаются.
-   Зелья при появлении могут быть — как у обычного зомби.
-   Блоки не ломает и на свет не идёт.
-3. Здоровье всегда 80 (40 сердец), не случайные 20–40.
-4. Если видит игрока ближе 12 блоков, раз в 8 секунд колдует один приём.
-   Пока игрока не видно или он дальше — пауза не тикает, первый приём сразу при встрече.
-   Стена приём закрывает. Щит не ловит.
-   Подброс — основной приём, около 70%. Огонь и рывок — по 15%.
-   - Подброс чаще всего на 25–30 блоков, поровну. Каждый десятый подброс — на 50.
-     Падение с такой высоты бьёт почти на всю жизнь и сильнее.
-   - Поджог на 6 секунд. Огнестойкость урон снимает, как обычно.
-   - Рывок к себе. Если игрок уже вплотную (ближе 2.5 блока), рывка нет:
-     тогда чаще подброс, реже огонь.
-5. Мотыга и надетая броня не выпадают.
-6. Если убил игрок — опыта 15 (у обычного зомби 5) и одна случайная вещь:
-   сахар, золотая морковка, фуга (звезда фейерверка), красный редстоуновый факел
-   или один кусок чёрной кожи. Если зомби сгорел сам — лишней вещи нет.
+1. On spawn the chance is SPAWN_CHANCE (0.1%, one in a thousand). FIXED: from day 40, does not grow with the threat scale.
+   Regular adult zombie only.
+   husk, drowned, zombie villager, baby, Overseer and raid zombies do not become sorcerers.
+2. The leather is dyed black, as if with dye. The hoe has no enchantments.
+   Random enchantments, shield, totem, pumpkin and spawner are not given to its head.
+   Potions at spawn are possible — as with a regular zombie.
+   It does not break blocks and does not go to light.
+3. Health is always 80 (40 hearts), not a random 20–40.
+4. If it sees a player closer than 12 blocks, it casts one spell every 8 seconds.
+   While the player is not visible or is farther — the pause does not tick, the first spell comes immediately on meeting.
+   A wall blocks the spell. A shield does not catch it.
+   Launch is the main spell, about 70%. Fire and pull — 15% each.
+   - The launch is most often 25–30 blocks, equally split. Every tenth launch is 50.
+     A fall from that height deals almost the whole life bar and more damage.
+   - Ignite for 6 seconds. Fire resistance removes the damage, as usual.
+   - Pull toward itself. If the player is already right next to it (closer than 2.5 blocks), there is no pull:
+     then launch is more frequent, fire less.
+5. The hoe and the worn armor do not drop.
+6. If a player killed it — 15 experience (a regular zombie gives 5) and one random item:
+   sugar, golden carrot, firework star, redstone torch
+   or one piece of black leather. If the zombie burned on its own — no extra item.
 
 
-КОМАНДА
+COMMAND
 -------
   /etsorcerer
   /evolvingthreats spawn sorcerer
-Зомби появляется в 6 блоках по взгляду и сразу смотрит на тебя.
-Нужны права оператора. Для подброса выйди из полёта.
+The zombie appears 6 blocks away in the direction you look and immediately looks at you.
+Operator permissions are required. For the launch, get out of flight.
 
 
 SETTINGS (ZombieSorcerer.java)
 -------------------------------
-  ENABLED ...................... true — false выключает спавн и приёмы
-  SPAWN_CHANCE ................. 0.001 — шанс в мире (0,1%, один из тысячи). FIXED с 40-го дня. Команда шанс не бросает
-  HEALTH ....................... 80 — жизни, 40 сердец
-  LAUNCH_WEIGHT ................ 70 — вес подброса. Вместе с огнём и рывком сумма 100 = проценты
-  FIRE_WEIGHT .................. 15 — вес поджога
-  PULL_WEIGHT .................. 15 — вес рывка. 0 = рывка нет
-  LAUNCH_MIN_BLOCKS ............ 25 — обычный подброс, нижний край
-  LAUNCH_MAX_BLOCKS ............ 30 — обычный подброс, верхний край
-  LAUNCH_RARE_BLOCKS ........... 50 — редкий подброс, ровно столько блоков
-  LAUNCH_RARE_CHANCE ........... 0.10 — 10% подбросов на 50 блоков. 0 = всегда 25–30
-  XP_REWARD .................... 15 — опыт, у обычного зомби 5
-  SPELL_RANGE_BLOCKS ........... 12 — дальше этого не колдует
-  SPELL_COOLDOWN_SECONDS ....... 8 — пауза между приёмами
-  FIRE_SECONDS ................. 6 — сколько секунд горит игрок
-  PULL_SPEED ................... 1.6 — сила рывка
-  PULL_MIN_BLOCKS .............. 2.5 — ближе этого рывка нет
-  BONUS_DROP_CHANCE ............ 1.0 — шанс лишней вещи, если убил игрок
+  ENABLED ...................... true — false turns off spawning and spells
+  SPAWN_CHANCE ................. 0.001 — chance in the world (0.1%, one in a thousand). FIXED from day 40. The command does not roll the chance
+  HEALTH ....................... 80 — life, 40 hearts
+  LAUNCH_WEIGHT ................ 70 — weight of the launch. Together with fire and pull the sum is 100 = percentages
+  FIRE_WEIGHT .................. 15 — weight of the ignite
+  PULL_WEIGHT .................. 15 — weight of the pull. 0 = no pull
+  LAUNCH_MIN_BLOCKS ............ 25 — normal launch, lower bound
+  LAUNCH_MAX_BLOCKS ............ 30 — normal launch, upper bound
+  LAUNCH_RARE_BLOCKS ........... 50 — rare launch, exactly this many blocks
+  LAUNCH_RARE_CHANCE ........... 0.10 — 10% of launches go 50 blocks. 0 = always 25–30
+  XP_REWARD .................... 15 — experience, a regular zombie gives 5
+  SPELL_RANGE_BLOCKS ........... 12 — it does not cast farther than this
+  SPELL_COOLDOWN_SECONDS ....... 8 — pause between spells
+  FIRE_SECONDS ................. 6 — how many seconds the player burns
+  PULL_SPEED ................... 1.6 — strength of the pull
+  PULL_MIN_BLOCKS .............. 2.5 — closer than this there is no pull
+  BONUS_DROP_CHANCE ............ 1.0 — chance of the extra item if a player killed it
 
 
-ТЕСТ
+TEST
 ----
-1. Введи /etsorcerer. На нём чёрная кожа и незеритовая мотыга, сердец 40.
-2. Постой в нескольких блоках без стены и без полёта. Через мгновение чаще всего подброс
-   на 25–30 блоков. Реже огонь или рывок. Примерно каждый десятый подброс — на 50.
-   Звук — как у вызывателя.
-3. Подожди 8 секунд — следующий приём.
-4. Убей. Мотыги нет. Есть опыт и одна вещь из списка.
+1. Enter /etsorcerer. It wears black leather and a netherite hoe, 40 hearts.
+2. Stand a few blocks away with no wall and no flying. After a moment, most often a launch
+   of 25–30 blocks. Less often fire or pull. About every tenth launch is 50.
+   The sound is like the evoker's.
+3. Wait 8 seconds — the next spell.
+4. Kill it. No hoe. There is experience and one item from the list.
 
 ==============================================================================================
 
-ЗОМБИ EXCALIBUR
-===============
+EXCALIBUR ZOMBIE
+================
 
-Тип: редкий вариант обычного зомби. Над головой имя Excalibur.
-Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-Код: zombie/ZombieExcalibur.java (настройки, меч, лут, команда),
-     mixin/ZombieExcaliburMixin.java (флаг и опыт),
-     mixin/ZombieExcaliburLootMixin.java (бирка),
-     mixin/ZombieMixin.java (шанс при спавне; меч свой, броня и щит как у обычного).
+Type: rare variant of a regular zombie. The name Excalibur is shown above its head.
+It is visible only when your crosshair is on it and it is no farther than about 64 blocks.
+Code: zombie/ZombieExcalibur.java (settings, sword, loot, command),
+     mixin/ZombieExcaliburMixin.java (flag and experience),
+     mixin/ZombieExcaliburLootMixin.java (name tag),
+     mixin/ZombieMixin.java (chance on spawn; own sword, armor and shield as for a regular zombie).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При спавне шанс SPAWN_CHANCE (1%). FIXED: с 40-го дня, от шкалы угрозы не растёт.
-   До 40-го дня таких нет. Уже живущий Excalibur остаётся.
-   Только обычный взрослый зомби.
-   Кадавр, утопленник, зомби-житель, детёныш, надсмотрщик и рейд им не становятся.
-2. В руке всегда один меч, шансы равные: дерево, камень, медь, железо или алмаз.
-   На нём Острота 20. У стола зачарований потолок V.
-   Золота и незерита нет.
-3. Броня как у обычного зомби: каждый кусок отдельно, иногда полный комплект, чары на броне.
-   Щит во второй руке может быть, с тем же шансом, что у обычного зомби.
-   Меч в первой руке при этом всегда остаётся.
-   Случайное оружие, тотем, тыква и спавнер на голову не выдаются.
-   Зелья при появлении могут быть — как у обычного зомби.
-   Чужие вещи с земли не подбирает, иначе меч сменится.
-4. Меч с этой остротой не выпадает. Броня и щит падают своим обычным шансом.
-   Всегда падает одна бирка с именем Excalibur.
-5. Здоровье всегда 50. Уже живущие Excalibur старое здоровье сохраняют.
-6. Если убил игрок — опыта 30. Общий множитель опыта это число не увеличивает.
-   Если зомби сгорел сам — опыта нет, бирка всё равно падает.
+1. On spawn the chance is SPAWN_CHANCE (1%). FIXED: from day 40, does not grow with the threat scale.
+   Before day 40 there are none. An Excalibur that is already alive stays.
+   Regular adult zombie only.
+   husk, drowned, zombie villager, baby, Overseer and raid zombies do not become one.
+2. In hand there is always one sword, with equal chances: wood, stone, copper, iron or diamond.
+   It has Sharpness 20. At the enchanting table the cap is V.
+   No gold and no netherite.
+3. Armor as on a regular zombie: each piece separately, sometimes a full set, enchantments on the armor.
+   A shield in the second hand is possible, with the same chance as for a regular zombie.
+   The sword in the first hand always stays.
+   Random weapon, totem, pumpkin and spawner are not given to its head.
+   Potions at spawn are possible — as with a regular zombie.
+   It does not pick up other items from the ground, otherwise the sword would change.
+4. A sword with this sharpness does not drop. Armor and shield drop with their usual chance.
+   One name tag named Excalibur always drops.
+5. Health is always 50. Excaliburs that are already alive keep their old health.
+6. If a player killed it — 30 experience. The global experience multiplier does not increase this number.
+   If the zombie burned on its own — no experience, the name tag still drops.
 
 
-УДАР
+THE HIT
 ----
-Это обычный удар мечом, только с большой Остротой. Отдельного сокрушительного приёма нет.
-Игра добавляет 1 урон за первый уровень Остроты и ещё 0.5 за каждый следующий.
-20 даёт 10.5 урона сверх самого меча (Острота V даёт только 3).
+It is an ordinary sword hit, only with a high Sharpness. There is no separate crushing move.
+The game adds 1 damage for the first level of Sharpness and another 0.5 for each next one.
+20 gives 10.5 damage on top of the sword itself (Sharpness V gives only 3).
 
-Голый игрок, обычная сложность, 10 сердец:
-  деревянный меч .... около 8 сердец
-  каменный и медный .. около 9
-  железный .......... около 9 с четвертью
-  алмазный .......... почти 10, остаётся четверть сердца
+A naked player, normal difficulty, 10 hearts:
+  wooden sword ..... about 8 hearts
+  stone and copper .. about 9
+  iron .............. about 9 and a quarter
+  diamond ........... almost 10, a quarter of a heart is left
 
-На сложной сложности любой такой меч убивает голого с одного удара.
-В броне удар заметно слабее: полный алмазный сет одним ударом не снимает.
+On hard difficulty any such sword kills a naked player in one hit.
+In armor the hit is noticeably weaker: a full diamond set is not taken down in one hit.
 
 
-КОМАНДА
+COMMAND
 -------
   /etexcalibur
   /evolvingthreats spawn excalibur
-Зомби появляется в 6 блоках по взгляду. Каждый вызов заново бросает материал меча.
-День не проверяется: команда работает и до 40-го дня.
-Нужны права оператора.
+The zombie appears 6 blocks away in the direction you look. Each call rerolls the sword material.
+The day is not checked: the command works before day 40 as well.
+Operator permissions are required.
 
 
 SETTINGS (ZombieExcalibur.java)
 --------------------------------
   ENABLED ...................... true
-  SPAWN_CHANCE ................. 0.01 = 1%. FIXED с 40-го дня. 0 = только команда
-  День включения ............... ThreatTable.EXCALIBUR_DAY = 40
-  SHARPNESS_LEVEL .............. 20. 5 = обычная Острота V
-  MAX_HEALTH ................... 50 = 25 сердец
-  XP_REWARD .................... 30. 0 = без опыта. Множитель опыта не трогает
-  NAME_TAG_COUNT ............... 1. 0 = бирку не ронять
+  SPAWN_CHANCE ................. 0.01 = 1%. FIXED from day 40. 0 = command only
+  Activation day ............... ThreatTable.EXCALIBUR_DAY = 40
+  SHARPNESS_LEVEL .............. 20. 5 = normal Sharpness V
+  MAX_HEALTH ................... 50 = 25 hearts
+  XP_REWARD .................... 30. 0 = no experience. Does not touch the experience multiplier
+  NAME_TAG_COUNT ............... 1. 0 = do not drop a name tag
   DISPLAY_NAME ................. Excalibur
 
 ==============================================================================================
 
-ЗОМБИ MJÖLNIR
-=============
+MJÖLNIR ZOMBIE
+==============
 
-Тип: редкий вариант обычного зомби. Над головой имя Mjölnir.
-Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
-Код: zombie/ZombieMjolnir.java (настройки, молот, лут, команда),
-     mixin/ZombieMjolnirMixin.java (флаг и опыт),
-     mixin/ZombieMjolnirLootMixin.java (бирка и редкий молот),
-     mixin/ZombieMixin.java (шанс при спавне, без случайного оружия; броня как у обычного зомби).
+Type: rare variant of a regular zombie. The name Mjölnir is shown above its head.
+It is visible only when your crosshair is on it and it is no farther than about 64 blocks.
+Code: zombie/ZombieMjolnir.java (settings, hammer, loot, command),
+     mixin/ZombieMjolnirMixin.java (flag and experience),
+     mixin/ZombieMjolnirLootMixin.java (name tag and rare hammer),
+     mixin/ZombieMixin.java (chance on spawn, no random weapon; armor as on a regular zombie).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При спавне шанс SPAWN_CHANCE (0.2%, один из пятисот). FIXED: с первого дня, от шкалы угрозы не растёт.
-   Только обычный взрослый зомби.
-   Кадавр, утопленник, зомби-житель, детёныш, надсмотрщик, рейд и Excalibur им не становятся.
-2. В руке булава — это молот в игре. На ней Отдача 20. У стола зачарований потолок II.
-3. Случайные оружие, щит, тотем, тыква и спавнер на голову ему не выдаются.
-   Броня — как у обычного зомби: куски по отдельности, редко полный комплект.
-   На броне могут быть чары. Шлем полного комплекта тыква и спавнер не забирают,
-   потому что редкая голова ему не выдаётся.
-   Зелья при появлении могут быть — как у обычного зомби.
-   Чужие вещи с земли не подбирает, иначе молот сменится.
-4. Молот сам по себе не падает. Отдельным броском HAMMER_DROP_CHANCE (0.5%, один из двухсот)
-   падает копия булавы с Отдачей 20. Добыча этот бросок не делает чаще.
-   Всегда падает одна бирка с именем Mjölnir.
-5. Если убил игрок — опыта 20 (у обычного зомби 5). Если зомби сгорел сам — опыта нет,
-   бирка и редкий молот всё равно могут упасть.
+1. On spawn the chance is SPAWN_CHANCE (0.2%, one in five hundred). FIXED: from day 1, does not grow with the threat scale.
+   Regular adult zombie only.
+   husk, drowned, zombie villager, baby, Overseer, raid zombies and Excalibur do not become one.
+2. In hand there is a mace — that is the hammer in the game. It has Knockback 20. At the enchanting table the cap is II.
+3. Random weapon, shield, totem, pumpkin and spawner are not given to its head.
+   Armor — as on a regular zombie: pieces separately, a full set rarely.
+   The armor can have enchantments. A full-set helmet does not take away a pumpkin or spawner,
+   because a rare head item is not given to it.
+   Potions at spawn are possible — as with a regular zombie.
+   It does not pick up other items from the ground, otherwise the hammer would change.
+4. The hammer itself does not drop. With a separate roll HAMMER_DROP_CHANCE (0.5%, one in two hundred)
+   a copy of the mace with Knockback 20 drops. Looting does not make this roll more frequent.
+   One name tag named Mjölnir always drops.
+5. If a player killed it — 20 experience (a regular zombie gives 5). If the zombie burned on its own — no experience,
+   the name tag and the rare hammer can still drop.
 
 
-УДАР
+THE HIT
 ----
-Это обычный удар булавой плюс очень сильный отброс.
-Каждый уровень Отдачи добавляет 1 к силе. Отдача II — это 2. Отдача 20 — это 20,
-примерно в десять раз сильнее: игрока может унести далеко.
+It is an ordinary mace hit plus a very strong knockback.
+Each level of Knockback adds 1 to the strength. Knockback II is 2. Knockback 20 is 20,
+about ten times stronger: the player can be carried far away.
 
 
-КОМАНДА
+COMMAND
 -------
 /etmjolnir
-или /evolvingthreats spawn mjolnir
-Нужны права оператора. Появляется в 6 блоках перед тобой и сразу идёт в атаку.
-Команда шанс не бросает.
+or /evolvingthreats spawn mjolnir
+Operator permissions are required. It appears 6 blocks in front of you and goes into attack at once.
+The command does not roll the chance.
 
 
 SETTINGS
 ---------
-В начале ZombieMjolnir.java:
-- ENABLED — выключить целиком
-- SPAWN_CHANCE — шанс появления, 0.002 = 0.2%
-- KNOCKBACK_LEVEL — уровень Отдачи, сейчас 20
-- HAMMER_DROP_CHANCE — шанс выпадения молота, 0.005 = 0.5%
-- XP_REWARD — опыт, сейчас 20
-- NAME_TAG_COUNT — сколько бирок, 0 = не ронять
-- DISPLAY_NAME — имя
+At the top of ZombieMjolnir.java:
+- ENABLED — turn the whole thing off
+- SPAWN_CHANCE — spawn chance, 0.002 = 0.2%
+- KNOCKBACK_LEVEL — Knockback level, currently 20
+- HAMMER_DROP_CHANCE — chance the hammer drops, 0.005 = 0.5%
+- XP_REWARD — experience, currently 20
+- NAME_TAG_COUNT — how many name tags, 0 = do not drop
+- DISPLAY_NAME — the name
 
 ==============================================================================================
 
-ГНИЛОЙ НАДСМОТРЩИК (Rotten Overseer)
-=====================================
+ROTTEN OVERSEER
+===============
 
-Тип: редкий мини-босс (обычный зомби с особым набором и ИИ).
-Код: ZombieOverseer.java — настройки в блоке «SETTINGS».
+Type: rare mini-boss (a regular zombie with a special kit and AI).
+Code: ZombieOverseer.java — settings are in the "SETTINGS" block.
 
 
-КАК ВСТРЕТИТЬ
+HOW TO ENCOUNTER IT
 -------------
-- Шанс при естественном спавне зомби (SPAWN_CHANCE, по умолчанию 0.2%).
-- Не утопленник и не зомби-пиглин.
-- При появлении может сразу «закрепиться» на ближайшем игроке в радиусе ~128 блоков.
+- Chance on natural zombie spawn (SPAWN_CHANCE, default 0.2%).
+- Not a drowned and not a zombified piglin.
+- On spawn it can immediately "lock on" to the nearest player within ~128 blocks.
 
 
-ХАРАКТЕРИСТИКИ (по умолчанию)
+STATS (default)
 ------------------------------
-  Здоровье .............. 100 HP
-  Броня ................. полный алмазный сет, Protection II
-  Оружие ................ алмазный топор Sharpness III (основная рука)
-                          + топор Sharpness II (вторая рука, тоже бьёт)
-  Радиус преследования .. ~112 блоков (FOLLOW_RANGE)
+  Health ................. 100 HP
+  Armor .................. full diamond set, Protection II
+  Weapon ................. diamond axe, Sharpness III (main hand)
+                          + axe, Sharpness II (off-hand, it hits too)
+  Chase radius ........... ~112 blocks (FOLLOW_RANGE)
 
 
-СПОСОБНОСТИ
+ABILITIES
 -----------
-1. Охота на игрока — помнит закреплённую цель, пока ты в радиусе ~128 блоков
-   и в том же измерении.
+1. Hunting the player — it remembers the locked-on target while you are within ~128 blocks
+   and in the same dimension.
 
-2. Таймаут охоты — если ~2 минуты держишься слишком далеко (вне зоны погони),
-   охота сбрасывается.
+2. Hunt timeout — if you stay too far away for ~2 minutes (outside the chase zone),
+   the hunt is reset.
 
-3. Призыв стаи — раз в ~25 с, если цель ближе ~96 блоков: 2 обычных зомби,
-   не больше 5 «слуг» одновременно (зомби рядом с той же целью).
-   Ставит их только на свободный пол рядом, не внутрь стены. Если места нет —
-   ждёт 5 секунд и пробует снова. Призванные зомби сами надсмотрщиками не становятся.
+3. Pack summon — once every ~25 s, if the target is closer than ~96 blocks: 2 regular zombies,
+   no more than 5 "servants" at a time (zombies near the same target).
+   It places them only on free floor nearby, not inside a wall. If there is no room —
+   it waits 5 seconds and tries again. Summoned zombies do not become Overseers themselves.
 
 
-ОТЛИЧИЕ ОТ ОБЫЧНОГО ЗОМБИ
+DIFFERENCES FROM A REGULAR ZOMBIE
 -------------------------
-- Не получает случайный лут из RandomWeapons / RandomArmor при спавне.
-- Имя над головой: Rotten Overseer. Видно, только когда прицел на нём и он не дальше примерно 64 блоков.
+- Does not get random loot from RandomWeapons / RandomArmor on spawn.
+- Name above the head: Rotten Overseer. Visible only when your crosshair is on it and it is no farther than about 64 blocks.
 
 
-ТЕСТ В ИГРЕ
+TEST IN GAME
 -----------
-Команды (нужны читы / OP, уровень прав 2):
+Commands (cheats / OP required, permission level 2):
   /etoverseer
   /evolvingthreats spawn overseer
   /etoverseer_egg
   /evolvingthreats give overseer_egg
   /evolvingthreats give overseer_egg 16
 
-Яйцо призыва:
-  Креатив → вкладка «Яйца призыва» (рядом с яйцом зомби).
-  Или /etoverseer_egg, /give @s evolving-threats:rotten_overseer_spawn_egg
-  ПКМ по блоку или в воздухе — спавн надсмотрщика.
-  Текстура: assets/.../textures/item/rotten_overseer_spawn_egg.png
+Spawn egg:
+  Creative → the "Spawn Eggs" tab (next to the zombie egg).
+  Or /etoverseer_egg, /give @s evolving-threats:rotten_overseer_spawn_egg
+  Right-click on a block or in the air — spawns an Overseer.
+  Texture: assets/.../textures/item/rotten_overseer_spawn_egg.png
 
-Случайный спавн: ZombieOverseer.SPAWN_CHANCE (по умолчанию 0.2%).
+Random spawn: ZombieOverseer.SPAWN_CHANCE (default 0.2%).
 
 ==============================================================================================
 
-РИТУАЛЬНАЯ СТАЯ
-===============
+RITUAL BAND
+===========
 
-Тип: редкая группа, не отдельный моб. 1–2 обычных зомби и 1–2 обычных скелета.
-Код: ritual/RitualBand.java (настройки, поведение, лут, команда),
-     mixin/RitualZombieMixin.java и RitualSkeletonMixin.java (память и запись в мир),
-     mixin/RitualMobMixin.java (опыт и лишние вещи),
-     mixin/RitualHuntMixin.java (голова игрока чует сквозь стены, солнце пиглина тушится),
-     mixin/RitualHurtMixin.java (свои не бьют своих, огонь пиглина, иссушение),
-     mixin/RitualDeathMixin.java (хлопок головы крипера).
+Type: rare group, not a separate mob. 1–2 regular zombies and 1–2 regular skeletons.
+Code: ritual/RitualBand.java (settings, behavior, loot, command),
+     mixin/RitualZombieMixin.java and RitualSkeletonMixin.java (memory and saving to the world),
+     mixin/RitualMobMixin.java (experience and extra items),
+     mixin/RitualHuntMixin.java (player head senses through walls, piglin sun is extinguished),
+     mixin/RitualHurtMixin.java (members do not hit their own, piglin fire, wither),
+     mixin/RitualDeathMixin.java (creeper head pop).
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. Шанс SPAWN_CHANCE (0,2%, один из пятисот) у обычного взрослого зомби и у обычного скелета.
-   FIXED: с первого дня, от шкалы угрозы не растёт.
-   Кадавр, странник, детёныш, надсмотрщик и рейд стаей не становятся.
-   Призванный согруппник шанс заново не бросает.
-2. У всех в стае одна и та же голова. Какая выпадет — решает поведение.
-   Кожа тёмно-зелёная, шлема нет. В руке красный факел или кость, и то и то в стае есть.
-   Чары, случайное оружие и зелья мода не выдаются. Блоки не ломают.
-3. Здоровье каждого 50. Удар любого в стае снимает 4 сердца до брони.
-   У обычного зомби полтора, у скелета с костью одно.
-   Без брони игрок переживает два удара.
-4. Любой в стае замечает игрока с 52 блоков, если видит его.
-   Голова игрока на тех же 52 блоках чует сквозь стены.
-   Голова не падает. Если убил игрок — компас падает с шансом 2,5%, как остальные головы.
-   Добыча I/II/III поднимает до 3,5% / 4,5% / 5,5%.
-5. Голова крипера. При смерти небольшой взрыв: больно рядом, блоки почти не ломает.
-   Своих не ранит и не раскидывает. Голова падает редко, как череп со скелета-иссушителя.
-   Ещё падает порох, в том числе с зомби.
-6. Голова пиглина. Лава, огонь и солнце не берут: зомби на открытом месте не загорается.
-   Голова падает редко, как череп со скелета-иссушителя. Ещё падает один золотой слиток.
-7. Череп иссушителя. Удар вешает иссушение на 4 секунды.
-   Пока оно ещё держится, следующий удар его не обновляет.
-   Череп падает редко, как со скелета-иссушителя. Ещё падают уголь и роза визера.
-8. Кусок тёмно-зелёной кожи иногда падает, как обычная броня (около 8,5%).
-   Красный факел из руки — с шансом 35%. Кость из руки не падает.
-   Опыта с каждого 50. У обычного зомби и скелета в этом моде 10, и общий множитель стаю не удваивает.
+1. The chance is SPAWN_CHANCE (0.2%, one in five hundred) for a regular adult zombie and a regular skeleton.
+   FIXED: from day 1, does not grow with the threat scale.
+   husk, stray, baby, Overseer and raid zombies do not become a band.
+   A summoned band-mate does not roll the chance again.
+2. Everyone in the band has the same head. Which one it is — the behavior decides.
+   Dark green leather skin, no helmet. In hand a red torch or a bone, and both are present in the band.
+   The mod's enchantments, random weapons and potions are not given. They do not break blocks.
+3. Each one has 50 health. A hit from anyone in the band removes 4 hearts before armor.
+   A regular zombie does a heart and a half, a skeleton with a bone one.
+   Without armor the player survives two hits.
+4. Anyone in the band notices a player from 52 blocks if it sees them.
+   The player head senses through walls at the same 52 blocks.
+   The head does not drop. If a player killed it — a compass drops with a 2.5% chance, like the other heads.
+   Looting I/II/III raises it to 3.5% / 4.5% / 5.5%.
+5. Creeper head. On death a small explosion: it hurts nearby, and almost does not break blocks.
+   It does not hurt or scatter its own. The head drops rarely, like the skull from a wither skeleton.
+   Gunpowder also drops, including from zombies.
+6. Piglin head. Lava, fire and sun do not hurt it: a zombie in the open does not catch fire.
+   The head drops rarely, like the skull from a wither skeleton. One gold ingot also drops.
+7. Wither skull. A hit applies wither for 4 seconds.
+   While it is still active, the next hit does not refresh it.
+   The skull drops rarely, like from a wither skeleton. Coal and a wither rose also drop.
+8. A piece of dark green leather sometimes drops, like ordinary armor (about 8.5%).
+   The red torch from the hand — with a 35% chance. The bone from the hand does not drop.
+   Experience is 50 from each. A regular zombie and skeleton in this mod give 10, and the global multiplier does not double the band.
 
 
-КОМАНДА
+COMMAND
 -------
   /etritual
   /etritual player
@@ -683,136 +683,136 @@ SETTINGS
   /etritual wither
   /evolvingthreats spawn ritual
   /evolvingthreats spawn ritual wither
-Без слова в конце голова случайная. Стая появляется в 6 блоках по взгляду.
-Нужны права оператора.
+Without a word at the end the head is random. The band appears 6 blocks away in the direction you look.
+Operator permissions are required.
 
 
 SETTINGS (RitualBand.java)
 ---------------------------
-  ENABLED ...................... true — false выключает стаю
-  SPAWN_CHANCE ................. 0.002 — 0,2%, один из пятисот. FIXED с первого дня. 0 = только команда
-  XP_REWARD .................... 50 — опыт с каждого. Множитель опыта не трогает. 0 = опыта нет
-  LEATHER_COLOR ................ 0x1B4F2A — тёмно-зелёная кожа
-  LEATHER_DROP_CHANCE .......... 0.085 — шанс куска кожи
-  TORCH_DROP_CHANCE ............ 0.35 — шанс факела из руки
-  HEAD_DROP_CHANCE ............. 0.025 — 2,5% у головы и у компаса.
-                                 Добыча I/II/III = 3,5% / 4,5% / 5,5%
-  MAX_HEALTH ................... 50 — 25 сердец у каждого в стае
-  ATTACK_DAMAGE ................ 8 — четыре сердца до брони. 2 урона = 1 сердце
-  GUNPOWDER_COUNT .............. 1 — порох
-  GOLD_INGOT_COUNT ............. 1 — золотой слиток
-  COAL_COUNT ................... 1 — уголь
-  ROSE_COUNT ................... 1 — роза визера
-  SENSE_BLOCKS ................. 52 — с какого расстояния замечают. Голова игрока на этой же дистанции чует сквозь стены
-  EXPLOSION_POWER .............. 1.5 — хлопок, у крипера 3
-  WITHER_SECONDS ............... 4 — длительность иссушения
-  WITHER_REFRESH_IF_BELOW_SECONDS  1 — пока эффект длиннее, удар его не обновляет
+  ENABLED ...................... true — false turns the band off
+  SPAWN_CHANCE ................. 0.002 — 0.2%, one in five hundred. FIXED from day 1. 0 = command only
+  XP_REWARD .................... 50 — experience from each. Does not touch the experience multiplier. 0 = no experience
+  LEATHER_COLOR ................ 0x1B4F2A — dark green leather
+  LEATHER_DROP_CHANCE .......... 0.085 — chance of a leather piece
+  TORCH_DROP_CHANCE ............ 0.35 — chance of the torch from the hand
+  HEAD_DROP_CHANCE ............. 0.025 — 2.5% for the head and for the compass.
+                                 Looting I/II/III = 3.5% / 4.5% / 5.5%
+  MAX_HEALTH ................... 50 — 25 hearts for each in the band
+  ATTACK_DAMAGE ................ 8 — four hearts before armor. 2 damage = 1 heart
+  GUNPOWDER_COUNT .............. 1 — gunpowder
+  GOLD_INGOT_COUNT ............. 1 — gold ingot
+  COAL_COUNT ................... 1 — coal
+  ROSE_COUNT ................... 1 — wither rose
+  SENSE_BLOCKS ................. 52 — distance from which they notice. The player head senses through walls at this same distance
+  EXPLOSION_POWER .............. 1.5 — the pop, a creeper's is 3
+  WITHER_SECONDS ............... 4 — duration of wither
+  WITHER_REFRESH_IF_BELOW_SECONDS  1 — while the effect is longer than this, a hit does not refresh it
 
 
-ТЕСТ
+TEST
 ----
-1. /etritual player — у всех голова игрока. Отойди за стену ближе 52 блоков: идут к тебе.
-   Убей. Компас — редко, около 2,5%. Голов игрока нет.
-2. /etritual creeper — смерть хлопает. Сосед из стаи остаётся на месте. Порох падает.
-   Голова — редко, около 2,5%.
-3. /etritual piglin — лава не жжёт. Днём на солнце зомби не загорается. Слиток падает.
-   Голова — редко, около 2,5%.
-4. /etritual wither — удар вешает иссушение и не обновляет его каждый тычок.
-   Уголь и роза падают. Череп — редко, около 2,5%.
-   Удар любой стаи снимает 4 сердца до брони. У каждого 50 жизней.
+1. /etritual player — everyone has the player head. Go behind a wall closer than 52 blocks: they come toward you.
+   Kill. A compass — rarely, about 2.5%. No player heads.
+2. /etritual creeper — death pops. A neighbor from the band stays in place. Gunpowder drops.
+   Head — rarely, about 2.5%.
+3. /etritual piglin — lava does not burn. In daytime in the sun the zombie does not catch fire. An ingot drops.
+   Head — rarely, about 2.5%.
+4. /etritual wither — a hit applies wither and does not refresh it on every poke.
+   Coal and a rose drop. Skull — rarely, about 2.5%.
+   A hit from any band removes 4 hearts before armor. Each has 50 health.
 
 ==============================================================================================
 
-УТОПЛЕННИК: ШЛЕМ, ВОДА, ГРОЗА
-=================================
+DROWNED: HELMET, WATER, THUNDERSTORM
+====================================
 
-Тип: обычный утопленник (не новый моб).
-Код: drowned/DrownedThreats.java (шансы, лечение, чары),
-     mixin/DrownedThreatMixin.java (появление),
-     mixin/DrownedRegenMixin.java (лечение),
-     mixin/DrownedTridentMixin.java (молния при попадании трезубца).
+Type: regular drowned (not a new mob).
+Code: drowned/DrownedThreats.java (chances, healing, enchantments),
+     mixin/DrownedThreatMixin.java (spawn),
+     mixin/DrownedRegenMixin.java (healing),
+     mixin/DrownedTridentMixin.java (lightning when the trident hits).
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Примерно каждый десятый появляется в черепашьем шлеме с чарами Защита II.
-   Это сопротивление урону. Если на голове уже есть предмет, шлем не надевается.
-2. В воде любой утопленник лечится на 2 здоровья (одно сердце) раз в 3 секунды,
-   пока не станет полным. На суше лечение не идёт.
-3. Трезубец выдаёт сама игра, примерно каждому шестнадцатому. Мод новый не создаёт и удочку не забирает.
-   Чары на этом трезубце выбирает мод и заменяет те, что успела повесить игра.
-   В 30% случаев это «Громовержец». В остальных 70% — одна другая чара, поровну:
-   Пронзатель, Верность, Тягун или Прочность. Уровень от I до максимума этой чары.
-   Кто получил удочку, просто держит её в руке. Крючок не закидывает. См. раздел «УТОПЛЕННИК С УДОЧКОЙ» ниже.
-4. Попадание трезубца с «Громовержцем» в игрока бьёт молнией даже без дождя и под крышей.
-   Трезубец с другой чарой молнией не бьёт.
-   В грозу под открытым небом молнию вызывает сама игра, второй раз не бьём.
-   Других мобов молния не бьёт. Удар трезубцем в упор молнию не вызывает.
-   Щит, который отбил бросок, тоже.
-5. Шлем падает с шансом около 8.5%. Трезубец падает как в обычной игре.
+1. About every tenth one spawns in a turtle shell helmet with Protection II.
+   That is damage resistance. If there is already an item on the head, the helmet is not put on.
+2. In water any drowned heals 2 health (one heart) every 3 seconds,
+   until full. On land there is no healing.
+3. The trident is given by the game itself, to roughly every sixteenth one. The mod does not create a new one and does not take the fishing rod away.
+   The mod picks the enchantments on this trident and replaces those the game had put on.
+   In 30% of cases it is Channeling. In the other 70% — one other enchantment, equally likely:
+   Impaling, Loyalty, Riptide or Unbreaking. The level is from I up to the maximum of that enchantment.
+   Whoever got a fishing rod just holds it in hand. It does not cast the hook. See the section "DROWNED WITH A FISHING ROD" below.
+4. A trident with Channeling hitting a player strikes lightning even without rain and under a roof.
+   A trident with another enchantment does not strike lightning.
+   In a thunderstorm under open sky the game itself calls lightning, we do not strike a second time.
+   Lightning does not strike other mobs. A point-blank trident stab does not call lightning.
+   A shield that blocked the throw does not either.
+5. The helmet drops with a chance of about 8.5%. The trident drops as in the normal game.
 
 
 SETTINGS (DrownedThreats.java)
 -------------------------------
-ENABLED — false возвращает обычных утопленников.
-HELMET_CHANCE — 0.10 = 10% со шлемом. 0 = нет.
-HELMET_PROTECTION — уровень Защиты. 2 = Защита II. 0 = шлем без чар. 4 = максимум.
-CHANNELING_CHANCE — 0.30 = «Громовержец» на 30% трезубцев, которые уже выдала игра.
-  Остальные получают Пронзатель, Верность, Тягун или Прочность. 0 = только эти чары. 1 = всегда «Громовержец».
-DROP_CHANCE — 0.085 = 8.5% выпадения шлема. 0 = не падает.
-REGEN_HP — сколько здоровья за раз. 2 = одно сердце. 0 = не лечится.
-REGEN_SECONDS — пауза лечения. 3 = три секунды.
+ENABLED — false returns regular drowned.
+HELMET_CHANCE — 0.10 = 10% with a helmet. 0 = none.
+HELMET_PROTECTION — Protection level. 2 = Protection II. 0 = helmet without enchantments. 4 = maximum.
+CHANNELING_CHANCE — 0.30 = Channeling on 30% of the tridents the game has already given out.
+  The rest get Impaling, Loyalty, Riptide or Unbreaking. 0 = only these enchantments. 1 = always Channeling.
+DROP_CHANCE — 0.085 = 8.5% helmet drop. 0 = does not drop.
+REGEN_HP — how much health at a time. 2 = one heart. 0 = no healing.
+REGEN_SECONDS — healing pause. 3 = three seconds.
 
 ==============================================================================================
 
-УТОПЛЕННИК С УДОЧКОЙ
-======================
+DROWNED WITH A FISHING ROD
+==========================
 
-Тип: обычный утопленник, которому игра уже дала удочку (не новый моб).
-У кого трезубец — удочки нет. У кого удочка — она только украшение в руке.
-Код заброса (сейчас выключен): drowned/DrownedFishing.java.
+Type: regular drowned that the game has already given a fishing rod (not a new mob).
+Whoever has a trident has no rod. Whoever has a rod — it is only decoration in the hand.
+Casting code (currently off): drowned/DrownedFishing.java.
 
 
-ЧТО ПРОИСХОДИТ
+WHAT HAPPENS
 --------------
-1. Удочку выдаёт сама игра. Мод её не забирает и новую не создаёт.
-   У кого трезубец — удочки нет.
-2. Удочка просто лежит в руке. Крючок не закидывается, игрока не тащит.
-3. Бьёт руками, как обычный утопленник.
+1. The game itself gives the rod. The mod does not take it away and does not create a new one.
+   Whoever has a trident has no rod.
+2. The rod just sits in the hand. The hook is not cast, the player is not pulled.
+3. It hits with its hands, like a regular drowned.
 
 
 SETTINGS (DrownedFishing.java)
 -------------------------------
-ENABLED — false, удочка только предмет в руке. true снова включает заброс и подтягивание.
-Числа ниже работают только если заброс включён.
-MELEE_BLOCKS — 3, ближе этого бьёт, а не тащит.
-CAST_BLOCKS — 16, дальше этого только идёт пешком.
-PULL_PER_TICK — 0.18, сила рывка за тик.
-MISS_COOLDOWN_SECONDS — 1, пауза после промаха.
-FLIGHT_TICKS — 30, сколько тиков летит крючок, если никого не задел. 30 = полторы секунды.
-CAST_SPEED — 1.6, скорость крючка. Меньше — чаще бьётся о землю.
+ENABLED — false, the rod is only an item in the hand. true turns casting and pulling back on.
+The numbers below work only if casting is on.
+MELEE_BLOCKS — 3, closer than this it hits instead of pulling.
+CAST_BLOCKS — 16, farther than this it only walks.
+PULL_PER_TICK — 0.18, strength of the pull per tick.
+MISS_COOLDOWN_SECONDS — 1, pause after a miss.
+FLIGHT_TICKS — 30, how many ticks the hook flies if it hits no one. 30 = a second and a half.
+CAST_SPEED — 1.6, speed of the hook. Lower — it hits the ground more often.
 
 ==============================================================================================
 
-ОБЩИЕ ВАРИАНТЫ, КОТОРЫЕ БЫВАЮТ И У ЗОМБИ
-========================================
+COMMON VARIANTS THAT ZOMBIES CAN ALSO HAVE
+==========================================
 
-Полное описание этих механик — отдельными файлами в mobs/common/.
-Здесь только коротко, чтобы список вариантов зомби был в одном месте.
+The full description of these mechanics is in separate files in mobs/common/.
+Here only a short summary, so that the list of zombie variants is in one place.
 
-Бастион. 1000 здоровья, удар не откидывает, зелье скорости не действует, опыт 200.
-Броня, чары и ломание блоков как у обычного зомби. С 60-го дня, шанс не растёт.
-Файл: бастион.txt
+Bastion. 1000 health, hits do not knock back, speed potion does not work, experience 200.
+Armor, enchantments and block breaking as for a regular zombie. From day 60, the chance does not grow.
+File: bastion.txt
 
-Spiky. Один кусок брони колет на 7–8 сердец сквозь броню и Защиту. Остальная броня обычная.
-С 40-го дня, шанс 0,2%. Файл: spiky.txt
+Spiky. One armor piece stings for 7–8 hearts through armor and Protection. The rest of the armor is normal.
+From day 40, chance 0.2%. File: spiky.txt
 
-Зеркало. Удар в упор возвращается игроку. Шанс 0,3% с первого дня. Файл: mirror.txt
+Mirror. A point-blank hit is returned to the player. Chance 0.3% from day 1. File: mirror.txt
 
-Рейдовый якорь. Зомби с золотой мотыгой, 100 здоровья и 12–15 прислуг.
-Пока якорь жив, прислуги слышат игрока. С 80-го дня. Файл: raid-anchor.txt
+Raid anchor. A zombie with a golden hoe, 100 health and 12–15 minions.
+While the anchor is alive, the minions hear the player. From day 80. File: raid-anchor.txt
 
-Осада — редкая ночь на всю базу, не отдельный зомби. Файл: siege.txt
+Siege — a rare night against the whole base, not a separate zombie. File: siege.txt
 
-Случайные здоровье, оружие, броня, щит, тотем, зелья и опыт за убийство — тоже файлы в mobs/common/.
-От чего растут шансы: threat-scale.txt
+Random health, weapon, armor, shield, totem, potions and kill experience are also files in mobs/common/.
+What makes the chances grow: threat-scale.txt

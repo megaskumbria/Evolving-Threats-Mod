@@ -1,158 +1,158 @@
-ОСАДА (Siege)
+Siege
 =============
 
-Тип: редкая ночь-событие в верхнем мире. Не отдельный моб и не «Рейдовый якорь».
-Код: siege/SiegeNight.java (расписание, запреты, тексты, звуки),
-     siege/SiegeComposition.java (кто придёт: фракции, виды, случайные доли),
-     siege/SiegeWaves.java (волны и поход к игроку),
-     siege/SiegeData.java (что помнит мир), siege/SiegeEvents.java (подключение).
-Связки с игрой: mixin/SiegeMobMixin.java (цели и метка осады у мобов),
+Type: a rare night-event in the upper world. Not a separate mob and not a "Raid Anchor".
+Code: siege/SiegeNight.java (schedule, bans, texts, sounds),
+     siege/SiegeComposition.java (who will come: factions, species, random fractions),
+     siege/SiegeWaves.java (waves and a hike to the player),
+     siege/SiegeData.java (what the world remembers), siege/SiegeEvents.java (connection).
+Links to the game: mixin/SiegeMobMixin.java (goals and mark of the siege in mobs),
      mixin/EntityPortalSiegeMixin.java, spawn/NaturalMonsterSwap.java.
-     Настройки — в блоках «SETTINGS».
+     Settings — in the "SETTINGS" blocks.
 
 
-СУТЬ
+ESSENCE
 ----
-Раз в 10–15 игровых дней (случайно) наступает ночь осады: до рассвета в верхнем мире
-бродят только мобы одной фракции, идут волнами издалека и охотятся на игрока, где бы он ни был.
+Once every 10–15 game days (by chance) comes the night of the siege: until dawn in the upper world
+only mobs of the same faction wander, go in waves from afar and hunt the player wherever he is.
 
-Две фракции, в одной осаде бывает только одна, они не смешиваются:
-  • НЕЖИТЬ И ТВАРИ: зомби (все виды), скелеты (все виды), иссушители, криперы,
-    пауки (и пещерные), ведьмы, фантомы.
-    Утопленников и слизней в осаде нет.
-  • ИЛЛАГЕРЫ: разбойники, поборники, вызыватели, разорители.
-Иллагерская осада возможна с 40-го дня шкалы (ThreatTable.SIEGE_ILLAGER_DAY), шанс 25%
-(SiegeComposition.ILLAGER_SIEGE_CHANCE). До 40-го дня все осады из нежити и тварей.
+Two fractions, in one siege there is only one, they do not mix:
+  • UNDEAD and CREATURES: zombies (all species), skeletons (all species), desiccants, creepers,
+    spiders (and cavemen), witches, phantoms.
+    There are no drowned people or slugs under siege.
+  • ILLAGERS: robbers, champions, callers, ruiners.
+Illager siege is possible from the 40th day of the scale (ThreatTable.SIEGE_ILLAGER_DAY), 25% chance
+(SiegeComposition.ILLAGER_SIEGE_CHANCE) Until the 40th day, all sieges are made of undead and critters.
 
-Иссушители (скелеты-иссушители) попадают в случайный состав, только если кто-то в этом мире
-уже побывал в Аду. Хватает одного визита любого игрока: мир это запоминает и не забывает.
-Пока в Аду никто не был, вместо иссушителей выбираются другие виды нежити и тварей.
-Проверка в момент предупреждения. Зайти в Ад уже после него — эта осада иссушителей не получит,
-следующая сможет.
-Старый поход тоже считается: у игры есть достижение за вход в Ад.
-Выключить проверку: SiegeComposition.WITHER_SKELETONS_REQUIRE_NETHER = false.
-Команда siege start wither_skeleton проверку не делает, чтобы вид можно было посмотреть заранее.
+Dryers (skeletons-dryers) fall into a random composition only if someone in this world
+i've already been to Hell. One visit of any player is enough: the world remembers it and does not forget it.
+While no one has been to Hell, other types of undead and creatures are chosen instead of dryers.
+Check at the time of warning. Go to Hell after it — this siege will not receive desiccants,
+the next one will.
+The old campaign also counts: the game has an achievement for entering Hell.
+Disable check: SiegeComposition.WITHER_SKELETONS_REQUIRE_NETHER = false.
+The siege start wither_skeleton command does not check so that the view can be viewed in advance.
 
-Состав выбирается один раз, когда начинается предупреждение, и держится до рассвета:
-  1. Сколько видов: один (15%), два (50%) или три (35%).
-  2. Какие виды из фракции: случайно, у каждого вида свой вес (чаще зомби и скелеты, реже фантомы).
-  3. Доли выбранных видов случайные, в сумме 100%. Например: 90% криперов и 10% зомби;
-     45% пауков, 35% криперов, 20% скелетов; 100% зомби.
-Состав виден в /evolvingthreats siege status.
+The composition is selected once when the warning begins, and lasts until dawn:
+  1. How many species: one (15%), two (50%) or three (35%).
+  2. Which species are from the faction: by chance, each species has its own weight (more often zombies and skeletons, less often phantoms).
+  3. The shares of the selected species are random, in the amount of 100%. For example: 90% of crippers and 10% of zombies;
+     45% spiders, 35% cripplers, 20% skeletons; 100% zombies.
+The composition is visible in /evolvingthreats siege status.
 
 
-ЭТАПЫ
+STAGES
 -----
-1. Утром за день до осады (необязательно) — туманный намёк в чат, без точной даты.
-2. За 2 минуты до ночи — страшное сообщение в чат, колокол и стоны вдали.
-   С этого момента нельзя спать и входить в порталы в Ад и Энд.
-3. Ночь (с 13000 до 23000 тиков) — идут волны.
-4. Рассвет — сообщение в чат, всё возвращается.
+1. On the morning of the day before the siege (optional) — a vague hint in the chat, with no exact date.
+2. 2 minutes before the night — a scary chat message, a bell and moans in the distance.
+   From now on, you can not sleep and enter the portals to Hell and End.
+3. Night (from 13,000 to 23,000 ticks) — waves are coming.
+4. Dawn — a chat message, everything comes back.
 
-Без заголовков, строки над панелью, полосы босса и звуков при появлении волн.
+No headers, rows above the panel, boss bars and sounds when waves appear.
 
 
-ЗАПРЕТЫ
+PROHIBITIONS
 -------
-Сон
-  Запрещён с предупреждения (за 2 минуты до ночи) и до рассвета: иначе можно выспаться
-  вечером и пропустить осаду. Кто уже лежал в кровати, того поднимает из неё.
-  При попытке лечь — страшное сообщение в чат.
-Порталы
-  Игрок в верхнем мире не может войти в портал в Ад или Энд. Игрок, который уже в Аду или Энде,
-  может вернуться. Сообщение не чаще раза в 10 секунд.
+Sleep
+  Prohibited from warning (2 minutes before the night) until dawn: otherwise you can sleep
+  in the evening and skip the siege. Anyone who has already been lying in bed is lifted out of it.
+  Trying to lie down is a scary chat message.
+Portals
+  The player in the upper world cannot enter the portal in Hell or End. A player who is already in Hell or End,
+  may return. Message no more than once every 10 seconds.
 
 
-КАКИЕ МОБЫ
+WHAT MOBS
 ----------
-• Ванильный ночной спавн: любой монстр заменяется на моба из состава осады, по тем же долям.
-  Так обычный спавн не разбавляет осаду чужими. Кадавры, странники, болотные и пустынные скелеты
-  берутся по биому. Фантомы из ванильного ночного спавна (если игрок давно не спал) не затронуты,
-  в осаде они идут как моб состава только если фантомы в нём есть.
-• Мобы из состава, что появились сами с предупреждения и до рассвета, тоже идут к игроку.
-• Идут отдельной целью: игра сама забывает игрока, если его не видно издалека, и затирает путь блужданием.
-  Фантомы ведутся только целью (сами летят к ней), остальные ещё и отрезками пути.
-• Всё остальное из mobs.txt для этих мобов работает (броня, оружие, динамит, спавнер на голове,
-  заряженные и быстрые криперы, матка пауков…). Помощники, которых моб призывает сам, не идут
-  к игроку специально (например, пещерные пауки роя).
-• Мини-боссов нет: надсмотрщик, василиск, капитан скелетов, Бастион, ритуальные стаи.
-  Нет также патрулей разбойников, парящих инструментов, повреждённых големов.
-  «Рейдовый якорь» в ночь осады сам не появляется (только по команде).
+• Vanilla night spawn: any monster is replaced with a mob from the siege, in the same proportions.
+  So an ordinary spawn does not dilute the siege by strangers. Cadavra, Wanderers, Swamp & Desert Skeletons
+  are picked by biome. Phantoms from vanilla night spawn (if the player has not slept) are untouched;
+  in the siege, they go as a mob of the composition only if there are phantoms in it.
+• Mobs from the squad, which appeared themselves from the warning until dawn, also go to the player.
+• Go with a separate goal: the game itself forgets the player if he is not visible from afar, and rubs the way by wandering.
+  Phantoms are guided only by the target (they fly to it themselves), the rest are also segments of the path.
+• Everything else from mobs.txt works for these mobs (armor, weapons, dynamite, head spavner,
+  charged and fast creepers, spider uterus…). Helpers, whom the mob calls itself, do not go
+  to the player specifically (for example, swarm cave spiders).
+• No minibosses: supervisor, basilisk, skeleton captain, bastion, ritual packs.
+  There are also no robber patrols, floating tools, damaged golems.
+  The "road anchor" does not appear on the night of the siege (only on command).
 
 
-ВОЛНЫ
+Waves
 -----
-• Группа появляется на поверхности в 50–70 блоках от игрока (волна без звука).
-  Фантомы появляются в воздухе на высоте 10–18 блоков.
-• Размер 8–15 в «цене» мобов: обычный моб стоит 1, вызыватель 2, разоритель 3
-  (SiegeComposition.Kind). В начале ночи волны слабее (×0.6), с полуночи идут с двух сторон,
-  перед рассветом одна большая последняя волна (×1.5).
-• Пауза между волнами 60–90 секунд. До первой волны 30 секунд после начала ночи.
-• Не больше 80 живых мобов осады вокруг одного игрока (MAX_ALIVE_PER_PLAYER).
-• Мобы получают игрока целью и большой радиус обзора; если путь слишком длинный, идут отрезками
-  по 24 блока к игроку. Пока идут издалека, смотрят на игрока и держат боевую стойку
-  (у зомби подняты руки, у иллагеров оружие в руках), а не прогулку. Бьют и стреляют только вблизи.
-• Зомби и скелеты в волне берутся из списка монстров биома (кадавры в пустыне, странники на снегу,
-  болотные скелеты в болоте). Если в биоме таких нет — обычные.
-• Метка моба — тег evolvingthreats_siege. Вне осады моб с тегом ведёт себя как обычный.
+• The group appears on the surface in 50–70 blocks from the player (wave without sound).
+  Phantoms appear in the air at a height of 10–18 blocks.
+• Size 8–15 in the "price" of mobs: a regular mob costs 1, a caller 2, a ruiner 3
+  (SiegeComposition.Kind) At the beginning of the night, the waves are weaker (×0.6), at midnight they come from both sides,
+  before dawn one large final wave (×1.5).
+• Pause between waves 60–90 seconds. Before the first wave, 30 seconds after the start of the night.
+• No more than 80 live mobs of siege around one player (MAX_ALIVE_PER_PLAYER).
+• Mobs receive the player with a target and a large viewing radius; if the path is too long, they go in segments
+  24 blocks for each player. While walking from afar, looking at the player and holding the battle rack
+  (the zombies have their hands up, the illagers have weapons in their hands), not a walk. They hit and shoot only in the vicinity.
+• Zombies and skeletons in the wave are taken from the list of biome monsters (censers in the desert, wanderers in the snow,
+  swamp skeletons in the swamp). If there are no such in the biome — ordinary.
+• Mob tag — evolvingthreats_siege tag. Outside the siege, the tagged mob behaves as normal.
 
 
-ТЕСТ В ИГРЕ
+IN-GAME TEST
 -----------
-Команды (читы / OP):
-  /evolvingthreats siege status    — когда следующая, на каком этапе и какой состав мобов
-  /evolvingthreats siege warn      — предупреждение сейчас; ночь начнётся через 2 минуты
-  /evolvingthreats siege start     — ночь осады сразу (днём мобы на солнце горят: это нормально)
-  /evolvingthreats siege warn|start undead   — то же, но обязательно нежить и твари
-  /evolvingthreats siege warn|start illagers — то же, но обязательно иллагеры (день 40 не проверяется)
-  /evolvingthreats siege start <вид>       — осада на 100% из одного вида, чтобы проверить его отдельно.
-    Виды: zombie, skeleton, wither_skeleton, creeper, spider, witch, phantom,
+Commands (cheats / OP):
+  /evolvingthreats siege status    — when is the next, at what stage and what is the composition of mobs
+  /evolvingthreats siege warn      — Warning now; night starts in 2 minutes
+  /evolvingthreats siege start     — the night of the siege immediately (during the day, mobs in the sun burn: this is normal)
+  /evolvingthreats siege warn|start undead   — the same, but always undead and creatures
+  /evolvingthreats siege warn|start illagers — the same, but necessarily illagers (day 40 is not checked)
+  /evolvingthreats siege start is a 100% siege from one species to test it separately.
+    Species: zombie, skeleton, wither_skeleton, creeper, spider, witch, phantom,
           pillager, vindicator, evoker, ravager.
-    wither_skeleton не проверяет, был ли кто-то в Аду.
-    warn <вид> — то же, но сначала предупреждение (ночь через 2 минуты).
-    У ведьм, вызывателей и разорителей есть лимит (6 / 3 / 3). Когда он заполнен,
-    остальные мобы волны заменяются на зомби или поборника.
-  /evolvingthreats siege stop      — прекратить осаду, следующая назначается заново
-  /evolvingthreats siege in <дни>  — назначить осаду через столько дней (0 = в ночь сегодня)
+    wither_skeleton doesn't check if someone has been to Hell.
+    warn <kind> — same, but warning first (night in 2 minutes).
+    Witches, Summoners and Ruiners have a limit (6 / 3 / 3). When it's full,
+    the remaining wave mobs are replaced with a zombie or a champion.
+  /evolvingthreats siege stop      — stop the siege, the next one is reassigned
+  /evolvingthreats siege in — assign a siege after so many days (0 = on the night of today)
 
-Быстрый способ полного прогона: /evolvingthreats siege in 0, затем /time set 10000
-(до 10600 — предупреждение, до 13000 — ждёшь ночь). Время можно двигать и дальше командой /time.
+Fast way to complete a run: /evolvingthreats siege in 0, then /time set 10000
+(up to 10600 — warning, up to 13000 — waiting for the night). Time can be moved further with the/time command.
 
 
-ЧТО МЕНЯТЬ
+WHAT TO CHANGE
 ----------
 SiegeNight.java:
-  DAYS_MIN / DAYS_MAX ............ как редко (10–15 дней)
-  NIGHT_START_TICK / DAWN_TICK ... когда ночь начинается и заканчивается
-  WARNING_BEFORE_NIGHT_TICKS ..... за сколько предупреждать (2400 = 2 минуты)
-  OMEN_ENABLED, OMEN_DAYS_BEFORE . утренний намёк
-  BELL_*, MOAN_*, SOUND_* ........ колокол и стоны
-  *_MESSAGES и *_MESSAGES_EN .... тексты в чате: русский и английский.
-                                 Язык берётся из настроек игры игрока (ru_… — русский, остальное — английский).
+  Days_MIN / days_MAX ............ how rare (10–15 days)
+  NIGHT_START_TICK / DAWN_TICK ... when the night starts and ends
+  WARNING_BEFORE_NIGHT_TICKS ..... how much warning (2400 = 2 minutes)
+  OMEN_ENABLED, OMEN_DAYS_BEFORE . vague morning hint
+  BELL_*, moan_*, SOUND_* ........ bell and moans
+  *_MESSAGES and *_MESSAGES_EN .... texts in the chat: Russian and English.
+                                 The language is taken from the player's game settings (ru_… — Russian, the rest is English).
 SiegeComposition.java:
-  ILLAGER_SIEGE_CHANCE ........... шанс иллагерской осады (0.25 = 25%)
-  WITHER_SKELETONS_REQUIRE_NETHER  true — иссушители в случайной осаде только после Ада.
-                                   false — иссушители могут выпасть и без Ада.
-  ONE_KIND_CHANCE, TWO_KINDS_CHANCE  шанс одного и двух видов (остальное — три)
-  SHARE_FLOOR .................... насколько ровные доли (0 = совсем случайные)
-  Kind (список видов вверху) ..... вес (как часто вид выпадает), цена в волне и max у каждого вида.
-                                   max = сколько мобов вида может быть живыми вокруг одного игрока.
-                                   Сейчас: вызыватели 3, разорители 3, ведьмы 6, остальные без ограничения (0).
-                                   Когда лимит исчерпан, вместо них берётся другой вид из состава
-                                   (если других нет — поборник или зомби).
-  CAVE_SPIDER_FRACTION, PHANTOM_HEIGHT_* .. доля пещерных пауков, высота появления фантомов
+  Illager_SIEGE_CHANCE ........... chance of Illager siege (0.25 = 25%)
+  WITHER_SKELETONS_REQUIRE_netter  true — dryers in a random siege only after Hell.
+                                   false — dryers can fall out without Hell.
+  ONE_KIND_CHANCE, TWO_KINDS_CHANCE  chance of one and two species (otherwise three)
+  SHARE_FLOOR .................... how even the shares are (0 = completely random)
+  Kind (list of species at the top) ..... weight (how often the species drops out), price in the wave and max for each species.
+                                   max = how many mobs of the species can be alive around one player.
+                                   Now: summoners 3, ruiners 3, witches 6, others unlimited (0).
+                                   When the limit is exhausted, another species from the lineup is taken instead
+                                   (if there are no others — a champion or a zombie).
+  CAVE_SPIDER_FRACTION, PHANTOM_HEIGHT_* .. the proportion of cave spiders, the height of the appearance of phantoms
 ThreatTable.java:
-  SIEGE_ILLAGER_DAY .............. с какого дня возможна иллагерская осада (40)
+  SIEGE_illager_DAY .............. from which day the Illager siege is possible (40)
 SiegeWaves.java:
   WAVE_SIZE_*, WAVE_PAUSE_*, MAX_ALIVE_PER_PLAYER, SPAWN_DISTANCE_*, EARLY_*, TWO_SIDES_FROM,
   FINAL_WAVE_*, MARCH_*, FOLLOW_RANGE
-  INCLUDE_CREATIVE_PLAYERS ....... true — игрок в творческом режиме тоже цель осады (удобно для проверки);
-                                   false — для осады его нет: волн рядом с ним не будет, мобы стоят
+  Include_CREATIVE_PLAYERS ....... true — the player in the creative mode is also the target of the siege (convenient for verification);
+                                   false — it is not there for the siege: there will be no waves next to it, the mobs are standing
 
 
-ИЗВЕСТНЫЕ ОГРАНИЧЕНИЯ
+Known Limitations
 ---------------------
-• Мобы ведутся только в загруженных чанках (примерно 8–10 чанков вокруг игрока).
-• Мобы осады не получают постоянную метку «не исчезать»: далеко от игрока они могут исчезнуть сами.
-• Игрок, всю ночь просидевший в Аду, осаду не получит: порталы закрываются только на вход.
-• Пока что нет наград за выживание и достижений.
+• Mobs are conducted only in loaded chunks (approximately 8–10 chunks around the player).
+• Siege mobs do not receive a constant “do not disappear” label: far from the player, they can disappear themselves.
+• A player who has spent all night in Hell will not receive a siege: portals are closed only at the entrance.
+• There are no rewards for survival and achievements yet.

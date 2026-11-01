@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Огненная стрела раз в кулдаун — только со jack o'lantern на голове. */
+/*Fire arrow once in a couldown - only with a jack o'lantern on his head. */
 @Mixin(AbstractSkeleton.class)
 public class AbstractSkeletonJackLanternGoalMixin {
 

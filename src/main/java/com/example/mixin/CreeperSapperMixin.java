@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Крипер: флаг «подрывник», цель ИИ и сохранение.
- * Шанс при появлении — в {@link MobDynamiteCreeperSpawnMixin}, вместе с метателем.
- * Обычный подрыв вплотную выключен в {@link SwellGoalMixin}, взрывает только своя цель.
+ Creeper: the flag "subversive", the purpose of AI and conservation.
+ * Chance when appearing - in {@link MobDynamiteCreeperSpawnMixin}, together with the thrower.
+ * Regular detonation is turned off in {@link SwellGoalMixin}, only detonates its target.
  */
 @Mixin(Creeper.class)
 public class CreeperSapperMixin implements SapperCreeperEntity {

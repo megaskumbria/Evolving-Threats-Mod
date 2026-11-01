@@ -12,39 +12,39 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 /**
- * Скелет-иссушитель в аду иногда получает незеритовый меч.
- * Каменный меч остаётся у остальных. На оба меча вешаются чары, и они растут со шкалой угрозы.
- * Незеритовый меч не выпадает. Опыт за любого иссушителя свой, общий множитель его не удваивает.
+ * Wither skeletons in the Nether sometimes get a netherite sword.
+ * Others keep stone swords. Both can get mod enchantments that grow with the threat scale.
+ * Netherite sword never drops. XP for any wither skeleton is fixed; the global multiplier does not double it again.
  */
 public final class WitherSkeletonSword {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — в аду снова только каменный меч, без чар мода. Опыт ниже остаётся. */
+	/** false — Nether spawns only stone swords again, no mod enchants. Lower XP below still applies. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0) незеритового меча на 100-й день. 0.15 = 15%.
-	 * GROWING: в начале это 10% от числа (ThreatTable.DANGEROUS_START_RATIO), около 1,5%.
-	 * Луна чуть двигает шанс. 0 = незерита нет, каменный меч и чары остаются.
-	 * Только ад. Осада в обычном мире и носитель спавнера этот бросок не делают.
+	 * Chance (0.0–1.0) for netherite sword on day 100. 0.15 = 15%.
+	 * GROWING: at start this is 10% of the value (ThreatTable.DANGEROUS_START_RATIO), ~1.5%.
+	 * Moon slightly shifts the chance. 0 = no netherite; stone sword and enchants remain.
+	 * Nether only. Overworld siege and spawner-head carriers skip this roll.
 	 */
 	public static final float NETHERITE_CHANCE = 0.15f;
 
 	/**
-	 * Шанс (0.0–1.0), что меч получит чары, на 100-й день. 0.70 = 70%, как у меча обычного скелета.
-	 * В начале около 1% (ThreatTable.WEAPON_ENCHANT_CHANCE_START). Число чар и их сила тоже растут.
-	 * Список тот же: острота, отбрасывание, заговор огня, добыча и остальные с меча.
-	 * 0 = чар мода нет. Каменный меч при этом всё ещё может выпасть, как в обычной игре.
+	 * Chance (0.0–1.0) for sword enchants on day 100. 0.70 = 70%, like normal skeleton swords.
+	 * At start ~1% (ThreatTable.WEAPON_ENCHANT_CHANCE_START). Enchant count and level also grow.
+	 * Same pool as skeleton swords: Sharpness, Knockback, Fire Aspect, Looting, etc.
+	 * 0 = no mod enchants. Stone sword can still drop as in vanilla.
 	 */
 	public static final float ENCHANT_CHANCE = 0.70f;
 
 	/**
-	 * Опыт, если иссушителя убил игрок. 25.
-	 * Раньше игра давала 5, мод удваивал до 10 и добавлял немного за меч.
-	 * Это число вместо старого. Общий множитель его второй раз не удваивает.
-	 * -1 = снова как у обычного моба, с множителем. 0 = опыта нет.
-	 * Ад, осада и носитель спавнера получают одно и то же.
+	 * XP when a player kills a wither skeleton. 25.
+	 * Vanilla was 5; the mod used to double to 10 and add a bit for the sword.
+	 * This replaces that. The global multiplier does not apply twice.
+	 * -1 = vanilla XP with multiplier. 0 = no XP.
+	 * Nether, siege, and spawner carriers all use the same value.
 	 */
 	public static final int XP_REWARD = 25;
 
@@ -53,7 +53,7 @@ public final class WitherSkeletonSword {
 	private WitherSkeletonSword() {
 	}
 
-	/** Конец появления. Меч и чары — только в аду и не у носителя спавнера. */
+	/** End of spawn. Sword and enchants — Nether only, not spawner-head carriers. */
 	public static void tryApply(WitherSkeleton skeleton) {
 		if (!ENABLED || skeleton.level().dimension() != Level.NETHER) {
 			return;
@@ -63,13 +63,13 @@ public final class WitherSkeletonSword {
 		}
 		if (skeleton.getRandom().nextFloat() < ThreatScale.dangerousChance(skeleton.level(), NETHERITE_CHANCE)) {
 			skeleton.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
-			// 0 = не выпадает никогда, даже с Добычей. Каменный меч это число не трогает.
+			// 0 = never drops, even with Looting. Stone sword drop chance is unchanged.
 			skeleton.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
 		}
 		MobEnchantments.rollMainHandGrowing(skeleton, ENCHANT_CHANCE);
 	}
 
-	/** Сколько опыта дать. -1 = это не иссушитель или опыт снова обычный. */
+	/** XP to award. -1 = not a wither skeleton or vanilla XP again. */
 	public static int experienceReward(Mob mob) {
 		if (!(mob instanceof WitherSkeleton) || XP_REWARD < 0) {
 			return -1;

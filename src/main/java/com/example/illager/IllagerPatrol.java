@@ -26,102 +26,102 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 /**
- * Отряд у игрока: разбойники, поборники и один разоритель.
- * Появляется днём в стороне от игрока и идёт в точку, где он стоял, в том числе если дом в деревне.
- * Обычный патруль игры (только разбойники и только вдали от деревни) при этом не отключается.
+ The squad of the player: robbers, champions and one destroyer.
+ Appears during the day away from the player and goes to the point where he stood, including if the house is in the village.
+ The usual patrol of the game (only robbers and only away from the village) does not turn off.
  */
 public final class IllagerPatrol {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — такие отряды не появляются. Уже вышедшие доходят до игрока как раньше. */
+	/** False - such groups do not appear. Those who are already out come to the player as before. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Самая короткая пауза между отрядами, в игровых днях.
-	 * 8 = восемь дней. Один день длится 20 минут. Меньше — отряды чаще.
+	 The shortest break between squads, in game days.
+	 * 8 = eight days. One day lasts 20 minutes. Less, more squads.
 	 */
 	public static final int DAYS_MIN = 8;
 
 	/**
-	 * Самая длинная пауза между отрядами, в игровых днях.
-	 * 14 = две недели. Каждый раз берётся случайное число от {@link #DAYS_MIN} до этого.
-	 * Если поставить меньше минимума, игра возьмёт минимум.
+	 The longest pause between squads, on game days.
+	 * 14 = two weeks. Each time a random number is taken from {@link #DAYS MIN} before that.
+	 If you put less than the minimum, the game will take the minimum.
 	 */
 	public static final int DAYS_MAX = 14;
 
 	/**
-	 * Проверка без ожидания дней. 0 = обычная случайная пауза {@link #DAYS_MIN}–{@link #DAYS_MAX}.
-	 * 200 = следующий отряд через 10 секунд. После проверки верни 0.
+	 * Check without waiting days. 0 = normal random pause {@link #DAYS MIN}-{@link #DAYS MAX}.
+	 * 200 = next squad in 10 seconds. After checking, return 0.
 	 */
 	public static final int TEST_ATTEMPT_TICKS = 0;
 
 	/**
-	 * Как часто снова пробовать, если время вышло, но сейчас ночь, нет места или игрок в креативе.
-	 * В тиках. 1200 = раз в минуту, пока не получится. Это не новая пауза на дни.
+	 How often to try again if time is up, but it's night, there's no room or player in the creative.
+	 * Ticks. 1200 = once per minute until it works. It's not a new pause for days.
 	 */
 	public static final int RETRY_TICKS = 1200;
 
 	/**
-	 * true — только днём, как старые патрули. false — и ночью тоже.
+	 True - only during the day, like old patrols. False - and at night too.
 	 */
 	public static final boolean DAYTIME_ONLY = true;
 
 	/**
-	 * Как далеко от игрока искать место, в блоках.
-	 * 64 и 96 = четыре–шесть чанков: отряд видно издалека, он не появляется во дворе.
-	 * Если поставить дальше дистанции прогрузки, они появятся и будут стоять, пока чанк не оживёт.
+	 How far from the player to look for a place in blocks.
+	 64 and 96 = four or six chanks: the squad can be seen from afar, it does not appear in the courtyard.
+	 If you put the distance of loading, they will appear and will stand until the Chunk is revived.
 	 */
 	public static final int SPAWN_DISTANCE_MIN = 64;
 	public static final int SPAWN_DISTANCE_MAX = 96;
 
 	/**
-	 * Сколько поборников в отряде. 2 и 3 = два или три.
+	 How many men are in the squad. 2 and 3 = two or three.
 	 */
 	public static final int VINDICATOR_MIN = 2;
 	public static final int VINDICATOR_MAX = 3;
 
 	/**
-	 * Сколько разбойников в отряде. 2 и 3 = два или три.
-	 * Один из них — капитан со знаменем: с него по-прежнему падает зловещая бутылочка.
+	 How many robbers are in the squad. 2 and 3 = two or three.
+	 One of them is a captain with a banner: an ominous bottle still falls from him.
 	 */
 	public static final int PILLAGER_MIN = 2;
 	public static final int PILLAGER_MAX = 3;
 
 	/**
-	 * Сколько разорителей. 1 = в каждом отряде один. 0 = без разорителя.
+	 How many ruiners. 1 = one in each order. 0 = no ruiner.
 	 */
 	public static final int RAVAGER_COUNT = 1;
 
 	/**
-	 * На сколько блоков нужно подойти к запомненной точке, чтобы остановиться.
-	 * 12 = двор у дома, а не один блок под ногами. Меньше — толпятся в той самой клетке.
+	 How many blocks do you have to go to the remembered point to stop?
+	 12 = yard by the house, not one block under the feet. Less crowded in the same cage.
 	 */
 	public static final int ARRIVE_BLOCKS = 12;
 
 	/**
-	 * Скорость шага к точке. 0.6 = обычный шаг. Больше — почти бегут.
+	 * Step speed to point. 0.6 = normal step. More, almost running.
 	 */
 	public static final double MARCH_SPEED = 0.6;
 
 	/**
-	 * Если в этом радиусе вокруг игрока уже есть свой отряд, новый не выходит.
-	 * 140 = чуть дальше, чем {@link #SPAWN_DISTANCE_MAX}, чтобы идущая группа ещё считалась «рядом».
+	 If there is already a squad in this radius around the player, a new one does not come out.
+	 * 140 = a little further away than {@link #SPAWN DISTANCE MAX} so that the band still counts as "next".
 	 */
 	public static final double NEARBY_BLOCKS = 140.0;
 
-	/** Сколько точек перебрать, ища поляну под отряд. */
+	/*How many points to go looking for a clearing under the squad. */
 	public static final int SPOT_TRIES = 24;
 
-	/** Сколько точек перебрать для одного моба рядом с центром отряда. */
+	/*How many points to pick for one mob near the center of the squad. */
 	public static final int MEMBER_TRIES = 12;
 
-	/** На сколько блоков члены отряда могут встать в сторону от разорителя. */
+	/*How many blocks can the members of the squad stand aside from the destroyer? */
 	public static final int CLUSTER_RADIUS = 4;
 
 	// ========================================================================
 
-	/** Один игровой день. 24000 тиков = 20 минут. */
+	/*One game day. 24,000 tics = 20 minutes. */
 	private static final int TICKS_PER_DAY = 24000;
 
 	private static final WeakHashMap<ServerLevel, Integer> TICKS_LEFT = new WeakHashMap<>();
@@ -129,7 +129,7 @@ public final class IllagerPatrol {
 	private IllagerPatrol() {
 	}
 
-	/** Конец тика мира. В аду и в крае отряд не выходит. */
+	/*End-of-tick of the world. In hell and in the region, the squad does not go out. */
 	public static void tick(ServerLevel level) {
 		if (!ENABLED || level.dimension() != Level.OVERWORLD) {
 			return;
@@ -150,7 +150,7 @@ public final class IllagerPatrol {
 		}
 	}
 
-	/** Случайная пауза: от DAYS_MIN до DAYS_MAX игровых дней. В тесте — фиксированные тики. */
+	/*Accidental pause: from Days MIN to Days MAX game days. The test has fixed ticks. */
 	private static int rollDelay(RandomSource random) {
 		if (TEST_ATTEMPT_TICKS > 0) {
 			return TEST_ATTEMPT_TICKS;
@@ -161,12 +161,12 @@ public final class IllagerPatrol {
 	}
 
 	/**
-	 * Вызвать отряд прямо сейчас, для команды теста.
-	 * День, креатив и пауза в несколько дней здесь не мешают.
-	 * Отряд всё равно появляется в {@link #SPAWN_DISTANCE_MIN}–{@link #SPAWN_DISTANCE_MAX}
-	 * блоках и идёт в точку, где игрок стоит в этот момент.
+	 Call the squad right now for the test team.
+	 A day, creativity and a pause of a few days do not interfere here.
+	 * The squad still appears at {@link #SPAWN DISTANCE MIN}-{@link #SPAWN DISTANCE MAX}
+	 Blocks and goes to the point where the player is at that moment.
 	 *
-	 * @return false, если рядом не нашлось свободной земли
+	 * @return false if there is no free land nearby
 	 */
 	public static boolean summonFor(ServerLevel level, ServerPlayer player) {
 		BlockPos center = findClusterCenter(level, player);
@@ -176,12 +176,12 @@ public final class IllagerPatrol {
 		return spawnSquad(level, player, center);
 	}
 
-	/** true — отряд вышел, и следующая пауза снова случайные дни. */
+	/*True - the squad is out, and the next pause is again random days. */
 	private static boolean trySpawn(ServerLevel level) {
 		if (level.getDifficulty() == Difficulty.PEACEFUL) {
 			return false;
 		}
-		// В осаду отряды не выходят. Попробуем снова через RETRY_TICKS, после рассвета получится.
+		// Squads don't go under siege. We'll try again through Retry TICKS, after dawn.
 		if (SiegeNight.isWindowOpen(level)) {
 			return false;
 		}
@@ -321,11 +321,11 @@ public final class IllagerPatrol {
 		float yaw = (float) (Mth.atan2(player.getZ() - z, player.getX() - x) * (180.0 / Math.PI)) - 90.0f;
 		raider.snapTo(x, pos.getY(), z, yaw, 0.0f);
 		if (captain) {
-			// До finalizeSpawn: игра вешает знамя капитана только если флаг уже стоит.
+			// Until finalizeSpawn: The game hangs the captain's flag only if the flag is already standing.
 			raider.setPatrolLeader(true);
 		}
 		if (raider instanceof IllagerPatrolMember patrol) {
-			// Точка, где игрок стоит прямо сейчас. Дальше она не следует за ним.
+			// The point where the player is standing right now. She doesn't follow him any further.
 			patrol.evolvingthreats$setPatrolDestination(player.blockPosition());
 		}
 		raider.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.PATROL, null);

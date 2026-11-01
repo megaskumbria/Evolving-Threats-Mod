@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Любому живому вешают эффект. Бастиону зелье «Скорость» не вешается:
- * ни при появлении, ни из бутылки, ни от маяка тыквы.
- * Замедление, сила и прыгучесть проходят как обычно.
+ Every living thing has an effect. Bastion potion "Speed" does not hang:
+ * neither when appearing, nor from the bottle, nor from the pumpkin beacon.
+ Slowdown, strength and jumping pass as usual.
  */
 @Mixin(LivingEntity.class)
 public class BastionSpeedMixin {

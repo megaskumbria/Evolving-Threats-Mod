@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Крипер, который кидает динамит и не взрывается сам. Реализация — mixin на Creeper. */
+/*Creeper that throws dynamite and does not explode itself. The implementation is mixin on Creeper. */
 public interface DynamiteCreeperEntity {
 
 	boolean evolvingthreats$isDynamiteCreeper();

@@ -21,45 +21,45 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Редкий обычный зомби или скелет по имени Bastion.
- * Игра его не добавляет: это тот же моб, только очень живучий и его не сдвигает удар.
- * Броня, чары, оружие и (у зомби) ломание блоков остаются как у обычного.
+ * A rare common zombie or skeleton named Bastion.
+ * The game does not add it: it is the same mob, only very tenacious and it is not moved by the blow.
+ * Armor, enchantments, weapons and (in zombies) breaking blocks remain as usual.
  */
 public final class Bastion {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — новые Бастионы не появляются, команда тоже не спавнит. Уже живые остаются как есть. */
+	/** false — new Bastions do not appear, the team will not spam either. Already alive remain as they are. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный зомби или скелет при появлении станет Бастионом.
-	 * 0.002 = 0.2%, как у надсмотрщика и капитана. Бросается отдельно для зомби и для скелета.
-	 * Команда этот шанс не бросает. Спаунер бросает. Призванная подмога и /summon — нет.
-	 * Число взято таким же, как у других редких мобов с 60-го дня: свой процент сюда и впиши.
+	 * Chance (0.0–1.0) that an ordinary zombie or skeleton will become a Bastion when it appears.
+	 * 0.002 = 0.2%, like the supervisor and the captain. Throws separately for zombies and for the skeleton.
+	 * The team skip this roll. Spauner throws. Summoned backup and /summon — no.
+	 * The number is taken the same as that of other rare mobs from the 60th day: enter your percentage here and enter it.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
-	/** Имя над головой. По-английски, как у остальных именных мобов. */
+	/** Name overhead. In English, like the rest of the name mobs. */
 	public static final String NAME = "Bastion";
 
 	/**
-	 * Здоровье. 1000 = 500 сердец. У обычного зомби и скелета случайно 20–40,
-	 * это число ставится после того броска и всегда одно и то же.
+	 * Health. 1000 = 500 hearts. An ordinary zombie and skeleton accidentally have 20–40,
+	 * this number is put after that throw and is always the same.
 	 */
 	public static final float MAX_HEALTH = 1000.0f;
 
 	/**
-	 * Опыт за убийство. 200 = двести. Всегда столько, броня и оружие сверху не добавляют.
-	 * Общий множитель опыта (сейчас ×2) это число не увеличивает.
-	 * 0 = опыта нет. Обычный зомби без этого даёт около 10.
+	 * Experience for killing. 200 = two hundred. Always so much, armor and weapons from above do not add.
+	 * The total exp multiplier (now ×2) does not increase this number.
+	 * 0 = no experience. A normal zombie without this gives about 10.
 	 */
 	public static final int XP_REWARD = 200;
 
 	/**
-	 * Насколько удар сдвигает с места. 1.0 = не сдвигает вообще.
-	 * 0.0 = как обычный моб. Выше 1 игра всё равно считает полным отказом.
-	 * Стрела с Откидыванием и взрыв тоже не толкают: игра считает их тем же сдвигом.
+	 * How far the blow moves. 1.0 = does not move at all.
+	 * 0.0 = as normal mob. Above 1, the game is still considered a complete rejection.
+	 * The reclining arrow and explosion do not push either: the game considers them to be the same shift.
 	 */
 	public static final double KNOCKBACK_RESISTANCE = 1.0;
 
@@ -72,7 +72,7 @@ public final class Bastion {
 		return mob instanceof BastionEntity data && data.evolvingthreats$isBastion();
 	}
 
-	/** Сколько опыта дать. -1 = это не Бастион, пусть решает игра. */
+	/** How much experience to give. -1 = this is not a Bastion, let the game decide. */
 	public static int experienceReward(Mob mob) {
 		if (!isBastion(mob)) {
 			return -1;
@@ -81,8 +81,8 @@ public final class Bastion {
 	}
 
 	/**
-	 * Бросить шанс. true = это Бастион, маленький скелет ему не нужен.
-	 * Здоровье и отказ от сдвига ставит {@link #apply}, уже после остального набора.
+	 * Throw a chance. true = it's a Bastion, he doesn't need a small skeleton.
+	 * Health and no shift puts {@link #apply}, after the rest of the pack.
 	 */
 	public static boolean tryRoll(Mob mob, EntitySpawnReason reason) {
 		if (isBastion(mob)) {
@@ -101,9 +101,9 @@ public final class Bastion {
 	}
 
 	/**
-	 * Команда. Появляется уже Бастионом, шанс не бросается.
-	 * skeleton = false — зомби, true — скелет.
-	 * false — выключен или моба не удалось создать.
+	 * Team. Already appears as a Bastion, the chance does not rush.
+	 * skeleton = false — zombie, true — skeleton.
+	 * false — disabled or mob could not be created.
 	 */
 	public static boolean spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt, boolean skeleton) {
 		if (!ENABLED) {
@@ -132,7 +132,7 @@ public final class Bastion {
 		return true;
 	}
 
-	/** Здоровье, имя, удар не сдвигает. Зелье скорости, если уже висело, снимается. */
+	/** Health, name, blow does not move. The potion of speed, if it was already hanging, is removed. */
 	public static void apply(Mob mob) {
 		if (!isBastion(mob)) {
 			return;
@@ -152,8 +152,8 @@ public final class Bastion {
 	}
 
 	/**
-	 * После загрузки мира. Здоровье не трогает: сколько сняли, столько и снято.
-	 * Снова запрещает сдвиг и прячет имя, пока на моба не наведутся.
+	 * After downloading the world. Health does not affect: how much was removed, so much was removed.
+	 * Again prohibits the shift and hides the name until the mob is hovered over.
 	 */
 	public static void refresh(Mob mob) {
 		if (!isBastion(mob)) {
@@ -177,18 +177,18 @@ public final class Bastion {
 		if (mob.getType() != EntityTypes.ZOMBIE && mob.getType() != EntityTypes.SKELETON) {
 			return false;
 		}
-		// Детёныш быстрее взрослого. Бастион ходит обычным шагом взрослого.
+		// The cub is faster than the adult. The bastion walks with the normal step of an adult.
 		if (mob.isBaby()) {
 			return false;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
 			return false;
 		}
-		// В ночь осады именные редкие мобы не появляются.
+		// On the night of the siege, nominal rare mobs do not appear.
 		if (SiegeNight.isWindowOpen(mob.level())) {
 			return false;
 		}
-		// С какого дня Бастионы вообще появляются. Шанс ниже от дня не меняется.
+		// From what day do the Bastions appear at all. The odds remain unchanged from day to day.
 		return ThreatScale.reached(mob.level(), ThreatTable.BASTION_DAY);
 	}
 

@@ -40,136 +40,136 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Капитан скелетов и два помощника.
- * Капитан: алмазная броня, лук (сила V, откидывание IV) и алмазный меч
- * (острота V, заговор огня II, отдача II). Лук с откидыванием IV в выживании
- * получить нельзя, поэтому с капитана он не падает никогда.
- * Помощники: полный железный сет и железный меч в каждой руке.
- * Броня и мечи помощников чаруются случайно, кусок за куском: может не быть чар,
- * может часть, может всё.
- * Капитан сам идёт к ближайшему игроку, как гнилой надсмотрщик.
- * Помощники не отходят от капитана слишком далеко и не дерутся со своими.
+ Captain of skeletons and two assistants.
+ Captain: Diamond armor, bow (force V, recline IV) and diamond sword
+ (Sharpness V, Conspiracy of Fire II, Knockback II). Onions with recline IV in survival
+ You can't get it, so it never falls off the captain.
+ A complete iron set and an iron sword in each hand.
+ Armor and swords of helpers are charmed by chance, piece by piece: there may be no charm,
+ Maybe part, maybe all.
+ The captain himself goes to the nearest player like a rotten overseer.
+ The assistants do not move too far from the captain and do not fight their own.
  */
 public final class SkeletonCaptain {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — капитаны не появляются, команда тоже не спавнит отряд. */
+	/** Turn on the mechanics. False - Captains do not appear, the team will not save the squad either. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что обычный скелет при появлении окажется капитаном и позовёт двоих.
-	 * 0.002 = 0.2% (было 0.6%, слишком часто). Команда этот шанс не бросает.
-	 * Спаунер скелетов тоже бросает этот шанс. Призванная подмога и команда /summon — нет.
+	 Chance (0.0-1.0) that a normal skeleton will appear as a captain and call two.
+	 0.002 = 0.2% (was 0.6%, too often). The team doesn't give up that chance.
+	 Skeleton spawner also throws this chance. Called backup and /summon team - No.
 	 */
 	public static final float SPAWN_CHANCE = 0.002f;
 
-	/** Сколько помощников выходит вместе с капитаном. 2 = двое. */
+	/*How many assistants go out with the captain? 2 = two. */
 	public static final int HELPER_COUNT = 2;
 
-	/** Имя над головой. Это бирка: пока имя есть, капитан сам не исчезает, как названный моб. */
+	/** Name overhead. It's a tag: as long as the name is there, the captain doesn't disappear like the mob. */
 	public static final String CAPTAIN_NAME = "Captain of the Skeletons";
 
 	/**
-	 * Шанс (0.0–1.0) зачаровать КАЖДЫЙ кусок брони капитана и помощников.
-	 * 0.45 = 45% на шлем, отдельно 45% на нагрудник и так далее.
-	 * Поэтому бывает голый алмаз, бывает одна зачарованная деталь, бывает весь сет.
-	 * 0 = броня всегда без чар. 1 = чары на каждом куске.
+	 * Chance (0.0–1.0) to enchant EVERY piece of the captain’s armor.
+	 * 0.45 = 45% for helmet, 45% for breastplate and so on.
+	 Therefore, there is a bare diamond, there is one enchanted detail, there is the whole set.
+	 * 0 = armor is always without charm. 1 = spell on each piece.
 	 */
 	public static final float ARMOR_ENCHANT_CHANCE = 0.45f;
 
 	/**
-	 * Шанс (0.0–1.0) зачаровать КАЖДЫЙ железный меч помощника. 0.55 = 55% на меч.
-	 * Какие чары и какого уровня — как у обычного оружия мода (чаще низкие).
-	 * Меч и лук капитана этим шансом не пользуются: у них чары заданы жёстко.
+	 * Chance (0.0-1.0) to enchant EVERY Iron Sword 0.55 = 55% per sword.
+	 What charms and what level – like conventional weapons fashion (often low).
+	 The sword and bow of the captain do not use this chance: their spells are set rigidly.
 	 */
 	public static final float HELPER_SWORD_ENCHANT_CHANCE = 0.55f;
 
-	/** Откидывание на луке капитана. У ванильного лука потолок II. 4 = IV, нарочно выше. */
+	/** Lifting on the captain's bow. Vanilla onions have ceiling II. 4 = IV, purposely higher. */
 	public static final int BOW_PUNCH_LEVEL = 4;
 
-	/** Сила на луке капитана. 5 = V, это ванильный потолок. */
+	/*Force on the captain's bow. 5 = V, this is the vanilla ceiling. */
 	public static final int BOW_POWER_LEVEL = 5;
 
-	/** Острота меча капитана. 5 = V. */
+	/*The sharpness of the captain's sword. 5 = V. */
 	public static final int SWORD_SHARPNESS_LEVEL = 5;
 
-	/** Заговор огня на мече капитана. 2 = II. */
+	/*A plot of fire on the captain's sword. 2 = II. */
 	public static final int SWORD_FIRE_ASPECT_LEVEL = 2;
 
-	/** Отдача на мече капитана. 2 = II. */
+	/*Return on the captain's sword. 2 = II. */
 	public static final int SWORD_KNOCKBACK_LEVEL = 2;
 
 	/**
-	 * Как далеко (блоки) помощник может отойти от капитана, пока нет боя.
-	 * Дальше — догоняет. 6 = держатся кучкой.
+	 How far (blocks) an assistant can move away from the captain until there is a fight.
+	 Next, catching up. 6 = held together.
 	 */
 	public static final double IDLE_FOLLOW_BLOCKS = 6.0;
 
 	/**
-	 * То же в бою. 14 = помощник успевает добежать до игрока, но не уходит за ним
-	 * на другой край поля, пока капитан стоит и стреляет.
+	 Same in combat. 14 = the assistant has time to run to the player, but does not go after him
+	 To the other end of the field while the captain stands and shoots.
 	 */
 	public static final double COMBAT_LEASH_BLOCKS = 14.0;
 
 	/**
-	 * Если кто-то из отряда видит цель, остальные подхватывают её, пока она не дальше
-	 * этого (блоки) от них. 32 = весь отряд вступает, даже если сам игрока ещё не видит.
+	 If one of the squad sees a target, the others pick it up until it's further away.
+	 * this (blocks) from them. 32 = the whole squad enters, even if the player himself does not see.
 	 */
 	public static final double CALL_RANGE_BLOCKS = 32.0;
 
 	/**
-	 * Как далеко капитан сам идёт за игроком, блоки. 112 — как радиус погони гнилого надсмотрщика.
-	 * У помощников остаётся FOLLOW_RANGE: они не ищут игрока сами, они бегут за капитаном.
+	 How far the captain himself goes after the player, blocks. 112 - like the chase radius of a rotten overseer.
+	 The assistants have a FOLLOW RANGE: they do not look for the player themselves, they run for the captain.
 	 */
 	public static final double CAPTAIN_FOLLOW_RANGE = 112.0;
 
 	/**
-	 * Дальше этого капитан бросает закреплённого игрока, блоки. 128 — как у надсмотрщика.
-	 * Ближе — идёт к нему, даже если между ними стена и капитан его ещё не видел.
-	 * Наблюдатель не закрепляется.
+	 Next, the captain throws the fixed player, blocks. 128 is like an overseer.
+	 Closer - goes to him, even if between them the wall and the captain has not yet seen him.
+	 * Observer is not secured.
 	 */
 	public static final double HUNT_ABANDON_DISTANCE = 128.0;
 
 	/**
-	 * true — капитан идёт и за игроком в креативе. Так команда /etcaptain показывает погоню.
-	 * false — как у надсмотрщика: креатив не закрепляет. Наблюдателя не трогает в любом случае.
+	 True - the captain goes after the player in the creative. So the /etcaptain team shows the chase.
+	 * False - like the overseer: creative does not fix. The observer doesn't touch it anyway.
 	 */
 	public static final boolean HUNT_CREATIVE = true;
 
-	/** Скорость, с которой помощник догоняет капитана. 1.15 = чуть быстрее шага скелета. */
+	/*The speed at which the assistant catches up with the captain. 1.15 = slightly faster than the skeletal step. */
 	public static final double GROUP_SPEED = 1.15;
 
-	/** Как далеко помощник держит цель, блоки. У обычного скелета около 16. 32 = не теряет игрока рядом с капитаном. */
+	/*How far the assistant holds the target, blocks. A normal skeleton has about 16. 32 = does not lose a player next to the captain. */
 	public static final double FOLLOW_RANGE = 32.0;
 
-	// ----- лут капитана (помощники этого не роняют) -----
+	// Captain's loot (helpers don't drop it)
 
 	/**
-	 * Шанс (0.0–1.0), что с капитана упадёт алмазный меч с его чарами.
-	 * 0.15 = 15%. Лук сюда не входит: он не падает никогда.
+	 Chance (0.0-1.0) that the captain will fall diamond sword with his charms.
+	 * 0.15 = 15%. Onions don't come in here; they never fall.
 	 */
 	public static final float SWORD_DROP_CHANCE = 0.15f;
 
 	/**
-	 * Шанс (0.0–1.0) на КАЖДЫЙ кусок брони капитана. 0.085 ≈ 8.5%, как у остальной брони мода.
-	 * Чары на упавшем куске сохраняются.
+	 * Chance (0.0-1.0) on EVERY piece of Captain's Armor 0.085 ≈ 8.5%, like the rest of the armor.
+	 The spell on the fallen piece is preserved.
 	 */
 	public static final float ARMOR_DROP_CHANCE = 0.085f;
 
 	/**
-	 * Шанс (0.0–1.0) дополнительно выронить 1 алмаз. 0.20 = 20%.
-	 * Это сверх меча и брони.
+	 * Chance (0.0-1.0) to drop 1 diamond. 0.20 = 20%.
+	 It's beyond sword and armor.
 	 */
 	public static final float DIAMOND_DROP_CHANCE = 0.20f;
 
 	/**
-	 * Сколько бирок падает с капитана всегда. 1 = одна бирка.
-	 * 0 = бирку не ронять. Лук от этого числа не зависит.
+	 How many tags does the captain always drop? 1 = one tag.
+	 * 0 = do not drop the name tag. The bow doesn't depend on that number.
 	 */
 	public static final int NAME_TAG_COUNT = 1;
 
-	/** Шанс выпадения железной брони и мечей помощника, на каждый предмет. 0.085 ≈ 8.5%. */
+	/** Chance of falling iron armor and swords of the assistant, on each item. 0.085 to 8.5%. */
 	public static final float HELPER_DROP_CHANCE = 0.085f;
 
 	// ========================================================================
@@ -191,7 +191,7 @@ public final class SkeletonCaptain {
 				&& squad.evolvingthreats$getSquadRole() == ROLE_CAPTAIN;
 	}
 
-	/** Вызвать в конце появления скелета. true = это капитан или помощник, обычный набор мода им не нужен. */
+	/*Call at the end of the appearance of the skeleton. True = it's a captain or an assistant, they don't need the usual fashion set. */
 	public static boolean tryClaim(AbstractSkeleton skeleton, ServerLevelAccessor level, EntitySpawnReason reason) {
 		if (!ENABLED || !(skeleton instanceof Skeleton) || !(skeleton instanceof SkeletonSquadMember squad)) {
 			return false;
@@ -214,14 +214,14 @@ public final class SkeletonCaptain {
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
 			return false;
 		}
-		// В ночь осады мини-боссы не появляются.
+		// On the night of the siege, mini-bosses don't show up.
 		if (SiegeNight.isWindowOpen(skeleton.level())) {
 			return false;
 		}
 		if (skeleton instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
 			return false;
 		}
-		// С какого дня капитаны вообще появляются (ThreatTable.SKELETON_CAPTAIN_DAY). Шанс ниже от дня не меняется.
+		// From what day do captains appear (ThreatTable.SKELETON CAPTAIN DAY)? The chance lower from the day does not change.
 		if (!ThreatScale.reached(skeleton.level(), ThreatTable.SKELETON_CAPTAIN_DAY)) {
 			return false;
 		}
@@ -238,7 +238,7 @@ public final class SkeletonCaptain {
 		return true;
 	}
 
-	/** Команда: капитан и два помощника перед игроком. null — механика выключена. */
+	/*Team: Captain and two assistants in front of the player. null - the mechanics are off. */
 	public static @Nullable Skeleton spawn(ServerLevel level, Vec3 pos, @Nullable LivingEntity lookAt) {
 		if (!ENABLED) {
 			return null;
@@ -263,7 +263,7 @@ public final class SkeletonCaptain {
 		return captain;
 	}
 
-	/** Кто держит отряд. Живой капитан, а если его уже нет — самый «старший» из живых помощников. */
+	/** Who's holding the squad. A living captain, and if he's gone, he's the oldest living assistant. */
 	public static @Nullable Skeleton anchor(Skeleton self, SkeletonSquadMember squad) {
 		if (!(self.level() instanceof ServerLevel level)) {
 			return null;
@@ -287,7 +287,7 @@ public final class SkeletonCaptain {
 		return eldest;
 	}
 
-	/** Свои по отряду: капитан и его помощники. Чужой отряд и обычный скелет — не свои. */
+	/*The captain and his assistants. An alien squad and an ordinary skeleton are not their own. */
 	public static boolean isSquadAlly(LivingEntity self, LivingEntity other) {
 		if (!(self instanceof SkeletonSquadMember a) || !(other instanceof SkeletonSquadMember b)) {
 			return false;
@@ -299,7 +299,7 @@ public final class SkeletonCaptain {
 		return squadId != null && squadId.equals(b.evolvingthreats$getSquadId());
 	}
 
-	/** Конец серверного тика: цель одного скелета становится целью всего отряда. Своих в цель не берём. */
+	/*End of server tick: the target of one skeleton becomes the target of the entire squad. We're not targeting our own. */
 	public static void shareTarget(ServerLevel level, Skeleton self) {
 		if (!(self instanceof SkeletonSquadMember squad) || squad.evolvingthreats$getSquadRole() == ROLE_NONE) {
 			return;
@@ -329,7 +329,7 @@ public final class SkeletonCaptain {
 		}
 	}
 
-	/** Дополнительный лут капитана. Лук не роняется даже здесь. */
+	/** Captain's extra loot. The bow doesn't drop even here. */
 	public static void dropBonus(ServerLevel level, Mob mob) {
 		if (!isCaptain(mob)) {
 			return;
@@ -486,8 +486,8 @@ public final class SkeletonCaptain {
 	}
 
 	/**
-	 * Закрепить капитана на игроке. prefer — кого указала команда.
-	 * Иначе ближайший живой игрок в радиусе охоты, не в креативе и не в наблюдателе.
+	 * Assign the captain to the player. Prefer who the team has indicated.
+	 Otherwise, the nearest live player in the range of the hunt, not in the creative and not in the observer.
 	 */
 	private static void beginHunt(ServerLevel level, Skeleton captain, @Nullable LivingEntity prefer) {
 		if (!(captain instanceof SkeletonSquadMember squad)) {
@@ -512,7 +512,7 @@ public final class SkeletonCaptain {
 		}
 	}
 
-	/** Ближайший игрок в радиусе. Наблюдатель пропускается. null — никого нет. */
+	/** Nearest player in radius. Observer passed. null - there's no one. */
 	public static @Nullable Player tryLockNearestPlayer(Skeleton captain, SkeletonSquadMember squad) {
 		if (!(captain.level() instanceof ServerLevel level)) {
 			return null;

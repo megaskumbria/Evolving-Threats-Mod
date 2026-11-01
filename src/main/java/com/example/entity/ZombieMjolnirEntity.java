@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Зомби Mjölnir. Реализация — mixin на Zombie. */
+/*Zombie Mjölnir. The implementation is mixin on Zombie. */
 public interface ZombieMjolnirEntity {
 
 	boolean evolvingthreats$isMjolnir();

@@ -15,42 +15,42 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 
 /**
- * Лут прислуг рейда: свой рандом с уклоном в крепкие сеты и чары.
- * Обычные {@link com.example.RandomArmor} / {@link com.example.RandomWeapons} не вызываются.
+ Lot servants raid: his rand with a slope in strong sets and charms.
+ * Regular {@link com.example.RandomArmor}/{@link com.example.RandomWeapons} are not called.
  */
 public final class RaidEliteLoadout {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Шанс (0.0–1.0) надеть каждый слот брони у прислуги рейда. 0.75 = 75% на слот. */
+	/** Chance (0.0-1.0) to wear each slot of armor from the raider. 0.75 = 75% per slot. */
 	public static final float ARMOR_PIECE_CHANCE = 0.75f;
 
 	/**
-	 * Веса материала брони: кожа, золото, кольчуга, медь, железо, алмаз.
-	 * Сумма не обязана быть 100 — важны относительные доли (железо/алмаз выше, чем в мире).
+	 Weight of armor material: leather, gold, chain mail, copper, iron, diamond.
+	 The amount does not have to be 100 – the relative shares are important (iron / diamond is higher than in the world).
 	 */
 	public static final int[] ARMOR_MATERIAL_WEIGHTS = { 8, 4, 10, 6, 28, 18 };
 
-	/** Шанс зачаровать выпавший кусок брони. 0.55 = 55%. */
+	/*A chance to enchant a fallen piece of armor. 0.55 = 55%. */
 	public static final float ARMOR_ENCHANT_CHANCE = 0.55f;
 
-	/** Уровень Protection на броне рейда (1–2). */
+	/*Protection level on the raid armor (1-2). */
 	public static final int ARMOR_PROTECTION_MIN = 1;
 	public static final int ARMOR_PROTECTION_MAX = 2;
 
-	/** Шанс, что зомби-прислуга получит оружие в основной руке. */
+	/*The chance that a zombie servant will get a gun in the main hand. */
 	public static final float ZOMBIE_WEAPON_CHANCE = 0.90f;
 
-	/** Веса материала оружия зомби: дерево, камень, золото, медь, железо, алмаз (без незерита). */
+	/*Weight of material weapons zombies: wood, stone, gold, copper, iron, diamond (without netherite). */
 	public static final int[] WEAPON_MATERIAL_WEIGHTS = { 5, 8, 4, 6, 30, 21 };
 
-	/** Шанс зачаровать оружие зомби. */
+	/*A chance to enchant zombie weapons. */
 	public static final float WEAPON_ENCHANT_CHANCE = 0.50f;
 
 	public static final int WEAPON_SHARPNESS_MIN = 1;
 	public static final int WEAPON_SHARPNESS_MAX = 3;
 
-	/** Шанс Power на луке скелета-прислуги. */
+	/*Power chance on the bow of a servant skeleton. */
 	public static final float SKELETON_BOW_ENCHANT_CHANCE = 0.65f;
 
 	public static final int SKELETON_POWER_MIN = 1;

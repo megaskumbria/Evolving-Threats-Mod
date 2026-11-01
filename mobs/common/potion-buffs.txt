@@ -1,48 +1,50 @@
-БАФЫ ЗЕЛИЙ НА МОБАХ
+POTION BUFFS ON MOBS
 ====================
 
-Тип: зомби, кадавр, зомби-житель, утопленник, скелет, странник, болотный скелет,
-     пустынный скелет, паук, пещерный паук, ведьма, крипер, эндермен, разбойник,
-     громила, вызыватель, разоритель, блейз, фантом, слизень, магмовый куб, страж,
-     древний страж, шалкер, пиглин, брут, хоглин, зоглин, парящий инструмент.
-Код: MobPotionBuffs.java (список эффектов, сколько их сразу, шанс II уровня),
+Type: zombie, husk, zombie villager, drowned, skeleton, stray, swamp skeleton,
+     desert skeleton, spider, cave spider, witch, creeper, enderman, pillager,
+     vindicator, evoker, ravager, blaze, phantom, slime, magma cube, guardian,
+     elder guardian, shulker, piglin, brute, hoglin, zoglin, floating tool.
+Code: MobPotionBuffs.java (effect list, how many at once, level-II chance),
      mixin/ZombieMixin.java, mixin/SkeletonMixin.java, mixin/SpiderRoleMixin.java,
-     mixin/MobPotionBuffMixin.java (ведьма, разбойник, громила, вызыватель, разоритель,
-     пещерный паук),
-     mixin/MobPotionBuffExtraMixin.java (крипер, эндермен, блейз, фантом, слизень,
-     магмовый куб, страж, древний страж, шалкер, пиглин, брут, хоглин, зоглин),
-     mixin/CreeperPotionCloudMixin.java (туман после взрыва крипера).
-     Парящий инструмент вызывает tryApply сам, из tool/FloatingTool.java.
+     mixin/MobPotionBuffMixin.java (witch, pillager, vindicator, evoker, ravager,
+     cave spider),
+     mixin/MobPotionBuffExtraMixin.java (creeper, enderman, blaze, phantom, slime,
+     magma cube, guardian, elder guardian, shulker, piglin, brute, hoglin, zoglin),
+     mixin/CreeperPotionCloudMixin.java (cloud after creeper explosion).
+     Floating tool calls tryApply itself from tool/FloatingTool.java.
 
 
-КАК РАБОТАЕТ
+HOW IT WORKS
 ------------
-1. При появлении моб может получить от 0 до 5 разных полезных эффектов.
-   Чем больше эффектов, тем реже. Пять сразу — около 2%.
-2. Эффект не кончается. Частицы идут, как у игрока, который выпил зелье.
-   Несколько зелий смешивают цвет частиц в один.
-3. Из 25 полезных зелий здесь 10 эффектов. Долгое и обычное при бесконечном времени — одно и то же.
-   Сильное зелье даёт II уровень (прыжок, скорость, регенерация, сила), шанс около 33%.
-4. Лечения нет. Это мгновенное зелье: бесконечным его делать нельзя, моб лечился бы каждый миг.
-5. Невидимость прячет тело. Броня и оружие в руках остаются видны.
-   Если рядом есть другой эффект, его частицы тоже выдают моба.
-6. Подводное дыхание не даёт зомби захлебнуться и стать утопленником.
-7. Ночное зрение и удача почти не меняют бой. Они в списке, потому что это тоже полезные зелья.
-8. Взорвавшийся крипер оставляет туман, как и раньше. Эффект из тумана длится 45 секунд,
-   а не бесконечно. Сам туман рассеивается за 15 секунд. На живом крипере зелье не кончается.
-9. Не получают баф: зомбифицированный пиглин, скелет-иссушитель, гнилой надсмотрщик,
-   зомби и скелеты из рейда мода, иллюзор.
-   Ведьма, разбойник, громила, вызыватель и разоритель получают баф даже в рейде.
-   Особые криперы (подрывник, метатель, ломатель щита) тоже могут быть под зельем.
-   Парящий инструмент получает те же зелья при призыве командой.
-   Невидимость криперу и парящему инструменту не выпадает: крипера трудно заметить и так,
-   а инструмент без тела зелье прячет целиком. Другие зелья им по-прежнему достаются.
+1. On spawn, a mob may get 0 to 5 different helpful effects.
+   More effects = rarer. All five at once is about 2%.
+2. Effects never expire. Particles show like a player who drank a potion.
+   Several potions blend particle colors into one.
+3. Of 25 helpful potions in the game, this uses 10 effects. Long and regular versions
+   behave the same at infinite duration.
+   Strong potions give level II (jump, speed, regeneration, strength), about 33% chance.
+4. No healing. Instant healing cannot be infinite — the mob would heal every tick.
+5. Invisibility hides the body. Armor and held items stay visible.
+   If another effect is active, its particles can still reveal the mob.
+6. Water breathing stops zombies from drowning and turning into drowned.
+7. Night vision and luck barely change combat. They are in the list as helpful potions.
+8. An exploding creeper still leaves a cloud as before. The cloud effect on players
+   lasts 45 seconds, not forever. The cloud itself fades in 15 seconds.
+   On a living creeper, the spawn potion buff does not expire.
+9. No buff: zombified piglin, wither skeleton, rotten overseer,
+   mod-raid zombies and skeletons, illusioner.
+   Witch, pillager, vindicator, evoker, and ravager get buffs even during raids.
+   Special creepers (sapper, dynamite thrower, shield breaker) can still have potions.
+   Floating tool gets the same potions when summoned by command.
+   Invisibility is never rolled for creepers or floating tool: creepers are hard to spot anyway,
+   and invisibility would hide the entire floating tool. Other potions still apply.
 
 
 SETTINGS
 ---------
   MobPotionBuffs.java
     ENABLED .................... true
-    COUNT_WEIGHTS .............. {50, 24, 13, 7, 4, 2} — 0, 1, 2, 3, 4, 5 эффектов
-    STRONG_LEVEL_CHANCE ........ 0.33 — шанс II уровня, где он есть
-    CLOUD_EFFECT_SECONDS ....... 45 — сколько секунд эффект из тумана крипера держится на игроке
+    COUNT_WEIGHTS .............. {50, 24, 13, 7, 4, 2} — 0, 1, 2, 3, 4, 5 effects
+    STRONG_LEVEL_CHANCE ........ 0.33 — level-II chance where supported
+    CLOUD_EFFECT_SECONDS ....... 45 — seconds the creeper cloud effect lasts on the player

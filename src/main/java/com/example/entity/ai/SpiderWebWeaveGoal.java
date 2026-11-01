@@ -10,9 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import java.util.EnumSet;
 
 /**
- * Паук-ткач: пока видит игрока в радиусе {@link SpiderThreats#WEB_MAX_DISTANCE},
- * раз в несколько секунд ставит паутину в клетку под ногами игрока.
- * Движение паука не блокирует — он продолжает атаковать как обычно.
+ * Spider-weaver: while he sees the player in the radius {@link SpiderThreats#WEB MAX DISTANCE},
+ Every few seconds puts the web in the cage under the feet of the player.
+ The spider's movement does not block - it continues to attack as usual.
  */
 public class SpiderWebWeaveGoal extends Goal {
 
@@ -40,7 +40,7 @@ public class SpiderWebWeaveGoal extends Goal {
 		}
 		long now = level.getGameTime();
 		if (!cooldownInitialized) {
-			// Первая паутина не сразу, а через обычную паузу.
+			// The first web is not immediately, but through a normal pause.
 			nextWebGameTime = now + SpiderThreats.randomWebCooldownTicks(spider.getRandom());
 			cooldownInitialized = true;
 			return false;

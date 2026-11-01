@@ -6,9 +6,9 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 /**
- * Летит к игроку по воздуху и бьёт, когда хитбоксы соприкасаются.
- * Пауза между ударами — {@link FloatingTool#ATTACK_COOLDOWN_TICKS}.
- * Сквозь стены не проходит: путь ищет обычный летающий навигатор.
+ Flies to the player in the air and hits when the hitboxes touch.
+ * Pause between beats - {@link FloatingTool#ATTACK COOLDOWN TICKS}
+ Through the walls does not pass: the path is looking for an ordinary flying navigator.
  */
 public class FloatingToolAttackGoal extends MeleeAttackGoal {
 

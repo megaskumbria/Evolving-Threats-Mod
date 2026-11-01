@@ -15,7 +15,7 @@ import net.minecraft.world.item.Items;
 import java.util.EnumSet;
 
 /**
- * Цель ИИ: раз в N секунд скелет с раздатчиком на голове замирает/чуть двигается и выпускает залп стрел.
+ AI goal: once every N seconds, the skeleton with a spreader on the head freezes / moves slightly and releases a volley of arrows.
  */
 public class DispenserBarrageGoal extends Goal {
 
@@ -110,7 +110,7 @@ public class DispenserBarrageGoal extends Goal {
 		skeleton.getLookControl().setLookAt(target, 45.0f, 45.0f);
 		skeleton.getNavigation().stop();
 
-		// Лёгкое «дёргание» на месте, чтобы не стоять как статуя.
+		// A slight “twitch” in place so as not to stand like a statue.
 		if (skeleton.getRandom().nextInt(6) == 0) {
 			float strafe = (skeleton.getRandom().nextFloat() - 0.5f) * 0.35f;
 			float forward = (skeleton.getRandom().nextFloat() - 0.5f) * 0.2f;

@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Охота после спектральной стрелы.
- * Цель ставится уже после выбора цели мобом и прямо перед шагом пути,
- * иначе он тут же забывает игрока за стеной и никуда не идёт.
+ Hunting after the spectral arrow.
+ The goal is set after the choice of the target mob and right before the step of the path,
+ Otherwise, he immediately forgets the player behind the wall and goes nowhere.
  */
 @Mixin(Mob.class)
 public class MobSpectralHuntMixin {

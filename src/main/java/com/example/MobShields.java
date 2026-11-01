@@ -25,38 +25,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Щиты у зомби и скелетов: случайный узор флага и шанс полностью погасить удар.
- * Щит всегда во второй руке. Если она уже занята (меч скелета с луком) — щит не выдаётся.
+ Shields in zombies and skeletons: a random pattern of the flag and a chance to completely extinguish the blow.
+ The shield is always in the second hand. If it is already occupied (skeletal sword with a bow), the shield is not issued.
  */
 public final class MobShields {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** Включить механику. false — щиты не выдаются и удары не гасятся. */
+	/** Turn on the mechanics. False - shields are not issued and blows are not extinguished. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что зомби или скелет появится со щитом на 100-й день (конец шкалы угрозы). 0.25 = 25%.
-	 * В начале игры шанс меньше и растёт со шкалой. Бросается один раз на моба. 0 = щитов не будет.
+	 Chance (0.0-1.0) that a zombie or skeleton will appear with a shield on day 100 (end of the threat scale). 0.25 = 25%.
+	 At the beginning of the game, the chance is smaller and increases with the scale. Drops once at the mob. 0 = no shields.
 	 */
 	public static final float SPAWN_CHANCE = 0.25f;
 
 	/**
-	 * Шанс (0.0–1.0), что удар по мобу со щитом будет полностью поглощён. 0.10 = 10%.
-	 * Срабатывает на удар существа или снаряда, не на падение, лаву и пустоту.
-	 * 0 = щит только красивый, урон всегда проходит.
+	 Chance (0.0-1.0) that the impact on the mob with the shield will be completely absorbed. 0.10 = 10%.
+	 It works on the impact of a creature or projectile, not on the fall, lava and emptiness.
+	 * 0 = shield only beautiful, damage always passes.
 	 */
 	public static final float BLOCK_CHANCE = 0.10f;
 
 	/**
-	 * Сколько слоёв узора на щите. 6 — как у полного флага: вместе с цветом основы
-	 * это миллионы разных рисунков. Меньше — рисунок проще и читается лучше. 0 = только цвет, без узора.
+	 * How many layers of pattern on the shield. 6 - like a full flag: along with the color of the base
+	 These are millions of different drawings. Less – the drawing is simpler and reads better. 0 = color only, without pattern.
 	 */
 	public static final int PATTERN_LAYERS = 6;
 
 	/**
-	 * Шанс, что щит выпадет при смерти моба. 0.085 ≈ 8.5%, как у брони в {@link RandomArmor#ARMOR_DROP_CHANCE}.
-	 * 1.0 = щит падает всегда.
+	 The chance that the shield will fall out when the mob dies. 0.085 ≈ 8.5% like the reservation in {@link RandomArmor#ARMOR DROP CHANCE}.
+	 * 1.0 = the shield always falls.
 	 */
 	public static final float DROP_CHANCE = 0.085f;
 
@@ -65,7 +65,7 @@ public final class MobShields {
 	private MobShields() {
 	}
 
-	/** Вызвать после выдачи оружия: вторая рука к этому моменту уже может быть занята. */
+	/*Call after issuing a weapon: the second hand may already be occupied. */
 	public static void tryEquip(Mob mob) {
 		if (!ENABLED || SPAWN_CHANCE <= 0.0f) {
 			return;
@@ -74,7 +74,7 @@ public final class MobShields {
 			return;
 		}
 		RandomSource random = mob.getRandom();
-		// GROWING: SPAWN_CHANCE — шанс на 100-й день, в начале игры он меньше (ThreatTable.SHIELD_START_RATIO).
+		// GROWING: SPAWN CHANCE - the chance on the 100th day, at the beginning of the game it is less (ThreatTable.SHIELD START RATIO).
 		if (random.nextFloat() >= ThreatScale.growingChance(mob.level(), SPAWN_CHANCE, ThreatTable.SHIELD_START_RATIO)) {
 			return;
 		}
@@ -83,9 +83,9 @@ public final class MobShields {
 	}
 
 	/**
-	 * Погасить удар, если во второй руке щит и выпал {@link #BLOCK_CHANCE}.
+	 * Extinguish the impact if the shield falls in the second hand {@link #BLOCK CHANCE}
 	 *
-	 * @return true — урон не проходит
+	 * @return true - damage doesn't go away
 	 */
 	public static boolean tryAbsorb(LivingEntity mob, DamageSource source, float damage) {
 		if (!ENABLED || BLOCK_CHANCE <= 0.0f || damage <= 0.0f) {
@@ -115,7 +115,7 @@ public final class MobShields {
 		return true;
 	}
 
-	/** Щит: случайный цвет основы и {@link #PATTERN_LAYERS} случайных слоёв флага. */
+	/** Shield: random base color and {@link #PATTERN LAYERS} random flag layers. */
 	private static ItemStack createShield(Mob mob, RandomSource random) {
 		ItemStack shield = new ItemStack(Items.SHIELD);
 		DyeColor[] colors = DyeColor.values();
@@ -135,7 +135,7 @@ public final class MobShields {
 		return shield;
 	}
 
-	/** Все узоры флагов из игры, кроме «основы»: её цвет задаётся отдельно и вторым слоем только мешает. */
+	/*All flag patterns from the game, except the "base": its color is set separately and the second layer only interferes. */
 	private static List<Holder<BannerPattern>> patternsExceptBase(Mob mob) {
 		Registry<BannerPattern> registry = mob.registryAccess().lookupOrThrow(Registries.BANNER_PATTERN);
 		List<Holder<BannerPattern>> patterns = new ArrayList<>();

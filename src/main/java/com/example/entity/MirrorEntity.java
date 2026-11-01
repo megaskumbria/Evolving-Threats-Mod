@@ -1,6 +1,6 @@
 package com.example.entity;
 
-/** Моб, чей ближний удар игрока возвращается тому же игроку. */
+/*A mob whose close-kick player returns to the same player. */
 public interface MirrorEntity {
 
 	boolean evolvingthreats$isMirror();

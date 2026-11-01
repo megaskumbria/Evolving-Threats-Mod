@@ -19,37 +19,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Редкий удар брутального пиглина снимает половину прочности с одной вещи в броне
- * и вешает головокружение, чтобы игрок заметил, что броня пострадала.
- * Чара «Прочность» этот удар не ослабляет: списывается само число, а не «попытка износа».
+ Rare impact of brutal piglin removes half the strength from one thing in armor
+ * and hangs dizziness so that the player notices that the armor is damaged.
+ The charm of “Durability” this blow does not weaken: the number itself is written off, and not “attempted wear”.
  */
 public final class PiglinBruteArmorHit {
 
-	// ===================== SETTINGS (меняй эти числа) =====================
+	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — удар брута снова только обычный. */
+	/*False – the brute strike again is only normal. */
 	public static final boolean ENABLED = true;
 
 	/**
-	 * Шанс (0.0–1.0), что удар, который уже снял здоровье, испортит броню.
-	 * 0.05 = 5%, примерно каждый двадцатый такой удар.
-	 * Бросок заново на каждый удар. Щит, который отбил удар, и мигание после удара не считаются.
-	 * 0 = брут броню не портит. 1 = каждый прошедший удар.
+	 * Chance (0.0-1.0) that the impact, which has already taken off health, will spoil the armor.
+	 * 0.05 = 5%, approximately every twentieth such impact.
+	 * Throw again for each stroke. The shield that repulsed the impact and the blinking after the impact do not count.
+	 * 0 = brute does not spoil the armor. 1 = every stroke that passes.
 	 */
 	public static final float HIT_CHANCE = 0.05f;
 
 	/**
-	 * Какую долю максимальной прочности снять с одной вещи. 0.5 = половина шкалы.
-	 * Незеритовый нагрудник (592) теряет 296, даже с чарой «Прочность».
-	 * Если осталось меньше этой доли, вещь ломается и исчезает.
-	 * 0 = прочность не трогать. 1 = выбранная вещь ломается сразу.
+	 What percentage of maximum strength to remove from one thing? 0.5 = half the scale.
+	 The nonseritic breastplate (592) loses 296, even with the spell of "Strength".
+	 If less than this fraction remains, the thing breaks down and disappears.
+	 * 0 = strength not to be touched. 1 = the selected item breaks down immediately.
 	 */
 	public static final float DURABILITY_FRACTION = 0.5f;
 
 	/**
-	 * Сколько секунд длится головокружение после такого удара. 10 = десять секунд.
-	 * Экран плывёт, как от испорченной еды. Молоко снимает эффект сразу.
-	 * 0 = головокружения нет, прочность всё равно списывается.
+	 How many seconds does dizziness last after such a blow? 10 = ten seconds.
+	 The screen floats like spoiled food. Milk takes effect immediately.
+	 * 0 = no dizziness, strength is still written off.
 	 */
 	public static final int NAUSEA_SECONDS = 10;
 
@@ -63,8 +63,8 @@ public final class PiglinBruteArmorHit {
 	}
 
 	/**
-	 * Удар уже снял здоровье.
-	 * Обычный пиглин и зомби-пиглин сюда не попадают. Игрок в творческом режиме тоже.
+	 The blow has already taken off.
+	 Ordinary piglins and zombie piglins do not get here. A player in creative mode, too.
 	 */
 	public static void onHit(PiglinBrute brute, Player player) {
 		if (!ENABLED || HIT_CHANCE <= 0.0f || DURABILITY_FRACTION <= 0.0f) {
@@ -92,7 +92,7 @@ public final class PiglinBruteArmorHit {
 		}
 	}
 
-	/** Одна случайная надетая вещь брони, у которой вообще бывает прочность. */
+	/*One random piece of armor worn, which generally has strength. */
 	private static EquipmentSlot pickSlot(Player player, RandomSource random) {
 		List<EquipmentSlot> worn = new ArrayList<>(ARMOR_SLOTS.length);
 		for (EquipmentSlot slot : ARMOR_SLOTS) {
@@ -129,12 +129,12 @@ public final class PiglinBruteArmorHit {
 		}
 	}
 
-	/** Тот же треск, что при полной поломке. Игрок слышит его, даже если вещь ещё на нём. */
+	/** Same crack as when it was completely broken. The player can hear it even if it is still on it. */
 	private static void playBreak(Player player) {
 		player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
 	}
 
-	/** Тыква и элитры в этих слотах бронёй не считаются. */
+	/*Pumpkin and elites in these slots are not considered armor. */
 	private static TagKey<Item> armorTag(EquipmentSlot slot) {
 		return switch (slot) {
 			case HEAD -> ItemTags.HEAD_ARMOR;

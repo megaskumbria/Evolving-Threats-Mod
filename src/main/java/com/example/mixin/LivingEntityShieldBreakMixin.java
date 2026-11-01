@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Срабатывает, когда живой моб уже принял удар и щит часть урона отбил.
- * Если источник — крипер-ломатель, щит в руке уничтожается.
- * Само число заблокированного урона не меняется: жизни от этого взрыва не снимаются.
- * Если игрок смотрел не на взрыв, щит удар не отбил и этот код не ломает его.
+ It works when the live mob has already taken a hit and the shield has recaptured some of the damage.
+ If the source is a cryper-breaker, the shield in the hand is destroyed.
+ The number of blocked damage does not change: lives from this explosion are not removed.
+ If the player did not look at the explosion, the shield did not hit and this code does not break it.
  */
 @Mixin(LivingEntity.class)
 public class LivingEntityShieldBreakMixin {

@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Свои из стаи не бьют друг друга.
- * Стая пиглина не берёт урон от лавы, огня и солнца.
- * Удар стаи иссушителя вешает короткое иссушение, если удар прошёл.
+ Yours in the pack don't hit each other.
+ A pack of piglin does not take damage from lava, fire and sun.
+ * The impact of the dehumidifier flock hangs a short drying if the impact passed.
  */
 @Mixin(LivingEntity.class)
 public class RitualHurtMixin {

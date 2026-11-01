@@ -1,7 +1,7 @@
 package com.example.entity;
 
 /**
- * Зомби с динамитом в руке. Реализация — mixin на Zombie.
+ Zombies with dynamite in hand. The implementation is mixin on Zombie.
  */
 public interface TntZombieEntity {
 
@@ -9,7 +9,7 @@ public interface TntZombieEntity {
 
 	void evolvingthreats$setTntZombie(boolean tntZombie);
 
-	/** Тики до следующего динамита. 0 = можно бросать. */
+	/*Ticks until the next dynamite. 0 = you can throw. */
 	int evolvingthreats$getTntCooldown();
 
 	void evolvingthreats$setTntCooldown(int ticks);

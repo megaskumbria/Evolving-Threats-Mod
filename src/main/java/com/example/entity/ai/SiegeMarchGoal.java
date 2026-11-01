@@ -9,25 +9,25 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import java.util.EnumSet;
 
 /**
- * Ведёт моба осады к игроку короткими отрезками, пока тот далеко.
+ Leads the mob siege to the player in short stretches while he is far away.
  *
- * Приоритет 1: выше драки, блуждания и «беги от солнца». Пока моб далеко, эти поведения
- * не перебивают путь. Ближе {@link SiegeWaves#MARCH_STOP_DISTANCE} цель выключается,
- * и моб дерётся или стреляет как обычно.
+ Priority 1: Above fighting, wandering and running from the sun. While the mob is away, these behaviors
+ * don't interrupt. Closer {@link SiegeWaves#MARCH STOP DISTANCE} target is off,
+ * and the mob fights or shoots as usual.
  *
- * Пока эта цель ведёт моба, обычная драка не работает, поэтому сама она руки не поднимает
- * и на игрока не смотрит. Здесь моб смотрит на игрока и держит боевую стойку всю дорогу:
- * у зомби подняты руки, у разбойника и поборника оружие в руках, а не прогулка.
- * Стрелять и бить раньше времени это не заставляет — удар включается только вблизи.
+ While this target is led by a mob, the usual fight does not work, so she does not raise her hands.
+ * and doesn't look at the player. Here the mob looks at the player and holds the battle stand all the way:
+ The zombies have their hands up, the robber and champion have weapons in their hands, not a walk.
+ Shoot and hit ahead of time it does not force - the blow is turned on only close.
  *
- * Путь, заданный снаружи раз в секунду, игра затирает своим блужданием на следующем же тике.
- * Поэтому идти к игроку можно только отдельной целью, как здесь.
+ The path set outside once per second, the game wipes with its wandering on the next tick.
+ Therefore, you can only go to the player with a separate goal, as here.
  */
 public class SiegeMarchGoal extends Goal {
 
 	/**
-	 * Насколько быстро голова поворачивается к игроку по горизонтали и вертикали.
-	 * 30 — как у обычной атаки игры. Меньше — голова догоняет медленнее.
+	 How quickly the head turns to the player horizontally and vertically.
+	 30 - as in a normal attack game. Less - the head catches up more slowly.
 	 */
 	private static final float LOOK_AT_PLAYER = 30.0f;
 
@@ -38,7 +38,7 @@ public class SiegeMarchGoal extends Goal {
 
 	public SiegeMarchGoal(Mob mob) {
 		this.mob = mob;
-		// LOOK — чтобы случайный взгляд не уводил голову, пока моб должен смотреть на игрока.
+		// LOOK - so that a casual glance does not take your head away while the mob has to look at the player.
 		this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 	}
 
@@ -48,7 +48,7 @@ public class SiegeMarchGoal extends Goal {
 			return false;
 		}
 		ServerPlayer player = SiegeWaves.nearestHuntTarget(mob);
-		// Дальше этой дистанции снова идём. Ближе — уже дерётся или стреляет, и мы его не дёргаем.
+		// We're going beyond that distance again. Closer - already fighting or shooting, and we do not pull.
 		return player != null && mob.distanceToSqr(player) > resumeSqr();
 	}
 
@@ -58,8 +58,8 @@ public class SiegeMarchGoal extends Goal {
 			return false;
 		}
 		ServerPlayer player = SiegeWaves.nearestHuntTarget(mob);
-		// Порог ниже, чем у canUse: иначе на границе цель включается и выключается каждый тик,
-		// моб дёргается, а скелет не может довести выстрел.
+		// The threshold is lower than that of canUse: otherwise, at the border, the target turns on and off every tick.
+		// The mob twitches, and the skeleton can't fire.
 		return player != null && mob.distanceToSqr(player) > stopSqr();
 	}
 
@@ -73,13 +73,13 @@ public class SiegeMarchGoal extends Goal {
 
 	@Override
 	public void stop() {
-		// Иначе руки так и останутся подняты, когда осада кончилась или моб уже рядом и дерётся сам.
+		// Otherwise, hands will remain raised when the siege is over or the mob is already nearby and fighting on its own.
 		mob.setAggressive(false);
 	}
 
 	@Override
 	public void tick() {
-		// Каждый тик, а не только когда путь перестраивается: иначе голова смотрит в сторону ходьбы.
+		// Every tick, not just when the path is rebuilt: otherwise the head looks toward walking.
 		holdCombatStance();
 		if (mob.tickCount < nextRepathTick) {
 			return;
@@ -92,8 +92,8 @@ public class SiegeMarchGoal extends Goal {
 		if (player == null) {
 			return;
 		}
-		// Даже если путь не построился, следующая попытка не раньше чем через паузу.
-		// Иначе каждый моб осады ищет путь каждый тик, и вся игра идёт рывками.
+		// Even if the path is not built, the next attempt is not until after a pause.
+		// Otherwise, every mob of siege looks for a way every tick, and the whole game goes in jerks.
 		nextRepathTick = mob.tickCount + Math.max(1, SiegeWaves.REPATH_COOLDOWN_TICKS);
 		lastX = mob.getX();
 		lastZ = mob.getZ();
@@ -110,8 +110,8 @@ public class SiegeMarchGoal extends Goal {
 	}
 
 	/**
-	 * Боевая стойка на всю дорогу. Обычная драка в это время выключена и стойку сама не включает.
-	 * Ближе {@link SiegeWaves#MARCH_STOP_DISTANCE} эта цель отпускает моба, и драка включается как обычно.
+	 * Fight stand all the way. The usual fight at this time is turned off and the stand itself does not include.
+	 * Closer {@link SiegeWaves#MARCH STOP DISTANCE} this target lets go of the mob and the fight goes on as usual.
 	 */
 	private void holdCombatStance() {
 		ServerPlayer player = SiegeWaves.nearestHuntTarget(mob);
@@ -124,7 +124,7 @@ public class SiegeMarchGoal extends Goal {
 		}
 	}
 
-	/** Стоит почти на месте, хотя путь ещё числится. Тогда строим новый. */
+	/*It is almost in place, although the path is still listed. Then we build a new one. */
 	private boolean isStuck() {
 		if (Double.isNaN(lastX)) {
 			return false;
@@ -134,7 +134,7 @@ public class SiegeMarchGoal extends Goal {
 		return movedX * movedX + movedZ * movedZ < 0.04;
 	}
 
-	/** Отрезок на той же высоте, где стоит моб. Точка на поверхности крыш и холмов ломает путь. */
+	/*The segment at the same height as the mob. A point on the surface of roofs and hills breaks the path. */
 	private boolean step(double dx, double dz, double distance, double length) {
 		double travel = Math.max(4.0, Math.min(length, distance - SiegeWaves.MARCH_STOP_DISTANCE));
 		double x = mob.getX() + dx / distance * travel;

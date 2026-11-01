@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Два места в одном ударе.
- * В начале: гасим обычные Шипы игры, если их надел Spiky, чтобы они не сложились с уколом на 7–8 сердец.
- * В конце: если удар игрока дошёл до Spiky, колем в ответ.
+ Two seats in one stroke.
+ At the beginning: extinguish the usual spines of the game, if Spiky put them on, so that they do not fold with a prick on 7-8 hearts.
+ * At the end: If the player hits Spiky, we return.
  */
 @Mixin(LivingEntity.class)
 public class SpikyHitMixin {
