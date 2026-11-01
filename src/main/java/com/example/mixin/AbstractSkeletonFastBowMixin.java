@@ -6,8 +6,11 @@ import com.example.entity.SniperSkeletonEntity;
 import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.FastBowSkeleton;
 import com.example.skeleton.SniperSkeleton;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -69,13 +72,50 @@ public abstract class AbstractSkeletonFastBowMixin {
 		if (isBasilisk()) {
 			return BasiliskSkeleton.arrowArc();
 		}
-		if (isSniper()) {
-			return SniperSkeleton.ARROW_ARC;
-		}
 		if (isFastBow()) {
 			return FastBowSkeleton.arrowArc();
 		}
 		return arc;
+	}
+
+	/**
+	 * Прицел снайпера. Одно число задира на дальней дистанции поднимает стрелу над головой,
+	 * поэтому направление считается заново под текущее расстояние.
+	 */
+	@ModifyArg(
+			method = "performRangedAttack",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/entity/projectile/Projectile;spawnProjectileUsingShoot(Lnet/minecraft/world/entity/projectile/Projectile;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;DDDFF)Lnet/minecraft/world/entity/projectile/Projectile;"
+			),
+			index = 4
+	)
+	private double evolvingthreats$sniperAim(double directionY) {
+		if (!isSniper()) {
+			return directionY;
+		}
+		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
+		LivingEntity target = skeleton.getTarget();
+		if (target == null) {
+			return directionY;
+		}
+		return SniperSkeleton.launchDirectionY(skeleton, target);
+	}
+
+	/** Урон не растёт от скорости полёта: иначе быстрая стрела убивает даже в незерите. */
+	@ModifyArg(
+			method = "performRangedAttack",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/entity/projectile/Projectile;spawnProjectileUsingShoot(Lnet/minecraft/world/entity/projectile/Projectile;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;DDDFF)Lnet/minecraft/world/entity/projectile/Projectile;"
+			),
+			index = 0
+	)
+	private Projectile evolvingthreats$sniperDamage(Projectile projectile) {
+		if (isSniper() && projectile instanceof AbstractArrow arrow) {
+			arrow.setBaseDamage(SniperSkeleton.baseDamage());
+		}
+		return projectile;
 	}
 
 	/** Разброс. У снайпера свой: ванильный на 128 блоках промахивается. */

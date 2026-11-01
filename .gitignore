@@ -40,3 +40,6 @@ replay_*.log
 *.jfr
 
 .cursor/
+
+# личная шпаргалка по клавишам Replay Mod, в репозиторий не кладём
+replay-mod-клавиши.txt

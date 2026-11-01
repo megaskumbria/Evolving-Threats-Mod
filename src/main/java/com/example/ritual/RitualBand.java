@@ -5,6 +5,7 @@ import com.example.entity.RitualMember;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.siege.SiegeNight;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -26,6 +27,8 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -50,16 +53,20 @@ public final class RitualBand {
 
 	/**
 	 * Шанс (0.0–1.0), что обычный зомби или обычный скелет окажется началом стаи.
-	 * 0.008 = 0,8%. Бросают и зомби, и скелеты, поэтому у смешанного спаунера стая чуть чаще.
+	 * 0.002 = 0,2%, один из пятисот. ФИКС: с первого дня, от шкалы угрозы не растёт.
+	 * Бросают и зомби, и скелеты, поэтому у смешанного спаунера стая чуть чаще.
 	 * Призванные согруппники, кадавр, странник и команда /summon этот шанс не бросают.
+	 * 0 = только команда.
 	 */
-	public static final float SPAWN_CHANCE = 0.008f;
+	public static final float SPAWN_CHANCE = 0.002f;
 
 	/**
-	 * Опыт с каждого. 10 — вдвое больше обычного зомби и скелета (у тех 5).
+	 * Опыт с каждого. 50 — своё число, общий множитель опыта его не удваивает.
+	 * У обычного зомби и скелета в игре 5, мод удваивает их до 10.
 	 * Падает, только если моба убил игрок: так устроена сама игра.
+	 * 0 = опыта нет.
 	 */
-	public static final int XP_REWARD = 10;
+	public static final int XP_REWARD = 50;
 
 	/**
 	 * Цвет кожи, RGB. 0x1B4F2A — тёмно-зелёный, темнее обычного зелёного красителя.
@@ -82,9 +89,9 @@ public final class RitualBand {
 	/**
 	 * Шанс (0.0–1.0), что выпадет голова крипера, пиглина или череп иссушителя,
 	 * если моба убил игрок. 0.025 = 2,5%, как череп со скелета-иссушителя.
-	 * Добыча I поднимает до 3,5%, II до 4,5%, III до 5,5% — так же, как у того черепа.
-	 * Голова игрока этим шансом не пользуется: вместо неё падает компас.
-	 * 0 = эти головы не падают. 1 = всегда.
+	 * Голова игрока этим шансом не пользуется: вместо неё с тем же шансом падает компас.
+	 * Добыча I/II/III поднимает и головы, и компас до 3,5% / 4,5% / 5,5%.
+	 * 0 = эти головы и компас не падают. 1 = всегда.
 	 */
 	public static final float HEAD_DROP_CHANCE = 0.025f;
 
@@ -116,10 +123,12 @@ public final class RitualBand {
 	public static final int ROSE_COUNT = 1;
 
 	/**
-	 * Как далеко (блоки) стая с головой игрока чует тебя сквозь стены. 36 = между 30 и 40.
-	 * Дальше идут только на того, кого видят. 0 = сквозь стены не чуют.
+	 * Как далеко (блоки) любой в стае замечает игрока, если видит его.
+	 * 52 = дальше обычного зомби (35) и скелета (32).
+	 * Голова игрока на этой же дистанции чует сквозь стены.
+	 * 0 = дальность как у обычного моба, сквозь стены никто не чует.
 	 */
-	public static final double SENSE_BLOCKS = 36.0;
+	public static final double SENSE_BLOCKS = 52.0;
 
 	/**
 	 * Сила хлопка при смерти стаи крипера. У обычного крипера 3.
@@ -197,12 +206,16 @@ public final class RitualBand {
 	 * Лишние вещи, если убил игрок. Голова на слоте падает отдельно, кроме головы игрока.
 	 * Кожа и факел тоже падают сами, по своим шансам.
 	 */
-	public static void dropBonus(Mob mob, ServerLevel level, boolean killedByPlayer) {
+	public static void dropBonus(Mob mob, ServerLevel level, DamageSource source, boolean killedByPlayer) {
 		if (!isRitual(mob) || !killedByPlayer || !(mob instanceof RitualMember data)) {
 			return;
 		}
 		switch (data.evolvingthreats$getRitualHead()) {
-			case HEAD_PLAYER -> drop(mob, level, new ItemStack(Items.COMPASS));
+			case HEAD_PLAYER -> {
+				if (mob.getRandom().nextFloat() < rareDropChance(source)) {
+					drop(mob, level, new ItemStack(Items.COMPASS));
+				}
+			}
 			case HEAD_CREEPER -> drop(mob, level, new ItemStack(Items.GUNPOWDER, Math.max(1, GUNPOWDER_COUNT)));
 			case HEAD_PIGLIN -> drop(mob, level, new ItemStack(Items.GOLD_INGOT, Math.max(1, GOLD_INGOT_COUNT)));
 			case HEAD_WITHER -> {
@@ -393,8 +406,9 @@ public final class RitualBand {
 	}
 
 	/**
-	 * Шанс головы, здоровье и сила удара. Зовётся и при появлении, и когда стая загружается из мира:
-	 * иначе уже живущие остаются со старым запасом жизней и слабым ударом.
+	 * Шанс головы, здоровье, сила удара и дальность взгляда.
+	 * Зовётся и при появлении, и когда стая загружается из мира:
+	 * иначе уже живущие остаются со старым запасом жизней, слабым ударом и короткой дальностью.
 	 */
 	public static void applyTuning(Mob mob) {
 		if (!(mob instanceof RitualMember data) || !data.evolvingthreats$isRitual()) {
@@ -402,6 +416,12 @@ public final class RitualBand {
 		}
 		int head = data.evolvingthreats$getRitualHead();
 		mob.setDropChance(EquipmentSlot.HEAD, head == HEAD_PLAYER ? 0.0f : Math.max(0.0f, HEAD_DROP_CHANCE));
+		if (SENSE_BLOCKS > 0.0) {
+			var follow = mob.getAttribute(Attributes.FOLLOW_RANGE);
+			if (follow != null && follow.getBaseValue() != SENSE_BLOCKS) {
+				follow.setBaseValue(SENSE_BLOCKS);
+			}
+		}
 		var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
 		if (attack != null) {
 			attack.setBaseValue(ATTACK_DAMAGE);
@@ -452,12 +472,6 @@ public final class RitualBand {
 		for (EquipmentSlot slot : LEATHER_SLOTS) {
 			mob.setDropChance(slot, leatherDrop);
 		}
-		if (head == HEAD_PLAYER) {
-			var follow = mob.getAttribute(Attributes.FOLLOW_RANGE);
-			if (follow != null && follow.getBaseValue() < SENSE_BLOCKS) {
-				follow.setBaseValue(SENSE_BLOCKS);
-			}
-		}
 		applyTuning(mob);
 		if (mob instanceof Skeleton skeleton) {
 			skeleton.reassessWeaponGoal();
@@ -490,6 +504,25 @@ public final class RitualBand {
 			return false;
 		}
 		return !(mob instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant());
+	}
+
+	/**
+	 * Тот же шанс, что у головы на слоте. Добыча добавляет 1% за уровень:
+	 * I = 3,5%, II = 4,5%, III = 5,5%.
+	 */
+	private static float rareDropChance(DamageSource source) {
+		float chance = Math.max(0.0f, HEAD_DROP_CHANCE);
+		if (!(source.getEntity() instanceof LivingEntity killer) || !(killer.level() instanceof ServerLevel level)) {
+			return chance;
+		}
+		var looting = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING);
+		int levels = Math.max(
+				EnchantmentHelper.getItemEnchantmentLevel(looting, killer.getMainHandItem()),
+				EnchantmentHelper.getItemEnchantmentLevel(looting, killer.getOffhandItem()));
+		if (levels <= 0) {
+			return chance;
+		}
+		return Math.min(1.0f, chance + levels * 0.01f);
 	}
 
 	private static boolean isPlayerHead(Mob mob) {

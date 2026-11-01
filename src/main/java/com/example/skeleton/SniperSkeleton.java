@@ -51,16 +51,17 @@ public final class SniperSkeleton {
 	/**
 	 * Скорость стрелы. У обычного скелета 1.6, у дальнего лука 2.4.
 	 * 10 = долетает до 128 блоков примерно за секунду и не падает в землю по пути.
-	 * Если уменьшить, подними {@link #ARROW_ARC}, иначе стрела ляжет раньше игрока.
+	 * Прицел подстраивается сам. Если уменьшить слишком сильно, стрела не долетит и ляжет в землю.
 	 */
 	public static final float ARROW_SPEED = 10.0f;
 
 	/**
-	 * Насколько задирать прицел. У обычного скелета 0.2, и это число умножается на расстояние.
-	 * 0.04 подогнано под скорость 10 и выстрел до 128 блоков: попадает в тело и вблизи, и издалека.
-	 * Выше — на дальней дистанции стрела пройдёт над головой. Ниже — упадёт перед игроком.
+	 * Куда по высоте тела целиться. 0.0 = ступни, 1.0 = макушка, 0.5 = середина.
+	 * Считается заново на каждый выстрел: одно и то же число задира на 128 блоках
+	 * поднимало стрелу над головой примерно с 48 до 112 блоков.
+	 * Выше 0.5 — ближе к голове. Ниже — в ноги.
 	 */
-	public static final double ARROW_ARC = 0.04;
+	public static final double AIM_HEIGHT = 0.5;
 
 	/**
 	 * Разброс стрелы. У скелета на сложной сложности около 2: на 128 блоках это промах в несколько блоков.
@@ -69,9 +70,84 @@ public final class SniperSkeleton {
 	 */
 	public static final float INACCURACY = 0.15f;
 
+	/**
+	 * Сколько сердец снимает попадание до брони, если на луке нет Силы.
+	 * 6 = шесть сердец. Скорость полёта это число не увеличивает:
+	 * быстрая стрела нужна, чтобы долететь, а не чтобы убивать с одного раза.
+	 * 1 = одно сердце. 0 = стрела не ранит. 10 = вся полоска голого игрока.
+	 * Сила на луке добавляет урон сверху, как у любой стрелы.
+	 */
+	public static final double DAMAGE_HEARTS = 6.0;
+
 	// ========================================================================
 
 	private SniperSkeleton() {
+	}
+
+	/**
+	 * Множитель урона для игры. Она считает удар как скорость полёта × это число.
+	 * Одно сердце — это 2 урона. Множитель меньше во столько раз, во сколько стрела быстрее,
+	 * чтобы получилось ровно {@link #DAMAGE_HEARTS} сердец, а не больше из-за скорости.
+	 */
+	public static double baseDamage() {
+		double damage = Math.max(0.0, DAMAGE_HEARTS) * 2.0;
+		return damage / Math.max(0.01, ARROW_SPEED);
+	}
+
+	/** Сопротивление воздуха у стрелы в самой игре. Менять не нужно: настоящая стрела летит с этим числом. */
+	private static final double ARROW_DRAG = 0.99;
+
+	/** Насколько стрела падает за один такт игры. Тоже число самой игры, не настройка прицела. */
+	private static final double ARROW_GRAVITY = 0.05;
+
+	/**
+	 * Направление выстрела по вертикали. Игра потом выравнивает его и умножает на скорость.
+	 * Подбирается так, чтобы стрела пришла в {@link #AIM_HEIGHT} тела цели.
+	 */
+	public static double launchDirectionY(AbstractSkeleton skeleton, LivingEntity target) {
+		double dx = target.getX() - skeleton.getX();
+		double dz = target.getZ() - skeleton.getZ();
+		double distance = Math.sqrt(dx * dx + dz * dz);
+		double startY = skeleton.getEyeY() - 0.1;
+		double wantY = target.getY(Mth.clamp(AIM_HEIGHT, 0.0, 1.0));
+		if (distance < 0.5) {
+			return wantY - startY;
+		}
+		double low = -distance * 2.0;
+		double high = distance * 2.0;
+		for (int i = 0; i < 24; i++) {
+			double mid = (low + high) * 0.5;
+			if (arrowHeightAt(distance, mid, startY) > wantY) {
+				high = mid;
+			} else {
+				low = mid;
+			}
+		}
+		return (low + high) * 0.5;
+	}
+
+	/** Высота стрелы в тот момент, когда она пролетает ровно над точкой на этом расстоянии. */
+	private static double arrowHeightAt(double distance, double directionY, double startY) {
+		double speed = Math.max(0.01f, ARROW_SPEED);
+		double length = Math.sqrt(distance * distance + directionY * directionY);
+		double horizontal = distance / length * speed;
+		double vertical = directionY / length * speed;
+		double traveled = 0.0;
+		double height = startY;
+		for (int tick = 0; tick < 400; tick++) {
+			if (horizontal <= 0.0001) {
+				return height;
+			}
+			if (traveled + horizontal >= distance) {
+				double fraction = (distance - traveled) / horizontal;
+				return height + vertical * fraction;
+			}
+			traveled += horizontal;
+			height += vertical;
+			horizontal *= ARROW_DRAG;
+			vertical = vertical * ARROW_DRAG - ARROW_GRAVITY;
+		}
+		return height;
 	}
 
 	public static boolean isSniper(AbstractSkeleton skeleton) {

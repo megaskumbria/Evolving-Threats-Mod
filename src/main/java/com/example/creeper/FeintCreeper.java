@@ -5,8 +5,11 @@ import com.example.entity.FastCreeperEntity;
 import com.example.entity.FeintCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
 import com.example.mixin.CreeperFuseAccessor;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +20,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Обычный с виду крипер. Пока игрок далеко, скорость и шипение как у ванильного.
+ * Обычный с виду крипер, но вокруг него всегда кружатся частицы зелья скорости.
+ * По ним его узнают заранее: после рывка реагировать уже некогда.
+ * Частицы — только картинка, само зелье не даётся и быстрее от них он не бежит.
+ * Пока игрок далеко, скорость и шипение как у ванильного.
  * Где-то за 6–7 блоков маскировка срывается: он бежит как супербыстрый и шипит полсекунды.
  * Ника нет. Подрывником, метателем динамита и супербыстрым сразу не бывает.
  * Заряженным и ломателем щита быть может.
@@ -84,7 +90,25 @@ public final class FeintCreeper {
 	 */
 	public static final boolean KEEP_BURST = true;
 
+	/**
+	 * Частицы зелья скорости вокруг обманки. true — видны всё время, и пока она ещё идёт медленно.
+	 * Так её можно узнать до рывка. false — снова неотличима от обычного крипера.
+	 * Это не зелье: скорость остаётся {@link #CALM_SPEED}, пока маскировка не сорвалась.
+	 * Отдельное зелье скорости при появлении (MobPotionBuffs) по-прежнему может ускорить рывок.
+	 */
+	public static final boolean SPEED_PARTICLES = true;
+
+	/**
+	 * Как часто сыпать одну частицу, в тиках. У моба с выпитым зельем игра делает это
+	 * примерно раз в 4 тика — издалека почти не разглядеть. 2 = чуть гуще, обманку видно заранее.
+	 * 1 = каждый тик, облако плотнее. 0 и меньше — частиц нет, как при SPEED_PARTICLES = false.
+	 */
+	public static final int SPEED_PARTICLE_EVERY_TICKS = 2;
+
 	// ========================================================================
+
+	/** Цвет и вид частицы — те же, что у выпитого зелья скорости. Считается один раз. */
+	private static ParticleOptions speedParticle;
 
 	private FeintCreeper() {
 	}
@@ -147,6 +171,7 @@ public final class FeintCreeper {
 		} else {
 			applyCalm(creeper);
 		}
+		spawnSpeedParticles(creeper);
 	}
 
 	/** Команда: обманка перед игроком. Пока до зоны далеко, идёт как обычный. null — механика выключена. */
@@ -193,6 +218,45 @@ public final class FeintCreeper {
 	private static void applyCalm(Creeper creeper) {
 		setSpeed(creeper, CALM_SPEED);
 		setFuse(creeper, fuseTicks(CALM_FUSE_SECONDS));
+	}
+
+	/**
+	 * Те же голубые завитки, что у зелья скорости. Зелье на крипера не вешается,
+	 * поэтому спокойная скорость 0.25 от частиц не меняется.
+	 * Видно примерно на 32 блока — дальше игра такие частицы не рисует.
+	 */
+	private static void spawnSpeedParticles(Creeper creeper) {
+		if (!SPEED_PARTICLES || SPEED_PARTICLE_EVERY_TICKS <= 0 || !creeper.isAlive()) {
+			return;
+		}
+		if (creeper.tickCount % SPEED_PARTICLE_EVERY_TICKS != 0) {
+			return;
+		}
+		if (!(creeper.level() instanceof ServerLevel level)) {
+			return;
+		}
+		// count = 0: одна частица точно в этой точке, скорости 1,1,1 — как у зелья на мобе.
+		level.sendParticles(
+				speedParticle(),
+				creeper.getRandomX(0.5),
+				creeper.getRandomY(),
+				creeper.getRandomZ(0.5),
+				0,
+				1.0,
+				1.0,
+				1.0,
+				1.0,
+				1.0,
+				1.0);
+	}
+
+	private static ParticleOptions speedParticle() {
+		if (speedParticle == null) {
+			// ambient = false: яркие частицы, как у выпитого зелья, а не тусклые от маяка.
+			MobEffectInstance effect = new MobEffectInstance(MobEffects.SPEED, 1, 0, false, true, false);
+			speedParticle = MobEffects.SPEED.value().createParticleOptions(effect);
+		}
+		return speedParticle;
 	}
 
 	private static boolean playerInTrigger(Creeper creeper, double blocks) {

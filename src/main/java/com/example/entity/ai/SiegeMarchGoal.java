@@ -15,10 +15,21 @@ import java.util.EnumSet;
  * не перебивают путь. Ближе {@link SiegeWaves#MARCH_STOP_DISTANCE} цель выключается,
  * и моб дерётся или стреляет как обычно.
  *
+ * Пока эта цель ведёт моба, обычная драка не работает, поэтому сама она руки не поднимает
+ * и на игрока не смотрит. Здесь моб смотрит на игрока и держит боевую стойку всю дорогу:
+ * у зомби подняты руки, у разбойника и поборника оружие в руках, а не прогулка.
+ * Стрелять и бить раньше времени это не заставляет — удар включается только вблизи.
+ *
  * Путь, заданный снаружи раз в секунду, игра затирает своим блужданием на следующем же тике.
  * Поэтому идти к игроку можно только отдельной целью, как здесь.
  */
 public class SiegeMarchGoal extends Goal {
+
+	/**
+	 * Насколько быстро голова поворачивается к игроку по горизонтали и вертикали.
+	 * 30 — как у обычной атаки игры. Меньше — голова догоняет медленнее.
+	 */
+	private static final float LOOK_AT_PLAYER = 30.0f;
 
 	private final Mob mob;
 	private int nextRepathTick;
@@ -27,7 +38,8 @@ public class SiegeMarchGoal extends Goal {
 
 	public SiegeMarchGoal(Mob mob) {
 		this.mob = mob;
-		this.setFlags(EnumSet.of(Flag.MOVE));
+		// LOOK — чтобы случайный взгляд не уводил голову, пока моб должен смотреть на игрока.
+		this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
 	}
 
 	@Override
@@ -56,10 +68,19 @@ public class SiegeMarchGoal extends Goal {
 		lastX = mob.getX();
 		lastZ = mob.getZ();
 		nextRepathTick = 0;
+		holdCombatStance();
+	}
+
+	@Override
+	public void stop() {
+		// Иначе руки так и останутся подняты, когда осада кончилась или моб уже рядом и дерётся сам.
+		mob.setAggressive(false);
 	}
 
 	@Override
 	public void tick() {
+		// Каждый тик, а не только когда путь перестраивается: иначе голова смотрит в сторону ходьбы.
+		holdCombatStance();
 		if (mob.tickCount < nextRepathTick) {
 			return;
 		}
@@ -85,6 +106,21 @@ public class SiegeMarchGoal extends Goal {
 		}
 		if (!step(dx, dz, distance, SiegeWaves.MARCH_STEP_BLOCKS)) {
 			step(dx, dz, distance, 8.0);
+		}
+	}
+
+	/**
+	 * Боевая стойка на всю дорогу. Обычная драка в это время выключена и стойку сама не включает.
+	 * Ближе {@link SiegeWaves#MARCH_STOP_DISTANCE} эта цель отпускает моба, и драка включается как обычно.
+	 */
+	private void holdCombatStance() {
+		ServerPlayer player = SiegeWaves.nearestHuntTarget(mob);
+		if (player == null) {
+			return;
+		}
+		mob.getLookControl().setLookAt(player, LOOK_AT_PLAYER, LOOK_AT_PLAYER);
+		if (!mob.isAggressive()) {
+			mob.setAggressive(true);
 		}
 	}
 

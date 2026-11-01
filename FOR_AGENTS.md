@@ -36,7 +36,7 @@
 
 ## Куда смотреть
 
-Одна задача — одна строка таблицы ниже и, если нужно поведение, **один** файл в `mobs/`. В заметке строка «Код:» уже перечисляет миксины. Папку `mixin/` целиком не обходить.
+Одна задача — одна строка таблицы ниже. Поведение одной сущности собрано разделами в одном файле папки (`mobs/zombies/zombie.txt` и так далее). Общее для многих мобов, осада и шкала угрозы — отдельные файлы в `mobs/common/`. В заметке строка «Код:» уже перечисляет миксины. Папку `mixin/` целиком не обходить.
 
 `entity/` и `entity/ai/` открывать только если класс механики ссылается на конкретный файл. `src/client` — только если задача про внешний вид.
 
@@ -62,7 +62,7 @@
 | Случайное здоровье | `MobHealth.java` | `mobs/common/случайное-здоровье.txt` |
 | Опыт за убийство усиленных | `MobExperience.java` | `mobs/common/опыт-за-убийство.txt` |
 | Парящий инструмент | `tool/FloatingTool.java` | `mobs/common/парящий-инструмент.txt` |
-| Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/повреждённый-голем.txt` |
+| Повреждённый голем | `golem/DamagedGolem.java` | `mobs/golems/golem.txt` |
 | Бастион (зомби или скелет) | `bastion/Bastion.java` | `mobs/common/бастион.txt` |
 | Spiky (укол брони на 7–8 сердец) | `spiky/Spiky.java` | `mobs/common/spiky.txt` |
 | Зеркало (возврат удара) | `mirror/Mirror.java` | `mobs/common/зеркало.txt` |
@@ -71,75 +71,77 @@
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
-| Дальний быстрый лук | `skeleton/FastBowSkeleton.java` | `mobs/skeletons/скелет-дальний-лук.txt` |
-| Маленький скелет | `skeleton/SmallSkeleton.java` | `mobs/skeletons/маленький-скелет.txt` |
-| Вредная стрела | `skeleton/HarmfulArrowSkeleton.java` | `mobs/skeletons/скелет-вредная-стрела.txt` |
-| Стрела выбивает вещи из рук | `skeleton/SkeletonDisarm.java` | `mobs/skeletons/скелет-выбивает-предмет.txt` |
-| «700 IQ», меч на спине | `skeleton/TacticianSkeleton.java` | `mobs/skeletons/скелет-700-iq.txt` |
+| Дальний быстрый лук | `skeleton/FastBowSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ С ДАЛЬНИМ БЫСТРЫМ ЛУКОМ») |
+| Маленький скелет | `skeleton/SmallSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «МАЛЕНЬКИЙ СКЕЛЕТ») |
+| Вредная стрела | `skeleton/HarmfulArrowSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ С ВРЕДНОЙ СТРЕЛОЙ») |
+| Случайные стрелы | `skeleton/RandomArrowSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ СО СЛУЧАЙНЫМИ СТРЕЛАМИ») |
+| Скелет-снайпер | `skeleton/SniperSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ-СНАЙПЕР») |
+| Стрела выбивает вещи из рук | `skeleton/SkeletonDisarm.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ: СТРЕЛА ВЫБИВАЕТ ВЕЩИ ИЗ РУК») |
+| «700 IQ», меч на спине | `skeleton/TacticianSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ «700 IQ»») |
 | Раздатчик на голове, залп стрел | `RandomDispenserSkull.java` | заметки нет; цель — `entity/ai/DispenserBarrageGoal.java` |
 | Спектральная стрела поднимает мобов | `skeleton/SpectralArrowHunt.java` | заметки нет |
-| Иссушитель со спавнером | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/иссушитель-со-спавнером.txt` |
-| Меч и опыт иссушителя | `skeleton/WitherSkeletonSword.java` | `mobs/skeletons/иссушитель-меч.txt` |
-| Капитан скелетов | `skeleton/SkeletonCaptain.java` | `mobs/skeletons/капитан-скелетов.txt` |
-| Василиск | `skeleton/BasiliskSkeleton.java` | `mobs/skeletons/василиск.txt` |
-| Скелет на костяной лошади | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/скелет-наездник.txt` |
-| Лук с Откидыванием V–VI | `skeleton/SkeletonPunchBow.java` | `mobs/skeletons/лук-откидывание.txt` |
+| Иссушитель со спавнером | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ-ИСУШИТЕЛЬ СО СПАВНЕРОМ») |
+| Меч и опыт иссушителя | `skeleton/WitherSkeletonSword.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ-ИССУШИТЕЛЬ: МЕЧ И ОПЫТ») |
+| Капитан скелетов | `skeleton/SkeletonCaptain.java` | `mobs/skeletons/skeleton.txt` (раздел «КАПИТАН СКЕЛЕТОВ») |
+| Василиск | `skeleton/BasiliskSkeleton.java` | `mobs/skeletons/skeleton.txt` (раздел «ВАСИЛИСК») |
+| Скелет на костяной лошади | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/skeleton.txt` (раздел «СКЕЛЕТ НАЕЗДНИК») |
+| Лук с Откидыванием V–VI | `skeleton/SkeletonPunchBow.java` | `mobs/skeletons/skeleton.txt` (раздел «ЛУК С ОТКИДЫВАНИЕМ V И VI») |
 
 ### Зомби
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
-| Идут на свет | `light/LightSeeking.java` | `mobs/zombies/зомби-идут-на-свет.txt` |
-| Ломают блоки к игроку | `digging/BlockBreaking.java` | `mobs/zombies/зомби-ломают-блоки.txt` |
+| Идут на свет | `light/LightSeeking.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ ИДУТ НА СВЕТ») |
+| Ломают блоки к игроку | `digging/BlockBreaking.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ ЛОМАЮТ БЛОКИ») |
 | Помнит игрока и идёт за стену | `grudge/PlayerGrudge.java` | заметки нет; этим пользуются свет и копание |
-| Маяк из тыквы | `beacon/JackLanternBeacon.java`, свет — `beacon/JackLanternLight.java` | `mobs/zombies/маяк-тыквы.txt` |
-| Носитель спавнера | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/носитель-спавнера.txt` |
-| Гнилой надсмотрщик | `overseer/ZombieOverseer.java` | `mobs/zombies/гнилой-надсмотрщик.txt` |
-| Зомби с динамитом | `zombie/TntZombie.java` | `mobs/zombies/зомби-с-динамитом.txt` |
-| Зомби-чародей | `zombie/ZombieSorcerer.java` | `mobs/zombies/зомби-чародей.txt` |
-| Зомби Excalibur | `zombie/ZombieExcalibur.java` | `mobs/zombies/зомби-экскалибур.txt` |
-| Зомби Mjölnir | `zombie/ZombieMjolnir.java` | `mobs/zombies/зомби-мьельнир.txt` |
-| Ритуальная стая | `ritual/RitualBand.java` | `mobs/zombies/ритуальная-стая.txt` |
-| Утопленник | `drowned/DrownedThreats.java` | `mobs/zombies/утопленник.txt` |
-| Удочка утопленника | `drowned/DrownedFishing.java` | `mobs/zombies/утопленник-удочка.txt` |
-| Зомби ворует вещь | `zombie/ZombieTheft.java` | `mobs/zombies/зомби-ворует-предмет.txt` |
+| Маяк из тыквы | `beacon/JackLanternBeacon.java`, свет — `beacon/JackLanternLight.java` | `mobs/zombies/zombie.txt` и `mobs/skeletons/skeleton.txt` (раздел «МАЯК») |
+| Носитель спавнера | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/zombie.txt` и `mobs/skeletons/skeleton.txt` (раздел «НОСИТЕЛЬ СПАВНЕРА») |
+| Гнилой надсмотрщик | `overseer/ZombieOverseer.java` | `mobs/zombies/zombie.txt` (раздел «ГНИЛОЙ НАДСМОТРЩИК») |
+| Зомби с динамитом | `zombie/TntZombie.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ С ДИНАМИТОМ») |
+| Зомби-чародей | `zombie/ZombieSorcerer.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ-ЧАРОДЕЙ») |
+| Зомби Excalibur | `zombie/ZombieExcalibur.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ EXCALIBUR») |
+| Зомби Mjölnir | `zombie/ZombieMjolnir.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ MJÖLNIR») |
+| Ритуальная стая | `ritual/RitualBand.java` | `mobs/zombies/zombie.txt` и `mobs/skeletons/skeleton.txt` (раздел «РИТУАЛЬНАЯ СТАЯ») |
+| Утопленник | `drowned/DrownedThreats.java` | `mobs/zombies/zombie.txt` (раздел «УТОПЛЕННИК: ШЛЕМ, ВОДА, ГРОЗА») |
+| Удочка утопленника | `drowned/DrownedFishing.java` | `mobs/zombies/zombie.txt` (раздел «УТОПЛЕННИК С УДОЧКОЙ») |
+| Зомби ворует вещь | `zombie/ZombieTheft.java` | `mobs/zombies/zombie.txt` (раздел «ЗОМБИ: ВОРУЕТ ВЕЩЬ ИЗ РУК») |
 
 ### Криперы, пауки, ведьмы, рейд
 
 | В игре | Сначала этот файл | Заметка |
 |--------|-------------------|---------|
-| Метатель динамита | `creeper/DynamiteCreeper.java` | `mobs/creepers/крипер-метатель-динамита.txt` |
-| Заряженный крипер | `creeper/ChargedCreeper.java` | `mobs/creepers/крипер-заряженный.txt` |
-| Ломает щит взрывом | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/крипер-ломает-щит.txt` |
-| Подрывник | `creeper/SapperCreeper.java` | `mobs/creepers/крипер-подрывник.txt` |
-| Супербыстрый крипер | `creeper/FastCreeper.java` | `mobs/creepers/крипер-быстрый.txt` |
-| Крипер-обманка | `creeper/FeintCreeper.java` | `mobs/creepers/крипер-обманка.txt` |
-| Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/пауки-ткач-и-матка.txt` |
-| Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/рой-пауков.txt` |
-| Яд пещерного паука может убить | `spider/CaveSpiderPoison.java` | `mobs/spiders/пещерный-паук-яд.txt` |
-| Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/raids/рейдовый-якорь.txt` |
-| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java`, `siege/SiegeComposition.java` (фракции и доли мобов) | `mobs/raids/осада.txt` |
-| Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/фантомы-укус-и-стая.txt` |
-| Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/фантомы-слабость.txt` |
-| Слепота с укуса фантома | `phantom/PhantomBlindness.java` | `mobs/phantoms/фантомы-слепота.txt` |
-| Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/патруль-у-дома.txt` |
-| Ракета разбойника | `illager/PillagerFirework.java` | `mobs/illagers/разбойник-фейерверк.txt` |
-| Алмазный топор поборника | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/поборник-алмазный-топор.txt` |
-| Поборник рубит дерево | `illager/VindicatorWoodBreak.java` | `mobs/illagers/поборник-рубит-дерево.txt` |
-| Разоритель пробивает стены | `illager/RavagerWallBreak.java` | `mobs/illagers/разоритель-пробивает-стены.txt` |
-| Урон и слабость досаждателя | `vex/VexDamage.java` | `mobs/illagers/досаждатель-урон.txt` |
-| Блейз-алхимик | `blaze/BlazeAlchemist.java` | `mobs/blazes/блейз-алхимик.txt` |
-| Ведьма-обнулитель | `witch/WitchNullifier.java` | `mobs/witches/ведьма-обнулитель.txt` |
-| Невидимость ведьмы | `witch/WitchInvisibility.java` | `mobs/witches/ведьма-невидимость.txt` |
-| Зелья ведьмы в игрока | `witch/WitchThrownPotions.java` | `mobs/witches/ведьма-зелья.txt` |
-| Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/слизни-отравление.txt` |
-| Магмовый куб | `magma/MagmaCubeThreats.java` | `mobs/slimes/магмовый-куб.txt` |
-| Обмен местами эндермена | `enderman/EndermanSwap.java` | `mobs/endermen/обмен-местами.txt` |
-| Чаще берёт и ставит блоки | `enderman/EndermanBlocks.java` | `mobs/endermen/блоки.txt` |
-| Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/шалкеры-снаряды.txt` |
-| Панцирь шалкера | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/шалкер-панцирь.txt` |
-| Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/брут-ломает-броню.txt` |
-| Здоровье брута | `piglin/PiglinBruteHealth.java` | `mobs/piglins/брут-здоровье.txt` |
+| Метатель динамита | `creeper/DynamiteCreeper.java` | `mobs/creepers/creeper.txt` (раздел «КРИПЕР-МЕТАТЕЛЬ ДИНАМИТА») |
+| Заряженный крипер | `creeper/ChargedCreeper.java` | `mobs/creepers/creeper.txt` (раздел «ЗАРЯЖЕННЫЙ КРИПЕР») |
+| Ломает щит взрывом | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/creeper.txt` (раздел «КРИПЕР, КОТОРЫЙ ЛОМАЕТ ЩИТ») |
+| Подрывник | `creeper/SapperCreeper.java` | `mobs/creepers/creeper.txt` (раздел «КРИПЕР-ПОДРЫВНИК») |
+| Супербыстрый крипер | `creeper/FastCreeper.java` | `mobs/creepers/creeper.txt` (раздел «СУПЕРБЫСТРЫЙ КРИПЕР») |
+| Крипер-обманка | `creeper/FeintCreeper.java` | `mobs/creepers/creeper.txt` (раздел «КРИПЕР-ОБМАНКА») |
+| Ткач и матка | `spider/SpiderThreats.java` | `mobs/spiders/spider.txt` (раздел «ПАУКИ: ТКАЧ И МАТКА») |
+| Рой пауков | `spider/SpiderSwarm.java` | `mobs/spiders/spider.txt` (раздел «ПАУКИ: РОЙ») |
+| Яд пещерного паука может убить | `spider/CaveSpiderPoison.java` | `mobs/spiders/spider.txt` (раздел «ПЕЩЕРНЫЙ ПАУК: ЯД СНОВА МОЖЕТ УБИТЬ») |
+| Рейдовый якорь | `raid/RaidAnchor.java` | `mobs/common/рейдовый-якорь.txt` |
+| Осада (редкая ночь, волны, запрет сна и порталов) | `siege/SiegeNight.java`, `siege/SiegeWaves.java`, `siege/SiegeComposition.java` (фракции и доли мобов) | `mobs/common/осада.txt` |
+| Укус и стая фантомов | `phantom/PhantomThreats.java` | `mobs/phantoms/phantom.txt` (раздел «ФАНТОМЫ: УКУС И СТАЯ») |
+| Слабость с укуса фантома | `phantom/PhantomWeakness.java` | `mobs/phantoms/phantom.txt` (раздел «ФАНТОМЫ: СЛАБОСТЬ С УКУСА») |
+| Слепота с укуса фантома | `phantom/PhantomBlindness.java` | `mobs/phantoms/phantom.txt` (раздел «ФАНТОМЫ: СЛЕПОТА С УКУСА») |
+| Патруль у дома | `illager/IllagerPatrol.java` | `mobs/illagers/illager.txt` (раздел «ПАТРУЛЬ У ДОМА») |
+| Ракета разбойника | `illager/PillagerFirework.java` | `mobs/illagers/illager.txt` (раздел «РАЗБОЙНИК: РАКЕТА ИЗ АРБАЛЕТА») |
+| Алмазный топор поборника | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/illager.txt` (раздел «ПОБОРНИК: АЛМАЗНЫЙ ТОПОР») |
+| Поборник рубит дерево | `illager/VindicatorWoodBreak.java` | `mobs/illagers/illager.txt` (раздел «ПОБОРНИК РУБИТ ДЕРЕВО») |
+| Разоритель пробивает стены | `illager/RavagerWallBreak.java` | `mobs/illagers/illager.txt` (раздел «РАЗОРИТЕЛЬ: ПРОБИВАЕТ СТЕНЫ») |
+| Урон и слабость досаждателя | `vex/VexDamage.java` | `mobs/illagers/illager.txt` (раздел «ДОСАЖДАТЕЛЬ: +1 СЕРДЦЕ К УДАРУ») |
+| Блейз-алхимик | `blaze/BlazeAlchemist.java` | `mobs/blazes/blaze.txt` |
+| Ведьма-обнулитель | `witch/WitchNullifier.java` | `mobs/witches/witch.txt` (раздел «ВЕДЬМА-ОБНУЛИТЕЛЬ») |
+| Невидимость ведьмы | `witch/WitchInvisibility.java` | `mobs/witches/witch.txt` (раздел «ВЕДЬМА: ЗЕЛЬЕ НЕВИДИМОСТИ») |
+| Зелья ведьмы в игрока | `witch/WitchThrownPotions.java` | `mobs/witches/witch.txt` (раздел «ВЕДЬМА: НОВЫЕ ЗЕЛЬЯ И ТУМАН») |
+| Яд слизней | `slime/SlimePoison.java` | `mobs/slimes/slime.txt` (раздел «ЯД СЛИЗНЕЙ») |
+| Магмовый куб | `magma/MagmaCubeThreats.java` | `mobs/slimes/slime.txt` (раздел «МАГМОВЫЙ КУБ») |
+| Обмен местами эндермена | `enderman/EndermanSwap.java` | `mobs/endermen/enderman.txt` (раздел «ЭНДЕРМЕН МЕНЯЕТСЯ МЕСТАМИ») |
+| Чаще берёт и ставит блоки | `enderman/EndermanBlocks.java` | `mobs/endermen/enderman.txt` (раздел «ЭНДЕРМЕН БЕРЁТ И СТАВИТ БЛОКИ») |
+| Снаряды шалкера | `shulker/ShulkerThreats.java` | `mobs/shulkers/shulker.txt` (раздел «ШАЛКЕРЫ: СНАРЯДЫ И ПЕРЕСАДКА») |
+| Панцирь шалкера | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/shulker.txt` (раздел «ШАЛКЕР: ЗАКРЫТЫЙ ПАНЦИРЬ ПОРТИТ ОРУЖИЕ») |
+| Удар брута по броне | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/piglin.txt` (раздел «БРУТАЛЬНЫЙ ПИГЛИН: ПОРТИТ БРОНЮ») |
+| Здоровье брута | `piglin/PiglinBruteHealth.java` | `mobs/piglins/piglin.txt` (раздел «БРУТАЛЬНЫЙ ПИГЛИН: ЗДОРОВЬЕ») |
 
 Служебное, если задача не про моба: `EvolvingThreats.java` — вход мода, `command/EvolvingThreatsCommands.java` — тестовые команды, `идея.txt` — общий замысел. Новую механику класть в отдельный класс; mixin — только вызов 1–2 методов.
 

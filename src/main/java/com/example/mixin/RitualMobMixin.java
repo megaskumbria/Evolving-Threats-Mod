@@ -27,6 +27,6 @@ public class RitualMobMixin {
 
 	@Inject(method = "dropCustomDeathLoot", at = @At("RETURN"))
 	private void evolvingthreats$ritualBonus(ServerLevel level, DamageSource source, boolean killedByPlayer, CallbackInfo ci) {
-		RitualBand.dropBonus((Mob) (Object) this, level, killedByPlayer);
+		RitualBand.dropBonus((Mob) (Object) this, level, source, killedByPlayer);
 	}
 }
