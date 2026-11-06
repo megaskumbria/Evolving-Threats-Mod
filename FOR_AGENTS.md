@@ -35,7 +35,7 @@ Do not leave new mechanics unlabeled; do not apply the scale silently.
 
 ## Where to look
 
-One task — one table row. One entity type = one file under `mobs/` (e.g. `mobs/zombies/zombie.txt`) with sections. Shared mechanics, siege, and threat scale live in `mobs/common/`. The note’s **Code:** line lists mixins; do not scan all of `mixin/`.
+One task — one table row. One variant = one file under `mobs/<folder>/`. Shared mechanics, siege, and threat scale live in `mobs/common/`. The note’s **Code:** line lists mixins; do not scan all of `mixin/`.
 
 Open `entity/` and `entity/ai/` only when the mechanics class points there. Open `src/client` only for visuals.
 
@@ -49,7 +49,7 @@ Paths in the table are under `src/main/java/com/example/`.
 |--------|------------|-------------|
 | Threat scale (day 0–100, moon, growing chances) | `threat/ThreatScale.java`, `threat/ThreatTable.java`, `ThreatData`/`ThreatEvents` | `mobs/common/threat-scale.txt`, `mobs.txt`, `idea.txt` |
 | Threat HUD | `src/client/.../ThreatHud.java`, `tools/prepare_threat_textures.py`, `art/threat_hud/` | — |
-| Advancements tab | `advancement/ModAdvancements.java` | icons and rewards in `data/evolving-threats/advancement`, item rewards in `data/evolving-threats/loot_table/advancement`, names in lang |
+| Advancements tab | `advancement/ModAdvancements.java` | icons and rewards in `data/evolving-threats/advancement`, item rewards in `data/evolving-threats/loot_table/advancement`, names in lang. Parents in the JSON are the tree only; do not put the mob's name in the title |
 | Random weapons / dual wield | `RandomWeapons.java` | `mobs/common/dual-wield.txt` |
 | Random / dyed leather armor | `RandomArmor.java` | `mobs/common/dyed-leather-armor.txt` |
 | Full armor set | `RandomArmor.java` (`FULL_SET_CHANCE`) | `mobs/common/full-armor-set.txt` |
@@ -71,58 +71,83 @@ Paths in the table are under `src/main/java/com/example/`.
 
 | In-game | Java first | Author note |
 |--------|------------|-------------|
-| Fast long-range bow | `skeleton/FastBowSkeleton.java` | `mobs/skeletons/skeleton.txt` — “SKELETON WITH FAST LONG-RANGE BOW” |
-| Small skeleton | `skeleton/SmallSkeleton.java` | section “SMALL SKELETON” |
-| Harmful arrow | `skeleton/HarmfulArrowSkeleton.java` | section “SKELETON WITH HARMFUL ARROW” |
-| Random effect arrows | `skeleton/RandomArrowSkeleton.java` | section “SKELETON WITH RANDOM ARROWS” |
-| Sniper | `skeleton/SniperSkeleton.java` | section “SNIPER SKELETON” |
-| Disarm arrow | `skeleton/SkeletonDisarm.java` | section “SKELETON: ARROW DISARMS HANDS” |
-| Tactician (“700 IQ”) | `skeleton/TacticianSkeleton.java` | section “SKELETON «700 IQ»” |
+| Fast long-range bow | `skeleton/FastBowSkeleton.java` | `mobs/skeletons/fast-bow.txt` |
+| Small skeleton | `skeleton/SmallSkeleton.java` | `mobs/skeletons/small-skeleton.txt` |
+| Harmful arrow | `skeleton/HarmfulArrowSkeleton.java` | `mobs/skeletons/harmful-arrow.txt` |
+| Random effect arrows | `skeleton/RandomArrowSkeleton.java` | `mobs/skeletons/random-arrows.txt` |
+| Sniper | `skeleton/SniperSkeleton.java` | `mobs/skeletons/sniper.txt` |
+| Disarm arrow | `skeleton/SkeletonDisarm.java` | `mobs/skeletons/disarm-arrow.txt` |
+| Tactician (“700 IQ”) | `skeleton/TacticianSkeleton.java` | `mobs/skeletons/tactician.txt` |
 | Dispenser head barrage | `RandomDispenserSkull.java` | no note; see `entity/ai/DispenserBarrageGoal.java` |
 | Spectral arrow hunt | `skeleton/SpectralArrowHunt.java` | no note |
-| Wither skeleton + spawner | `spawnerhead/SpawnerHeadMob.java` | section “WITHER SKELETON WITH SPAWNER” |
-| Wither sword / XP | `skeleton/WitherSkeletonSword.java` | section “WITHER SKELETON: SWORD AND XP” |
-| Captain | `skeleton/SkeletonCaptain.java` | section “SKELETON CAPTAIN” |
-| Basilisk | `skeleton/BasiliskSkeleton.java` | section “BASILISK” |
-| Horseman | `skeleton/SkeletonHorseman.java` | section “SKELETON HORSEMAN” |
-| Punch bow V–VI | `skeleton/SkeletonPunchBow.java` | section “PUNCH BOW V AND VI” |
+| Wither skeleton + spawner | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/wither-spawner.txt` |
+| Wither sword / XP | `skeleton/WitherSkeletonSword.java` | `mobs/skeletons/wither-sword.txt` |
+| Captain | `skeleton/SkeletonCaptain.java` | `mobs/skeletons/captain.txt` |
+| Basilisk | `skeleton/BasiliskSkeleton.java` | `mobs/skeletons/basilisk.txt` |
+| Horseman | `skeleton/SkeletonHorseman.java` | `mobs/skeletons/horseman.txt` |
+| Punch bow V–VI | `skeleton/SkeletonPunchBow.java` | `mobs/skeletons/punch-bow.txt` |
+| Jack-o’-lantern (skeleton copy) | `beacon/JackLanternBeacon.java` | `mobs/skeletons/jack-o-lantern.txt` |
+| Spawner head (skeleton copy) | `spawnerhead/SpawnerHeadMob.java` | `mobs/skeletons/spawner-head.txt` |
+| Ritual band (skeleton copy) | `ritual/RitualBand.java` | `mobs/skeletons/ritual-band.txt` |
+| Shared variants | — | `mobs/skeletons/shared-variants.txt` |
 
 ### Zombies
 
 | In-game | Java first | Author note |
 |--------|------------|-------------|
-| Light seeking | `light/LightSeeking.java` | `mobs/zombies/zombie.txt` — “ZOMBIES SEEK LIGHT” |
-| Block breaking | `digging/BlockBreaking.java` | section “ZOMBIES BREAK BLOCKS” |
+| Light seeking | `light/LightSeeking.java` | `mobs/zombies/light-seeking.txt` |
+| Block breaking | `digging/BlockBreaking.java` | `mobs/zombies/block-breaking.txt` |
 | Player grudge | `grudge/PlayerGrudge.java` | no separate note; used by light and digging |
-| Jack-o’-lantern beacon | `beacon/JackLanternBeacon.java`, `JackLanternLight.java` | `zombie.txt` / `skeleton.txt` — “BEACON” |
-| Spawner head | `spawnerhead/SpawnerHeadMob.java` | section “SPAWNER CARRIER” |
-| Rotten overseer | `overseer/ZombieOverseer.java` | section “ROTTEN OVERSEER” |
-| TNT zombie | `zombie/TntZombie.java` | section “ZOMBIE WITH TNT” |
-| Sorcerer | `zombie/ZombieSorcerer.java` | section “ZOMBIE SORCERER” |
-| Excalibur | `zombie/ZombieExcalibur.java` | section “ZOMBIE EXCALIBUR” |
-| Mjölnir | `zombie/ZombieMjolnir.java` | section “ZOMBIE MJÖLNIR” |
-| Ritual band | `ritual/RitualBand.java` | section “RITUAL BAND” |
-| Drowned | `drowned/DrownedThreats.java` | section “DROWNED: HELMET, WATER, STORM” |
-| Drowned fishing rod | `drowned/DrownedFishing.java` | section “DROWNED WITH FISHING ROD” |
-| Theft | `zombie/ZombieTheft.java` | section “ZOMBIE: STEALS FROM HANDS” |
+| Jack-o’-lantern beacon | `beacon/JackLanternBeacon.java`, `JackLanternLight.java` | `mobs/zombies/jack-o-lantern.txt` and `mobs/skeletons/jack-o-lantern.txt` |
+| Spawner head | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/spawner-head.txt` |
+| Rotten overseer | `overseer/ZombieOverseer.java` | `mobs/zombies/rotten-overseer.txt` |
+| TNT zombie | `zombie/TntZombie.java` | `mobs/zombies/tnt-zombie.txt` |
+| Sorcerer | `zombie/ZombieSorcerer.java` | `mobs/zombies/sorcerer.txt` |
+| Excalibur | `zombie/ZombieExcalibur.java` | `mobs/zombies/excalibur.txt` |
+| Mjölnir | `zombie/ZombieMjolnir.java` | `mobs/zombies/mjolnir.txt` |
+| Ritual band | `ritual/RitualBand.java` | `mobs/zombies/ritual-band.txt` |
+| Drowned | `drowned/DrownedThreats.java` | `mobs/zombies/drowned.txt` |
+| Drowned fishing rod | `drowned/DrownedFishing.java` | `mobs/zombies/drowned-fishing-rod.txt` |
+| Theft | `zombie/ZombieTheft.java` | `mobs/zombies/steals-item.txt` |
+| Shared variants (bastion, spiky, mirror, raid, siege) | — | `mobs/zombies/shared-variants.txt` |
 
 ### Creepers, spiders, witches, raids
 
 | In-game | Java first | Author note |
 |--------|------------|-------------|
-| Dynamite thrower | `creeper/DynamiteCreeper.java` | `mobs/creepers/creeper.txt` |
-| Charged / shield break / sapper / fast / feint | respective `creeper/*.java` | matching sections in `creeper.txt` |
-| Spider weaver / swarm / cave poison | `spider/*.java` | `mobs/spiders/spider.txt` |
+| Dynamite thrower | `creeper/DynamiteCreeper.java` | `mobs/creepers/dynamite.txt` |
+| Charged creeper | `creeper/ChargedCreeper.java` | `mobs/creepers/charged.txt` |
+| Shield-break creeper | `creeper/ShieldBreakCreeper.java` | `mobs/creepers/shield-break.txt` |
+| Sapper creeper | `creeper/SapperCreeper.java` | `mobs/creepers/sapper.txt` |
+| Super-fast creeper | `creeper/FastCreeper.java` | `mobs/creepers/super-fast.txt` |
+| Feint creeper | `creeper/FeintCreeper.java` | `mobs/creepers/feint.txt` |
+| Magnet creeper | `creeper/MagnetCreeper.java` | `mobs/creepers/magnet.txt` |
+| Spider weaver and matriarch | `spider/SpiderThreats.java` | `mobs/spiders/weaver.txt` |
+| Spider swarm | `spider/SpiderSwarm.java` | `mobs/spiders/swarm.txt` |
+| Cave spider poison | `spider/CaveSpiderPoison.java` | `mobs/spiders/cave-poison.txt` |
 | Raid anchor | `raid/RaidAnchor.java` | `mobs/common/raid-anchor.txt` |
 | Siege | `siege/SiegeNight.java`, `SiegeWaves.java`, `SiegeComposition.java` | `mobs/common/siege.txt` |
-| Phantoms | `phantom/*.java` | `mobs/phantoms/phantom.txt` |
-| Illagers | `illager/*.java`, `vex/VexDamage.java` | `mobs/illagers/illager.txt` |
+| Phantom bite and flock | `phantom/PhantomThreats.java` | `mobs/phantoms/bite-and-flock.txt` |
+| Phantom weakness | `phantom/PhantomWeakness.java` | `mobs/phantoms/weakness.txt` |
+| Phantom blindness | `phantom/PhantomBlindness.java` | `mobs/phantoms/blindness.txt` |
+| Patrol at the base | `illager/IllagerPatrol.java` | `mobs/illagers/patrol.txt` |
+| Pillager firework | `illager/PillagerFirework.java` | `mobs/illagers/firework-crossbow.txt` |
+| Vindicator diamond axe | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/diamond-axe.txt` |
+| Vindicator chops wood | `illager/VindicatorWoodBreak.java` | `mobs/illagers/chops-wood.txt` |
+| Ravager breaks walls | `illager/RavagerWallBreak.java` | `mobs/illagers/ravager.txt` |
+| Vex extra heart | `vex/VexDamage.java` | `mobs/illagers/vex.txt` |
 | Blaze alchemist | `blaze/BlazeAlchemist.java` | `mobs/blazes/blaze.txt` |
-| Witches | `witch/*.java` | `mobs/witches/witch.txt` |
-| Slimes / magma cube | `slime/SlimePoison.java`, `magma/MagmaCubeThreats.java` | `mobs/slimes/slime.txt` |
-| Enderman | `enderman/*.java` | `mobs/endermen/enderman.txt` |
-| Shulker | `shulker/*.java` | `mobs/shulkers/shulker.txt` |
-| Piglin brute | `piglin/*.java` | `mobs/piglins/piglin.txt` |
+| Witch potions and fog | `witch/WitchThrownPotions.java` | `mobs/witches/potions-and-fog.txt` |
+| Witch invisibility | `witch/WitchInvisibility.java` | `mobs/witches/invisibility.txt` |
+| Nullifier witch | `witch/WitchNullifier.java` | `mobs/witches/nullifier.txt` |
+| Slime poison | `slime/SlimePoison.java` | `mobs/slimes/poison.txt` |
+| Magma cube | `magma/MagmaCubeThreats.java` | `mobs/slimes/magma-cube.txt` |
+| Enderman swap | `enderman/EndermanSwap.java` | `mobs/endermen/swap-places.txt` |
+| Enderman moves blocks | `enderman/EndermanBlocks.java` | `mobs/endermen/moves-blocks.txt` |
+| Shulker shots and teleport | `shulker/ShulkerThreats.java` | `mobs/shulkers/shots-and-teleport.txt` |
+| Shulker closed shell | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/closed-shell.txt` |
+| Piglin brute health | `piglin/PiglinBruteHealth.java` | `mobs/piglins/health.txt` |
+| Piglin brute armor damage | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/armor-damage.txt` |
 
 Misc: `EvolvingThreats.java` — entrypoint; `command/EvolvingThreatsCommands.java` — test commands; `idea.txt` — design notes. New mechanics → new class; mixin → thin hook only.
 

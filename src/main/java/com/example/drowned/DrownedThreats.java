@@ -1,8 +1,10 @@
 package com.example.drowned;
 
+import com.example.advancement.ModAdvancements;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -140,6 +142,9 @@ public final class DrownedThreats {
 		}
 		bolt.snapTo(player.getX(), player.getY(), player.getZ());
 		level.addFreshEntity(bolt);
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onClearBolt(serverPlayer);
+		}
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TRIDENT_THUNDER, SoundSource.WEATHER, 5.0f, 1.0f);
 	}
 

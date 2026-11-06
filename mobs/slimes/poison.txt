@@ -1,0 +1,41 @@
+SLIME POISON
+=============
+
+Type: hit from a normal slime. Magma cube does not apply poison.
+Code: slime/SlimePoison.java (chances and effect strength),
+     mixin/SlimePoisonMixin.java (moment of the hit).
+
+
+HOW IT WORKS
+------------
+The chance is rolled when a slime hit actually removed health.
+A shield that blocked the hit, and brief invulnerability right after a hit, do not roll again.
+
+Large (size 4, and any size greater than 2):
+  30% — Poison II for 15 seconds.
+Medium (size 2):
+  20% — Poison I for 15 seconds.
+Small (size 1):
+  no poison. It barely deals damage anyway.
+
+If the player already has poison that is stronger or lasts longer, a weaker hit does not overwrite it.
+
+
+SETTINGS (SlimePoison.java)
+-----------------------------
+  ENABLED ...................... true
+  LARGE_CHANCE ................. 0.30 — large slime chance (30%)
+  MEDIUM_CHANCE ................ 0.20 — medium slime chance (20%)
+  POISON_SECONDS ............... 15 — how many seconds poison lasts
+  MEDIUM_SIZE .................. 2
+  LARGE_MIN_SIZE ............... 3 — slime counts as large from this size up
+  MEDIUM_AMPLIFIER ............. 0 — Poison I
+  LARGE_AMPLIFIER .............. 1 — Poison II
+
+
+TEST
+----
+1. Summon a large slime and let it hit you several times. About every third hit — Poison II.
+2. Kill it, wait for mediums. Their hits sometimes give Poison I.
+3. Small slimes do not apply poison.
+4. Magma cube does not apply poison.

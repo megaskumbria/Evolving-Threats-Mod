@@ -1,11 +1,13 @@
 package com.example.spawnerhead;
 
+import com.example.advancement.ModAdvancements;
 import com.example.threat.ThreatScale;
 
 import com.example.entity.RaidParticipantEntity;
 import com.example.entity.SpawnerHeadCarrierEntity;
 import com.example.entity.ZombieOverseerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -194,6 +196,9 @@ public final class SpawnerHeadMob {
 
 		carrier.evolvingthreats$setSpawnerHeadHitCount(0);
 		summonMinions(mob, level);
+		if (source.getEntity() instanceof ServerPlayer player) {
+			ModAdvancements.onReinforcements(player);
+		}
 	}
 
 	private static void summonMinions(Mob carrier, ServerLevel level) {

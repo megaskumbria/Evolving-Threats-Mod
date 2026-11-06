@@ -1,9 +1,11 @@
 package com.example.enderman;
 
+import com.example.advancement.ModAdvancements;
 import java.util.Set;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
@@ -151,6 +153,9 @@ public final class EndermanSwap {
 			return false;
 		}
 		playTeleport(level, player);
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onSwapped(serverPlayer);
+		}
 		return true;
 	}
 

@@ -1,0 +1,26 @@
+ZOMBIE: STEALS AN ITEM FROM YOUR HANDS
+======================================
+
+Type: regular zombie, cadaver and zombie villager (not a new mob).
+Code: zombie/ZombieTheft.java (chance and drop),
+     mixin/ZombieTheftMixin.java (moment of the hit).
+
+
+WHAT HAPPENS
+--------------
+1. A hit that has already removed health has a 4% chance to take one item from the player's hands.
+   Main hand first (sword). If it is empty — the off-hand (shield or totem).
+2. The item ends up in the zombie's main hand. It hits with it: a netherite sword hurts more than a bare hand.
+3. If the zombie already has something in its main hand, it takes nothing.
+   A fishing rod, trident, hoe, TNT and the mod's random weapon all count as occupying the hand.
+4. The stolen item always drops when the zombie dies. Durability is not damaged.
+   While the zombie holds it, it does not despawn on its own and does not pick up another item from the ground.
+5. Drowned and zombified piglins do not steal.
+   A hit blocked by a shield, and the invulnerability flash after a hit, do not give a chance to steal.
+
+
+SETTINGS (ZombieTheft.java)
+----------------------------
+ENABLED — false turns stealing off.
+STEAL_CHANCE — 0.04 = 4%, roughly every twenty-fifth hit that lands. 0 = never.
+DROP_CHANCE — 1 = the item always drops and its durability is intact. 0 = it vanishes together with the zombie.

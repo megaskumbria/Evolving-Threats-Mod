@@ -1,0 +1,39 @@
+DROWNED: HELMET, WATER, THUNDERSTORM
+====================================
+
+Type: regular drowned (not a new mob).
+Code: drowned/DrownedThreats.java (chances, healing, enchantments),
+     mixin/DrownedThreatMixin.java (spawn),
+     mixin/DrownedRegenMixin.java (healing),
+     mixin/DrownedTridentMixin.java (lightning when the trident hits).
+
+
+WHAT HAPPENS
+--------------
+1. About every tenth one spawns in a turtle shell helmet with Protection II.
+   That is damage resistance. If there is already an item on the head, the helmet is not put on.
+2. In water any drowned heals 2 health (one heart) every 3 seconds,
+   until full. On land there is no healing.
+3. The trident is given by the game itself, to roughly every sixteenth one. The mod does not create a new one and does not take the fishing rod away.
+   The mod picks the enchantments on this trident and replaces those the game had put on.
+   In 30% of cases it is Channeling. In the other 70% — one other enchantment, equally likely:
+   Impaling, Loyalty, Riptide or Unbreaking. The level is from I up to the maximum of that enchantment.
+   Whoever got a fishing rod just holds it in hand. It does not cast the hook. See drowned-fishing-rod.txt.
+4. A trident with Channeling hitting a player strikes lightning even without rain and under a roof.
+   A trident with another enchantment does not strike lightning.
+   In a thunderstorm under open sky the game itself calls lightning, we do not strike a second time.
+   Lightning does not strike other mobs. A point-blank trident stab does not call lightning.
+   A shield that blocked the throw does not either.
+5. The helmet drops with a chance of about 8.5%. The trident drops as in the normal game.
+
+
+SETTINGS (DrownedThreats.java)
+-------------------------------
+ENABLED — false returns regular drowned.
+HELMET_CHANCE — 0.10 = 10% with a helmet. 0 = none.
+HELMET_PROTECTION — Protection level. 2 = Protection II. 0 = helmet without enchantments. 4 = maximum.
+CHANNELING_CHANCE — 0.30 = Channeling on 30% of the tridents the game has already given out.
+  The rest get Impaling, Loyalty, Riptide or Unbreaking. 0 = only these enchantments. 1 = always Channeling.
+DROP_CHANCE — 0.085 = 8.5% helmet drop. 0 = does not drop.
+REGEN_HP — how much health at a time. 2 = one heart. 0 = no healing.
+REGEN_SECONDS — healing pause. 3 = three seconds.

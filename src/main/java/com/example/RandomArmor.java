@@ -171,6 +171,24 @@ public final class RandomArmor {
 		return true;
 	}
 
+	/**
+	 * All four slots are pieces from this mod, and all four are the same material.
+	 * Used when a zombie or skeleton dies, for the matching-set advancement.
+	 * A mixed set, an empty slot, or a carved pumpkin instead of a helmet is not a set.
+	 */
+	public static boolean wearsMatchedSet(Mob mob) {
+		Item helmet = mob.getItemBySlot(EquipmentSlot.HEAD).getItem();
+		Item chest = mob.getItemBySlot(EquipmentSlot.CHEST).getItem();
+		Item legs = mob.getItemBySlot(EquipmentSlot.LEGS).getItem();
+		Item boots = mob.getItemBySlot(EquipmentSlot.FEET).getItem();
+		for (Item[] row : ARMOR_PIECES) {
+			if (helmet == row[0] && chest == row[1] && legs == row[2] && boots == row[3]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/*GROWING: Slot chance between ThreatTable. ARMOR PIECE CHANCE START (day 0) and {@code endChance} (day 100). */
 	private static float pieceChance(Mob mob, float endChance) {
 		return ThreatScale.lerp(mob.level(), ThreatTable.ARMOR_PIECE_CHANCE_START, endChance);

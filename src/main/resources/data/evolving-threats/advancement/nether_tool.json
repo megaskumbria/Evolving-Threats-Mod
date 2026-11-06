@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:floating_tool",
+  "display": {
+    "icon": {
+      "id": "minecraft:blaze_powder"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.nether_tool.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.nether_tool.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/nether_tool"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

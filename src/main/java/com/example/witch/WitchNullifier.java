@@ -1,8 +1,10 @@
 package com.example.witch;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.NullifierWitchEntity;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -169,6 +171,9 @@ public final class WitchNullifier {
 			}
 			if (!entity.removeAllEffects()) {
 				continue;
+			}
+			if (entity instanceof ServerPlayer player) {
+				ModAdvancements.onEffectsWiped(player);
 			}
 			level.playSound(
 					null,

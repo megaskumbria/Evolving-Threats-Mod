@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:magma_cream"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.overheated.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.overheated.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/overheated"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

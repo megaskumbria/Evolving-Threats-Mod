@@ -1,5 +1,6 @@
 package com.example.piglin;
 
+import com.example.advancement.ModAdvancements;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -81,6 +82,9 @@ public final class PiglinBruteArmorHit {
 			return;
 		}
 		shred(player, slot);
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onArmorCracked(serverPlayer);
+		}
 		if (NAUSEA_SECONDS > 0) {
 			player.addEffect(new MobEffectInstance(
 					MobEffects.NAUSEA,

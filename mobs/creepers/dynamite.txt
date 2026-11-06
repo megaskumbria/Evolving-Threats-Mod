@@ -1,0 +1,41 @@
+DYNAMITE-THROWER CREEPER
+========================
+
+Type: rare variant of the normal creeper. Looks vanilla — no separate texture.
+Code: creeper/DynamiteCreeper.java (settings, throw, spawn command),
+     entity/ai/DynamiteThrowGoal.java (distance and retreat),
+     mixin/CreeperDynamiteMixin.java (goal and persistence),
+     mixin/MobDynamiteCreeperSpawnMixin.java (chance on spawn),
+     mixin/SwellGoalMixin.java (does not swell or explode on its own).
+
+
+HOW IT WORKS
+------------
+1. On normal spawn, SPAWN_CHANCE (default 4%) to become a thrower.
+2. Does not melee the player and does not explode itself. If you get closer than 8 blocks — backs away.
+3. At 8–16 blocks it strafes sideways around the player (does not stand still) and throws dynamite.
+   Dynamite flies toward the feet and lands shortly before detonation. Fuse 2–3 seconds. Pause between throws 8 seconds.
+4. Beyond 16 blocks — moves closer to throw. Beyond 28 — gives up the chase.
+5. Flint and steel can still ignite it, like a normal creeper.
+6. Dynamite is vanilla TNT: breaks blocks unless the tntExplodes gamerule is off.
+
+
+COMMAND (needs gamemaster permissions, like other mod commands)
+-----------------------------------------------------------------
+  /etdynamite
+  /evolvingthreats spawn dynamite
+Creeper spawns 10 blocks in front of where you look and immediately targets you.
+
+
+SETTINGS (DynamiteCreeper.java)
+--------------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.04 — world spawn chance (0.04 = 4%)
+  RETREAT_DISTANCE ............. 8 — backs away closer than this
+  THROW_MAX_DISTANCE ........... 16 — moves closer beyond this
+  HOLD_DISTANCE ................ 12 — distance at which it circles
+  STRAFE_SIDE_BLOCKS ........... 6 — how far sideways it runs
+  THROW_BLOCKS_PER_TICK ........ 0.70 — dynamite speed (higher = flatter arc)
+  LAND_BEFORE_EXPLODE_TICKS .... 8 — lands at feet this many ticks before explosion
+  THROW_COOLDOWN_SECONDS ....... 8
+  FUSE_MIN_SECONDS / MAX ....... 2 / 3 — time until dynamite explodes

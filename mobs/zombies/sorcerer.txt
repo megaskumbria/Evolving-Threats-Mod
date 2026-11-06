@@ -1,0 +1,73 @@
+ZOMBIE SORCERER
+===============
+
+Type: rare variant of a regular zombie. Black leather on all four slots, a netherite hoe in hand.
+Code: zombie/ZombieSorcerer.java (settings, spells, loot, command),
+     mixin/ZombieSorcererMixin.java (flag, pause, experience),
+     mixin/ZombieSorcererGoalMixin.java (when it casts),
+     mixin/ZombieSorcererLootMixin.java (extra item),
+     mixin/ZombieMixin.java (chance on spawn, without enchantments and random armor).
+
+
+HOW IT WORKS
+------------
+1. On spawn the chance is SPAWN_CHANCE (0.1%, one in a thousand). FIXED: from day 40, does not grow with the threat scale.
+   Regular adult zombie only.
+   husk, drowned, zombie villager, baby, Overseer and raid zombies do not become sorcerers.
+2. The leather is dyed black, as if with dye. The hoe has no enchantments.
+   Random enchantments, shield, totem, pumpkin and spawner are not given to its head.
+   Potions at spawn are possible — as with a regular zombie.
+   It does not break blocks and does not go to light.
+3. Health is always 80 (40 hearts), not a random 20–40.
+4. If it sees a player closer than 12 blocks, it casts one spell every 8 seconds.
+   While the player is not visible or is farther — the pause does not tick, the first spell comes immediately on meeting.
+   A wall blocks the spell. A shield does not catch it.
+   Launch is the main spell, about 70%. Fire and pull — 15% each.
+   - The launch is most often 25–30 blocks, equally split. Every tenth launch is 50.
+     A fall from that height deals almost the whole life bar and more damage.
+   - Ignite for 6 seconds. Fire resistance removes the damage, as usual.
+   - Pull toward itself. If the player is already right next to it (closer than 2.5 blocks), there is no pull:
+     then launch is more frequent, fire less.
+5. The hoe and the worn armor do not drop.
+6. If a player killed it — 15 experience (a regular zombie gives 5) and one random item:
+   sugar, golden carrot, firework star, redstone torch
+   or one piece of black leather. If the zombie burned on its own — no extra item.
+
+
+COMMAND
+-------
+  /etsorcerer
+  /evolvingthreats spawn sorcerer
+The zombie appears 6 blocks away in the direction you look and immediately looks at you.
+Operator permissions are required. For the launch, get out of flight.
+
+
+SETTINGS (ZombieSorcerer.java)
+-------------------------------
+  ENABLED ...................... true — false turns off spawning and spells
+  SPAWN_CHANCE ................. 0.001 — chance in the world (0.1%, one in a thousand). FIXED from day 40. The command does not roll the chance
+  HEALTH ....................... 80 — life, 40 hearts
+  LAUNCH_WEIGHT ................ 70 — weight of the launch. Together with fire and pull the sum is 100 = percentages
+  FIRE_WEIGHT .................. 15 — weight of the ignite
+  PULL_WEIGHT .................. 15 — weight of the pull. 0 = no pull
+  LAUNCH_MIN_BLOCKS ............ 25 — normal launch, lower bound
+  LAUNCH_MAX_BLOCKS ............ 30 — normal launch, upper bound
+  LAUNCH_RARE_BLOCKS ........... 50 — rare launch, exactly this many blocks
+  LAUNCH_RARE_CHANCE ........... 0.10 — 10% of launches go 50 blocks. 0 = always 25–30
+  XP_REWARD .................... 15 — experience, a regular zombie gives 5
+  SPELL_RANGE_BLOCKS ........... 12 — it does not cast farther than this
+  SPELL_COOLDOWN_SECONDS ....... 8 — pause between spells
+  FIRE_SECONDS ................. 6 — how many seconds the player burns
+  PULL_SPEED ................... 1.6 — strength of the pull
+  PULL_MIN_BLOCKS .............. 2.5 — closer than this there is no pull
+  BONUS_DROP_CHANCE ............ 1.0 — chance of the extra item if a player killed it
+
+
+TEST
+----
+1. Enter /etsorcerer. It wears black leather and a netherite hoe, 40 hearts.
+2. Stand a few blocks away with no wall and no flying. After a moment, most often a launch
+   of 25–30 blocks. Less often fire or pull. About every tenth launch is 50.
+   The sound is like the evoker's.
+3. Wait 8 seconds — the next spell.
+4. Kill it. No hoe. There is experience and one item from the list.

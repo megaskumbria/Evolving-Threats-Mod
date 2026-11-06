@@ -1,9 +1,11 @@
 package com.example.creeper;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.DynamiteCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
@@ -188,6 +190,9 @@ public final class SapperCreeper {
 	public static void detonate(Creeper creeper) {
 		if (!creeper.isIgnited()) {
 			creeper.ignite();
+			if (creeper.getTarget() instanceof ServerPlayer player) {
+				ModAdvancements.onCoverBlast(player);
+			}
 		}
 	}
 

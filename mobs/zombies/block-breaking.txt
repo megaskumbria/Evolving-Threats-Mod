@@ -1,0 +1,94 @@
+ZOMBIES BREAK BLOCKS (Block Breaking)
+=====================================
+
+Type: zombie behavior (not a separate mob).
+Code: digging/BlockBreaking.java (settings and rules),
+     entity/ai/BreakToTargetGoal.java (dig toward the player),
+     entity/ai/LightSeekGoal.java (break light),
+     mixin/ZombieBreakGoalsMixin.java (hook).
+
+
+1) BREAKING BLOCKS TO REACH THE PLAYER
+------------------------------------------
+When it works: the zombie has a player target (it noticed the player), the player is within 32 blocks,
+there is no ordinary path to them AND there is a real wall ahead (a block at head level).
+  - Player 3+ blocks lower and no more than 8 blocks away horizontally — digs DOWN under its feet.
+  - Otherwise — it breaks only the wall at head level; a single block at foot level ahead is not broken (it steps over it).
+  - On a flat road below it and "just ahead" it does not dig, if the pathfinder made a mistake.
+  - If a path to the player is found again (checked every 0.5 sec) — it walks, and does not keep digging for nothing.
+  - While it breaks a wall, a normal attack does not interrupt it; it strikes only if the player is within hit range.
+  - If the zombie gets distracted and returns to the same block within 5 sec, the cracks are not reset.
+  - Zombies do NOT dig UP (they cannot climb a tunnel).
+Cracks are visible on the block, the zombie waves its arm and makes a hit sound. Items from blocks do NOT drop.
+
+PLAYER MEMORY (PlayerGrudge):
+  A zombie that noticed or hit a player remembers them and keeps the target up to 32 blocks
+  (even without direct line of sight — underground, behind a wall). While the memory is active, it is
+  not distracted by torches. Code: grudge/PlayerGrudge.java, entity/ai/ZombiePlayerGrudgeGoal.java
+  (priority 0 — higher than light and digging).
+  The Overseer and raid zombies hunt on their own; they do not need the memory.
+
+
+2) BREAKING SPEED
+-------------------
+Same as the player's (block hardness + the tool in the zombie's hand), but multiplied by 0.3.
+  Dirt with a bare hand ............ ~2.5 sec
+  Stone with a bare hand ........... ~25 sec (very slow without a pickaxe)
+  Stone with an iron pickaxe ....... ~1.5 sec
+  Dirt with an iron shovel ......... almost instant
+Zombies get tools from the random weapons (RandomWeapons): pickaxe/shovel/axe/sword/hoe
+of all materials. Material matters: iron is faster than wood.
+
+
+3) BREAKING LIGHT
+--------------
+A zombie that came to a light (LightSeeking) and does not see a player:
+  - breaks it at the same speed as ordinary blocks (hardness + the tool in hand, cracks grow on the block):
+    a torch — at once, glowstone/lantern — in a couple of seconds with a bare hand,
+  - breaks any light except lava and glow berries,
+  - if it notices a player or villager earlier — it drops the light and goes for the target.
+Light from bedrock/obsidian is not broken — they just stand for 4 sec and leave.
+
+
+4) WHAT CANNOT BE BROKEN
+--------------------
+  Bedrock, obsidian, air/liquids, and blocks with "infinite" hardness (barrier, command block...).
+  Everything else (including chests, furnaces, glass) can be broken. Crying obsidian is currently breakable.
+  To forbid more blocks — UNBREAKABLE_BLOCKS in BlockBreaking.java.
+
+
+SETTINGS (BlockBreaking.java)
+------------------------------
+  ENABLED ........................ true — turn all breaking on/off
+  BREAKER_FRACTION ............... 1.0 — share of zombies that are breakers (1.0 = all, 0.3 = 30%)
+  SPEED_MULTIPLIER ............... 0.3 — speed multiplier relative to the player
+  DROP_ITEMS ..................... false — whether items drop
+  UNBREAKABLE_BLOCKS ............. bedrock, obsidian
+  DIG_MAX_DISTANCE_TO_TARGET ..... 32 — they do not dig farther than this from the player
+  STUCK_CHECK_INTERVAL_TICKS ..... 10 — how often to check "stuck?" and "did a path appear?"
+  KEEP_PROGRESS_TICKS ............ 100 — how many ticks (5 sec) the cracks wait if the zombie got distracted
+  DIG_DOWN_MIN_BLOCKS_BELOW .... 3 — dig down only if the player is 3+ blocks lower
+  DIG_DOWN_MAX_HORIZONTAL ...... 8 — and the player is no more than 8 blocks away horizontally
+  REACH .......................... 3.5 — arm reach
+  RESPECT_MOB_GRIEFING ........... true — honor /gamerule mobGriefing
+
+(LightSeeking.java)
+  BREAK_LIGHT .................... true — whether to break light
+  (light breaking speed has no setting of its own — SPEED_MULTIPLIER from BlockBreaking is used)
+
+
+WHO BREAKS
+----------
+  Yes:  all Overworld zombies (regular, husk, zombie villager), the Overseer, raid zombie minions.
+  No:   drowned, zombified piglin, zombie with TNT; skeletons (not zombies).
+  Only regular zombies break light (the Overseer/raid have no "go to light" behavior).
+  If /gamerule mobGriefing is false — blocks are not broken.
+
+
+TEST
+----
+1) Build a glass cage or a dirt wall next to a zombie and stand behind it
+   so that the zombie sees you (through the glass). It should start breaking the barrier.
+2) Give the zombie a pickaxe: /summon zombie ~ ~ ~ {equipment:{mainhand:{id:"minecraft:iron_pickaxe"}}}
+3) For light: a torch far from you, the zombie will come and break it (torch at once, glowstone in a couple of seconds).
+4) Raid minions: /etraid, then hide in a pit underground.

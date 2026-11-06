@@ -1,5 +1,6 @@
 package com.example.shulker;
 
+import com.example.advancement.ModAdvancements;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -137,6 +138,9 @@ public final class ShulkerShellDurability {
 				player.setItemSlot(hand, weapon);
 			}
 			playBreak(player);
+		}
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onToolGroaned(serverPlayer);
 		}
 	}
 

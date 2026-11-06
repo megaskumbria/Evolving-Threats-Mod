@@ -1,0 +1,48 @@
+PHANTOMS: BLINDNESS ON BITE
+========================
+
+Type: part of normal phantoms (not a new mob or separate species).
+Code: phantom/PhantomBlindness.java (chance and duration),
+     mixin/PhantomBlindnessMixin.java (mark on phantom),
+     mixin/PhantomBlindnessMobMixin.java (roll on spawn, save, on bite).
+
+Who can apply blindness: about every fifth phantom.
+Roll is separate from weakness: one phantom may have both, only one, or neither.
+Night flock, spawn egg, and spawn command use this roll.
+A marked phantom stays marked after rejoining the world.
+Chance does not grow with days (FIXED).
+
+
+WHAT HAPPENS
+--------------
+1. On spawn, 20% chance the phantom can apply blindness.
+   Other phantoms never apply blindness.
+2. A bite that dealt damage gives random blindness for 7–12 seconds.
+   Screen darkens; the phantom is hard to see.
+3. Shield block and post-hit invulnerability do not apply a new effect.
+4. A repeat bite refreshes duration if blindness remaining is shorter.
+   Longer blindness is not shortened by this bite.
+5. Milk removes blindness immediately.
+6. Hitting another mob does not apply blindness. Players only.
+7. Bite damage unchanged (still from “bite and flock”).
+   Weakness, if the phantom has it, still applies as before.
+
+
+SETTINGS (PhantomBlindness.java)
+---------------------------------
+  ENABLED ...................... true — toggle blindness
+  SPAWN_CHANCE ................. 0.20 — share of phantoms that can (20%)
+  BLINDNESS_MIN_SECONDS ........ 7 — shortest blindness, seconds
+  BLINDNESS_MAX_SECONDS ........ 12 — longest blindness, seconds
+  Both 0 disables the effect. If min/max are swapped, the game still uses
+  the lower and higher values.
+
+
+TEST
+----
+1. To test quickly, set SPAWN_CHANCE = 1.0 temporarily.
+   Every phantom applies blindness. Restore 0.20 after testing.
+2. Summon a phantom and let it bite without a shield. Blindness 7–12 seconds.
+3. Block with a shield. Blocked bite does not apply blindness.
+4. Set SPAWN_CHANCE = 0.20 and summon several phantoms.
+   Blindness on about every fifth. Weakness still about every third.

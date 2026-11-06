@@ -1,0 +1,57 @@
+MAGNET CREEPER
+==============
+
+Type: rare variant of the normal creeper. Looks vanilla, but electric sparks show while it pulls.
+Code: creeper/MagnetCreeper.java (settings, pull, command),
+     mixin/CreeperMagnetMixin.java (flag, timer, tick),
+     mixin/MobDynamiteCreeperSpawnMixin.java (chance on spawn, after feint and super-fast).
+
+
+HOW IT WORKS
+------------
+1. On spawn, SPAWN_CHANCE (1%). FIXED: from day one, does not scale with threat level or moon.
+   Never sapper, dynamite thrower, feint, or super-fast.
+   Can be charged and a shield-breaker. Charged magnet still pulls the same; the blast is bigger.
+2. Until it notices a player, it is a normal creeper.
+   Creative and spectator are not pulled.
+3. Once it has you as a target, an invisible leash appears just inside the edge of its sight.
+   Sight is the creeper's follow range: 32 blocks with the sight mod, 16 if sight is off.
+   The leash starts 1 block inside that, so the creeper does not forget you on the rim.
+   You can run out to that leash and no farther. Walking and sprinting both reach it at first,
+   because the tug starts weaker than walking.
+4. Over RAMP_SECONDS (8) the edge shrinks to 2 blocks and the tug grows past sprint.
+   Hanging at the edge does not last: you are reeled in even if you keep sprinting.
+   Speed potions and a short elytra burst do not open a lasting gap.
+   An ender pearl far outside the leash snaps you back onto it, unless that spot is inside a block.
+5. Closer than 1.5 blocks the tug stops, so you are not pushed through the body.
+   By then the hiss has started. Fuse and blast are a normal creeper's (1.5 seconds),
+   unless it is also charged.
+6. If it loses you for more than 1 second, the next meeting starts weak again.
+   A brief corner does not reset the pull.
+7. A horse or boat is dragged with you. Flint and steel still ignites it.
+
+
+COMMAND
+-------
+  /etmagnet
+  /evolvingthreats spawn magnet
+Creeper spawns 16 blocks in front of where you look and immediately pulls.
+Requires operator permissions. This spawn is not charged; lightning still charges it.
+
+
+SETTINGS (MagnetCreeper.java)
+-----------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.01 = 1%. 0 = command only
+  RAMP_SECONDS ................. 8 — how long you can hold the edge of sight before the reel
+  ARRIVE_BLOCKS ................ 2 — leash shrinks to this
+  EDGE_MARGIN .................. 1 — leash starts this far inside sight, so it keeps the target
+  START_PULL_PER_TICK .......... 0.10 — weaker than walking (0.22). Sprint is about 0.28
+  END_PULL_PER_TICK ............ 0.60 — stronger than sprint, you are dragged in
+  MAX_PULL_PER_TICK ............ 1.5 — yank when already outside the leash
+  VERTICAL_PULL ................ 0.5 — 0 = ground only, 1 = straight at the creeper
+  STOP_BLOCKS .................. 1.5 — tug stops this close
+  SNAP_BLOCKS .................. 6 — pearl / long dive snaps back onto the leash
+  LOSE_GRACE_TICKS ............. 20 — 1 second without a target resets the ramp
+  SHOW_PARTICLES ............... true — electric sparks while pulling
+  PARTICLE_EVERY_TICKS ......... 2

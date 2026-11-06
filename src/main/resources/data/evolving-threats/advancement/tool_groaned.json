@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:relocated",
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.tool_groaned.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.tool_groaned.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/tool_groaned"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

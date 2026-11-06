@@ -1,0 +1,52 @@
+NULLIFIER WITCH
+===============
+
+Type: rare variant of a normal witch. Looks like vanilla.
+Code: witch/WitchNullifier.java (settings, effect removal, command),
+     mixin/WitchNullifierMixin.java (flag and pause between white potions),
+     mixin/WitchNullifierMobMixin.java (spawn chance and persistence),
+     mixin/ThrownSplashPotionNullifyMixin.java (swap bottle to white),
+     mixin/AbstractThrownPotionNullifyMixin.java (hit clears effects).
+
+
+HOW IT WORKS
+------------
+1. On spawn, SPAWN_CHANCE (15%). Witch hut, raid, and spawner all use this chance.
+2. The witch still drinks potions for herself and throws poison, slowness, and damage.
+   If the cooldown has passed, the next throw at the player is a white splash potion with no effect of its own.
+   The first throw at the player does not wait for cooldown.
+3. A player in the splash loses all effect icons at once: potions, golden apple, beacon beam.
+   Poison, wither, and weakness drop too — the potion clears everything, not only buffs.
+   If you stand in a beacon beam, the beacon reapplies the effect on its own.
+4. Other mobs in the splash do not lose their effects.
+   Allies in a raid still get healing throws, not white potions.
+5. Shield does not block the white potion: splash potions are not blocked by shield in the game.
+6. The next white potion is not sooner than 15 seconds later.
+   Normal throws during that pause work like a regular witch.
+   While the witch is drinking, she throws nothing — step back and wait a couple of seconds.
+
+
+COMMAND
+-------
+  /etwitch
+  /evolvingthreats spawn witch
+The witch spawns 8 blocks in front of where you look and immediately faces you.
+Requires operator permissions, like other mod commands.
+
+
+SETTINGS (WitchNullifier.java)
+-------------------------------
+  ENABLED ...................... true — false disables both spawn and effect removal
+  SPAWN_CHANCE ................. 0.15 — world spawn chance (15%). Command does not roll chance
+  THROW_COOLDOWN_SECONDS ....... 15 — pause between white potions
+  POTION_COLOR ................. 0xF4F4F4 — splash color, almost white
+  SPLASH_RADIUS_BLOCKS ......... 4 — horizontal splash, same as normal potion
+  SPLASH_VERTICAL_BLOCKS ....... 2 — up and down, same as normal potion
+
+
+TEST
+----
+1. Drink strength, speed, or fire resistance. You can apply poison too — it will also clear.
+2. Run /etwitch and step back several blocks so she starts throwing.
+3. The first white bottle clears all icons. Gulp sound means effects really dropped.
+4. For about 15 seconds the next throws are normal (poison, slowness, damage). Then white again.

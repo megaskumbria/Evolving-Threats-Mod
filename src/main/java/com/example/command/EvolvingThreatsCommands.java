@@ -1,5 +1,6 @@
 package com.example.command;
 
+import com.example.advancement.ModAdvancements;
 import com.example.bastion.Bastion;
 import com.example.mirror.Mirror;
 import com.example.spiky.Spiky;
@@ -8,6 +9,7 @@ import com.example.witch.WitchNullifier;
 import com.example.creeper.DynamiteCreeper;
 import com.example.creeper.FastCreeper;
 import com.example.creeper.FeintCreeper;
+import com.example.creeper.MagnetCreeper;
 import com.example.illager.IllagerPatrol;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
@@ -84,6 +86,8 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnFastCreeper(ctx.getSource())))
 				.then(Commands.literal("feint_creeper")
 						.executes(ctx -> spawnFeintCreeper(ctx.getSource())))
+				.then(Commands.literal("magnet")
+						.executes(ctx -> spawnMagnetCreeper(ctx.getSource())))
 				.then(Commands.literal("raid")
 						.executes(ctx -> spawnRaid(ctx.getSource(), null))
 						.then(Commands.argument("target", EntityArgument.player())
@@ -208,6 +212,11 @@ public final class EvolvingThreatsCommands {
 		//   The day shows the day, the phase of the moon and the current threat.
 		//   day set <N> - make it as if the installation of the fashion has passed N days (the time of the world and the moon do not change).
 		//                 day set 0 – start the scale again. To test any stage.
+		// Shows every mod card on the advancements tab. No items, no experience, no chat spam.
+		// Clear them again with: /advancement revoke @s from evolving-threats:root
+		dispatcher.register(root.then(Commands.literal("advancements")
+				.executes(ctx -> revealAdvancements(ctx.getSource()))));
+
 		dispatcher.register(root.then(Commands.literal("day")
 				.executes(ctx -> dayStatus(ctx.getSource()))
 				.then(Commands.literal("set")
@@ -244,6 +253,10 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(Commands.literal("etfeint")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnFeintCreeper(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etmagnet")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnMagnetCreeper(ctx.getSource())));
 
 		dispatcher.register(Commands.literal("etraid")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
@@ -352,9 +365,26 @@ public final class EvolvingThreatsCommands {
 				.then(Commands.literal("v")
 						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_V))));
 
+		dispatcher.register(Commands.literal("etadvancements")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> revealAdvancements(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("etkit")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> SurvivalKit.give(ctx.getSource())));
+	}
+
+	private static int revealAdvancements(CommandSourceStack source) {
+		ServerPlayer player = source.getPlayer();
+		if (player == null) {
+			source.sendFailure(Component.literal("Run this as a player."));
+			return 0;
+		}
+		int count = ModAdvancements.revealAll(player);
+		source.sendSuccess(() -> Component.literal(
+				"Opened " + count + " mod advancements. No items and no experience. "
+						+ "To hide them again: /advancement revoke @s from evolving-threats:root"), true);
+		return Math.max(1, count);
 	}
 
 	private static int dayStatus(CommandSourceStack source) {
@@ -564,6 +594,27 @@ public final class EvolvingThreatsCommands {
 			return 0;
 		}
 		source.sendSuccess(() -> Component.literal("Spawned feint creeper"), true);
+		return 1;
+	}
+
+	private static int spawnMagnetCreeper(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		ServerPlayer lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			pos = self.position().add(self.getLookAngle().scale(16.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (MagnetCreeper.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Magnet creeper is disabled"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned magnet creeper"), true);
 		return 1;
 	}
 

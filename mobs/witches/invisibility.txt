@@ -1,0 +1,41 @@
+WITCH: INVISIBILITY POTION
+==========================
+
+Type: normal witch, including nullifier witch. No separate mob type spawns.
+Code: witch/WitchInvisibility.java (chance, pause, duration),
+     mixin/WitchInvisibilityMixin.java (moment when the witch decides to drink).
+
+
+HOW IT WORKS
+------------
+1. While the witch has a target, every 15 seconds there is a 10% chance to drink invisibility.
+   First check happens as soon as she picks someone.
+   Without a target, the timer does not run: alone in her hut she does not vanish.
+2. Sip works like vanilla witch potions: bottle at mouth, she slows down, about one and a half seconds.
+   While drinking, she throws nothing.
+3. After the sip she is invisible for 20 seconds. Throws and sounds remain:
+   you see the bottle in flight, hear steps and voice.
+   No particles around her, or the cloud would give away her position.
+4. If she is already drinking water, fire resistance, or healing, she finishes that sip.
+   Invisibility starts right after, with no new chance roll.
+   If she was drinking speed, the bottle may switch to invisibility.
+5. While invisibility is active, she does not drink another. When it ends, the 15-second countdown restarts.
+6. If she already spawned invisible from general spawn potions, she will not drink:
+   that effect does not expire.
+
+
+SETTINGS (WitchInvisibility.java)
+----------------------------------
+  ENABLED ...................... true — false disables new sips
+  DRINK_CHANCE ................. 0.10 — chance per check (10%). Was 35%
+  CHECK_SECONDS ................ 15 — how often to check in combat. Was 6 seconds
+  INVISIBILITY_SECONDS ......... 20 — how long she stays invisible. 180 = full bottle
+  SHOW_PARTICLES ............... false — true enables particles and makes her easier to find
+
+
+TEST
+----
+1. To see it immediately, temporarily set DRINK_CHANCE = 1.0. After testing, restore 0.10.
+2. Summon a witch and hit her while standing close. She should raise a bottle, drink, and vanish.
+3. Wait: she still throws potions while invisible. After 20 seconds she is visible again.
+4. Set ENABLED = false. New sips stop; normal witch potions remain.

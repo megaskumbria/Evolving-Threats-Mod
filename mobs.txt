@@ -70,6 +70,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Can spawn charged — FIXED
 - Super-fast creeper, 0.5 s fuse, cannot outrun — FIXED
 - Feint creeper: looks normal, at 6–7 blocks speeds up like super-fast, 0.5 s fuse, no name tag. 0.3% — FIXED
+- Magnet creeper: after it notices you, you can hold the edge of its sight, then it reels you in. 1% — FIXED. Can be charged
 
 8. Spiders
 - Random health 16–30 HP. — FIXED

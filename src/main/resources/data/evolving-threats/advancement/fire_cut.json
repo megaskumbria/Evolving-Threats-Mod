@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:clear_bolt",
+  "display": {
+    "icon": {
+      "id": "minecraft:magma_cream"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.fire_cut.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.fire_cut.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/fire_cut"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

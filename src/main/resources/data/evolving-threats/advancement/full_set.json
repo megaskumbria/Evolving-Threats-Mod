@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:dual_wield",
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_chestplate"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.full_set.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.full_set.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/full_set"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

@@ -1,5 +1,6 @@
 package com.example.zombie;
 
+import com.example.advancement.ModAdvancements;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 
@@ -9,6 +10,7 @@ import com.example.entity.ZombieSorcererEntity;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -361,6 +363,9 @@ public final class ZombieSorcerer {
 		player.setDeltaMovement(motion.x, vy, motion.z);
 		player.resetFallDistance();
 		player.syncVelocity = true;
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onLifted(serverPlayer);
+		}
 		level.sendParticles(
 				ParticleTypes.WITCH,
 				player.getX(),
@@ -382,6 +387,9 @@ public final class ZombieSorcerer {
 		Vec3 vel = toward.scale(PULL_SPEED / len);
 		player.setDeltaMovement(vel.x, Math.max(0.2, player.getDeltaMovement().y), vel.z);
 		player.syncVelocity = true;
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onLifted(serverPlayer);
+		}
 		level.sendParticles(
 				ParticleTypes.WITCH,
 				player.getX(),

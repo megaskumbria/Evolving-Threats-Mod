@@ -1,0 +1,43 @@
+PHANTOMS: WEAKNESS ON BITE
+=========================
+
+Type: part of normal phantoms (not a new mob or separate species).
+Code: phantom/PhantomWeakness.java (chance, duration, amplifier),
+     mixin/PhantomWeaknessMixin.java (mark on phantom),
+     mixin/PhantomWeaknessMobMixin.java (roll on spawn, save, on bite).
+
+Who can apply weakness: about every third phantom.
+Night flock, spawn egg, and spawn command use this roll.
+A marked phantom stays marked after rejoining the world.
+
+
+WHAT HAPPENS
+--------------
+1. On spawn, 30% chance the phantom can apply weakness.
+   Other phantoms never apply weakness.
+2. A bite that dealt damage gives the player Weakness I for 10 seconds.
+   Melee hits deal 4 less damage (2 hearts).
+3. Shield block and post-hit invulnerability do not apply a new effect.
+4. A repeat bite refreshes duration if weakness remaining is shorter.
+   A longer weakness is not shortened by this bite.
+5. Milk removes weakness immediately.
+6. Hitting another mob does not apply weakness. Players only.
+7. Bite damage is unchanged by this mechanic (still from “bite and flock”).
+
+
+SETTINGS (PhantomWeakness.java)
+--------------------------------
+  ENABLED ...................... true — toggle weakness
+  SPAWN_CHANCE ................. 0.30 — share of phantoms that can (30%)
+  WEAKNESS_SECONDS ............. 10 — duration in seconds
+  AMPLIFIER .................... 0 — Weakness I (1 = Weakness II)
+
+
+TEST
+----
+1. To test quickly, set SPAWN_CHANCE = 1.0 temporarily.
+   Every phantom applies weakness. Restore 0.30 after testing.
+2. Summon a phantom and let it bite without a shield. Weakness I for 10 seconds.
+3. Block with a shield. Blocked bite does not apply weakness.
+4. Set SPAWN_CHANCE = 0.30 and summon several phantoms.
+   Weakness on about every third.

@@ -1,0 +1,35 @@
+CAVE SPIDER: POISON CAN KILL AGAIN
+===================================
+
+Type: regular cave spider bite, not a separate mob.
+Code: spider/CaveSpiderPoison.java (toggle),
+     mixin/CaveSpiderPoisonMixin.java (remembers poison is from cave spider),
+     mixin/PoisonTickMixin.java (final tick can kill).
+
+When: from day one, always. Not a chance and not tied to the threat scale.
+Moon does not matter. Siege night does not disable this poison.
+
+
+SAME AS VANILLA
+----------------------
+The mod does not change the seconds. The game sets them:
+- Easy difficulty — bite does not apply poison;
+- Normal — Poison I for 7 seconds;
+- Hard — Poison I for 15 seconds.
+
+Every 1.25 seconds half a heart is removed. Armor does not reduce this damage.
+The mod still raises cave spider health to 16–30. That is separate.
+
+
+WHAT CHANGED
+--------------
+In vanilla, poison stops at half a heart and cannot kill.
+Cave spider poison can now remove that last half heart.
+
+Does not finish off: witch poison, slime poison, drunk poison potion.
+If a longer witch or slime poison is applied on top of the spider bite,
+there is nothing left to finish — their poison is what is active.
+Milk removes poison along with this special behavior.
+
+Disable the finishing blow: ENABLED = false at the top of CaveSpiderPoison.java.
+Bite duration in seconds does not get shorter because of this.

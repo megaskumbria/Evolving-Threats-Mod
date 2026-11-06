@@ -1,0 +1,30 @@
+{
+  "parent": "evolving-threats:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:gunpowder"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.dynamite_creeper.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.dynamite_creeper.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 40
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

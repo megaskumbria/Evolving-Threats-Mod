@@ -1,0 +1,66 @@
+WITCH: NEW POTIONS AND FOG
+============================
+
+Type: vanilla witch throws at the player. No separate mob type spawns.
+Code: witch/WitchThrownPotions.java (list, chances, seconds),
+     mixin/WitchThrownPotionMixin.java (swap bottle at throw time).
+
+Allies in a raid still get healing and regeneration.
+The nullifier white potion stays splash and still clears effects.
+While the witch is drinking, she throws nothing.
+
+
+HOW IT WORKS
+------------
+1. Roughly every other throw at the player comes from the new list, equal weight:
+   Slowness IV for 15–20 seconds,
+   Blindness for 5–10 seconds,
+   Wither I for 10 seconds,
+   Hunger I for 20–30 seconds,
+   Nausea for 8–12 seconds,
+   Mining Fatigue I for 15–20 seconds,
+   Levitation for 4–6 seconds.
+2. Other throws work as before: Slowness at range, poison if you are healthy,
+   Weakness sometimes up close, otherwise instant damage.
+3. About one third of throws at the player are fog bottles. On impact, a cloud
+   lasts about 30 seconds, like a normal lingering potion. While you stand in it,
+   the effect is reapplied.
+   For poison, slowness, weakness, and damage, fog lasts one quarter of the bottle time.
+   For new effects, seconds match the settings.
+4. Splash at point-blank lasts almost the full configured duration.
+   At the edge of the puddle, duration is shorter — same as any splash bottle.
+   Splashes and fog affect everyone nearby, not only the player.
+5. To disable one potion from the new list, set its maximum seconds to 0.
+
+
+SETTINGS (WitchThrownPotions.java)
+-----------------------------------
+  ENABLED ...................... true
+  SPECIAL_CHANCE ............... 0.50 — share of new effects (50%)
+  LINGERING_CHANCE ............. 0.35 — share of fog bottles (35%)
+  SLOWNESS_MIN_SECONDS ......... 15
+  SLOWNESS_MAX_SECONDS ......... 20
+  SLOWNESS_AMPLIFIER ........... 3 — Slowness IV
+  BLINDNESS_MIN_SECONDS ........ 5
+  BLINDNESS_MAX_SECONDS ........ 10
+  WITHER_SECONDS ............... 10 — Wither I, about 2 hearts
+  WITHER_AMPLIFIER ............. 0
+  HUNGER_MIN_SECONDS ........... 20
+  HUNGER_MAX_SECONDS ........... 30
+  NAUSEA_MIN_SECONDS ........... 8
+  NAUSEA_MAX_SECONDS ........... 12
+  FATIGUE_MIN_SECONDS .......... 15
+  FATIGUE_MAX_SECONDS .......... 20
+  FATIGUE_AMPLIFIER ............ 0 — Mining Fatigue I. Level 1 nearly stops mining
+  LEVITATION_MIN_SECONDS ....... 4
+  LEVITATION_MAX_SECONDS ....... 6
+  VANILLA_LINGERING_SCALE ...... 0.25 — fog for vanilla potions, quarter duration
+
+
+TEST
+----
+1. Set SPECIAL_CHANCE = 1.0 and LINGERING_CHANCE = 0. Summon a witch and back away
+   so she throws. Bottles are splash; effects come from the new list.
+2. Set LINGERING_CHANCE = 1.0. After a hit, colored fog remains on the ground.
+3. Restore 0.50 and 0.35. Some throws are poison, slowness, weakness, or damage again.
+4. /etwitch — white bottle is still splash and still clears effects.

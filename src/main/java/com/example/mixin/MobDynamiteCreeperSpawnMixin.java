@@ -4,6 +4,7 @@ import com.example.creeper.ChargedCreeper;
 import com.example.creeper.DynamiteCreeper;
 import com.example.creeper.FastCreeper;
 import com.example.creeper.FeintCreeper;
+import com.example.creeper.MagnetCreeper;
 import com.example.creeper.SapperCreeper;
 import com.example.creeper.ShieldBreakCreeper;
 import net.minecraft.world.DifficultyInstance;
@@ -18,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * The chance of a special cryper when it appears: charged (1%), bomber (5%), thrower (4%), shield breaker (5%),
- Deception (0.3%), superfast (3%). Fast and deception are not subversive and thrower and are not each other.
- Charged dynamite does not throw, but can be a bomber or a shield breaker.
- If the bomber or thrower has already fallen, the shield breaker does not throw at this cryper.
- The finalizeSpawn method is announced in Mob, Creeper does not have its own copy - so mixin on Mob.
+ * Rolls special creepers when one spawns.
+ * Charged first (separate roll, can stack). Then sapper, dynamite thrower, shield-breaker,
+ * feint, super-fast, magnet. Magnet skips those chase variants, but can still be charged
+ * or a shield-breaker.
+ * Mixin is on Mob because Creeper does not override finalizeSpawn.
  */
 @Mixin(Mob.class)
 public class MobDynamiteCreeperSpawnMixin {
@@ -41,6 +42,7 @@ public class MobDynamiteCreeperSpawnMixin {
 			ShieldBreakCreeper.rollOnSpawn(creeper, spawnReason);
 			FeintCreeper.rollOnSpawn(creeper, spawnReason);
 			FastCreeper.rollOnSpawn(creeper, spawnReason);
+			MagnetCreeper.rollOnSpawn(creeper, spawnReason);
 		}
 	}
 }

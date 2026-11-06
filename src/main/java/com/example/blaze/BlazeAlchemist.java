@@ -1,7 +1,9 @@
 package com.example.blaze;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.AlchemistBlazeEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -166,6 +168,9 @@ public final class BlazeAlchemist {
 		int leftTicks = Math.max(1, FIRE_RESISTANCE_LEFT_SECONDS) * 20;
 		if (!current.isInfiniteDuration() && current.getDuration() <= leftTicks) {
 			return;
+		}
+		if (target instanceof ServerPlayer player) {
+			ModAdvancements.onFireCut(player);
 		}
 		target.forceAddEffect(new MobEffectInstance(
 				MobEffects.FIRE_RESISTANCE,

@@ -1,0 +1,43 @@
+SPIDERS: SWARM
+============
+
+Type: rare pack of regular spiders (not a separate mob in the menu).
+Code: spider/SpiderSwarm.java (pack size, chance, where to place),
+     spider/SpiderThreats.java (shared roll: matriarch, then weaver, then swarm),
+     mixin/SpiderRoleMixin.java (called when a spider appears).
+
+Who starts a swarm: regular spider only, and only if it did not roll matriarch or weaver.
+Who does not: cave spiders, spider jockeys (skeleton on top), spiders already
+summoned by another mob. Swarm helpers do not start a new swarm themselves.
+
+During new chunk generation no swarm forms: the spider there stays alone.
+Otherwise there would be nowhere to place the pack.
+
+
+WHAT HAPPENS
+--------------
+1. Chance SPAWN_CHANCE (2%). Decided once, together with matriarch and weaver.
+2. Pack has PACK_MIN to PACK_MAX spiders (6–10), including the one that started the swarm.
+3. The rest spawn nearby on free floor: block under feet, body not in wall,
+   not in water or lava. They do not suffocate in blocks.
+4. If there is no spot for someone (narrow tunnel), that spider does not appear. Pack will be smaller.
+5. Everyone in the pack is regular: no weaver cobweb and no matriarch entourage.
+
+
+SETTINGS (SpiderSwarm.java)
+----------------------------
+  ENABLED ...................... true — enable/disable swarm
+  SPAWN_CHANCE ................. 0.02 — swarm chance (2%). 0.0 = never, 1.0 = almost every
+                                   spider that did not roll matriarch or weaver
+  PACK_MIN / PACK_MAX .......... 6 / 10 — total spider count
+  RADIUS_MIN / RADIUS_MAX ...... 2 / 6 — how far from the first to search for a spot, in blocks
+  SPOT_TRIES ................... 16 — how many points to try per spider
+  VERTICAL_STEPS ............... 3 — how many blocks up and down to still search for floor
+
+
+TEST
+----
+1. In SpiderThreats set MATRIARCH_SPAWN_CHANCE = 0 and WEAVER_SPAWN_CHANCE = 0.
+2. In SpiderSwarm set SPAWN_CHANCE = 1.0.
+3. Find a spider at night: several more should be nearby, all on the floor, not in walls.
+4. Restore chances afterward, or almost every spider will be a swarm.

@@ -1,0 +1,27 @@
+PILLAGER: FIREWORK FROM CROSSBOW
+==============================
+
+Type: vanilla pillager (not a new mob). Same in patrol, raid, and mansion.
+Code: illager/PillagerFirework.java (chance, stars, and aim),
+     mixin/PillagerFireworkMixin.java (start of crossbow charge),
+     mixin/PillagerFireworkAimMixin.java (rocket flies at the chest, no arrow arc).
+
+
+WHAT HAPPENS
+--------------
+1. About every fifth shot is a rocket. It is on the crossbow from the first moment of charging:
+   a firework is visible on the crossbow, no arrow in that shot. Other shots are normal.
+2. The rocket flies straight at the chest. The game aimed it like an arrow, with lift, and it passed over the head.
+3. The rocket has one star. With no armor on Normal difficulty that is 7 health (3.5 hearts).
+   Weaker on Easy, stronger on Hard. Armor reduces the hit.
+4. The blast hits everyone in a radius of about five blocks: player, villager, golem,
+   other pillagers, and the shooter if too close.
+5. Piglins with crossbows and players do not use this swap.
+
+
+SETTINGS (PillagerFirework.java)
+---------------------------------
+ENABLED — false means arrow every time again.
+SHOT_CHANCE — 0.20 = every fifth shot. 0 = never. 1 = every shot is a rocket.
+STAR_COUNT — stars in the rocket. 1 = 3.5 hearts. 0 = always arrow. 7 = max, 9.5 hearts.
+AIM_BODY — height on the target. 0.45 = chest. 1.0 = top of head.

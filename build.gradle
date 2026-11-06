@@ -56,6 +56,14 @@ dependencies {
 	// Version 26.3-2.6.28 — for Minecraft 26.3. If you update the game, change the number here.
 	//Fashion page: https://modrinth.com/mod/replaymod
 	clientRuntimeOnly "maven.modrinth:replaymod:26.3-2.6.28"
+
+	// Tests for rules that do not need a running game, such as when a patrol has reached the house.
+	testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+tasks.named("test") {
+	useJUnitPlatform()
 }
 
 processResources {

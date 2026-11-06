@@ -1,5 +1,7 @@
 package com.example.zombie;
 
+import com.example.advancement.ModAdvancements;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -75,6 +77,9 @@ public final class ZombieTheft {
 		zombie.setPersistenceRequired();
 		zombie.setCanPickUpLoot(false);
 		zombie.level().playSound(null, zombie.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.HOSTILE, 1.0f, 0.6f);
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onEmptyHand(serverPlayer);
+		}
 	}
 
 	/** Main hand first (weapon). If empty — shield or totem in offhand. */

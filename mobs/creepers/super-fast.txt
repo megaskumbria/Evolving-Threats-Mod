@@ -1,0 +1,39 @@
+SUPER-FAST CREEPER
+====================
+
+Type: rare variant of the normal creeper. Looks vanilla.
+Code: creeper/FastCreeper.java (settings, speed, command),
+     mixin/CreeperFastMixin.java (flag and persistence),
+     mixin/MobDynamiteCreeperSpawnMixin.java (chance on spawn).
+
+
+HOW IT WORKS
+------------
+1. On spawn, SPAWN_CHANCE (3%). FIXED: from day one, does not scale with threat level.
+   Does not become sapper, dynamite thrower, or feint.
+   Charged creeper and shield-breaker can be fast.
+2. Runs twice as fast as a normal creeper. Sprint and sprint-jumps do not outrun it:
+   on a straight line it catches up.
+3. Remembers the player for 48 blocks. Normal creeper range is about 16:
+   run farther — chase ends. That does not work here.
+4. Hisses 0.5 seconds and explodes. Normal creeper hiss is 1.5 seconds.
+   Same explosion power. Hard to run away in half a second.
+   Once hissing stops without exploding, it runs and catches up again.
+5. Speed potion on spawn can make it even faster.
+
+
+COMMAND
+-------
+  /etfast
+  /evolvingthreats spawn fast_creeper
+Creeper spawns 12 blocks in front of where you look and immediately runs at you.
+Requires operator permissions.
+
+
+SETTINGS (FastCreeper.java)
+----------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.03 = 3%. 0 = command only
+  CHASE_SPEED .................. 0.50. Normal creeper 0.25. 0.35 you can still escape
+  FOLLOW_RANGE ................. 48 blocks. 16 = like normal
+  FUSE_SECONDS ................. 0.5 = half a second of hiss. Normal creeper 1.5

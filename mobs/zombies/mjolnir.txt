@@ -1,0 +1,55 @@
+MJÖLNIR ZOMBIE
+==============
+
+Type: rare variant of a regular zombie. The name Mjölnir is shown above its head.
+It is visible only when your crosshair is on it and it is no farther than about 64 blocks.
+Code: zombie/ZombieMjolnir.java (settings, hammer, loot, command),
+     mixin/ZombieMjolnirMixin.java (flag and experience),
+     mixin/ZombieMjolnirLootMixin.java (name tag and rare hammer),
+     mixin/ZombieMixin.java (chance on spawn, no random weapon; armor as on a regular zombie).
+
+
+HOW IT WORKS
+------------
+1. On spawn the chance is SPAWN_CHANCE (0.2%, one in five hundred). FIXED: from day 1, does not grow with the threat scale.
+   Regular adult zombie only.
+   husk, drowned, zombie villager, baby, Overseer, raid zombies and Excalibur do not become one.
+2. In hand there is a mace — that is the hammer in the game. It has Knockback 20. At the enchanting table the cap is II.
+3. Random weapon, shield, totem, pumpkin and spawner are not given to its head.
+   Armor — as on a regular zombie: pieces separately, a full set rarely.
+   The armor can have enchantments. A full-set helmet does not take away a pumpkin or spawner,
+   because a rare head item is not given to it.
+   Potions at spawn are possible — as with a regular zombie.
+   It does not pick up other items from the ground, otherwise the hammer would change.
+4. The hammer itself does not drop. With a separate roll HAMMER_DROP_CHANCE (0.5%, one in two hundred)
+   a copy of the mace with Knockback 20 drops. Looting does not make this roll more frequent.
+   One name tag named Mjölnir always drops.
+5. If a player killed it — 20 experience (a regular zombie gives 5). If the zombie burned on its own — no experience,
+   the name tag and the rare hammer can still drop.
+
+
+THE HIT
+----
+It is an ordinary mace hit plus a very strong knockback.
+Each level of Knockback adds 1 to the strength. Knockback II is 2. Knockback 20 is 20,
+about ten times stronger: the player can be carried far away.
+
+
+COMMAND
+-------
+/etmjolnir
+or /evolvingthreats spawn mjolnir
+Operator permissions are required. It appears 6 blocks in front of you and goes into attack at once.
+The command does not roll the chance.
+
+
+SETTINGS
+---------
+At the top of ZombieMjolnir.java:
+- ENABLED — turn the whole thing off
+- SPAWN_CHANCE — spawn chance, 0.002 = 0.2%
+- KNOCKBACK_LEVEL — Knockback level, currently 20
+- HAMMER_DROP_CHANCE — chance the hammer drops, 0.005 = 0.5%
+- XP_REWARD — experience, currently 20
+- NAME_TAG_COUNT — how many name tags, 0 = do not drop
+- DISPLAY_NAME — the name

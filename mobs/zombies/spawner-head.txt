@@ -1,0 +1,51 @@
+SPAWNER CARRIER (Spawner Head)
+==============================
+
+Type: rare variant of a regular zombie or skeleton (not a separate mob in the menu).
+Code: spawnerhead/SpawnerHeadMob.java,
+     mixin/ZombieMixin.java, SkeletonMixin.java,
+     mixin/LivingEntitySpawnerHeadMixin.java (player hits).
+
+
+WHAT IT LOOKS LIKE
+------------
+A spawner block on the head (like the skeleton with a dispenser — an item in the HEAD slot).
+It overrides a helmet. A skeleton's spawner and dispenser on the head do not drop together:
+if the spawner was rolled — the dispenser is not put on.
+
+Smoke and fire above the head (like a real spawner) — client side only,
+code: client/spawnerhead/SpawnerHeadParticles.java (ENABLED, height HEAD_CENTER_ABOVE_FEET).
+
+
+HOW IT WORKS
+------------
+1. On a normal spawn the chance to become a carrier is CARRIER_SPAWN_CHANCE (0.5% on day 100).
+2. Every 2 player hits (sword, bow, any damage from the player) 1–2 mobs of the same kind appear nearby
+   (a zombie calls a zombie, a skeleton — a skeleton, a husk — a husk…). The hit counter is reset after a summon.
+3. The summoned help can NEVER get a spawner on its head (no overpowered chain).
+4. The help uses a normal finalizeSpawn (armor/weapon by the mod's rules), but without the carrier role.
+
+
+WHO CAN BE A CARRIER
+------------------------
+  Yes:  zombie, husk, zombie villager, skeleton, stray.
+  No:   drowned, zombified piglin, boss Overseer, raid minions.
+  The wither skeleton is separate: mobs/skeletons/wither-spawner.txt
+  (always two per summon, its own chance).
+
+
+SETTINGS (SpawnerHeadMob.java)
+-------------------------------
+  ENABLED ...................... true — on/off
+  CARRIER_SPAWN_CHANCE ......... 0.005 — chance on spawn at day 100 (0.5%). Early in the game it is 10 times lower
+  HITS_TO_SUMMON ............... 2 — player hits before a summon
+  SUMMON_COUNT_MIN / MAX ....... 1 / 2 — how many mobs are summoned
+  SUMMON_RADIUS ................ 3.0 — spawn radius (blocks)
+  SPAWNER_HEAD_DROP_CHANCE ..... 0.085 — chance the spawner drops from the head
+
+
+TEST
+----
+1. At night, wait for zombies/skeletons or /summon — look at the head (very rare, 0.5% by day 100).
+2. Hit the carrier 2 times — 1–2 of the same kind should appear nearby.
+3. To see it more often: temporarily set CARRIER_SPAWN_CHANCE = 1.0.

@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:captain",
+  "display": {
+    "icon": {
+      "id": "minecraft:arrow"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.basilisk.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.basilisk.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/basilisk"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

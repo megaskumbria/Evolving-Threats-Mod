@@ -1,5 +1,6 @@
 package com.example.illager;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.IllagerPatrolMember;
 import com.example.siege.SiegeNight;
 import net.minecraft.core.BlockPos;
@@ -100,6 +101,14 @@ public final class IllagerPatrol {
 	public static final int ARRIVE_BLOCKS = 12;
 
 	/**
+	 * How close (blocks) a player must be to the house point when the squad is in the yard
+	 * for the advancement to count. 48 = the house and the ground around it.
+	 * Farther than this, the squad reached an empty spot and the card does not fire.
+	 * A member in an unloaded chunk is invisible, so a missing ravager there abandons the squad.
+	 */
+	public static final double PATROL_WITNESS_BLOCKS = 48.0;
+
+	/**
 	 * Step speed to point. 0.6 = normal step. More, almost running.
 	 */
 	public static final double MARCH_SPEED = 0.6;
@@ -131,7 +140,12 @@ public final class IllagerPatrol {
 
 	/*End-of-tick of the world. In hell and in the region, the squad does not go out. */
 	public static void tick(ServerLevel level) {
-		if (!ENABLED || level.dimension() != Level.OVERWORLD) {
+		if (level.dimension() != Level.OVERWORLD) {
+			return;
+		}
+		// A squad already on the road can still finish after the mechanic is turned off.
+		noticeArrivals(level);
+		if (!ENABLED) {
 			return;
 		}
 		Integer left = TICKS_LEFT.get(level);
@@ -332,6 +346,92 @@ public final class IllagerPatrol {
 		raider.setCanJoinRaid(false);
 		level.addFreshEntity(raider);
 		return true;
+	}
+
+	/**
+	 * A member is standing in the yard. Pillagers often get there first; the card waits
+	 * until a vindicator and the ravager are in the same yard. Then every member forgets
+	 * the point, including anyone still on the road, so the next squad is not blocked.
+	 */
+	private static void noticeArrivals(ServerLevel level) {
+		double search = Math.max(0.0, PATROL_WITNESS_BLOCKS) + Math.max(0, ARRIVE_BLOCKS);
+		java.util.Set<BlockPos> yards = new java.util.HashSet<>();
+		for (ServerPlayer player : level.players()) {
+			if (!player.isAlive() || player.isSpectator()) {
+				continue;
+			}
+			AABB aroundPlayer = player.getBoundingBox().inflate(search);
+			for (Raider raider : level.getEntitiesOfClass(Raider.class, aroundPlayer, IllagerPatrol::isMarching)) {
+				BlockPos destination = ((IllagerPatrolMember) raider).evolvingthreats$getPatrolDestination();
+				if (destination == null) {
+					continue;
+				}
+				double reach = Math.max(0, ARRIVE_BLOCKS);
+				if (raider.blockPosition().distSqr(destination) <= reach * reach) {
+					yards.add(destination);
+				}
+			}
+		}
+		for (BlockPos destination : yards) {
+			finishIfReady(level, destination);
+		}
+	}
+
+	private static void finishIfReady(ServerLevel level, BlockPos destination) {
+		double wide = Math.max(NEARBY_BLOCKS, SPAWN_DISTANCE_MAX);
+		List<Raider> squad = level.getEntitiesOfClass(Raider.class, new AABB(destination).inflate(wide),
+				raider -> isMarchingTo(raider, destination));
+		List<PatrolArrival.Member> members = new ArrayList<>(squad.size());
+		for (Raider raider : squad) {
+			members.add(new PatrolArrival.Member(
+					raider.isAlive(),
+					kindOf(raider.getType()),
+					raider.blockPosition().distSqr(destination)));
+		}
+		PatrolArrival.Verdict verdict = PatrolArrival.verdict(members, ARRIVE_BLOCKS);
+		if (verdict == PatrolArrival.Verdict.WAIT) {
+			return;
+		}
+		if (verdict == PatrolArrival.Verdict.GRANT) {
+			double witness = Math.max(0.0, PATROL_WITNESS_BLOCKS);
+			for (ServerPlayer player : level.players()) {
+				if (!player.isAlive() || player.isSpectator()) {
+					continue;
+				}
+				if (PatrolArrival.playerCloseEnough(player.blockPosition().distSqr(destination), witness)) {
+					ModAdvancements.onPatrolArrived(player);
+				}
+			}
+		}
+		for (Raider raider : squad) {
+			((IllagerPatrolMember) raider).evolvingthreats$setPatrolDestination(null);
+			raider.getNavigation().stop();
+		}
+	}
+
+	private static boolean isMarching(Raider raider) {
+		return raider.isAlive()
+				&& raider instanceof IllagerPatrolMember member
+				&& member.evolvingthreats$getPatrolDestination() != null;
+	}
+
+	private static boolean isMarchingTo(Raider raider, BlockPos destination) {
+		return isMarching(raider)
+				&& destination.equals(((IllagerPatrolMember) raider).evolvingthreats$getPatrolDestination());
+	}
+
+	/** Pillager, vindicator, ravager. A captain is still a pillager. Everyone else does not count. */
+	private static PatrolArrival.Kind kindOf(EntityType<?> type) {
+		if (type == EntityTypes.PILLAGER) {
+			return PatrolArrival.Kind.PILLAGER;
+		}
+		if (type == EntityTypes.VINDICATOR) {
+			return PatrolArrival.Kind.VINDICATOR;
+		}
+		if (type == EntityTypes.RAVAGER) {
+			return PatrolArrival.Kind.RAVAGER;
+		}
+		return PatrolArrival.Kind.OTHER;
 	}
 
 	private static boolean canStand(ServerLevel level, BlockPos feet, EntityType<?> type) {

@@ -1,6 +1,8 @@
 package com.example.witch;
 
+import com.example.advancement.ModAdvancements;
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
@@ -138,6 +140,9 @@ public final class WitchInvisibility {
 				speed.addTransientModifier(DRINKING_SLOW);
 			}
 			useTicks = Math.max(1, stack.getUseDuration(witch));
+			if (witch.getTarget() instanceof ServerPlayer serverPlayer) {
+				ModAdvancements.onWitchGone(serverPlayer);
+			}
 		}
 		return new Drink(Math.max(1, CHECK_SECONDS) * 20, useTicks);
 	}

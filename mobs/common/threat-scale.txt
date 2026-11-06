@@ -102,13 +102,14 @@ Phantoms, creepers, spiders, slimes, witches, vindicators, pillagers, drowned, r
 shulkers, piglin brute, magma cube, enderman, patrols, hostile golems, floating tools,
 ritual groups. They work from day 0 as before.
 Mirror: 0.3% from day 0, moon ignored. See mirror.txt.
-Random-arrow skeleton: 1% from day 0, moon ignored. See mobs/skeletons/skeleton.txt, section “RANDOM-ARROW SKELETON”.
-Sniper skeleton: 1 in 500 from day 0, moon ignored. See mobs/skeletons/skeleton.txt, section “SNIPER SKELETON”.
+Random-arrow skeleton: 1% from day 0, moon ignored. See mobs/skeletons/random-arrows.txt.
+Sniper skeleton: 1 in 500 from day 0, moon ignored. See mobs/skeletons/sniper.txt.
 Sight range: mobs that noticed the player only within 16 blocks now notice at 32. Does not grow with days.
 See sight-range.txt.
-Feint creeper: 0.3% from day 0, moon ignored. See mobs/creepers/creeper.txt, section “FEINT CREEPER”.
+Feint creeper: 0.3% from day 0, moon ignored. See mobs/creepers/feint.txt.
+Magnet creeper: 1% from day 0, moon ignored. See mobs/creepers/magnet.txt.
 Cave spider poison can kill from day 0, no chance roll. Witch and slime poison stops at half a heart.
-See mobs/spiders/spider.txt, section “CAVE SPIDER: LETHAL POISON AGAIN”.
+See mobs/spiders/cave-poison.txt.
 
 
 ON-SCREEN BAR

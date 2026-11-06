@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:light_out",
+  "display": {
+    "icon": {
+      "id": "minecraft:bone"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.reinforcements.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.reinforcements.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/reinforcements"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

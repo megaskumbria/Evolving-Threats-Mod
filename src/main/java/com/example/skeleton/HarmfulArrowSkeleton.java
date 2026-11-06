@@ -4,12 +4,15 @@ import com.example.threat.ThreatScale;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
@@ -84,12 +87,27 @@ public final class HarmfulArrowSkeleton {
 	 */
 	public static final int LEVITATION_SECONDS = 8;
 
+	/**
+	 Instant damage I, in half-hearts, on top of the arrow hit. 6 = 3 hearts.
+	 The game's short invulnerability after the arrow was swallowing this.
+	 0 = the harming arrow deals no extra hearts.
+	 */
+	public static final float HARMING_DAMAGE = 6.0f;
+
+	/**
+	 Instant damage II, in half-hearts, on top of the arrow hit. 12 = 6 hearts.
+	 Same invulnerability fix as {@link #HARMING_DAMAGE}.
+	 */
+	public static final float STRONG_HARMING_DAMAGE = 12.0f;
+
 	// ========================================================================
 
 	/**
 	 Harmful potions. Ordinary, long and strong are different arrows.
 	 Useful (power, treatment, invisibility, etc.) are not included.
 	 Turtle power is also not: along with slowing down, it gives protection, it is easier for the player from it.
+	 Wind charged, weaving, oozing and infested are not here. Nothing happens on hit:
+	 a burst, cobwebs or slimes only if the target dies, and silverfish only sometimes on a later hit.
 	 * Spectral arrow and effects without their potion are added separately to {@link #randomArrow}.
 	 Blindness is painted with the color of weakness, drying with the color of weaving.
 	 Hunger, nausea and levitation are painted with their color: olive, purple and pale blue.
@@ -104,11 +122,7 @@ public final class HarmfulArrowSkeleton {
 			Potions.LONG_POISON,
 			Potions.STRONG_POISON,
 			Potions.WEAKNESS,
-			Potions.LONG_WEAKNESS,
-			Potions.WIND_CHARGED,
-			Potions.WEAVING,
-			Potions.OOZING,
-			Potions.INFESTED
+			Potions.LONG_WEAKNESS
 	);
 
 	private HarmfulArrowSkeleton() {
@@ -187,6 +201,43 @@ public final class HarmfulArrowSkeleton {
 				Optional.of(name)));
 		arrow.set(DataComponents.POTION_DURATION_SCALE, EFFECT_DURATION_SCALE);
 		return arrow;
+	}
+
+	/**
+	 Harming arrow hit. Called after the game has already put the effect on the target.
+	 The arrow's own hit starts a short invulnerability, and magic damage that is not
+	 bigger than that hit is thrown away. These hearts are dealt on top of the arrow,
+	 then the one-tick effect is removed so it does not land a second time.
+	 Undead are healed instead, same as a harming potion in the normal game.
+	 The cycling-effect skeleton uses the same harming arrow, so this covers that shot too.
+	 */
+	public static void onHarmingHit(Arrow arrow, LivingEntity target) {
+		if (!(target.level() instanceof ServerLevel level) || !target.isAlive()) {
+			return;
+		}
+		ItemStack stack = arrow.getPickupItemStackOrigin();
+		PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+		if (contents == null || !contents.hasEffects()) {
+			return;
+		}
+		float scale = stack.getOrDefault(DataComponents.POTION_DURATION_SCALE, 1.0f);
+		contents.forEachEffect(effect -> {
+			if (!effect.is(MobEffects.INSTANT_DAMAGE)) {
+				return;
+			}
+			boolean strong = effect.getAmplifier() >= 1;
+			if (target.isInvertedHealAndHarm()) {
+				// A harming potion heals undead. 4 = 2 hearts, 8 = 4 hearts, as in the normal game.
+				target.heal(strong ? 8.0f : 4.0f);
+			} else {
+				float damage = strong ? STRONG_HARMING_DAMAGE : HARMING_DAMAGE;
+				if (damage > 0.0f) {
+					target.damageCooldownTime = 0;
+					target.hurtServer(level, target.damageSources().magic(), damage);
+				}
+			}
+			target.removeEffect(MobEffects.INSTANT_DAMAGE);
+		}, scale);
 	}
 
 	/**

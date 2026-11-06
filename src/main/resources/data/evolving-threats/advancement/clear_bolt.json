@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:relocated",
+  "display": {
+    "icon": {
+      "id": "minecraft:lightning_rod"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.clear_bolt.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.clear_bolt.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/clear_bolt"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

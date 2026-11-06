@@ -1,9 +1,11 @@
 package com.example.creeper;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.DynamiteCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
 import com.example.entity.ShieldBreakCreeperEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -115,6 +117,9 @@ public final class ShieldBreakCreeper {
 		player.setItemInHand(hand, ItemStack.EMPTY);
 		player.onEquippedItemBroken(broken, hand.asEquipmentSlot());
 		player.stopUsingItem();
+		if (player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onShieldSplinter(serverPlayer);
+		}
 	}
 
 	private static float faceYaw(Vec3 from, LivingEntity lookAt) {

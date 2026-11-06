@@ -1,0 +1,57 @@
+FEINT CREEPER
+===============
+
+Type: rare variant of the normal creeper. Body like vanilla, no name tag.
+Speed potion particles always around it — that's how you spot it early.
+Code: creeper/FeintCreeper.java (settings, burst, command),
+     mixin/CreeperFeintMixin.java (flag, distance and tick),
+     mixin/MobDynamiteCreeperSpawnMixin.java (chance on spawn).
+
+
+HOW IT WORKS
+------------
+1. On spawn, SPAWN_CHANCE (0.3%). FIXED: from day one, does not scale with threat level or moon.
+   Never sapper, dynamite thrower, or super-fast.
+   Can be charged and shield-breaker.
+2. While the player is far, acts like a normal creeper: speed 0.25, hiss 1.5 seconds.
+   Sprint gets away from it. Remembers player like normal, about 16 blocks, not 48.
+   Speed potion particles swirl constantly even while it still moves slowly.
+   Visual only: particles do not make it faster. Visible from about 32 blocks.
+3. Each feint creeper picks one distance between 6 and 7 blocks once.
+   When the player it chases enters that zone — disguise drops.
+   Iron golem and other mobs do not trigger the burst: player only.
+4. After reveal, runs like super-fast (speed 0.50) and hisses 0.5 seconds.
+   Same explosion power. Hard to run away in half a second.
+   Hiss still starts up close, about 3 blocks, like normal:
+   from 7 blocks the blast does not reach the player, so only the sprint there.
+   It is already charging before hiss, and hiss is three times shorter.
+5. By default, once revealed — no pretending for the rest of its life.
+   Step back and make it slow again — not possible.
+   If you run so far it gives up chase, next time it is fast immediately.
+   Constant KEEP_BURST = false restores disguise when the player left the zone
+   and hiss stopped without exploding.
+6. Speed potion on spawn can make the burst even faster.
+
+
+COMMAND
+-------
+  /etfeint
+  /evolvingthreats spawn feint_creeper
+Creeper spawns 12 blocks in front of where you look and walks toward you like normal,
+until it enters the 6–7 block zone.
+Requires operator permissions.
+
+
+SETTINGS (FeintCreeper.java)
+-----------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.003 = 0.3%. 0 = command only
+  TRIGGER_MIN / TRIGGER_MAX .... 6 and 7 blocks. Each creeper picks its number between them
+  CHASE_SPEED .................. 0.50 after reveal. Like super-fast. Normal 0.25
+  CALM_SPEED ................... 0.25 while pretending
+  FUSE_SECONDS ................. 0.5 = half a second hiss after reveal
+  CALM_FUSE_SECONDS ............ 1.5 = normal hiss while disguise holds
+  KEEP_BURST ................... true = after reveal, fast forever
+  SPEED_PARTICLES .............. true = speed potion particles for feint's whole life
+  SPEED_PARTICLE_EVERY_TICKS ... how often one particle. 2 = slightly denser than drunk potion.
+                                 0 = do not spawn

@@ -1,8 +1,10 @@
 package com.example.spider;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.SpiderRoleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
@@ -132,21 +134,30 @@ public final class SpiderThreats {
 		spider.getAttribute(Attributes.SCALE).setBaseValue(MATRIARCH_SCALE);
 
 		int count = spider.getRandom().nextIntBetweenInclusive(MATRIARCH_CAVE_SPIDERS_MIN, MATRIARCH_CAVE_SPIDERS_MAX);
+		int spawned = 0;
 		for (int i = 0; i < count; i++) {
-			spawnCaveSpider(level, spider);
+			if (spawnCaveSpider(level, spider)) {
+				spawned++;
+			}
+		}
+		// The card is the pack appearing, not the big spider merely existing.
+		if (spawned > 0) {
+			ModAdvancements.onLittleOnes(level, spider.getX(), spider.getY(), spider.getZ());
 		}
 	}
 
-	private static void spawnCaveSpider(ServerLevel level, Spider matriarch) {
+	/** @return true when a cave spider actually entered the world. */
+	private static boolean spawnCaveSpider(ServerLevel level, Spider matriarch) {
 		CaveSpider minion = EntityTypes.CAVE_SPIDER.create(level, EntitySpawnReason.MOB_SUMMONED);
 		if (minion == null) {
-			return;
+			return false;
 		}
 		Vec3 pos = findMinionPos(level, matriarch);
 		minion.snapTo(pos.x, pos.y, pos.z, matriarch.getRandom().nextFloat() * 360.0f, 0.0f);
 		DifficultyInstance difficulty = level.getCurrentDifficultyAt(minion.blockPosition());
 		minion.finalizeSpawn(level, difficulty, EntitySpawnReason.MOB_SUMMONED, (SpawnGroupData) null);
 		level.addFreshEntity(minion);
+		return true;
 	}
 
 	private static Vec3 findMinionPos(ServerLevel level, Spider matriarch) {
@@ -195,6 +206,9 @@ public final class SpiderThreats {
 		level.playSound(null, pos, web.getSoundType().getPlaceSound(),
 				net.minecraft.sounds.SoundSource.HOSTILE, 0.8f, 1.0f);
 		// Cobweb stays until broken (sword, shears, or mining).
+		if (target instanceof ServerPlayer player) {
+			ModAdvancements.onCobweb(player);
+		}
 		return true;
 	}
 }

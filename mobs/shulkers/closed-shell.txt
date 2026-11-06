@@ -1,0 +1,26 @@
+SCHALKER: CLOSED PANZIRE POWERS
+========================================
+
+Type: A regular shalker (not a new mob).
+Code: shulker/ShulkerShellDurability.java (chance and proportion of strength)
+mixin/ShulkerShellMixin.java (hitting a closed shell)
+
+
+What's going on?
+--------------
+1. A blow to a closed shell with a 5 percent chance removes half the strength of that shell.
+than hit: sword, axe, pickaxe, shovel, hoe, bow, crossbow.
+2. An arrow on a closed shalker still doesn't hurt him.
+Onions can still lose half the scale.
+3. The charm of “strength” does not reduce this write-off. If less than half is left, the thing breaks down.
+At the time of writing off, you can hear the crack of a broken instrument, even if it is still intact.
+4. Open or open shalker weapons do not spoil. Fist punch, too.
+5. The chance for each stroke is separate. The shalkers don't share a counter.
+The player in creative mode does not lose strength.
+
+
+SETTINGS (ShulkerShellDurability.java)
+---------------------------------------
+ENABLED - False shell does not spoil anything again.
+HIT CHANCE is 0.05 = 5% per impact. 0 = never. 1 = each impact on the closed shell.
+DURABILITY FRACTION - 0.5 = half of the scale. 1 = the thing breaks right away.

@@ -1,8 +1,8 @@
 {
-  "parent": "evolving-threats:root",
+  "parent": "evolving-threats:light_out",
   "display": {
     "icon": {
-      "id": "minecraft:cactus"
+      "id": "minecraft:sweet_berries"
     },
     "title": {
       "translate": "advancements.evolving-threats.spiky.title"

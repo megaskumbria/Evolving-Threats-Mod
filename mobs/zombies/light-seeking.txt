@@ -1,0 +1,68 @@
+ZOMBIES GO TOWARD LIGHT (Light Seeking)
+=======================================
+
+Type: behavior of regular zombies (not a separate mob).
+Code: light/LightSeeking.java (settings + light search),
+     entity/ai/LightSeekGoal.java (walk / stand / walk on),
+     mixin/ZombieLightSeekGoalsMixin.java (hooks it into the zombie).
+
+
+HOW IT WORKS
+------------
+1. A zombie WITHOUT a target searches for light about every 2 seconds in an area: ±60 blocks in X/Z, ±16 in height
+   (in a straight line up to ~60 blocks, diagonally up to ~85). It picks the nearest suitable block.
+2. It finds the nearest bright light source (brightness 12+) that it can see in a straight line
+   (not through walls) — and walks to it.
+3. When it arrives (closer than ~2.5 blocks) it BREAKS it at the same speed as ordinary blocks
+   (cracks grow on the block; a torch breaks at once, glowstone in a couple of seconds) (see block-breaking.txt). If the light cannot be broken (bedrock/obsidian)
+   or breaking is turned off — it stands for ~4 seconds and leaves.
+4. If the light is still there, it counts as "visited" for 2 minutes, and the zombie looks for another one or wanders as usual.
+5. As soon as the zombie notices a player — it attacks the player. While it remembers the player
+   (PlayerGrudge, up to 32 blocks), it does not go to light even if the player hid underground.
+6. VILLAGERS MATTER MORE THAN LIGHT: if there is a villager within 40 blocks (±16 in height, through walls),
+   the zombie targets it and goes to kill/infect it. This is checked both before heading to a light
+   and every half second on the way / at the light — the zombie abandons the torch halfway.
+
+
+WHO TAKES PART
+-------------
+  Yes:  regular zombie, husk, zombie villager.
+  No:   drowned (in water), zombified piglin, Rotten Overseer, raid minions.
+
+
+WHAT COUNTS AS LIGHT
+--------------------
+Any block with brightness >= MIN_LIGHT_LEVEL (default 12):
+  torch, glowstone, lantern, sea lantern, campfire, fire, etc.
+LAVA (and a lava cauldron) and GLOW BERRIES (cave vines) are always excluded.
+
+Important: the game does not remember who placed a block. Village torches attract zombies too.
+If that is a problem — raise MIN_LIGHT_LEVEL to 15.
+
+
+SETTINGS (LightSeeking.java)
+-----------------------------
+  ENABLED ................... true / false — turn the whole behavior on/off
+  MIN_LIGHT_LEVEL ........... 12 — minimum brightness of the light source
+  SEARCH_RADIUS_HORIZONTAL .. 60 — "vision" radius around the zombie (blocks)
+  SEARCH_RADIUS_VERTICAL .... 16 — up/down (blocks)
+  REQUIRE_LINE_OF_SIGHT ..... true — light behind a wall is not noticed
+  SCAN_INTERVAL_TICKS ....... 40 — pause between searches (20 ticks = 1 sec)
+  MOVE_SPEED ................ 1.0 — walking speed toward the light
+  ARRIVE_DISTANCE ........... 2.5 — counts as "arrived" when closer than this (blocks)
+  WAIT_AT_LIGHT_TICKS ....... 80 — how long to stand at the light
+  IGNORE_VISITED_LIGHT_TICKS  2400 — how long before returning to the same light
+  MAX_WALK_TICKS ............ 600 — maximum for one trip (30 sec)
+  VILLAGER_BEATS_LIGHT ...... true — a villager nearby matters more than light (false — as before)
+  VILLAGER_SENSE_RADIUS ..... 40 — distance at which the zombie senses a villager (blocks)
+  VILLAGER_SENSE_VERTICAL ... 16 — up/down (in vanilla only ±4)
+  VILLAGER_RECHECK_TICKS .... 10 — how often to check for a villager on the way to the light
+
+
+TEST IN GAME
+-----------
+1. Create a cheats-enabled world, night: /time set night, /gamerule doMobSpawning true (default).
+2. Move ~15 blocks away from the zombie so it cannot see you (behind a hill/house).
+3. Place a torch or glowstone in the open, in the zombie's field of view.
+4. A zombie without a target should slowly walk up to the torch, stand, and move on.
+5. Quick test: /summon minecraft:zombie ~ ~ ~ near the torch at a distance of 10 blocks.

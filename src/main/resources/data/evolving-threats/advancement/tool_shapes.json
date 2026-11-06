@@ -1,0 +1,57 @@
+{
+  "parent": "evolving-threats:floating_tool",
+  "display": {
+    "icon": {
+      "id": "minecraft:grindstone"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.tool_shapes.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.tool_shapes.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "sword": {
+      "trigger": "minecraft:impossible"
+    },
+    "axe": {
+      "trigger": "minecraft:impossible"
+    },
+    "shovel": {
+      "trigger": "minecraft:impossible"
+    },
+    "pickaxe": {
+      "trigger": "minecraft:impossible"
+    },
+    "hoe": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 150,
+    "loot": [
+      "evolving-threats:advancement/tool_shapes"
+    ]
+  },
+  "requirements": [
+    [
+      "sword"
+    ],
+    [
+      "axe"
+    ],
+    [
+      "shovel"
+    ],
+    [
+      "pickaxe"
+    ],
+    [
+      "hoe"
+    ]
+  ]
+}

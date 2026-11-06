@@ -1,0 +1,59 @@
+BEACON (Jack o'Lantern on the head)
+===================================
+
+Type: rare zombie or skeleton (not a separate mob).
+Code: beacon/JackLanternBeacon.java,
+     beacon/JackLanternLight.java (light around the head),
+     entity/ai/JackBeaconAuraGoal.java (zombie),
+     entity/ai/JackLanternFireShotGoal.java (skeleton),
+     mixin/ZombieMixin.java, SkeletonMixin.java,
+     mixin/ZombieJackBeaconGoalsMixin.java, AbstractSkeletonJackLanternGoalMixin.java.
+
+
+WHAT IT LOOKS LIKE
+------------
+A glowing pumpkin (JACK_O_LANTERN) in the HEAD slot.
+The picture on the head does not light up the world, so an invisible light of level LIGHT_LEVEL
+(15 — like a lantern block) travels next to the head. If the pumpkin is removed or the mob dies — the light goes out.
+An ordinary carved pumpkin (without light) is NOT used by this mechanic.
+
+
+WHO CAN GET THE HEAD
+-------------------------
+  Yes:  zombie, husk, zombie villager, skeleton, stray.
+  No:   drowned, zombified piglin, Overseer, raid.
+
+  Only one thing per head: spawner OR beacon OR (for a skeleton) dispenser.
+
+
+ZOMBIE — PACK BEACON
+-----------------
+1. It does not go to break torches (excluded from LightSeeking / LightSeekGoal).
+2. If it sees a player (direct line of sight) — about once per second a "pulse" within BEACON_RADIUS:
+   nearby zombies get Speed and (if enabled) a target on the same player, if they had no target.
+
+
+SKELETON — FIRE SHOT
+--------------------------
+Once every 8–14 sec (random) one fire arrow at the target, if within range and there is line of sight.
+In addition to the normal bow (does not replace the dispenser and is not a volley).
+
+
+SETTINGS (JackLanternBeacon.java)
+----------------------------------
+  ENABLED ...................... true
+  JACK_HEAD_DROP_CHANCE ........ 0.085 — chance the pumpkin drops
+  LIGHT_LEVEL .................. 15 — brightness around the head, 0 = no light. This is in JackLanternLight.java
+  CARRIER_SPAWN_CHANCE ......... 0.01 — chance on spawn at day 100 (1%). Early in the game it is 10 times lower
+  BEACON_RADIUS ................ 20 — pack speed-boost radius
+  BEACON_PULSE_INTERVAL_TICKS .. 20 — how often the pulse happens
+  ALLY_SPEED_AMPLIFIER ......... 0 — Speed I
+  SHARE_TARGET_WITH_ALLIES ..... true — pass aggro to allies without a target
+  FIRE_SHOT_COOLDOWN_* ......... 8–14 sec between fire arrows
+
+
+TEST
+----
+1. CARRIER_SPAWN_CHANCE = 1.0 — check the head and the behavior.
+2. Beacon zombie + pack: kill the light, attack — nearby zombies should run faster while the beacon sees you.
+3. Beacon skeleton: wait for a fire arrow between the normal shots.

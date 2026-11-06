@@ -1,0 +1,87 @@
+RITUAL BAND
+===========
+
+Type: rare group, not a separate mob. 1–2 regular zombies and 1–2 regular skeletons.
+Code: ritual/RitualBand.java (settings, behavior, loot, command),
+     mixin/RitualZombieMixin.java and RitualSkeletonMixin.java (memory and saving to the world),
+     mixin/RitualMobMixin.java (experience and extra items),
+     mixin/RitualHuntMixin.java (player head senses through walls, piglin sun is extinguished),
+     mixin/RitualHurtMixin.java (members do not hit their own, piglin fire, wither),
+     mixin/RitualDeathMixin.java (creeper head pop).
+
+
+HOW IT WORKS
+------------
+1. The chance is SPAWN_CHANCE (0.2%, one in five hundred) for a regular adult zombie and a regular skeleton.
+   FIXED: from day 1, does not grow with the threat scale.
+   husk, stray, baby, Overseer and raid zombies do not become a band.
+   A summoned band-mate does not roll the chance again.
+2. Everyone in the band has the same head. Which one it is — the behavior decides.
+   Dark green leather skin, no helmet. In hand a red torch or a bone, and both are present in the band.
+   The mod's enchantments, random weapons and potions are not given. They do not break blocks.
+3. Each one has 50 health. A hit from anyone in the band removes 4 hearts before armor.
+   A regular zombie does a heart and a half, a skeleton with a bone one.
+   Without armor the player survives two hits.
+4. Anyone in the band notices a player from 52 blocks if it sees them.
+   The player head senses through walls at the same 52 blocks.
+   The head does not drop. If a player killed it — a compass drops with a 2.5% chance, like the other heads.
+   Looting I/II/III raises it to 3.5% / 4.5% / 5.5%.
+5. Creeper head. On death a small explosion: it hurts nearby, and almost does not break blocks.
+   It does not hurt or scatter its own. The head drops rarely, like the skull from a wither skeleton.
+   Gunpowder also drops, including from zombies.
+6. Piglin head. Lava, fire and sun do not hurt it: a zombie in the open does not catch fire.
+   The head drops rarely, like the skull from a wither skeleton. One gold ingot also drops.
+7. Wither skull. A hit applies wither for 4 seconds.
+   While it is still active, the next hit does not refresh it.
+   The skull drops rarely, like from a wither skeleton. Coal and a wither rose also drop.
+8. A piece of dark green leather sometimes drops, like ordinary armor (about 8.5%).
+   The red torch from the hand — with a 35% chance. The bone from the hand does not drop.
+   Experience is 50 from each. A regular zombie and skeleton in this mod give 10, and the global multiplier does not double the band.
+
+
+COMMAND
+-------
+  /etritual
+  /etritual player
+  /etritual creeper
+  /etritual piglin
+  /etritual wither
+  /evolvingthreats spawn ritual
+  /evolvingthreats spawn ritual wither
+Without a word at the end the head is random. The band appears 6 blocks away in the direction you look.
+Operator permissions are required.
+
+
+SETTINGS (RitualBand.java)
+---------------------------
+  ENABLED ...................... true — false turns the band off
+  SPAWN_CHANCE ................. 0.002 — 0.2%, one in five hundred. FIXED from day 1. 0 = command only
+  XP_REWARD .................... 50 — experience from each. Does not touch the experience multiplier. 0 = no experience
+  LEATHER_COLOR ................ 0x1B4F2A — dark green leather
+  LEATHER_DROP_CHANCE .......... 0.085 — chance of a leather piece
+  TORCH_DROP_CHANCE ............ 0.35 — chance of the torch from the hand
+  HEAD_DROP_CHANCE ............. 0.025 — 2.5% for the head and for the compass.
+                                 Looting I/II/III = 3.5% / 4.5% / 5.5%
+  MAX_HEALTH ................... 50 — 25 hearts for each in the band
+  ATTACK_DAMAGE ................ 8 — four hearts before armor. 2 damage = 1 heart
+  GUNPOWDER_COUNT .............. 1 — gunpowder
+  GOLD_INGOT_COUNT ............. 1 — gold ingot
+  COAL_COUNT ................... 1 — coal
+  ROSE_COUNT ................... 1 — wither rose
+  SENSE_BLOCKS ................. 52 — distance from which they notice. The player head senses through walls at this same distance
+  EXPLOSION_POWER .............. 1.5 — the pop, a creeper's is 3
+  WITHER_SECONDS ............... 4 — duration of wither
+  WITHER_REFRESH_IF_BELOW_SECONDS  1 — while the effect is longer than this, a hit does not refresh it
+
+
+TEST
+----
+1. /etritual player — everyone has the player head. Go behind a wall closer than 52 blocks: they come toward you.
+   Kill. A compass — rarely, about 2.5%. No player heads.
+2. /etritual creeper — death pops. A neighbor from the band stays in place. Gunpowder drops.
+   Head — rarely, about 2.5%.
+3. /etritual piglin — lava does not burn. In daytime in the sun the zombie does not catch fire. An ingot drops.
+   Head — rarely, about 2.5%.
+4. /etritual wither — a hit applies wither and does not refresh it on every poke.
+   Coal and a rose drop. Skull — rarely, about 2.5%.
+   A hit from any band removes 4 hearts before armor. Each has 50 health.

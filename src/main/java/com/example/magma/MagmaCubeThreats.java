@@ -3,7 +3,9 @@ package com.example.magma;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import com.example.advancement.ModAdvancements;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -225,6 +227,9 @@ public final class MagmaCubeThreats {
 		}
 		state.overheatTicks = Math.max(1, OVERHEAT_SECONDS * 20);
 		applySpeed(cube);
+		if (target instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onOverheated(serverPlayer);
+		}
 		if (cube.level() instanceof ServerLevel level) {
 			level.playSound(null, cube.getX(), cube.getY(), cube.getZ(), SoundEvents.BLAZE_SHOOT, SoundSource.HOSTILE, 0.8f, 0.6f);
 			level.sendParticles(ParticleTypes.LAVA, cube.getX(), cube.getY() + cube.getBbHeight() * 0.5, cube.getZ(), 12, 0.4, 0.3, 0.4, 0.0);

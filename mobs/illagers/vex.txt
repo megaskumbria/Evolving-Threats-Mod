@@ -1,0 +1,34 @@
+VEX: +1 HEART PER HIT
+==============================
+
+Type: vanilla vex (not a new mob). Still summons ravager as before.
+Code: vex/VexDamage.java (how many hearts to add),
+     mixin/VexDamageMixin.java (moment of hit).
+
+
+WHAT HAPPENS
+--------------
+Each hit removes one heart more than in vanilla. With no armor.
+Sword, Sharpness, and difficulty stay as they were — one extra heart on top.
+
+On Normal difficulty iron sword hit was 4.5 hearts, now 5.5.
+On Easy was 2.75 hearts, now 3.75.
+On Hard was 6.75 hearts, now 7.75.
+
+Armor still reduces damage. Peaceful still zeroes damage as before.
+
+About every fifth hit that removed health applies Weakness I for 10 seconds.
+Player only. Villager and golem do not get weakness.
+A shield block and brief post-hit invulnerability do not count.
+Milk removes the effect immediately. Another such hit refreshes the duration.
+A swarm of several vexes applies weakness more often: chance rolls separately for each.
+
+
+SETTINGS (VexDamage.java)
+--------------------------
+ENABLED — false disables the extra damage. Weakness still applies.
+EXTRA_HEARTS — extra hearts per hit. 1 = one heart. 0 = vanilla.
+WEAKNESS_ENABLED — false removes weakness. Extra heart remains.
+WEAKNESS_CHANCE — 0.20 = every fifth hit that landed. 0.25 = every fourth. 0 = never.
+WEAKNESS_SECONDS — how long weakness lasts. 10 = ten seconds. 0 = no effect.
+WEAKNESS_AMPLIFIER — 0 = Weakness I. 1 = Weakness II, sword barely hits.

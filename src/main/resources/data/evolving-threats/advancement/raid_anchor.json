@@ -1,8 +1,8 @@
 {
-  "parent": "evolving-threats:root",
+  "parent": "evolving-threats:bastion",
   "display": {
     "icon": {
-      "id": "minecraft:golden_hoe"
+      "id": "minecraft:iron_chain"
     },
     "title": {
       "translate": "advancements.evolving-threats.raid_anchor.title"

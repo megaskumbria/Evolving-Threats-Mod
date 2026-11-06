@@ -1,0 +1,33 @@
+SHIELD-BREAK CREEPER
+==========================
+
+Type: rare variant of the normal creeper. Looks vanilla.
+Code: creeper/ShieldBreakCreeper.java (settings, shield destruction, command),
+     mixin/CreeperShieldBreakMixin.java (flag and persistence),
+     mixin/LivingEntityShieldBreakMixin.java (moment shield blocked the blast),
+     mixin/MobDynamiteCreeperSpawnMixin.java (chance on spawn, after sapper and thrower).
+
+
+HOW IT WORKS
+------------
+1. On spawn, SPAWN_CHANCE (5%). If sapper or thrower already rolled — this creeper is normal.
+2. Runs and explodes like a normal creeper. Fuse 1.5 sec, normal explosion power.
+3. If the player blocked with a shield and the blast hit the shield (facing the creeper) —
+   the shield is destroyed entirely, no damage to the player.
+   Durability and Unbreaking do not help.
+4. If the shield is not raised or the player is not facing the blast — shield intact, damage as normal creeper.
+   A charged creeper can also be a shield-breaker: shield breaks in one blast, bigger hole.
+5. Flint and steel still ignites it.
+
+
+COMMAND
+-------
+  /etshield
+  /evolvingthreats spawn shield
+Creeper spawns 8 blocks in front of where you look.
+
+
+SETTINGS (ShieldBreakCreeper.java)
+-----------------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.05 — world chance (5%)

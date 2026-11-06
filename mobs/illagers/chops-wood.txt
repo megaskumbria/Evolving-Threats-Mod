@@ -1,0 +1,56 @@
+VINDICATOR CHOPS WOOD
+=====================
+
+Type: vanilla vindicator. Does not break stone or dirt.
+Code: illager/VindicatorWoodBreak.java (what counts as wood and speed),
+     entity/ai/VindicatorChopGoal.java (when to chop),
+     mixin/VindicatorChopMixin.java (hook up the goal).
+
+
+WHEN IT CHOPS
+-----------
+Has a target (player, villager, iron golem) within 32 blocks, no normal path,
+and a wooden block with collision directly in front of the vindicator.
+If the target is already in melee range, it attacks instead of chopping.
+If a path opens — drops the block and moves.
+The axe stays in hand while chopping, hits with it, not fists.
+As soon as the path is clear, attacks the player again with the same axe.
+Crack progress is not reset for 5 seconds if distracted and returning to the same block.
+
+
+WHAT IT BREAKS
+----------
+Everything wooden that blocks the way:
+  fence, gate, door, trapdoor, planks, logs, stairs, slabs,
+  button, pressure plate, shelf, sign, bamboo.
+Nether and any non-wood fence is left alone.
+Chest and barrel are not broken: items are inside.
+Dirt, stone, cobblestone fence — no.
+
+
+SPEED
+--------
+20% of how fast the same axe chops for the player.
+Oak fence: iron axe about 2.5 sec, diamond about 1.9 sec.
+Efficiency on the axe speeds it up too. Sharpness does not affect chop speed.
+Items from the block do not drop.
+
+
+SETTINGS (VindicatorWoodBreak.java)
+------------------------------------
+  ENABLED ...................... true
+  SPEED_MULTIPLIER ............. 0.2 — fraction of player speed
+  DROP_ITEMS ................... false
+  MAX_DISTANCE_TO_TARGET ....... 32
+  CHECK_INTERVAL_TICKS ......... 10
+  KEEP_PROGRESS_TICKS .......... 100
+  REACH ........................ 3.5
+  RESPECT_MOB_GRIEFING ......... true
+
+
+TEST
+----
+1. Put a wooden fence between yourself and a vindicator. It should chop the fence with crack animation.
+2. Iron axe is slower than diamond on the same fence.
+3. Stone fence and dirt are not broken: vindicator stands and looks for a path.
+4. /gamerule mobGriefing false — chopping stops.

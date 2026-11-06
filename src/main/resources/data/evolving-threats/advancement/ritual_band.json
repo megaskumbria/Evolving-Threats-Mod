@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:mirror",
+  "display": {
+    "icon": {
+      "id": "minecraft:candle"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.ritual_band.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.ritual_band.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/ritual_band"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

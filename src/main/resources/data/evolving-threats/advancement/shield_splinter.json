@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:dynamite_creeper",
+  "display": {
+    "icon": {
+      "id": "minecraft:shield"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.shield_splinter.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.shield_splinter.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/shield_splinter"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

@@ -1,6 +1,8 @@
 package com.example.phantom;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.BlindingPhantomEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,13 +76,16 @@ public final class PhantomBlindness {
 		if (seconds <= 0) {
 			return;
 		}
-		target.addEffect(new MobEffectInstance(
+		boolean applied = target.addEffect(new MobEffectInstance(
 				MobEffects.BLINDNESS,
 				seconds * 20,
 				0,
 				false,
 				true,
 				true), phantom);
+		if (applied && target instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onBlinded(serverPlayer);
+		}
 	}
 
 	/*The smaller and larger of the two settings. If both are no more than zero, there is no blindness. */

@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:through_wall",
+  "display": {
+    "icon": {
+      "id": "minecraft:feather"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.feint_creeper.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.feint_creeper.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 150,
+    "loot": [
+      "evolving-threats:advancement/feint_creeper"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

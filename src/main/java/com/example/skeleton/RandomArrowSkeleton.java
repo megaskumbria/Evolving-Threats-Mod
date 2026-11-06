@@ -1,10 +1,12 @@
 package com.example.skeleton;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.FastBowSkeletonEntity;
 import com.example.entity.RandomArrowSkeletonEntity;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
@@ -240,6 +242,16 @@ public final class RandomArrowSkeleton {
 	}
 
 	/*Arson of its duration. Vanilla after burning arrow puts 5 seconds, here is the number of settings. */
+	/** A cycling arrow hit someone. Only a player hit counts, a miss does not. */
+	public static void onPlayerHit(AbstractArrow arrow, Entity hit) {
+		if (!(hit instanceof ServerPlayer player) || player.isSpectator()) {
+			return;
+		}
+		if (arrow.getOwner() instanceof AbstractSkeleton skeleton && isActive(skeleton)) {
+			ModAdvancements.onVariedArrow(player);
+		}
+	}
+
 	public static void onFireHit(AbstractArrow arrow, Entity hit) {
 		if (!(hit instanceof LivingEntity living) || FIRE_SECONDS <= 0) {
 			return;

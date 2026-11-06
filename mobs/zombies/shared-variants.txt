@@ -1,0 +1,22 @@
+COMMON VARIANTS THAT ZOMBIES CAN ALSO HAVE
+==========================================
+
+The full description of these mechanics is in separate files in mobs/common/.
+Here only a short summary, so that the list of zombie variants is in one place.
+
+Bastion. 1000 health, hits do not knock back, speed potion does not work, experience 200.
+Armor, enchantments and block breaking as for a regular zombie. From day 60, the chance does not grow.
+File: bastion.txt
+
+Spiky. One armor piece stings for 7–8 hearts through armor and Protection. The rest of the armor is normal.
+From day 40, chance 0.2%. File: spiky.txt
+
+Mirror. A point-blank hit is returned to the player. Chance 0.3% from day 1. File: mirror.txt
+
+Raid anchor. A zombie with a golden hoe, 100 health and 12–15 minions.
+While the anchor is alive, the minions hear the player. From day 80. File: raid-anchor.txt
+
+Siege — a rare night against the whole base, not a separate zombie. File: siege.txt
+
+Random health, weapon, armor, shield, totem, potions and kill experience are also files in mobs/common/.
+What makes the chances grow: threat-scale.txt

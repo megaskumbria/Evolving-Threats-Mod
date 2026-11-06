@@ -1,8 +1,10 @@
 package com.example.entity.ai;
 
+import com.example.advancement.ModAdvancements;
 import com.example.digging.BlockBreaking;
 import com.example.grudge.PlayerGrudge;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -169,7 +171,10 @@ public class BreakToTargetGoal extends Goal {
 		}
 
 		if (progress >= 1.0f) {
-			level.destroyBlock(breakPos, BlockBreaking.DROP_ITEMS, zombie);
+			if (level.destroyBlock(breakPos, BlockBreaking.DROP_ITEMS, zombie)
+					&& zombie.getTarget() instanceof ServerPlayer player) {
+				ModAdvancements.onBlockBroken(player);
+			}
 			breakPos = null;
 			progress = 0.0f;
 		} else {

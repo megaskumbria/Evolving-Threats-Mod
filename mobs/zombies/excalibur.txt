@@ -1,0 +1,68 @@
+EXCALIBUR ZOMBIE
+================
+
+Type: rare variant of a regular zombie. The name Excalibur is shown above its head.
+It is visible only when your crosshair is on it and it is no farther than about 64 blocks.
+Code: zombie/ZombieExcalibur.java (settings, sword, loot, command),
+     mixin/ZombieExcaliburMixin.java (flag and experience),
+     mixin/ZombieExcaliburLootMixin.java (name tag),
+     mixin/ZombieMixin.java (chance on spawn; own sword, armor and shield as for a regular zombie).
+
+
+HOW IT WORKS
+------------
+1. On spawn the chance is SPAWN_CHANCE (1%). FIXED: from day 40, does not grow with the threat scale.
+   Before day 40 there are none. An Excalibur that is already alive stays.
+   Regular adult zombie only.
+   husk, drowned, zombie villager, baby, Overseer and raid zombies do not become one.
+2. In hand there is always one sword, with equal chances: wood, stone, copper, iron or diamond.
+   It has Sharpness 20. At the enchanting table the cap is V.
+   No gold and no netherite.
+3. Armor as on a regular zombie: each piece separately, sometimes a full set, enchantments on the armor.
+   A shield in the second hand is possible, with the same chance as for a regular zombie.
+   The sword in the first hand always stays.
+   Random weapon, totem, pumpkin and spawner are not given to its head.
+   Potions at spawn are possible — as with a regular zombie.
+   It does not pick up other items from the ground, otherwise the sword would change.
+4. A sword with this sharpness does not drop. Armor and shield drop with their usual chance.
+   One name tag named Excalibur always drops.
+5. Health is always 50. Excaliburs that are already alive keep their old health.
+6. If a player killed it — 30 experience. The global experience multiplier does not increase this number.
+   If the zombie burned on its own — no experience, the name tag still drops.
+
+
+THE HIT
+----
+It is an ordinary sword hit, only with a high Sharpness. There is no separate crushing move.
+The game adds 1 damage for the first level of Sharpness and another 0.5 for each next one.
+20 gives 10.5 damage on top of the sword itself (Sharpness V gives only 3).
+
+A naked player, normal difficulty, 10 hearts:
+  wooden sword ..... about 8 hearts
+  stone and copper .. about 9
+  iron .............. about 9 and a quarter
+  diamond ........... almost 10, a quarter of a heart is left
+
+On hard difficulty any such sword kills a naked player in one hit.
+In armor the hit is noticeably weaker: a full diamond set is not taken down in one hit.
+
+
+COMMAND
+-------
+  /etexcalibur
+  /evolvingthreats spawn excalibur
+The zombie appears 6 blocks away in the direction you look. Each call rerolls the sword material.
+The day is not checked: the command works before day 40 as well.
+Operator permissions are required.
+
+
+SETTINGS (ZombieExcalibur.java)
+--------------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.01 = 1%. FIXED from day 40. 0 = command only
+  Activation day ............... ThreatTable.EXCALIBUR_DAY = 40
+  SHARPNESS_LEVEL .............. 20. 5 = normal Sharpness V
+  MAX_HEALTH ................... 50 = 25 hearts
+  XP_REWARD .................... 30. 0 = no experience. Does not touch the experience multiplier
+  NAME_TAG_COUNT ............... 1. 0 = do not drop a name tag
+  DISPLAY_NAME ................. Excalibur

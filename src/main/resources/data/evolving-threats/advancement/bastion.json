@@ -1,5 +1,5 @@
 {
-  "parent": "evolving-threats:root",
+  "parent": "evolving-threats:spiky",
   "display": {
     "icon": {
       "id": "minecraft:obsidian"

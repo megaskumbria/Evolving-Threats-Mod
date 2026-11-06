@@ -1,0 +1,48 @@
+SAPPER CREEPER
+=================
+
+Type: rare variant of the normal creeper. Looks vanilla.
+Code: creeper/SapperCreeper.java (settings, blast, command),
+     entity/ai/SapperBreachGoal.java (where it goes and when it detonates),
+     mixin/CreeperSapperMixin.java (flag and persistence),
+     mixin/MobDynamiteCreeperSpawnMixin.java (chance on spawn, before thrower),
+     mixin/SwellGoalMixin.java (does not swell up close vanilla-style on its own).
+
+
+HOW IT WORKS
+------------
+1. On spawn, SPAWN_CHANCE (5%, like jack-o-lantern). If sapper rolled,
+   dynamite thrower is no longer rolled for it. Charged creeper can be a sapper:
+   then the explosion is still twice as strong.
+2. Explosion power and hiss like a normal creeper (1.5 sec). Nothing reduced.
+3. Walks to the block under the player's feet (floor, tower top, step).
+   Reaches it — hisses 1.5 sec and explodes.
+   If you walk away while it hisses, fuse resets like a normal creeper.
+   Hit and knockback alone in open ground do not trigger the blast.
+4. Tower with no path up: approaches the base (within 2.2 blocks horizontally) and hisses.
+   Walk away from the tower — hissing stops.
+5. No path and player not visible (house, wall, closed door): gets as close as possible,
+   presses against the wall, stands 8–10 seconds and explodes. This blast cannot be cancelled.
+   Remembers the player for 90 seconds (MEMORY_SECONDS), even if they went deep inside the house.
+   If the door opens or the player is visible again before the wait ends — timer resets, creeper runs again.
+6. Flint and steel still ignites it. Fuse from flint and steel does not reset.
+
+
+COMMAND
+-------
+  /etsapper
+  /evolvingthreats spawn sapper
+Creeper spawns 8 blocks in front of where you look.
+
+
+SETTINGS (SapperCreeper.java)
+------------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.05 — world chance (5%)
+  DETONATE_HORIZONTAL .......... 2.2 — flush against support
+  ELEVATED_BLOCKS .............. 2 — blocks higher to count as a tower
+  PATH_REACH_BLOCKS ............ 2 — "can reach" if path gets this close
+  WALL_DELAY_MIN / MAX ......... 8 / 10 seconds until blast at wall
+  STUCK_MOVE_BLOCKS / TICKS .... 0.6 blocks in 20 ticks — "stuck and standing"
+  MEMORY_SECONDS ............... 90 — how long it remembers player without line of sight
+  CHASE_MAX_DISTANCE ........... 40 — gives up beyond this

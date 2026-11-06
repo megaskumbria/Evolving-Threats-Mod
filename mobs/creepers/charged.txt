@@ -1,0 +1,24 @@
+CHARGED CREEPER
+==================
+
+Type: normal creeper, already charged like after lightning. Aura around it is visible.
+Code: creeper/ChargedCreeper.java (chance),
+     mixin/CreeperPowerAccessor.java (charged flag),
+     mixin/MobDynamiteCreeperSpawnMixin.java (roll on spawn, before thrower).
+
+
+WHAT HAPPENS
+--------------
+1. On world spawn, 1% chance: roughly one creeper in a hundred is already charged.
+   Lightning still charges any creeper.
+2. Explosion twice as strong as normal. Head may drop from it.
+3. Does not throw dynamite.
+4. Separate chance it may be a sapper, shield-breaker, or magnet.
+   Then that skill works as usual, but the explosion is still charged.
+5. Commands /etsapper, /etshield, and /ettnt do not roll this chance.
+
+
+SETTINGS (ChargedCreeper.java)
+-------------------------------
+ENABLED — false: does not spawn charged on its own. Lightning still charges.
+SPAWN_CHANCE — 0.01 = 1%. 0 = never. 1 = every creeper charged.

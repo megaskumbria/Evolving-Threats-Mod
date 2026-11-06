@@ -149,6 +149,13 @@ public final class RitualBand {
 	 */
 	public static final int WITHER_REFRESH_IF_BELOW_SECONDS = 1;
 
+	/**
+	 * How far (blocks) to look for other living members of the same pack.
+	 * 64 covers a fight that has spread out. Members farther away, or in
+	 * unloaded chunks, are not seen, so the pack counts as finished.
+	 */
+	public static final double GROUP_ALIVE_SEARCH_BLOCKS = 64.0;
+
 	// ========================================================================
 
 	public static final int HEAD_PLAYER = 1;
@@ -309,6 +316,31 @@ public final class RitualBand {
 			ally.setDeltaMovement(speeds[i]);
 			ally.syncVelocity = true;
 		}
+	}
+
+	/**
+	 * True when this mob is the last living member of its pack that the game can see.
+	 * The advancement for wiping the pack uses this on the killing blow.
+	 */
+	public static boolean isLastLiving(Mob mob) {
+		if (!(mob instanceof RitualMember data) || !data.evolvingthreats$isRitual()) {
+			return false;
+		}
+		UUID group = data.evolvingthreats$getRitualGroup();
+		if (group == null || !(mob.level() instanceof ServerLevel level)) {
+			return false;
+		}
+		double reach = Math.max(0.0, GROUP_ALIVE_SEARCH_BLOCKS);
+		var box = new AABB(mob.position(), mob.position()).inflate(reach);
+		for (Mob other : level.getEntitiesOfClass(Mob.class, box)) {
+			if (other == mob || !other.isAlive()) {
+				continue;
+			}
+			if (areAllies(mob, other)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static boolean areAllies(LivingEntity first, LivingEntity second) {

@@ -1,0 +1,37 @@
+RAVAGER: BREAKS THROUGH WALLS
+=============================
+
+Type: vanilla ravager (not a new mob). Same in patrol and raid.
+Code: illager/RavagerWallBreak.java (cooldown, hole size, what counts as stone),
+     entity/ai/RavagerHeadbuttGoal.java (when to strike),
+     mixin/RavagerHeadbuttMixin.java (goal in behavior list).
+
+
+WHAT HAPPENS
+--------------
+1. If there is no path to the target, the ravager headbutts the wall in front.
+   Target is close and path is clear — normal bite, does not touch the wall.
+2. One strike removes a hole 3 blocks wide and 3 high, one layer deep.
+   A thick wall gives way layer by layer: the next layer only after a cooldown.
+3. Dirt, wood, glass, wool, netherrack drop on the first hit.
+   Stone, cobblestone, deepslate, bricks, ores, and metal blocks
+   crack on the first hit and drop on the second.
+4. Obsidian, crying obsidian, and bedrock do not break.
+   Barrier, portal frame, and reinforced deepslate too: they cannot be broken.
+5. Chest and barrel drop on the first hit, furnace on the second like stone.
+   The block itself does not drop as an item. Contents spill on the ground and can be picked up.
+   A wall of planks and stone also leaves no block drops.
+6. Cooldown between hits is random, 20–25 seconds.
+   While stunned by a shield or roaring, it does not strike.
+
+
+SETTINGS (RavagerWallBreak.java)
+---------------------------------
+ENABLED — false disables wall breaking.
+COOLDOWN_MIN_SECONDS / COOLDOWN_MAX_SECONDS — pause in seconds. 20 and 25 = twenty to twenty-five.
+STONE_HITS — hits on stone. 2 = two hits. 1 = stone drops immediately.
+HOLE_WIDTH — hole width. 3 = center, left, and right.
+HOLE_HEIGHT — height from feet. 3 = feet, body, and head.
+REACH — how close the wall must be to strike. 2 = flush or one block away.
+DROP_ITEMS — true if blocks should drop as items.
+RESPECT_MOB_GRIEFING — true: with mobGriefing false walls are not broken.

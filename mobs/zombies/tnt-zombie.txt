@@ -1,0 +1,52 @@
+ZOMBIE WITH TNT
+===============
+
+Type: rare regular zombie. Not a new mob in the menu.
+Code: zombie/TntZombie.java (chance, throw, command),
+     entity/ai/TntDropGoal.java (when to drop),
+     mixin/ZombieMixin.java (instead of a sword),
+     mixin/TntZombieMixin.java (flag and pause, saving),
+     mixin/TntZombieGoalMixin.java (target).
+
+The weapon is TNT in hand. This zombie is not given a sword, shield or totem.
+Armor, potions and the mod's special head item stay.
+It does not break blocks: neither a wall toward the player nor a torch. If there is no path, it drops TNT.
+
+
+WHEN IT DROPS
+------------
+An ordinary lit TNT appears under its feet. The fuse is 4 seconds, the explosion is like vanilla TNT.
+It breaks blocks only if the game rule allows it (tntExplodes).
+The zombie itself is not protected from the explosion.
+
+1. Health below 3 (a heart and a half). Even if the player is nearby and the path is clear.
+2. No path to the player is found, the player is no farther than 32 blocks, it cannot hit them,
+   and there is a block right in front of the zombie. On an empty road, or if the player is just far away — it does not drop.
+The next TNT comes no sooner than 4 seconds later.
+
+
+COMMAND
+-------
+  /ettnt
+  /evolvingthreats spawn tnt_zombie
+The zombie appears 6 blocks away in the direction you look. The chance is not rolled.
+
+
+SETTINGS (TntZombie.java)
+--------------------------
+  ENABLED ...................... true
+  SPAWN_CHANCE ................. 0.04 — chance for a regular zombie (4%)
+  LOW_HEALTH ................... 3 — below this health it drops TNT
+  PATH_CHECK_BLOCKS ............ 32 — farther than this "no path" is not counted
+  PATH_CHECK_INTERVAL_TICKS .... 10 — how often to check the path
+  THROW_COOLDOWN_SECONDS ....... 4 — pause between TNTs
+  FUSE_TICKS ................... 80 — fuse, 80 = 4 seconds
+  TNT_DROP_CHANCE .............. 0.085 — chance that the TNT in hand drops on death
+
+
+TEST
+----
+1. /ettnt. TNT in hand, no sword.
+2. Put it behind a dirt wall and stand on the other side. After a couple of seconds TNT will start hissing under it.
+3. Bring it almost to death (below a heart and a half). It drops TNT even if the path is clear.
+4. It does not dig through the wall.

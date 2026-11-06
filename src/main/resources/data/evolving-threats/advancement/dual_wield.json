@@ -1,5 +1,5 @@
 {
-  "parent": "evolving-threats:root",
+  "parent": "evolving-threats:mob_shield",
   "display": {
     "icon": {
       "id": "minecraft:iron_sword"

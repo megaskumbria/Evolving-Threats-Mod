@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:until_dawn",
+  "display": {
+    "icon": {
+      "id": "minecraft:ink_sac"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.blinded.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.blinded.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "evolving-threats:advancement/blinded"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

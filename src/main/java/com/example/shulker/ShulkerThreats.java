@@ -1,11 +1,13 @@
 package com.example.shulker;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.ShulkerBulletTraits;
 import com.example.entity.ShulkerVariant;
 import com.example.mixin.ShulkerTeleportAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.BlockUtil;
@@ -349,6 +351,9 @@ public final class ShulkerThreats {
 				player.teleportTo(level, x, y, z, Set.of(), player.getYRot(), player.getXRot(), false);
 				player.resetFallDistance();
 				player.playSound(SoundEvents.CHORUS_FRUIT_TELEPORT, 1.0f, 1.0f);
+				if (player instanceof ServerPlayer serverPlayer) {
+					ModAdvancements.onRelocated(serverPlayer);
+				}
 				return;
 			}
 		}

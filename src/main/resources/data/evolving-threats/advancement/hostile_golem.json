@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:relocated",
+  "display": {
+    "icon": {
+      "id": "minecraft:poppy"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.hostile_golem.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.hostile_golem.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 200,
+    "loot": [
+      "evolving-threats:advancement/hostile_golem"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

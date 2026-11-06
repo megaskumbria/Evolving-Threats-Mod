@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Kill advancements, at the start of death.
@@ -20,5 +21,17 @@ public class LivingEntityAdvancementMixin {
 	@Inject(method = "die", at = @At("HEAD"))
 	private void evolvingthreats$advancements(DamageSource source, CallbackInfo ci) {
 		ModAdvancements.onDying((LivingEntity) (Object) this, source);
+	}
+
+	/**
+	 * A totem just saved this mob. Runs only when the check returns true,
+	 * so a totem that was not in hand does not count. The player's own totem
+	 * is ignored: this entity is then a player, not a mob.
+	 */
+	@Inject(method = "checkTotemDeathProtection", at = @At("RETURN"))
+	private void evolvingthreats$mobTotem(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+		if (Boolean.TRUE.equals(cir.getReturnValue())) {
+			ModAdvancements.onMobTotem((LivingEntity) (Object) this, source);
+		}
 	}
 }

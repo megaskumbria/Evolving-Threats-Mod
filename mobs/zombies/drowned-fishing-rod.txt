@@ -1,0 +1,26 @@
+DROWNED WITH A FISHING ROD
+==========================
+
+Type: regular drowned that the game has already given a fishing rod (not a new mob).
+Whoever has a trident has no rod. Whoever has a rod — it is only decoration in the hand.
+Casting code (currently off): drowned/DrownedFishing.java.
+
+
+WHAT HAPPENS
+--------------
+1. The game itself gives the rod. The mod does not take it away and does not create a new one.
+   Whoever has a trident has no rod.
+2. The rod just sits in the hand. The hook is not cast, the player is not pulled.
+3. It hits with its hands, like a regular drowned.
+
+
+SETTINGS (DrownedFishing.java)
+-------------------------------
+ENABLED — false, the rod is only an item in the hand. true turns casting and pulling back on.
+The numbers below work only if casting is on.
+MELEE_BLOCKS — 3, closer than this it hits instead of pulling.
+CAST_BLOCKS — 16, farther than this it only walks.
+PULL_PER_TICK — 0.18, strength of the pull per tick.
+MISS_COOLDOWN_SECONDS — 1, pause after a miss.
+FLIGHT_TICKS — 30, how many ticks the hook flies if it hits no one. 30 = a second and a half.
+CAST_SPEED — 1.6, speed of the hook. Lower — it hits the ground more often.

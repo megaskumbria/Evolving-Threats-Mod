@@ -1,0 +1,51 @@
+PATROL AT THE BASE
+===============
+
+Type: squad of vanilla pillagers, vindicators, and ravager (not a new mob in the menu).
+Code: illager/IllagerPatrol.java (composition, distance, how often),
+     illager/IllagerPatrolEvents.java (check every world tick),
+     entity/ai/IllagerPatrolMarchGoal.java (march to where the player stood),
+     mixin/RaiderPatrolMixin.java (remember the point and save in the world).
+
+Vanilla patrol is not disabled: a rare group of pillagers alone can still appear far from a village.
+This squad spawns separately and also near the base.
+
+
+WHAT HAPPENS
+--------------
+1. Random pause: 8 to 14 in-game days (one day = 20 minutes).
+   Each time the number is new. Spawns only in daytime and not on Peaceful difficulty.
+   If the timer expires at night, the squad comes the next morning, not two weeks later.
+   In Creative and Spectator the squad does not spawn.
+2. Location — 64–96 blocks from the player, on the surface, not in water.
+   If a marching squad is already nearby (140 blocks), a new one does not spawn.
+3. The squad has 2–3 pillagers, 2–3 vindicators, and 1 ravager.
+   One pillager is the captain with a banner. An ominous bottle drops from them.
+4. They remember where the player stood at spawn and march there.
+   If the player left, they still reach the base and stop within 12 blocks of the point.
+   They do not chase the player across the map. If they see the player nearby on the way — fight like normal mobs,
+   lose sight — march to the same point again.
+5. This squad does not join someone else’s village raid.
+
+
+SETTINGS (IllagerPatrol.java)
+------------------------------
+  ENABLED ...................... true — turn spawning on/off
+  DAYS_MIN / DAYS_MAX .......... 8 / 14 — random pause, in in-game days
+  TEST_ATTEMPT_TICKS ........... 0 — if greater than 0, days are ignored, pause in ticks
+  RETRY_TICKS .................. 1200 — how often to retry if it is night or no valid spot
+  DAYTIME_ONLY ................. true — daytime only
+  SPAWN_DISTANCE_MIN / MAX ..... 64 / 96 — how far from the player they appear, in blocks
+  ARRIVE_BLOCKS ................ 12 — how close to the point to stop
+  MARCH_SPEED .................. 0.6 — march speed toward the point
+  PILLAGER_MIN / MAX ........... 2 / 3 — pillagers
+  VINDICATOR_MIN / MAX ......... 2 / 3 — vindicators
+  RAVAGER_COUNT ................ 1 — ravagers. 0 = none
+  NEARBY_BLOCKS ................ 140 — do not spawn a second squad while the first is still marching
+
+
+TEST
+----
+Command (cheats required): /etpatrol
+The squad spawns immediately 64–96 blocks away and marches to where you stand.
+Works in Creative and at night. The normal 8–14 day timer is not reset by this.

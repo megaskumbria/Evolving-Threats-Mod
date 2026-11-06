@@ -1,0 +1,31 @@
+Enderman takes and puts blocks
+==============================
+
+Type: ordinary enderman. Anger is not necessary: drags blocks and calmly.
+Code: enderman/EndermanBlocks.java (how often)
+mixin/EndermanTakeBlockMixin.java (attempt to take)
+mixin/EndermanPlaceBlockMixin.java (attempt to put).
+
+
+How it works
+------------
+1. FIXED: From day one, the threat scale does not increase.
+2. Takes the block next to you more often. Try on average once every quarter of a second
+(In a normal game, once in half a second).
+Watches one random block in a couple of steps. If there is air or something that cannot be carried,
+The attempt is empty and he tries again.
+3. Put a block that already carries, tries on average every 2 seconds
+(In a normal game, once every 50 seconds, so the block hangs in your hands for a long time).
+The place is also random: you need air over a solid block.
+4. The list of blocks is the same as in the game: earth, sand, gravel and other things that the enderman can carry.
+He doesn't take stone, boards and chests.
+5. If “mobs break blocks” is turned off in the world, the enderman does not touch the blocks.
+
+
+SETTINGS
+---------
+  EndermanBlocks.java
+ENABLED...............false again as in a regular game
+TAKE INTERVAL .... 5 - pause between attempts to take, in ticks. 20 ticks = 1 second.
+Less is more often. 1 = every tick.
+PLACE INTERVAL - 40 - pause between attempts to bet. Less is faster than that.

@@ -29,7 +29,7 @@ If the throw does not fall, there is a quick reload of the raid (I or II, in lat
 The thug in the raid and the rotten overseer is still with his spell of play.
 7. Special "heads" (spawner block, beacon pumpkin, distributor) are not fascinated.
 8. Such an object falls off the mob with the usual chance (about 8.5%), the charm is preserved.
-Exception: A bow with a folding V or VI never falls. See mobs/skeletons/skeleton.txt, section “Onions with Rejection V and VI”.
+Exception: A bow with a folding V or VI never falls. See mobs/skeletons/punch-bow.txt.
 
 What works for the mob in combat:
 - weapons: sharpness, fiery plot, discard, force, flame, rapid reload, etc.

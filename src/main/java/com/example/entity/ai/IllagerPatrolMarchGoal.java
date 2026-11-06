@@ -45,7 +45,8 @@ public class IllagerPatrolMarchGoal extends Goal {
 			return;
 		}
 		if (arrived(destination)) {
-			patrol.evolvingthreats$setPatrolDestination(null);
+			// Leave the house point set. The level tick grants the card only when
+			// a pillager, a vindicator, and the ravager are all in the yard, then clears it.
 			mob.getNavigation().stop();
 			return;
 		}

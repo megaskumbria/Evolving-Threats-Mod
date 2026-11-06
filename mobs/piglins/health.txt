@@ -1,0 +1,19 @@
+PIGLIN BRUTE: HEALTH
+=============================
+
+Type: vanilla piglin brute (not a new mob).
+Code: piglin/PiglinBruteHealth.java (health value),
+     mixin/PiglinBruteHealthMixin.java (on spawn).
+
+
+WHAT HAPPENS
+--------------
+1. A newly spawned brute has 60 health (30 hearts). In vanilla it is 50 (25 hearts).
+2. Regular piglins and zombified piglins are unchanged.
+3. A brute already in the world keeps its old health until it despawns and respawns.
+
+
+SETTINGS (PiglinBruteHealth.java)
+----------------------------------
+ENABLED — false restores vanilla 50.
+MAX_HEALTH — 60 = 30 hearts.

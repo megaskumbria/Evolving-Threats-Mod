@@ -1,0 +1,28 @@
+PIGLIN BRUTE: ARMOR DAMAGE
+=================================
+
+Type: vanilla piglin brute (not a new mob). Regular piglin and zombified piglin do not do this.
+Code: piglin/PiglinBruteArmorHit.java (chance, durability fraction, nausea),
+     mixin/PiglinBruteArmorMixin.java (on hit).
+
+
+WHAT HAPPENS
+--------------
+1. About every twentieth hit that already dealt health damage also damages one armor piece.
+2. Half of that piece’s maximum durability is removed. Netherite chestplates lose half the bar
+   even with Unbreaking: the enchant does not reduce this hit.
+3. Which piece is random among equipped slots: helmet, chestplate, leggings, boots.
+   Turtle shell counts. Carved pumpkin and elytra do not.
+4. If less than half durability remains, the item breaks and is destroyed.
+5. At the same moment you hear armor crack and get 10 seconds of nausea.
+   The screen wobbles so the special hit is obvious. Crack plays even if the item did not break yet.
+6. With no armor, nothing happens. Creative players do not lose durability either.
+   A shield block and post-hit invulnerability do not roll the chance.
+
+
+SETTINGS (PiglinBruteArmorHit.java)
+-------------------------------------
+ENABLED — false restores normal hits.
+HIT_CHANCE — 0.05 = about every twentieth damaging hit. 0 = never. 1 = every hit.
+DURABILITY_FRACTION — 0.5 = half the bar. 1 = item breaks immediately.
+NAUSEA_SECONDS — 10 = ten seconds of nausea. 0 = no effect.

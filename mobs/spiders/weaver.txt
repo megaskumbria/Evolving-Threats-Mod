@@ -1,0 +1,51 @@
+SPIDERS: WEAVER AND MATRIARCH
+===================
+
+Type: rare variants of the regular spider (not separate mobs in the menu).
+Code: spider/SpiderThreats.java (all settings and rules),
+     entity/ai/SpiderWebWeaveGoal.java (weaver behavior),
+     mixin/SpiderRoleMixin.java (chance on spawn + goal hookup),
+     mixin/SpiderRoleSaveMixin.java (role persists in the world).
+
+Who participates: regular spider only.
+Who does not: cave spiders, spider jockeys (skeleton on top).
+One roll on spawn: matriarch → weaver → swarm (see "SPIDERS: SWARM" below) → regular.
+A summoned spider (swarm helper) skips this roll and stays regular.
+
+
+WEAVER (WEAVER_SPAWN_CHANCE = 10%)
+-------------------------------
+Looks the same as a regular spider.
+While it sees the player (up to 12 blocks, line of sight) — every 5–9 sec it places cobweb
+in the cell under the player's feet. Cobweb stays FOREVER (does not despawn on its own) —
+remove with sword, shears, or by breaking the block.
+If there is nowhere to place cobweb (cell occupied / water) — retry in 1 sec.
+Does not work if /gamerule mobGriefing is off (RESPECT_MOB_GRIEFING).
+
+
+MATRIARCH (MATRIARCH_SPAWN_CHANCE = 4%)
+-----------------------------------
+Spider with 40 HP (regular has 16), size x1.3 — to tell them apart.
+On spawn, 1–4 cave spiders appear nearby (within 2.5 blocks).
+Cave spiders are regular — not matriarchs or weavers.
+Matriarchs do not appear during chunk generation (there is no real world there for reinforcements).
+
+
+SETTINGS (SpiderThreats.java)
+------------------------------
+  ENABLED ...................... true — enable/disable all
+  WEAVER_SPAWN_CHANCE .......... 0.10 — weaver chance
+  MATRIARCH_SPAWN_CHANCE ....... 0.04 — matriarch chance
+  WEB_COOLDOWN_MIN/MAX_SECONDS . 5 / 9 — pause between cobwebs
+  WEB_MAX_DISTANCE ............. 12 — range for placing web
+  MATRIARCH_MAX_HEALTH ......... 40 — matriarch health
+  MATRIARCH_CAVE_SPIDERS_MIN/MAX 1 / 4 — how many cave spiders
+  MATRIARCH_SCALE .............. 1.3 — matriarch size (1.0 = regular)
+
+
+TEST
+----
+1. Temporarily set WEAVER_SPAWN_CHANCE = 1.0 (and MATRIARCH = 0.0) — approach a spider at night:
+   cobweb should appear under your feet.
+2. For matriarch: MATRIARCH_SPAWN_CHANCE = 1.0 — spider is bigger, 1–4 small ones nearby.
+3. Cobweb remains until you break it.

@@ -1,0 +1,47 @@
+PHANTOMS: BITE AND FLOCK
+====================
+
+Type: vanilla insomnia phantoms (not a new mob).
+Code: phantom/PhantomThreats.java (damage, extra days without sleep, flock cap),
+     mixin/PhantomBiteMixin.java (damage at bite),
+     mixin/PhantomSpawnerMixin.java (wave size).
+
+Who bites harder: any phantom, including from spawn egg and commands.
+Who arrives in a bigger flock: only night spawn from insomnia.
+Spawn egg still gives one phantom.
+
+
+WHAT HAPPENS
+--------------
+1. Unarmored bite: Easy 3 HP (1.5 hearts), Normal 6 HP (3 hearts),
+   Hard 9 HP (4.5 hearts). In vanilla that is 2 / 2 / 3.
+   Armor and shield reduce damage as usual. Strength potion on the phantom adds on top.
+2. For the first three in-game days without a bed, flock size is normal:
+   Easy 1–2, Normal 1–3, Hard 1–4.
+3. After that, each 2 extra days without sleep adds 1 phantom to the wave.
+   Day 5 +1, day 7 +2, day 9 +3.
+4. Wave cap: Easy 3, Normal 5, Hard 6.
+   On Hard the cap is reached by day 13 without sleep: then every wave is 6.
+5. Wave still every 1–2 minutes, per player who has not slept.
+   Bed or death resets the counter and flock size returns to normal.
+
+
+SETTINGS (PhantomThreats.java)
+-------------------------------
+  ENABLED ...................... true — toggles bite and flock growth
+  EASY_BITE_HP ................. 3 — Easy bite in health units (2 = 1 heart)
+  NORMAL_BITE_HP ............... 6 — Normal bite
+  HARD_BITE_HP ................. 9 — Hard bite
+  CALM_DAYS .................... 3 — days without sleep before flock grows
+  DAYS_PER_EXTRA_PHANTOM ....... 2 — extra days per +1 phantom
+  EASY_FLOCK_CAP ............... 3 — Easy wave cap
+  NORMAL_FLOCK_CAP ............. 5 — Normal cap
+  HARD_FLOCK_CAP ............... 6 — Hard cap
+
+
+TEST
+----
+1. Normal difficulty. Do not sleep for 3 in-game days, go outside at night above sea level.
+   Wave 1–3 phantoms; bite removes 3 hearts with no armor.
+2. Wait until day 5 without a bed. Wave has one extra phantom.
+3. Sleep in a bed. Next night flock is normal again until insomnia builds up.

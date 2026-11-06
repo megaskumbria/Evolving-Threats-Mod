@@ -1,0 +1,59 @@
+ROTTEN OVERSEER
+===============
+
+Type: rare mini-boss (a regular zombie with a special kit and AI).
+Code: ZombieOverseer.java — settings are in the "SETTINGS" block.
+
+
+HOW TO ENCOUNTER IT
+-------------
+- Chance on natural zombie spawn (SPAWN_CHANCE, default 0.2%).
+- Not a drowned and not a zombified piglin.
+- On spawn it can immediately "lock on" to the nearest player within ~128 blocks.
+
+
+STATS (default)
+------------------------------
+  Health ................. 100 HP
+  Armor .................. full diamond set, Protection II
+  Weapon ................. diamond axe, Sharpness III (main hand)
+                          + axe, Sharpness II (off-hand, it hits too)
+  Chase radius ........... ~112 blocks (FOLLOW_RANGE)
+
+
+ABILITIES
+-----------
+1. Hunting the player — it remembers the locked-on target while you are within ~128 blocks
+   and in the same dimension.
+
+2. Hunt timeout — if you stay too far away for ~2 minutes (outside the chase zone),
+   the hunt is reset.
+
+3. Pack summon — once every ~25 s, if the target is closer than ~96 blocks: 2 regular zombies,
+   no more than 5 "servants" at a time (zombies near the same target).
+   It places them only on free floor nearby, not inside a wall. If there is no room —
+   it waits 5 seconds and tries again. Summoned zombies do not become Overseers themselves.
+
+
+DIFFERENCES FROM A REGULAR ZOMBIE
+-------------------------
+- Does not get random loot from RandomWeapons / RandomArmor on spawn.
+- Name above the head: Rotten Overseer. Visible only when your crosshair is on it and it is no farther than about 64 blocks.
+
+
+TEST IN GAME
+-----------
+Commands (cheats / OP required, permission level 2):
+  /etoverseer
+  /evolvingthreats spawn overseer
+  /etoverseer_egg
+  /evolvingthreats give overseer_egg
+  /evolvingthreats give overseer_egg 16
+
+Spawn egg:
+  Creative → the "Spawn Eggs" tab (next to the zombie egg).
+  Or /etoverseer_egg, /give @s evolving-threats:rotten_overseer_spawn_egg
+  Right-click on a block or in the air — spawns an Overseer.
+  Texture: assets/.../textures/item/rotten_overseer_spawn_egg.png
+
+Random spawn: ZombieOverseer.SPAWN_CHANCE (default 0.2%).

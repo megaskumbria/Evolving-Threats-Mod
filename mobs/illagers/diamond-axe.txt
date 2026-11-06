@@ -1,0 +1,36 @@
+VINDICATOR: DIAMOND AXE
+=========================
+
+Type: vanilla vindicator (not a new mob). Iron axe stays on the rest.
+Code: illager/VindicatorDiamondAxe.java (chance),
+     mixin/VindicatorDiamondAxeMixin.java (moment when the axe is already in hand).
+
+Where the chance rolls: mansion, home patrol, raid, spawn egg, spawn command.
+Same chance everywhere.
+
+
+WHAT HAPPENS
+--------------
+1. About every fourth vindicator gets a diamond axe instead of iron.
+2. Enchantments from the iron axe carry over to the diamond one.
+   Outside raids the game applies them by difficulty, and separately the mod with 30% chance
+   (see mobs/common/enchantments-on-gear.txt, ILLAGER_ENCHANT_CHANCE).
+   In raids enchantments are raid-specific: if the raid decided to enchant the axe, the diamond one stays enchanted.
+   Not every axe has enchantments. Enchant chance is the same as for iron.
+3. The axe drops from the vindicator with the same chance as iron: about 8.5%.
+   Enchantments on the dropped axe are preserved.
+
+
+SETTINGS (VindicatorDiamondAxe.java)
+-------------------------------------
+  ENABLED ...................... true — false means all axes iron again
+  CHANCE ....................... 0.25 — share of diamond axes (25%)
+
+
+TEST
+----
+1. To see it immediately, temporarily set CHANCE = 1.0. After testing set back to 0.25.
+2. Summon a vindicator or call patrol /etpatrol. Diamond axe in hand.
+   Some shimmer — that is enchantments.
+3. Start a raid with vindicators. Some have diamond axes too, including raid-enchanted ones.
+4. Mansion: vindicators there use the same chance.

@@ -1,9 +1,11 @@
 package com.example.entity.ai;
 
+import com.example.advancement.ModAdvancements;
 import com.example.digging.BlockBreaking;
 import com.example.grudge.PlayerGrudge;
 import com.example.light.LightSeeking;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -136,7 +138,10 @@ public class LightSeekGoal extends Goal {
 				if (breakProgress >= 1.0f) {
 					clearCracks();
 					zombie.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
-					zombie.level().destroyBlock(lightPos, BlockBreaking.DROP_ITEMS, zombie);
+					if (zombie.level() instanceof ServerLevel server
+							&& server.destroyBlock(lightPos, BlockBreaking.DROP_ITEMS, zombie)) {
+						ModAdvancements.onLightBroken(server, lightPos);
+					}
 					markVisited();
 					finished = true;
 				} else {

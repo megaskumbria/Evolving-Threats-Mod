@@ -15,5 +15,6 @@ public class RandomArrowHitMixin {
 	@Inject(method = "onHitEntity", at = @At("RETURN"))
 	private void evolvingthreats$randomArrowFire(EntityHitResult result, CallbackInfo ci) {
 		RandomArrowSkeleton.onFireHit((AbstractArrow) (Object) this, result.getEntity());
+		RandomArrowSkeleton.onPlayerHit((AbstractArrow) (Object) this, result.getEntity());
 	}
 }

@@ -58,3 +58,9 @@ Damaged golem:
 
 Feint creeper (speed burst when close):
 /etfeint
+
+Magnet creeper (pulls you in):
+/etmagnet
+
+
+/evolvingthreats advancements

@@ -1,6 +1,8 @@
 package com.example.skeleton;
 
+import com.example.advancement.ModAdvancements;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
@@ -52,15 +54,18 @@ public final class SkeletonDisarm {
 		if (arrow.getRandom().nextFloat() >= DISARM_CHANCE) {
 			return;
 		}
-		throwHand(player, InteractionHand.MAIN_HAND);
-		throwHand(player, InteractionHand.OFF_HAND);
+		boolean dropped = throwHand(player, InteractionHand.MAIN_HAND);
+		dropped = throwHand(player, InteractionHand.OFF_HAND) || dropped;
+		if (dropped && player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onDisarmed(serverPlayer);
+		}
 	}
 
-	/** Full stack from the hand flies forward. Empty hand drops nothing. */
-	private static void throwHand(Player player, InteractionHand hand) {
+	/** Full stack from the hand flies forward. Empty hand drops nothing and returns false. */
+	private static boolean throwHand(Player player, InteractionHand hand) {
 		ItemStack held = player.getItemInHand(hand);
 		if (held.isEmpty()) {
-			return;
+			return false;
 		}
 		ItemStack thrown = held.copy();
 		player.setItemInHand(hand, ItemStack.EMPTY);
@@ -68,5 +73,6 @@ public final class SkeletonDisarm {
 		if (entity != null) {
 			player.level().addFreshEntity(entity);
 		}
+		return true;
 	}
 }

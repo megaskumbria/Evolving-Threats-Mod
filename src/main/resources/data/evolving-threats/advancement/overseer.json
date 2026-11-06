@@ -1,0 +1,33 @@
+{
+  "parent": "evolving-threats:spiky",
+  "display": {
+    "icon": {
+      "id": "minecraft:rotten_flesh"
+    },
+    "title": {
+      "translate": "advancements.evolving-threats.overseer.title"
+    },
+    "description": {
+      "translate": "advancements.evolving-threats.overseer.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 150,
+    "loot": [
+      "evolving-threats:advancement/overseer"
+    ]
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}
