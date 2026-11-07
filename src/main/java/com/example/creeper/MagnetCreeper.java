@@ -5,6 +5,8 @@ import com.example.entity.FastCreeperEntity;
 import com.example.entity.FeintCreeperEntity;
 import com.example.entity.MagnetCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -30,7 +32,8 @@ import java.util.Set;
  * Electric sparks while the pull is on — that is how you spot it. No custom name.
  * Never a sapper, dynamite thrower, feint, or super-fast: those already chase their own way.
  * Can still be charged (bigger blast) or a shield-breaker.
- * Chance is FIXED from day 0. Threat and the moon do not change it.
+ * Chance is FIXED from day 40 ({@link ThreatTable#MAGNET_CREEPER_DAY}). None before that.
+ * Threat and the moon do not change the chance.
  */
 public final class MagnetCreeper {
 
@@ -41,11 +44,12 @@ public final class MagnetCreeper {
 
 	/**
 	 * Chance (0.0–1.0) that a normal creeper is a magnet. 0.01 = 1%.
-	 * FIXED: from day 0, does not scale with threat or moon.
+	 * FIXED from day 40 ({@link ThreatTable#MAGNET_CREEPER_DAY}): none before that day,
+	 * then this chance exactly. Does not scale with threat or moon.
 	 * Rolled only if it is not already a sapper, thrower, feint, or super-fast.
 	 * Charged and shield-breaker are separate and can stack with this.
-	 * 0 = command only. 1 = every remaining creeper.
-	 * Command does not roll this chance.
+	 * 0 = command only. 1 = every remaining creeper after day 40.
+	 * Command ignores the day and this chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.01f;
 
@@ -171,6 +175,10 @@ public final class MagnetCreeper {
 			return;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return;
+		}
+		// None before day 40. From that day the chance stays SPAWN_CHANCE; the moon does not change it.
+		if (!ThreatScale.reached(creeper.level(), ThreatTable.MAGNET_CREEPER_DAY)) {
 			return;
 		}
 		if (SPAWN_CHANCE <= 0.0f || creeper.getRandom().nextFloat() >= SPAWN_CHANCE) {

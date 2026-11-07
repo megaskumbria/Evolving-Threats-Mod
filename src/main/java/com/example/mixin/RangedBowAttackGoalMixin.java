@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- Dual-wield skeleton: does not shoot at point-blank range; at the beginning of shooting, the bow is again in the main hand (animation).
+ * Bow + melee skeleton does not shoot at point-blank range.
+ * Captain and sniper put the bow back in the right hand when they start shooting.
+ * Two lead hands keep the bow in the left hand, so this does not touch their items.
  */
 @Mixin(net.minecraft.world.entity.ai.goal.RangedBowAttackGoal.class)
 public class RangedBowAttackGoalMixin {
@@ -40,8 +42,11 @@ public class RangedBowAttackGoalMixin {
 
 	@Inject(method = "start", at = @At("RETURN"))
 	private void evolvingthreats$prepareBowHand(CallbackInfo ci) {
-		if (mob instanceof AbstractSkeleton skeleton && RandomWeapons.isDualWieldArcher(skeleton)) {
+		if (mob instanceof AbstractSkeleton skeleton
+				&& RandomWeapons.isDualWieldArcher(skeleton)
+				&& !RandomWeapons.isTwoLeadHands(skeleton)) {
 			RandomWeapons.swapToRangedHands(skeleton);
+			// Swap restarts the draw. Two lead hands never reach this, so their shot is not cancelled.
 			skeleton.stopUsingItem();
 		}
 	}

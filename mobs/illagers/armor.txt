@@ -1,0 +1,44 @@
+PILLAGER AND VINDICATOR ARMOR
+==============================
+
+Type: vanilla pillager and vindicator. Patrol, raid, mansion, and summon.
+Code: illager/PillagerArmor.java (which set, dye, drop),
+     mixin/PillagerArmorMixin.java (on spawn),
+     client illager/PillagerArmorLayer.java (how the plates sit),
+     client illager/IllagerArmorFit.java (hides the robe while armor is worn; the nose stays).
+
+
+WHAT HAPPENS
+--------------
+1. A new pillager or vindicator might wear a full set. GROWING: 12% on day 0, 75% at day 100
+   on a full moon. A new moon is lower (about 56% at day 100). Already spawned ones keep what they wear.
+   If the roll hits, the set is one material: leather 34%, iron 28%, chain 22%, copper 13%, diamond 3%.
+   Those shares do not change with the day. No gold, no netherite.
+2. Leather is dyed one color for the whole set, so it is not plain brown.
+3. The set is real armor: it blocks damage, and each piece can drop (8.5%).
+4. A slot that already has an item is left alone. A captain banner on the head stays;
+   that pillager still gets chest, legs, and boots.
+5. The illager model is not a player's, so the game does not draw armor by itself.
+   The mod glues the player armor mesh onto the head, body, arms, and legs.
+   The nose stays, including in front of a helmet.
+   While chest, legs, or boots are worn, the robe is hidden so it does not cut through the plates.
+   A chestplate also unfolds the crossed arms, so the sleeves have a real arm to follow.
+   Idle pillagers in a chestplate stand with their arms down. Evokers are not changed.
+   If a plate sits wrong, change the numbers in PillagerArmorLayer and restart.
+
+
+SETTINGS (PillagerArmor.java)
+-----------------------------
+  ENABLED ...................... true
+  WEAR_CHANCE_END .............. 0.75 = 75% wear a set at day 100, full moon. Day 0 is ThreatTable 0.12
+  LEATHER_DYE_CHANCE ........... 1.0 = every leather set is dyed. 0 = brown
+  LEATHER_USE_DYE_COLORS ....... true = 16 bright dyes. false = any RGB
+  DROP_CHANCE .................. 0.085 = 8.5% per piece
+
+SETTINGS (PillagerArmorLayer.java)
+----------------------------------
+  HELMET_LIFT_Y ................ -1 sits the helmet on the 10-pixel head. -2 lifts it off the chin. 0 leaves the crown bare
+  CHEST_DROP_Y ................. 2 lowers the chestplate under the mouth. 0 leaves the collar across the chin
+  CHEST_DEPTH_SCALE ............ 1.08 thickens the plate and the sleeves together, so the shoulder stays closed
+  LEGS_DEPTH_SCALE ............. 1.24 wraps the waist and still sits under the chestplate
+  SHOW_REAL_ARMS_WITH_CHESTPLATE  true = arms down so sleeves fit. false = keep the crossed robe (it cuts the plate)

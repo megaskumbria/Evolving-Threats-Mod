@@ -28,3 +28,35 @@ SETTINGS
   RandomWeapons.java
     ZOMBIE_DUAL_MELEE_CHANCE ...... 0.20 — 20% for zombies
     SKELETON_DUAL_MELEE_CHANCE .... 0.20 — 20% for skeleton and stray
+
+
+BOW AND ONE MELEE WEAPON
+========================
+
+Type: normal skeleton and stray. Not the captain, sniper, or “700 IQ” tactician.
+Code: RandomWeapons.java (chance, which hand holds what),
+     mixin/AbstractSkeletonTwoLeadMixin.java (mark on the skeleton),
+     mixin/TwoLeadHandsSaveMixin.java (mark survives a reload),
+     mixin/AbstractSkeletonDualWieldMixin.java (melee goal stays available),
+     mixin/RangedBowAttackGoalMixin.java (no shot at point-blank; no hand swap for this mark),
+     mixin/SkeletonMeleeGoalSwapMixin.java (captain and sniper still swap; this mark does not),
+     client mixin/TwoLeadHandsRendererMixin.java (bow draw from the left hand; sword arm up close).
+
+
+HOW IT WORKS
+------------
+1. Chance SKELETON_DUAL_WIELD_CHANCE, 0.35 = 35% on day 100. Grows with the threat scale, same as before.
+2. Right hand: sword, axe, pickaxe, shovel, or hoe. Left hand: his bow.
+   Up close he raises the right hand and hits at once. Far away he shoots the bow from the left hand.
+   The two items never trade places, so he does not stand still swapping weapons.
+3. Skeletons already in the world before this change have no mark. They still swap hands.
+   New spawns get the mark.
+4. Does not apply when the right hand has no melee weapon: bow only, shield, totem, or harmful arrow.
+   Captain and sniper keep the bow in the right hand and still swap.
+   Tactician still switches the item on his back. Two melee weapons and no bow are unchanged.
+
+
+SETTINGS
+--------
+  RandomWeapons.java
+    SKELETON_DUAL_WIELD_CHANCE .... 0.35 — 35% on day 100 for skeleton and stray

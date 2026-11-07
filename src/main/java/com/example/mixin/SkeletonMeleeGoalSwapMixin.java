@@ -10,8 +10,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- *Inner class AbstractSkeleton$1 is a goal to "beat in melee."
- When starting / stopping, change hands in places so that the blows go with the sword, not with the bow.
+ * Inner class AbstractSkeleton$1 is the goal "hit in melee".
+ * Captain and sniper swap hands here so the swing uses the sword.
+ * Two lead hands already have the sword in the right hand; {@link com.example.RandomWeapons#swapToMeleeHands}
+ * leaves them alone.
  */
 @Mixin(targets = "net.minecraft.world.entity.monster.skeleton.AbstractSkeleton$1")
 public class SkeletonMeleeGoalSwapMixin {

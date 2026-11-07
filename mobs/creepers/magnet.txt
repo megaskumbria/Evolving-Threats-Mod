@@ -9,7 +9,8 @@ Code: creeper/MagnetCreeper.java (settings, pull, command),
 
 HOW IT WORKS
 ------------
-1. On spawn, SPAWN_CHANCE (1%). FIXED: from day one, does not scale with threat level or moon.
+1. On spawn, SPAWN_CHANCE (1%). FIXED from day 40: none before that, then 1% and it does not grow.
+   Moon ignored. The day is ThreatTable.MAGNET_CREEPER_DAY.
    Never sapper, dynamite thrower, feint, or super-fast.
    Can be charged and a shield-breaker. Charged magnet still pulls the same; the blast is bigger.
 2. Until it notices a player, it is a normal creeper.
@@ -36,7 +37,7 @@ COMMAND
   /etmagnet
   /evolvingthreats spawn magnet
 Creeper spawns 16 blocks in front of where you look and immediately pulls.
-Requires operator permissions. This spawn is not charged; lightning still charges it.
+Requires operator permissions. Ignores the day-40 gate. This spawn is not charged; lightning still charges it.
 
 
 SETTINGS (MagnetCreeper.java)

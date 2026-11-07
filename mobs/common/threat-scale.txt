@@ -57,7 +57,8 @@ WHAT TURNS ON FROM WHICH DAY (FIXED + day; moon does not matter)
   Day 40 ... zombies break blocks, run to light and break it, zombie sorcerer appears;
              Excalibur zombie (Sharpness 20 sword, 1% chance);
              illager siege possible (ravagers, pillagers, evokers, vindicators), 25% chance;
-             Spiky (zombie or skeleton, 0.2% chance): one armor piece deals 7–8 hearts through armor
+             Spiky (zombie or skeleton, 0.2% chance): one armor piece deals 7–8 hearts through armor;
+             magnet creeper (1%): pulls the player in, none before this day
   Day 60 ... Rotten overseer, skeleton captain, Bastion (zombie or skeleton, 0.2% chance)
   Day 80 ... Basilisk skeleton, Raid anchor (natural spawn, 0.1% on surface zombie at night,
              not more than once per 5 days)
@@ -74,6 +75,8 @@ Armor material weights (leather/gold/chain/copper/iron/diamond):
 Weapon in zombie hands ............ 10% → 40%  (start = 25% of max; same pattern for all weapon chances)
 Weapon material weights (wood/stone/gold/copper/iron/diamond):
     50 / 30 / 10 / 6 / 3.7 / 0.3  →  30 / 25 / 10 / 10 / 15 / 10
+Pillager and vindicator full set .. 12% → 75% (full moon). Leather 34 / iron 28 / chain 22 / copper 13 / diamond 3
+                                   of those who wear any. No gold, no netherite. Weights do not grow.
 Shield ............................ 2.5% → 25%
 Totem of undying .................. 0.2% → 4%
 Weapon enchantments ............... 1% → 70%
@@ -107,7 +110,6 @@ Sniper skeleton: 1 in 500 from day 0, moon ignored. See mobs/skeletons/sniper.tx
 Sight range: mobs that noticed the player only within 16 blocks now notice at 32. Does not grow with days.
 See sight-range.txt.
 Feint creeper: 0.3% from day 0, moon ignored. See mobs/creepers/feint.txt.
-Magnet creeper: 1% from day 0, moon ignored. See mobs/creepers/magnet.txt.
 Cave spider poison can kill from day 0, no chance roll. Witch and slime poison stops at half a heart.
 See mobs/spiders/cave-poison.txt.
 

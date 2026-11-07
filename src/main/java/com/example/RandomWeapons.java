@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.entity.TwoLeadHandsSkeleton;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 import net.minecraft.core.component.DataComponents;
@@ -33,8 +34,12 @@ public final class RandomWeapons {
 	public static final float ZOMBIE_WEAPON_CHANCE = 0.40f;
 
 	/**
-	 * Chance that a skeleton spawns with a bow AND a second weapon (bow in main hand, sword/axe/… in offhand).
-	 * 0.35 = 35%. Shoots at range, switches to melee up close.
+	 * Chance that a skeleton spawns with a bow AND a melee weapon.
+	 * 0.35 = 35%. Right hand keeps the sword, axe, pickaxe, shovel, or hoe. Left hand keeps the bow.
+	 * Up close he swings the right hand at once. Far away he shoots the bow in the left hand.
+	 * He does not swap the two items, so he does not pause to decide.
+	 * Captain and sniper do not use this chance: their bow stays in the right hand and they still swap.
+	 * Tactician is separate too: his spare weapon hangs on his back.
 	 */
 	public static final float SKELETON_DUAL_WIELD_CHANCE = 0.35f;
 
@@ -59,15 +64,15 @@ public final class RandomWeapons {
 
 	/**
 	 * If the player is closer than this distance (blocks), a bow+sword skeleton does NOT shoot (melee takes over).
-	 * 4.0 is a reasonable threshold; melee hit still only within strike range (~2–3 blocks, see mixin).
+	 * 6.0 = he closes in from 6 blocks. The hit itself is still only in strike range (~2–3 blocks).
 	 */
-	public static final float SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS = 4.0f;
+	public static final float SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS = 6.0f;
 
 	/**
 	 * Slightly above the threshold above — bow turns back on when you run away (hysteresis, less flicker).
-	 * Must be >= SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS. 5.0 with suppress 4.0 is fine.
+	 * Must be >= SKELETON_BOW_SUPPRESS_DISTANCE_BLOCKS. 7.0 with suppress 6.0 is fine.
 	 */
-	public static final float SKELETON_BOW_RESUME_DISTANCE_BLOCKS = 5.0f;
+	public static final float SKELETON_BOW_RESUME_DISTANCE_BLOCKS = 7.0f;
 
 	// ========================================================================
 
@@ -101,7 +106,7 @@ public final class RandomWeapons {
 		float meleeOnly = growing(mob, SKELETON_MELEE_ONLY_CHANCE);
 
 		if (roll < dualWield) {
-			equipDualWieldArcher(mob);
+			equipTwoLeadHands(mob);
 			return;
 		}
 
@@ -112,11 +117,33 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * Bow stays in main hand (vanilla already gave it), random weapon in offhand.
+	 * Bow stays in the right hand (vanilla already gave it), random weapon in the left.
+	 * Sniper uses this. He still swaps hands in a fight. Ordinary skeletons use {@link #equipTwoLeadHands}.
 	 */
 	public static void equipDualWieldArcher(Mob mob) {
 		Item weapon = pickRandomWeapon(mob);
 		mob.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(weapon));
+	}
+
+	/**
+	 * Right hand: random melee weapon. Left hand: the bow he already held.
+	 * Marked so combat does not swap the items. Shield is not added later: the left hand is full.
+	 * If the right hand is not a bow, nothing changes (another set already took it).
+	 */
+	public static void equipTwoLeadHands(Mob mob) {
+		if (!mob.getMainHandItem().is(Items.BOW)) {
+			return;
+		}
+		// Mark first. Moving the bow re-checks his goals, and the mark tells them not to swap.
+		if (mob instanceof TwoLeadHandsSkeleton data) {
+			data.evolvingthreats$setTwoLeadHands(true);
+		}
+		// Same drop chance the bow already had. The sword keeps that chance on the right hand.
+		float bowDrop = mob.getDropChances().byEquipment(EquipmentSlot.MAINHAND);
+		ItemStack bow = mob.getMainHandItem().copy();
+		mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(pickRandomWeapon(mob)));
+		mob.setItemSlot(EquipmentSlot.OFFHAND, bow);
+		mob.setDropChance(EquipmentSlot.OFFHAND, bowDrop);
 	}
 
 	/** Replaces the bow in main hand with a random weapon. */
@@ -126,10 +153,27 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * Skeleton with bow and second weapon (bow may be in either hand during combat — we swap hands).
+	 * Skeleton with a bow and a melee weapon. Bow may sit in either hand.
+	 * Two lead hands do not swap. Captain and sniper do.
 	 */
 	public static boolean isDualWieldArcher(AbstractSkeleton skeleton) {
 		return skeleton.isHolding(Items.BOW) && hasModMeleeWeapon(skeleton);
+	}
+
+	/**
+	 * True — melee stays in the right hand, bow stays in the left, combat does not swap them.
+	 * False for captain, sniper, tactician, and skeletons saved before this mark existed.
+	 */
+	public static boolean isTwoLeadHands(AbstractSkeleton skeleton) {
+		return skeleton instanceof TwoLeadHandsSkeleton data && data.evolvingthreats$isTwoLeadHands();
+	}
+
+	/**
+	 * Bow is in the left hand and a sword, axe, pickaxe, shovel, or hoe is in the right.
+	 * Used for the draw pose: the game only raises a bow held in the right hand by itself.
+	 */
+	public static boolean holdsBowInLeftHand(AbstractSkeleton skeleton) {
+		return skeleton.getOffhandItem().is(Items.BOW) && isModMeleeWeapon(skeleton.getMainHandItem());
 	}
 
 	/** Whether the mob holds our tool-style weapon (not a bow) in either hand. */
@@ -174,10 +218,11 @@ public final class RandomWeapons {
 	}
 
 	/**
-	 * Before a melee hit: sword in main hand, bow in offhand (otherwise damage would count as bow).
+	 * Captain and sniper only: before a melee hit, sword moves to the right hand.
+	 * Two lead hands already hold the sword there, so they skip this.
 	 */
 	public static void swapToMeleeHands(AbstractSkeleton skeleton) {
-		if (!isDualWieldArcher(skeleton)) {
+		if (isTwoLeadHands(skeleton) || !isDualWieldArcher(skeleton)) {
 			return;
 		}
 		if (skeleton.getMainHandItem().is(Items.BOW)) {
@@ -185,9 +230,12 @@ public final class RandomWeapons {
 		}
 	}
 
-	/** After melee: bow back in main hand. */
+	/**
+	 * Captain and sniper only: after melee, bow returns to the right hand.
+	 * Two lead hands keep the bow in the left hand and shoot from there.
+	 */
 	public static void swapToRangedHands(AbstractSkeleton skeleton) {
-		if (!skeleton.isHolding(Items.BOW)) {
+		if (isTwoLeadHands(skeleton) || !skeleton.isHolding(Items.BOW)) {
 			return;
 		}
 		if (skeleton.getOffhandItem().is(Items.BOW)) {

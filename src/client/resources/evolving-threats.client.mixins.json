@@ -7,7 +7,14 @@
 		"LivingEntityRendererAccessor",
 		"TacticianBackItemStateMixin",
 		"TacticianSkeletonRendererMixin",
-		"DrownedFishingLineMixin"
+		"TwoLeadHandsRendererMixin",
+		"DrownedFishingLineMixin",
+		"PillagerArmorExtractMixin",
+		"PillagerArmorRendererMixin",
+		"PillagerArmorStateMixin",
+		"IllagerArmorFitMixin",
+		"ModelPartCubesAccessor",
+		"ModelPartCubeAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

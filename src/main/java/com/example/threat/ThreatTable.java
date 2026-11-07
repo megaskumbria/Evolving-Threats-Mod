@@ -41,6 +41,12 @@ public final class ThreatTable {
 	public static final int EXCALIBUR_DAY = 40;
 
 	/**
+	 * Magnet creeper: pulls the player in once it notices them.
+	 * Chance in {@code MagnetCreeper}, does not grow by day. None before this day — too lethal early.
+	 */
+	public static final int MAGNET_CREEPER_DAY = 40;
+
+	/**
 	 * Spiky: normal zombie or skeleton, one armor piece deals 7–8 hearts through armor.
 	 * Chance in {@code Spiky}, does not grow by day.
 	 */
@@ -81,6 +87,13 @@ public final class ThreatTable {
 
 	/** Per-slot armor piece chance at game start. 0.08 = 8%. End of scale — in {@code RandomArmor}. */
 	public static final float ARMOR_PIECE_CHANCE_START = 0.08f;
+
+	/**
+	 * Pillager and vindicator full armor set at day 0. 0.12 = 12%.
+	 * By day 100 it reaches {@code PillagerArmor.WEAR_CHANCE_END}. Moon shifts it along the way.
+	 * Material (leather, iron, chain, copper, rare diamond) does not change with the day.
+	 */
+	public static final float ILLAGER_ARMOR_CHANCE_START = 0.12f;
 
 	/**
 	 * Full armor set chance at game start. 0 = no full-set mobs on day one.

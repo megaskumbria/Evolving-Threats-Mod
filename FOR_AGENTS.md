@@ -132,6 +132,7 @@ Paths in the table are under `src/main/java/com/example/`.
 | Phantom blindness | `phantom/PhantomBlindness.java` | `mobs/phantoms/blindness.txt` |
 | Patrol at the base | `illager/IllagerPatrol.java` | `mobs/illagers/patrol.txt` |
 | Pillager firework | `illager/PillagerFirework.java` | `mobs/illagers/firework-crossbow.txt` |
+| Pillager and vindicator armor | `illager/PillagerArmor.java` | `mobs/illagers/armor.txt` |
 | Vindicator diamond axe | `illager/VindicatorDiamondAxe.java` | `mobs/illagers/diamond-axe.txt` |
 | Vindicator chops wood | `illager/VindicatorWoodBreak.java` | `mobs/illagers/chops-wood.txt` |
 | Ravager breaks walls | `illager/RavagerWallBreak.java` | `mobs/illagers/ravager.txt` |

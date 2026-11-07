@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  In a dual-wield skeleton, a vanilla melee target is turned on if there is a path to the player (running from 20 blocks).
  Next to the bow - melee does not turn on (shooting). Close onions are extinguished by mixin' onions;
- Here you are allowed to come and hit, otherwise the skeleton “freezes” between 4-5 blocks.
+ Here you are allowed to come and hit, otherwise the skeleton “freezes” between 6-7 blocks.
  */
 @Mixin(MeleeAttackGoal.class)
 public class MeleeAttackGoalMixin {

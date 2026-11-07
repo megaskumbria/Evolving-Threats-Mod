@@ -70,7 +70,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Can spawn charged — FIXED
 - Super-fast creeper, 0.5 s fuse, cannot outrun — FIXED
 - Feint creeper: looks normal, at 6–7 blocks speeds up like super-fast, 0.5 s fuse, no name tag. 0.3% — FIXED
-- Magnet creeper: after it notices you, you can hold the edge of its sight, then it reels you in. 1% — FIXED. Can be charged
+- Magnet creeper: after it notices you, you can hold the edge of its sight, then it reels you in. 1% — FROM DAY 40, FIXED CHANCE. Can be charged
 
 8. Spiders
 - Random health 16–30 HP. — FIXED
@@ -89,6 +89,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Lingering potions — FIXED
 
 11. Vindicators
+- Full armor set, same as pillagers: leather, iron, chain, copper, rare diamond. Visible on the body — GROWING
 - Diamond axes — FIXED
 - Fast wood/fence breaking — FIXED
 
@@ -114,6 +115,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Closed shell: half tool durability on hit — FIXED
 
 16. Pillagers
+- Full armor set, not always: 12% on day 0, 75% by day 100 (full moon). Leather, iron, chain, copper, rare diamond. No gold. Visible on the body. Vindicators too — GROWING
 - Firework crossbow — FIXED
 - High-level crossbow enchants — GROWING
 
