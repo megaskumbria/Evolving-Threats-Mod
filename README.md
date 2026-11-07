@@ -15,11 +15,15 @@ The full list of mob changes is in **[Features](FEATURES.md)**.
 
 ## Building
 
-The project is built with Gradle.
+The project is built with the Gradle Wrapper (`gradlew`), the script in this folder. It uses the Gradle version the mod was made with, so Gradle does not need to be installed separately.
 
-```bat
-gradlew.bat build
+Windows (PowerShell):
+
+```powershell
+.\gradlew build
 ```
+
+macOS and Linux:
 
 ```bash
 ./gradlew build
@@ -27,7 +31,7 @@ gradlew.bat build
 
 The mod jar is written to `build/libs/`.
 
-A development client (with the game, so you can try the mod) starts with `gradlew.bat runClient` on Windows, or `./gradlew runClient` on macOS and Linux.
+A development client (with the game, so you can try the mod) starts with `.\gradlew runClient` on Windows, or `./gradlew runClient` on macOS and Linux.
 
 Replay Mod is included only so videos can be recorded in that development client. It is not part of the mod jar, and players do not need to install it.
 
