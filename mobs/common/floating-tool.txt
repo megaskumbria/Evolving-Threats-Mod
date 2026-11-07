@@ -14,7 +14,7 @@ In hell, the subject is chosen by FloatingTool itself: Neserite.
 How it works
 ------------
 1. In the ordinary world, he appears in the same place where zombies and skeletons: dark, no closer than 24 blocks to the player.
-Out of every 100 such appearances, approximately 5 are this instrument (NATURAL SPAWN CHANCE = 0.05).
+Out of every 100 such appearances, approximately 2 are this instrument (NATURAL SPAWN CHANCE = 0.02).
 The shot is common to a damaged golem: the next 0.2% is a golem, not this instrument.
 He doesn't appear in the End. He sees a player, he goes to him.
 2. He is in hell at any time, not just at night. FIXED, 5% hostile appearances
@@ -49,13 +49,13 @@ Team
 -------
   /ettool
   /evolvingthreats spawn tool
-This is a test, not a regular spawn. Appears in 6 blocks in view and does not throw a 5% chance.
+This is a test, not a regular spawn. Appears in 6 blocks in view and does not throw the 2% chance.
 Each call is a new random object. We need operator rights.
 
 
 SETTINGS (FloatingTool.java)
 -----------------------------
-NATURAL SPAWN CHANCE ..........0.05—5% of nighttime hostile mobs in the ordinary world. 0 = Team only
+NATURAL SPAWN CHANCE ..........0.02—2% of nighttime hostile mobs in the ordinary world. 0 = Team only
 0.05 - 5% of monsters in hell. FIXED. 0 = They don't appear in hell
 NETHER FIRE ASPECT LEVEL ..... 3 - Conspiracy of Fire III. 2 = ordinary II
 NETHER DROP CHANCE 0 - The hellish instrument does not fall. Mining doesn't help.

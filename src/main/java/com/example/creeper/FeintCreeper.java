@@ -5,6 +5,8 @@ import com.example.entity.FastCreeperEntity;
 import com.example.entity.FeintCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
 import com.example.mixin.CreeperFuseAccessor;
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -27,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * At about 6–7 blocks the disguise drops: it runs like the super-fast creeper and hisses for half a second.
  * No custom name. Never sapper, dynamite thrower, or super-fast at spawn.
  * Can still be charged or a shield-breaker.
+ * Chance is FIXED from day 40 ({@link ThreatTable#FEINT_CREEPER_DAY}). None before that.
+ * Threat and the moon do not change the chance.
  */
 public final class FeintCreeper {
 
@@ -37,9 +41,11 @@ public final class FeintCreeper {
 
 	/**
 	 * Chance (0.0–1.0) that a normal creeper is a feint. 0.003 = 0.3%.
-	 * FIXED: from day 0, does not scale with threat or moon.
-	 * Rarer than super-fast (that one is 3%). 0 = command only. 1 = every creeper.
-	 * Command does not roll this chance.
+	 * FIXED from day 40 ({@link ThreatTable#FEINT_CREEPER_DAY}): none before that day,
+	 * then this chance exactly. Does not scale with threat or moon.
+	 * Rarer than super-fast (that one is 3%, also from day 40). 0 = command only.
+	 * 1 = every remaining creeper after day 40.
+	 * Command ignores the day and this chance.
 	 */
 	public static final float SPAWN_CHANCE = 0.003f;
 
@@ -139,6 +145,10 @@ public final class FeintCreeper {
 			return;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return;
+		}
+		// None before day 40. From that day the chance stays SPAWN_CHANCE; the moon does not change it.
+		if (!ThreatScale.reached(creeper.level(), ThreatTable.FEINT_CREEPER_DAY)) {
 			return;
 		}
 		if (SPAWN_CHANCE <= 0.0f || creeper.getRandom().nextFloat() >= SPAWN_CHANCE) {

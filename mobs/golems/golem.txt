@@ -13,7 +13,7 @@ HOW IT WORKS
 ------------
 1. Overworld at night, same places as zombies and skeletons. Not closer than 24 blocks to player.
    Chance NATURAL_SPAWN_CHANCE = 0.002 (0.2%, one in five hundred). FIXED from day one, not scale.
-   Shared roll with floating tool: first 5% tool, next 0.2% golem.
+   Shared roll with floating tool: first 2% tool, next 0.2% golem.
 2. If ceiling too low for 2.7-block golem, normal mob spawns there instead.
 3. Sees player — attacks. Does not protect village or give flowers.
    Iron ingot does not repair it.

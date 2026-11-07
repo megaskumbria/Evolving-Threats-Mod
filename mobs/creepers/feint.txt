@@ -10,7 +10,8 @@ Code: creeper/FeintCreeper.java (settings, burst, command),
 
 HOW IT WORKS
 ------------
-1. On spawn, SPAWN_CHANCE (0.3%). FIXED: from day one, does not scale with threat level or moon.
+1. On spawn, SPAWN_CHANCE (0.3%). FIXED from day 40 (ThreatTable.FEINT_CREEPER_DAY):
+   none before that day, then 0.3% exactly. Does not scale with threat level or moon.
    Never sapper, dynamite thrower, or super-fast.
    Can be charged and shield-breaker.
 2. While the player is far, acts like a normal creeper: speed 0.25, hiss 1.5 seconds.
@@ -45,7 +46,7 @@ Requires operator permissions.
 SETTINGS (FeintCreeper.java)
 -----------------------------
   ENABLED ...................... true
-  SPAWN_CHANCE ................. 0.003 = 0.3%. 0 = command only
+  SPAWN_CHANCE ................. 0.003 = 0.3% from day 40. None before that. 0 = command only
   TRIGGER_MIN / TRIGGER_MAX .... 6 and 7 blocks. Each creeper picks its number between them
   CHASE_SPEED .................. 0.50 after reveal. Like super-fast. Normal 0.25
   CALM_SPEED ................... 0.25 while pretending

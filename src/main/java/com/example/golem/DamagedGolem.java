@@ -47,7 +47,7 @@ public class DamagedGolem extends IronGolem implements Enemy {
 	/**
 	 Chance (0.0-1.0) that instead of the usual night monster will appear this golem.
 	 0.002 = 0.2%, one in five hundred. FIXED: From day one, the threat scale does not increase.
-	 A shot shared with a hovering instrument: first the instrument's chance (5%), then this one.
+	 A shot shared with a hovering instrument: first the instrument's chance (2%), then this one.
 	 If in this place the golem does not get up (low ceiling), there will be an ordinary mob, the attempt does not disappear.
 	 Ordinary world, neither hell nor end. The game does not put more than 24 blocks.
 	 Team /etgolem does not throw this chance. 0 = does not appear in the world.

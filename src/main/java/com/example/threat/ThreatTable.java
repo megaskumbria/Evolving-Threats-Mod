@@ -47,6 +47,18 @@ public final class ThreatTable {
 	public static final int MAGNET_CREEPER_DAY = 40;
 
 	/**
+	 * Super-fast creeper: twice the speed, long chase, half-second fuse.
+	 * Chance in {@code FastCreeper}, does not grow by day. None before this day.
+	 */
+	public static final int FAST_CREEPER_DAY = 40;
+
+	/**
+	 * Feint creeper: walks like a normal creeper, then sprints once the player is 6–7 blocks away.
+	 * Chance in {@code FeintCreeper}, does not grow by day. None before this day.
+	 */
+	public static final int FEINT_CREEPER_DAY = 40;
+
+	/**
 	 * Spiky: normal zombie or skeleton, one armor piece deals 7–8 hearts through armor.
 	 * Chance in {@code Spiky}, does not grow by day.
 	 */

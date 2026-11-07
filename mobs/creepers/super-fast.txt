@@ -9,7 +9,8 @@ Code: creeper/FastCreeper.java (settings, speed, command),
 
 HOW IT WORKS
 ------------
-1. On spawn, SPAWN_CHANCE (3%). FIXED: from day one, does not scale with threat level.
+1. On spawn, SPAWN_CHANCE (3%). FIXED from day 40 (ThreatTable.FAST_CREEPER_DAY):
+   none before that day, then 3% exactly. Does not scale with threat level or moon.
    Does not become sapper, dynamite thrower, or feint.
    Charged creeper and shield-breaker can be fast.
 2. Runs twice as fast as a normal creeper. Sprint and sprint-jumps do not outrun it:
@@ -33,7 +34,7 @@ Requires operator permissions.
 SETTINGS (FastCreeper.java)
 ----------------------------
   ENABLED ...................... true
-  SPAWN_CHANCE ................. 0.03 = 3%. 0 = command only
+  SPAWN_CHANCE ................. 0.03 = 3% from day 40. None before that. 0 = command only
   CHASE_SPEED .................. 0.50. Normal creeper 0.25. 0.35 you can still escape
   FOLLOW_RANGE ................. 48 blocks. 16 = like normal
   FUSE_SECONDS ................. 0.5 = half a second of hiss. Normal creeper 1.5

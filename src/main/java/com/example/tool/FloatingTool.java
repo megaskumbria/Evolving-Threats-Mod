@@ -72,12 +72,12 @@ public class FloatingTool extends Monster {
 
 	/**
 	 Chance (0.0-1.0) that instead of the usual night monster will appear this tool.
-	 * 0.05 = 5%. Total throw with a damaged golem: first this chance, then the chance of a golem (0.2%).
-	 0.05 and 0.002 together = 5.2% of special mobs, they do not occupy the same appearance.
+	 * 0.02 = 2%. Total throw with a damaged golem: first this chance, then the chance of a golem (0.2%).
+	 0.02 and 0.002 together = 2.2% of special mobs, they do not occupy the same appearance.
 	 Ordinary world, neither hell nor end. The game does not put closer than 24 blocks, like any monster.
 	 Team /ettool does not throw this chance. 0 = does not appear in the world.
 	 */
-	public static final float NATURAL_SPAWN_CHANCE = 0.05f;
+	public static final float NATURAL_SPAWN_CHANCE = 0.02f;
 
 	/**
 	 Chance (0.0-1.0) that instead of a hostile mob in hell will appear nonseritic tool.

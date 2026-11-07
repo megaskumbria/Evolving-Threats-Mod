@@ -58,7 +58,9 @@ WHAT TURNS ON FROM WHICH DAY (FIXED + day; moon does not matter)
              Excalibur zombie (Sharpness 20 sword, 1% chance);
              illager siege possible (ravagers, pillagers, evokers, vindicators), 25% chance;
              Spiky (zombie or skeleton, 0.2% chance): one armor piece deals 7–8 hearts through armor;
-             magnet creeper (1%): pulls the player in, none before this day
+             magnet creeper (1%): pulls the player in, none before this day;
+             super-fast creeper (3%): twice the speed, half-second fuse;
+             feint creeper (0.3%): walks slowly, then sprints at 6–7 blocks
   Day 60 ... Rotten overseer, skeleton captain, Bastion (zombie or skeleton, 0.2% chance)
   Day 80 ... Basilisk skeleton, Raid anchor (natural spawn, 0.1% on surface zombie at night,
              not more than once per 5 days)
@@ -109,7 +111,6 @@ Random-arrow skeleton: 1% from day 0, moon ignored. See mobs/skeletons/random-ar
 Sniper skeleton: 1 in 500 from day 0, moon ignored. See mobs/skeletons/sniper.txt.
 Sight range: mobs that noticed the player only within 16 blocks now notice at 32. Does not grow with days.
 See sight-range.txt.
-Feint creeper: 0.3% from day 0, moon ignored. See mobs/creepers/feint.txt.
 Cave spider poison can kill from day 0, no chance roll. Witch and slime poison stops at half a heart.
 See mobs/spiders/cave-poison.txt.
 

@@ -5,6 +5,8 @@ import com.example.entity.FastCreeperEntity;
 import com.example.entity.FeintCreeperEntity;
 import com.example.entity.SapperCreeperEntity;
 import com.example.mixin.CreeperFuseAccessor;
+import com.example.threat.ThreatScale;
+import com.example.threat.ThreatTable;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -29,11 +31,12 @@ public final class FastCreeper {
 	public static final boolean ENABLED = true;
 
 	/**
-	 Chance (0.0–1.0) that a regular cryper will be super fast. 0.03 = 3%.
-	 FIXED: From day one, the threat scale and the moon do not depend.
-	 * That's the starting number. The bomber and shield breaker have 5%, the loaded 1%.
-	 * 0 = commands only. 1 = every cryper is like this.
-	 The team skip this roll.
+	 Chance (0.0–1.0) that a regular creeper will be super fast. 0.03 = 3%.
+	 FIXED from day 40 ({@link ThreatTable#FAST_CREEPER_DAY}): none before that day,
+	 then this chance exactly. Threat scale and the moon do not change it.
+	 The bomber and shield breaker have 5%, the charged creeper 1%.
+	 0 = commands only. 1 = every creeper is like this after day 40.
+	 The command skips this roll and the day check.
 	 */
 	public static final float SPAWN_CHANCE = 0.03f;
 
@@ -90,6 +93,10 @@ public final class FastCreeper {
 			return;
 		}
 		if (reason == EntitySpawnReason.COMMAND || reason == EntitySpawnReason.MOB_SUMMONED) {
+			return;
+		}
+		// None before day 40. From that day the chance stays SPAWN_CHANCE; the moon does not change it.
+		if (!ThreatScale.reached(creeper.level(), ThreatTable.FAST_CREEPER_DAY)) {
 			return;
 		}
 		if (SPAWN_CHANCE <= 0.0f || creeper.getRandom().nextFloat() >= SPAWN_CHANCE) {
