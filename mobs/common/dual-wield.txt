@@ -47,7 +47,8 @@ HOW IT WORKS
 ------------
 1. Chance SKELETON_DUAL_WIELD_CHANCE, 0.35 = 35% on day 100. Grows with the threat scale, same as before.
 2. Right hand: sword, axe, pickaxe, shovel, or hoe. Left hand: his bow.
-   Up close he raises the right hand and hits at once. Far away he shoots the bow from the left hand.
+   Idle, with no target, both arms stay down — same as a normal skeleton.
+   Up close he raises his arms and hits. Far away, while he is actually shooting, he draws the bow from the left hand.
    The two items never trade places, so he does not stand still swapping weapons.
 3. Skeletons already in the world before this change have no mark. They still swap hands.
    New spawns get the mark.

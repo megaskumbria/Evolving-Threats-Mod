@@ -15,9 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Skeleton bow pose looks only at the right hand.
- * When the bow stays in the left hand, this raises that arm while he shoots,
- * and leaves the raised-sword pose alone once the player is in melee range.
+ * Skeleton bow pose looks only at the right hand, and only while he is aggressive.
+ * When the bow stays in the left hand, this raises the draw while he shoots.
+ * Idle, he is not aggressive, so both arms stay down.
+ * Once the player is in melee range the sword pose is left to the game.
  */
 @Mixin(AbstractSkeletonRenderer.class)
 public class TwoLeadHandsRendererMixin {
