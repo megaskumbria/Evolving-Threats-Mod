@@ -2,12 +2,17 @@ package com.example.skeleton;
 
 import com.example.threat.ThreatScale;
 
+import com.example.advancement.AdvancementMoments;
+import com.example.advancement.ModAdvancements;
 import com.example.entity.FastBowSkeletonEntity;
 import com.example.mixin.RangedBowAttackGoalAccessor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.Items;
 
 /**
@@ -34,6 +39,12 @@ public final class FastBowSkeleton {
 	 * Vanilla skeleton 15. 30 = twice as far. Higher = opens fire from farther away.
 	 */
 	public static final float ATTACK_RANGE_BLOCKS = 30.0f;
+
+	/**
+	 * How far a normal skeleton bow still reaches, blocks.
+	 * A hit past this is the card. Exactly this far is still a normal shot.
+	 */
+	public static final float VANILLA_BOW_BLOCKS = 15.0f;
 
 	/**
 	 * Follow range — how far it spots and keeps the player, blocks.
@@ -118,5 +129,19 @@ public final class FastBowSkeleton {
 		int pause = skeleton.level().getDifficulty() == Difficulty.HARD ? HARD_PAUSE_TICKS : OTHER_PAUSE_TICKS;
 		bowGoal.setMinAttackInterval(pause);
 		((RangedBowAttackGoalAccessor) bowGoal).evolvingthreats$setAttackRadiusSqr(ATTACK_RANGE_BLOCKS * ATTACK_RANGE_BLOCKS);
+	}
+
+	/** Arrow already hit. A shot from within a normal bow's reach does not count. */
+	public static void onArrowHit(AbstractArrow arrow, Entity hit) {
+		if (!ENABLED || !(hit instanceof ServerPlayer player)) {
+			return;
+		}
+		if (!(arrow.getOwner() instanceof FastBowSkeletonEntity data) || !data.evolvingthreats$isFastBow()) {
+			return;
+		}
+		Entity owner = arrow.getOwner();
+		if (owner != null && AdvancementMoments.fartherThanNormalBow(owner.distanceTo(player), VANILLA_BOW_BLOCKS)) {
+			ModAdvancements.onFarShot(player);
+		}
 	}
 }

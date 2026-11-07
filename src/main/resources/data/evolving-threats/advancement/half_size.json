@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:horseman",
+  "display": {
+    "icon": { "id": "minecraft:bone" },
+    "title": { "translate": "advancements.evolving-threats.half_size.title" },
+    "description": { "translate": "advancements.evolving-threats.half_size.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 25,
+    "loot": [ "evolving-threats:advancement/half_size" ]
+  },
+  "requirements": [[ "done" ]]
+}

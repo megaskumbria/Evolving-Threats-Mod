@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:reinforcements",
+  "display": {
+    "icon": { "id": "minecraft:dispenser" },
+    "title": { "translate": "advancements.evolving-threats.arrow_volley.title" },
+    "description": { "translate": "advancements.evolving-threats.arrow_volley.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 150,
+    "loot": [ "evolving-threats:advancement/arrow_volley" ]
+  },
+  "requirements": [[ "done" ]]
+}

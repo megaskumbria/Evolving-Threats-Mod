@@ -1,5 +1,7 @@
 package com.example.slime;
 
+import com.example.advancement.ModAdvancements;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -80,12 +82,15 @@ public final class SlimePoison {
 		if (chance <= 0.0f || slime.getRandom().nextFloat() >= chance) {
 			return;
 		}
-		target.addEffect(new MobEffectInstance(
+		boolean applied = target.addEffect(new MobEffectInstance(
 				MobEffects.POISON,
 				POISON_SECONDS * 20,
 				Math.max(0, amplifier),
 				false,
 				true,
 				true), slime);
+		if (applied && target instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onSlimePoison(serverPlayer);
+		}
 	}
 }

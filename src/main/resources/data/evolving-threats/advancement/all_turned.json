@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:varied_arrows",
+  "display": {
+    "icon": { "id": "minecraft:spectral_arrow" },
+    "title": { "translate": "advancements.evolving-threats.all_turned.title" },
+    "description": { "translate": "advancements.evolving-threats.all_turned.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 200,
+    "loot": [ "evolving-threats:advancement/all_turned" ]
+  },
+  "requirements": [[ "done" ]]
+}

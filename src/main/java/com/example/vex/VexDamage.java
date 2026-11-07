@@ -1,6 +1,8 @@
 package com.example.vex;
 
 import net.minecraft.world.Difficulty;
+import com.example.advancement.ModAdvancements;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -100,12 +102,15 @@ public final class VexDamage {
 		if (vex.getRandom().nextFloat() >= WEAKNESS_CHANCE) {
 			return;
 		}
-		target.addEffect(new MobEffectInstance(
+		boolean applied = target.addEffect(new MobEffectInstance(
 				MobEffects.WEAKNESS,
 				WEAKNESS_SECONDS * 20,
 				Math.max(0, WEAKNESS_AMPLIFIER),
 				false,
 				true,
 				true), vex);
+		if (applied && target instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onWeakHands(serverPlayer);
+		}
 	}
 }

@@ -89,7 +89,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Lingering potions — FIXED
 
 11. Vindicators
-- Full armor set, same as pillagers: leather, iron, chain, copper, rare diamond. Visible on the body — GROWING
+- Full armor set, same as pillagers: leather, iron, chain, copper, rare diamond. Each piece may be enchanted on its own. Visible on the body — GROWING
 - Diamond axes — FIXED
 - Fast wood/fence breaking — FIXED
 
@@ -115,7 +115,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Closed shell: half tool durability on hit — FIXED
 
 16. Pillagers
-- Full armor set, not always: 12% on day 0, 75% by day 100 (full moon). Leather, iron, chain, copper, rare diamond. No gold. Visible on the body. Vindicators too — GROWING
+- Full armor set, not always: 12% on day 0, 75% by day 100 (full moon). Leather, iron, chain, copper, rare diamond. No gold. Enchantments per piece, not always the whole set. Visible on the body. Vindicators too — GROWING
 - Firework crossbow — FIXED
 - High-level crossbow enchants — GROWING
 

@@ -1,6 +1,8 @@
 package com.example.phantom;
 
 import com.example.entity.WeakeningPhantomEntity;
+import com.example.advancement.ModAdvancements;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -71,12 +73,15 @@ public final class PhantomWeakness {
 		if (!(phantom instanceof WeakeningPhantomEntity data) || !data.evolvingthreats$weakensOnBite()) {
 			return;
 		}
-		target.addEffect(new MobEffectInstance(
+		boolean applied = target.addEffect(new MobEffectInstance(
 				MobEffects.WEAKNESS,
 				WEAKNESS_SECONDS * 20,
 				Math.max(0, AMPLIFIER),
 				false,
 				true,
 				true), phantom);
+		if (applied && target instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onWeakerBite(serverPlayer);
+		}
 	}
 }

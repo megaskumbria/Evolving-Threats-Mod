@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:block_hole",
+  "display": {
+    "icon": { "id": "minecraft:tnt" },
+    "title": { "translate": "advancements.evolving-threats.fuse_underfoot.title" },
+    "description": { "translate": "advancements.evolving-threats.fuse_underfoot.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 100,
+    "loot": [ "evolving-threats:advancement/fuse_underfoot" ]
+  },
+  "requirements": [[ "done" ]]
+}

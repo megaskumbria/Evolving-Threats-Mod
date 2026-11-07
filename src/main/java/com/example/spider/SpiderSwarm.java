@@ -1,5 +1,7 @@
 package com.example.spider;
 
+import com.example.advancement.AdvancementMoments;
+import com.example.advancement.ModAdvancements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
@@ -75,25 +77,34 @@ public final class SpiderSwarm {
 		int max = Math.max(min, PACK_MAX);
 		int total = leader.getRandom().nextIntBetweenInclusive(min, max);
 		int extras = total - 1;
+		int present = 1;
 		for (int i = 0; i < extras; i++) {
-			spawnOne(leader, level);
+			if (spawnOne(leader, level)) {
+				present++;
+			}
+		}
+		// A short pack in a tunnel is not the card. The leader alone never counts.
+		if (AdvancementMoments.swarmBigEnough(present, Math.max(1, PACK_MIN))) {
+			ModAdvancements.onSwarm(level, leader.getX(), leader.getY(), leader.getZ());
 		}
 	}
 
-	private static void spawnOne(Spider leader, ServerLevel level) {
+	/** @return true when another spider actually entered the world. */
+	private static boolean spawnOne(Spider leader, ServerLevel level) {
 		Vec3 pos = findOpenSpot(level, leader);
 		if (pos == null) {
-			return;
+			return false;
 		}
 		Spider spider = EntityTypes.SPIDER.create(level, EntitySpawnReason.MOB_SUMMONED);
 		if (spider == null) {
-			return;
+			return false;
 		}
 		spider.snapTo(pos.x, pos.y, pos.z, leader.getRandom().nextFloat() * 360.0f, 0.0f);
 		DifficultyInstance difficulty = level.getCurrentDifficultyAt(spider.blockPosition());
 		// MOB_SUMMONED: SpiderThreats leaves these normal — no new swarm.
 		spider.finalizeSpawn(level, difficulty, EntitySpawnReason.MOB_SUMMONED, (SpawnGroupData) null);
 		level.addFreshEntity(spider);
+		return true;
 	}
 
 	/** Nearby spot with solid floor and spider body not inside a block — otherwise it suffocates. */

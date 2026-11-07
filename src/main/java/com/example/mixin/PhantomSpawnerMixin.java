@@ -1,5 +1,7 @@
 package com.example.mixin;
 
+import com.example.advancement.AdvancementMoments;
+import com.example.advancement.ModAdvancements;
 import com.example.phantom.PhantomThreats;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
@@ -63,6 +65,9 @@ public class PhantomSpawnerMixin {
 		int vanillaCount = 1 + vanillaRoll;
 		Difficulty difficulty = difficultyById(bound - 1);
 		int grown = PhantomThreats.groupSize(player, difficulty, vanillaCount);
+		if (AdvancementMoments.flockBigger(grown, vanillaCount)) {
+			ModAdvancements.onBiggerFlock(player);
+		}
 		return grown - 1;
 	}
 

@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:shield_splinter",
+  "display": {
+    "icon": { "id": "minecraft:string" },
+    "title": { "translate": "advancements.evolving-threats.magnet_hold.title" },
+    "description": { "translate": "advancements.evolving-threats.magnet_hold.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 150,
+    "loot": [ "evolving-threats:advancement/magnet_hold" ]
+  },
+  "requirements": [[ "done" ]]
+}

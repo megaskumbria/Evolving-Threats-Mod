@@ -16,6 +16,9 @@ WHAT HAPPENS
    Those shares do not change with the day. No gold, no netherite.
 2. Leather is dyed one color for the whole set, so it is not plain brown.
 3. The set is real armor: it blocks damage, and each piece can drop (8.5%).
+   Enchantments are rolled per piece, same growth as zombie armor (1% on day 0, 65% per piece
+   at day 100, full moon). One piece, several, or the whole set — each roll is separate.
+   A captain banner is not enchanted. See MobEnchantments.ILLAGER_ARMOR_ENCHANT_CHANCE.
 4. A slot that already has an item is left alone. A captain banner on the head stays;
    that pillager still gets chest, legs, and boots.
 5. The illager model is not a player's, so the game does not draw armor by itself.

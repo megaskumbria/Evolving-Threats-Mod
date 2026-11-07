@@ -1,7 +1,9 @@
 package com.example.spider;
 
+import com.example.advancement.ModAdvancements;
 import com.example.entity.LethalPoisonEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -73,6 +75,10 @@ public final class CaveSpiderPoison {
 		if (!(target instanceof LethalPoisonEntity data) || !data.evolvingthreats$isLethalCavePoison()) {
 			return;
 		}
-		target.hurtServer(level, target.damageSources().magic(), TICK_DAMAGE);
+		boolean hurt = target.hurtServer(level, target.damageSources().magic(), TICK_DAMAGE);
+		// Only the tick that continues past half a heart. Ordinary poison damage does not count.
+		if (hurt && target instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onPoisonLasts(serverPlayer);
+		}
 	}
 }

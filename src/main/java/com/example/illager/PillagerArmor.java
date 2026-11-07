@@ -1,5 +1,6 @@
 package com.example.illager;
 
+import com.example.MobEnchantments;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 import net.minecraft.core.component.DataComponents;
@@ -115,6 +116,8 @@ public final class PillagerArmor {
 		if (woreAny) {
 			dyeLeather(illager, random);
 		}
+		// Each piece rolls alone. A banner on the head is not armor, so it is skipped.
+		MobEnchantments.rollArmorForIllager(illager);
 	}
 
 	/** Index into {@link #SETS}. Weights are relative, so 3 against 97 is 3%. */

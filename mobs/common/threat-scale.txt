@@ -80,7 +80,7 @@ Pillager and vindicator full set .. 12% → 75% (full moon). Leather 34 / iron 2
 Shield ............................ 2.5% → 25%
 Totem of undying .................. 0.2% → 4%
 Weapon enchantments ............... 1% → 70%
-Armor enchantments ................ 1% → 65%
+Armor enchantments ................ 1% → 65% per piece (zombies, skeletons, pillagers, vindicators)
 Enchant count on weapons .......... mostly 1 → up to 5 (weights 85/11/3/1/0 → 55/28/12/4/1)
 Enchant level strength ............ mostly low → at max, high levels more common than low (3.0 → -0.3, Sharpness V ≈ 26%)
 Extra night spawns ................ 0–3 extra zombies/skeletons on night spawn:

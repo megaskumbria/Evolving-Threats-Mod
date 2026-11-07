@@ -1,12 +1,16 @@
 package com.example.skeleton;
 
+import com.example.advancement.AdvancementMoments;
+import com.example.advancement.ModAdvancements;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 
 import com.example.entity.TacticianSkeletonEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -17,6 +21,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -167,6 +172,29 @@ public final class SkeletonPunchBow {
 				mob.setDropChance(slot, 0.0f);
 			}
 		}
+	}
+
+	/** Arrow already hit. A shield block and Punch below {@link #MIN_LEVEL_THAT_NEVER_DROPS} do not count. */
+	public static void onArrowHit(AbstractArrow arrow, Entity hit) {
+		if (!(hit instanceof ServerPlayer player) || player.isBlocking()) {
+			return;
+		}
+		if (!(arrow.getOwner() instanceof AbstractSkeleton skeleton)) {
+			return;
+		}
+		if (AdvancementMoments.punchStrongEnough(highestPunch(skeleton), MIN_LEVEL_THAT_NEVER_DROPS)) {
+			ModAdvancements.onHardPunch(player);
+		}
+	}
+
+	/** Highest Punch on either hand. 0 = no Punch bow. */
+	private static int highestPunch(AbstractSkeleton skeleton) {
+		var punch = skeleton.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.PUNCH);
+		int best = 0;
+		for (EquipmentSlot slot : HANDS) {
+			best = Math.max(best, EnchantmentHelper.getItemEnchantmentLevel(punch, skeleton.getItemBySlot(slot)));
+		}
+		return best;
 	}
 
 	private static int rollLevel(RandomSource random) {

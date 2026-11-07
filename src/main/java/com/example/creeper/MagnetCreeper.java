@@ -1,5 +1,7 @@
 package com.example.creeper;
 
+import com.example.advancement.AdvancementMoments;
+import com.example.advancement.ModAdvancements;
 import com.example.entity.DynamiteCreeperEntity;
 import com.example.entity.FastCreeperEntity;
 import com.example.entity.FeintCreeperEntity;
@@ -10,6 +12,7 @@ import com.example.threat.ThreatTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -92,6 +95,13 @@ public final class MagnetCreeper {
 	 * Raise it if speed effects or ice still let you hold ground. Lower it for a slower reel.
 	 */
 	public static final double END_PULL_PER_TICK = 0.60;
+
+	/**
+	 * How fast a player sprints, blocks per tick. About 0.28.
+	 * When the tug reaches this, sprint no longer holds the edge, and the card counts.
+	 * Raise it and the card waits until the pull is stronger. 0 = the card never counts.
+	 */
+	public static final double SPRINT_BLOCKS_PER_TICK = 0.28;
 
 	/**
 	 * Fastest correction in one tick when you are already outside the leash, in blocks.
@@ -300,6 +310,10 @@ public final class MagnetCreeper {
 		}
 		body.setDeltaMovement(motion);
 		body.syncVelocity = true;
+		if (player instanceof ServerPlayer serverPlayer
+				&& AdvancementMoments.magnetHolds(tug, SPRINT_BLOCKS_PER_TICK)) {
+			ModAdvancements.onMagnetHold(serverPlayer);
+		}
 	}
 
 	/**

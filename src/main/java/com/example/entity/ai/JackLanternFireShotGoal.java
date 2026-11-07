@@ -95,6 +95,7 @@ public class JackLanternFireShotGoal extends Goal {
 		double dz = target.getZ() - skeleton.getZ();
 
 		arrow.shoot(dx, dy, dz, JackLanternBeacon.FIRE_ARROW_VELOCITY, JackLanternBeacon.FIRE_ARROW_INACCURACY);
+		arrow.addTag(JackLanternBeacon.FIRE_ARROW_TAG);
 		level.addFreshEntity(arrow);
 
 		level.playSound(

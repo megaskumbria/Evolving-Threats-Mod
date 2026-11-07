@@ -25,6 +25,7 @@ public class DispenserBarrageGoal extends Goal {
 	private boolean initializedCooldown;
 
 	private int barrageTicksRemaining;
+	private long barrageId;
 	private int arrowsRemaining;
 	private int shootCooldownTicks;
 
@@ -79,6 +80,7 @@ public class DispenserBarrageGoal extends Goal {
 
 	@Override
 	public void start() {
+		barrageId = skeleton.level().getGameTime();
 		barrageTicksRemaining = RandomDispenserSkull.BARRAGE_PHASE_TICKS;
 		arrowsRemaining = RandomDispenserSkull.BARRAGE_ARROW_COUNT;
 		shootCooldownTicks = 0;
@@ -168,6 +170,7 @@ public class DispenserBarrageGoal extends Goal {
 		double dz = target.getZ() - skeleton.getZ();
 
 		arrow.shoot(dx, dy, dz, RandomDispenserSkull.BARRAGE_ARROW_VELOCITY, RandomDispenserSkull.BARRAGE_INACCURACY);
+		arrow.addTag(RandomDispenserSkull.BARRAGE_TAG_PREFIX + skeleton.getUUID() + "_" + barrageId);
 		level.addFreshEntity(arrow);
 
 		level.playSound(

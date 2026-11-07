@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:advancement_reward",
+  "pools": [{
+    "rolls": 1,
+    "entries": [{
+      "type": "minecraft:item",
+      "name": "minecraft:gunpowder",
+          "modifier": { "type": "minecraft:set_count", "count": 4 }
+    }]
+  }]
+}

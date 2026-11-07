@@ -6,7 +6,9 @@ import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.light.LightSeeking;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.advancement.ModAdvancements;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -87,6 +89,12 @@ public final class JackLanternBeacon {
 	/** Seconds of arrow burning after hitting. */
 	public static final int FIRE_ARROW_FIRE_SECONDS = 5;
 
+	/**
+	 * Mark on the extra fire arrow, so a normal flaming bow shot does not count.
+	 * The card needs this arrow to hit the player.
+	 */
+	public static final String FIRE_ARROW_TAG = "evolvingthreats_jack_fire";
+
 	/** Minimum distance to the target for the shot (blocks). */
 	public static final double FIRE_SHOT_MIN_DISTANCE = 4.0;
 
@@ -144,6 +152,7 @@ public final class JackLanternBeacon {
 		if (!(focus instanceof Player)) {
 			return;
 		}
+		int sped = 0;
 		AABB area = beacon.getBoundingBox().inflate(BEACON_RADIUS);
 		for (Zombie ally : level.getEntitiesOfClass(Zombie.class, area, z -> canReceiveBeaconBuff(z, beacon))) {
 			ally.addEffect(new MobEffectInstance(
@@ -153,9 +162,24 @@ public final class JackLanternBeacon {
 					false,
 					false,
 					true));
+			sped++;
 			if (SHARE_TARGET_WITH_ALLIES && ally.getTarget() == null) {
 				ally.setTarget(focus);
 			}
+		}
+		// The head alone does not count. A neighbor has to actually speed up.
+		if (sped > 0 && focus instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onNeighborsRan(serverPlayer);
+		}
+	}
+
+	/** The marked fire arrow hit something. A normal flaming shot has no mark. */
+	public static void onArrowHit(net.minecraft.world.entity.projectile.arrow.AbstractArrow arrow, net.minecraft.world.entity.Entity hit) {
+		if (!arrow.entityTags().contains(FIRE_ARROW_TAG)) {
+			return;
+		}
+		if (hit instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onFireFollowed(serverPlayer);
 		}
 	}
 

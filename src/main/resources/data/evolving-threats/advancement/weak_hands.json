@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:illager_siege",
+  "display": {
+    "icon": { "id": "minecraft:emerald" },
+    "title": { "translate": "advancements.evolving-threats.weak_hands.title" },
+    "description": { "translate": "advancements.evolving-threats.weak_hands.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 100,
+    "loot": [ "evolving-threats:advancement/weak_hands" ]
+  },
+  "requirements": [[ "done" ]]
+}

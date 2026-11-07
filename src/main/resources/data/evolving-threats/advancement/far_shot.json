@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:captain",
+  "display": {
+    "icon": { "id": "minecraft:bow" },
+    "title": { "translate": "advancements.evolving-threats.far_shot.title" },
+    "description": { "translate": "advancements.evolving-threats.far_shot.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 40,
+    "loot": [ "evolving-threats:advancement/far_shot" ]
+  },
+  "requirements": [[ "done" ]]
+}

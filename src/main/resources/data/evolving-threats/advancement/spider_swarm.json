@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:little_ones",
+  "display": {
+    "icon": { "id": "minecraft:cobweb" },
+    "title": { "translate": "advancements.evolving-threats.spider_swarm.title" },
+    "description": { "translate": "advancements.evolving-threats.spider_swarm.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 100,
+    "loot": [ "evolving-threats:advancement/spider_swarm" ]
+  },
+  "requirements": [[ "done" ]]
+}

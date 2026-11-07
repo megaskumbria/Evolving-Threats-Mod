@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:dynamite_creeper",
+  "display": {
+    "icon": { "id": "minecraft:gunpowder" },
+    "title": { "translate": "advancements.evolving-threats.stronger_blast.title" },
+    "description": { "translate": "advancements.evolving-threats.stronger_blast.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 150,
+    "loot": [ "evolving-threats:advancement/stronger_blast" ]
+  },
+  "requirements": [[ "done" ]]
+}

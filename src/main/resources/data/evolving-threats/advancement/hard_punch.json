@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:disarmed",
+  "display": {
+    "icon": { "id": "minecraft:arrow" },
+    "title": { "translate": "advancements.evolving-threats.hard_punch.title" },
+    "description": { "translate": "advancements.evolving-threats.hard_punch.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 100,
+    "loot": [ "evolving-threats:advancement/hard_punch" ]
+  },
+  "requirements": [[ "done" ]]
+}

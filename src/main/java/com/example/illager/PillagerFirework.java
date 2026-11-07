@@ -1,6 +1,9 @@
 package com.example.illager;
 
+import com.example.advancement.ModAdvancements;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -110,6 +113,25 @@ public final class PillagerFirework {
 			}
 		}
 		projectile.shoot(toTarget.x, toTarget.y, toTarget.z, power, uncertainty);
+	}
+
+	/**
+	 * The rocket already tried to hurt whoever it could see.
+	 * A miss leaves nobody freshly hurt, so it does not count.
+	 * 5 blocks is the blast the game uses. 25 is that distance squared.
+	 */
+	public static void onExplosionHit(FireworkRocketEntity rocket, ServerLevel level) {
+		if (!ENABLED || !(rocket.getOwner() instanceof Pillager)) {
+			return;
+		}
+		for (ServerPlayer player : level.players()) {
+			if (player.isSpectator() || !player.isAlive() || player.hurtTime < 9) {
+				continue;
+			}
+			if (rocket.distanceToSqr(player) <= 25.0) {
+				ModAdvancements.onCrossbowFlash(player);
+			}
+		}
 	}
 
 	/*Remove the rocket left over from the last volley so that this volley will charge the arrow. */

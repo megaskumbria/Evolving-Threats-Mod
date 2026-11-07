@@ -15,6 +15,7 @@ import com.example.raid.RaidAnchor;
 import com.example.ritual.RitualBand;
 import com.example.siege.SiegeComposition;
 import com.example.skeleton.BasiliskSkeleton;
+import com.example.skeleton.SmallSkeleton;
 import com.example.skeleton.SkeletonCaptain;
 import com.example.skeleton.SniperSkeleton;
 import com.example.spiky.Spiky;
@@ -39,10 +40,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.equine.SkeletonHorse;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -115,6 +118,12 @@ public final class ModAdvancements {
 	public static final double LITTLE_ONES_NEAR_BLOCKS = 32.0;
 
 	/**
+	 * How close (blocks) a player must be when a full spider pack appears.
+	 * 32 = you were there for it. Farther than this, the card does not count.
+	 */
+	public static final double SWARM_NEAR_BLOCKS = 32.0;
+
+	/**
 	 * Rewards are not numbers here. The advancements screen reads them from JSON,
 	 * and the game gives them once, the first time the advancement completes.
 	 * Change a number there and both the screen and the payout change.
@@ -183,6 +192,26 @@ public final class ModAdvancements {
 	 *   <li>witch_gone — 1 golden carrot, 100 xp. She started the invisibility drink, and you are the one she is fighting.</li>
 	 *   <li>little_ones — 4 spider eyes, 100 xp. The small ones appeared within {@link #LITTLE_ONES_NEAR_BLOCKS}.</li>
 	 *   <li>tool_groaned — 1 diamond, 200 xp. A hit on the closed shell took half the tool's durability.</li>
+	 *   <li>magnet_hold — 8 string, 150 xp. The tug reached sprint and would not let go.</li>
+	 *   <li>stronger_blast — 4 gunpowder, 150 xp. A creeper that spawned charged blew up on you. Lightning does not count.</li>
+	 *   <li>short_step — 4 sugar, 100 xp. The short fuse exploded while you were still in the blast.</li>
+	 *   <li>spider_swarm — 8 string, 100 xp. A full pack appeared within {@link #SWARM_NEAR_BLOCKS}.</li>
+	 *   <li>poison_lasts — 1 milk bucket, 30 xp. Cave-spider poison damaged you below half a heart.</li>
+	 *   <li>slime_poison — 4 slime balls, 30 xp. A medium or large slime's hit applied poison.</li>
+	 *   <li>far_shot — 8 arrows, 40 xp. The arrow hit from past a normal bow's reach.</li>
+	 *   <li>half_size — 4 bones, 25 xp. You killed a skeleton at half size.</li>
+	 *   <li>three_effects — 1 diamond, 150 xp. One arrow put three effects on you and he drew a sword.</li>
+	 *   <li>hard_punch — slow falling potion (1:30, {@code minecraft:slow_falling}), 100 xp. Punch V or VI hit you.</li>
+	 *   <li>all_turned — invisibility potion (3:00, {@code minecraft:invisibility}), 200 xp. Others came after the glowing arrow.</li>
+	 *   <li>fire_followed — 4 fire charges, 100 xp. The extra fire arrow hit you.</li>
+	 *   <li>arrow_volley — 1 shield, 150 xp. Two or more arrows from one volley hit you.</li>
+	 *   <li>sword_stayed — Smite III book ({@code minecraft:smite}), 150 xp. You killed the one holding a netherite sword.</li>
+	 *   <li>fuse_underfoot — 1 TNT, 100 xp. Lit TNT was placed at his feet while he was after you.</li>
+	 *   <li>neighbors_ran — 1 lantern, 100 xp. Neighbors sped up while he could see you.</li>
+	 *   <li>weak_hands — 4 emeralds, 100 xp. The hit applied weakness.</li>
+	 *   <li>crossbow_flash — 4 gunpowder, 40 xp. A rocket from the crossbow hurt you.</li>
+	 *   <li>weaker_bite — strength potion (3:00, {@code minecraft:strength}), 100 xp. The bite applied weakness.</li>
+	 *   <li>bigger_flock — 1 white bed, 200 xp. The sleepless wave was larger than the game's own roll.</li>
 	 * </ul>
 	 * Nothing is hidden. Parents in the JSON are only the tree: who is drawn after whom.
 	 * The game shows the next two cards on a branch, the same way the vanilla tabs do.
@@ -255,6 +284,26 @@ public final class ModAdvancements {
 	private static final Identifier WITCH_GONE = EvolvingThreats.id("witch_gone");
 	private static final Identifier LITTLE_ONES = EvolvingThreats.id("little_ones");
 	private static final Identifier TOOL_GROANED = EvolvingThreats.id("tool_groaned");
+	private static final Identifier MAGNET_HOLD = EvolvingThreats.id("magnet_hold");
+	private static final Identifier STRONGER_BLAST = EvolvingThreats.id("stronger_blast");
+	private static final Identifier SHORT_STEP = EvolvingThreats.id("short_step");
+	private static final Identifier SPIDER_SWARM = EvolvingThreats.id("spider_swarm");
+	private static final Identifier POISON_LASTS = EvolvingThreats.id("poison_lasts");
+	private static final Identifier SLIME_POISON = EvolvingThreats.id("slime_poison");
+	private static final Identifier FAR_SHOT = EvolvingThreats.id("far_shot");
+	private static final Identifier HALF_SIZE = EvolvingThreats.id("half_size");
+	private static final Identifier THREE_EFFECTS = EvolvingThreats.id("three_effects");
+	private static final Identifier HARD_PUNCH = EvolvingThreats.id("hard_punch");
+	private static final Identifier ALL_TURNED = EvolvingThreats.id("all_turned");
+	private static final Identifier FIRE_FOLLOWED = EvolvingThreats.id("fire_followed");
+	private static final Identifier ARROW_VOLLEY = EvolvingThreats.id("arrow_volley");
+	private static final Identifier SWORD_STAYED = EvolvingThreats.id("sword_stayed");
+	private static final Identifier FUSE_UNDERFOOT = EvolvingThreats.id("fuse_underfoot");
+	private static final Identifier NEIGHBORS_RAN = EvolvingThreats.id("neighbors_ran");
+	private static final Identifier WEAK_HANDS = EvolvingThreats.id("weak_hands");
+	private static final Identifier CROSSBOW_FLASH = EvolvingThreats.id("crossbow_flash");
+	private static final Identifier WEAKER_BITE = EvolvingThreats.id("weaker_bite");
+	private static final Identifier BIGGER_FLOCK = EvolvingThreats.id("bigger_flock");
 
 	/** Entity types that add to {@link #KILL_COUNT_FIRST} and the two cards after it. */
 	private static final EntityType<?>[] COUNTED_UNDEAD = {
@@ -333,6 +382,15 @@ public final class ModAdvancements {
 		}
 		if (entity instanceof AbstractSkeleton && entity.getVehicle() instanceof SkeletonHorse) {
 			grant(player, HORSEMAN);
+		}
+		if (entity instanceof WitherSkeleton && entity.getMainHandItem().is(Items.NETHERITE_SWORD)) {
+			grant(player, SWORD_STAYED);
+		}
+		if (entity instanceof AbstractSkeleton skeleton) {
+			var scale = skeleton.getAttribute(Attributes.SCALE);
+			if (scale != null && AdvancementMoments.smallEnough(scale.getBaseValue(), SmallSkeleton.SCALE)) {
+				grant(player, HALF_SIZE);
+			}
 		}
 		if (entity instanceof FloatingTool tool) {
 			grant(player, FLOATING_TOOL);
@@ -593,6 +651,139 @@ public final class ModAdvancements {
 	public static void onToolGroaned(ServerPlayer player) {
 		if (!player.isSpectator()) {
 			grant(player, TOOL_GROANED);
+		}
+	}
+
+	/** The pull is now as strong as sprint, so this player cannot hold the edge. */
+	public static void onMagnetHold(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, MAGNET_HOLD);
+		}
+	}
+
+	/** A creeper that spawned already charged just exploded, and this player is inside the blast. */
+	public static void onStrongerBlast(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, STRONGER_BLAST);
+		}
+	}
+
+	/** The short fuse just exploded, and this player is inside the blast. */
+	public static void onShortStep(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, SHORT_STEP);
+		}
+	}
+
+	/** A full pack appeared. Only players close enough to have seen it. */
+	public static void onSwarm(ServerLevel level, double x, double y, double z) {
+		double reach = Math.max(0.0, SWARM_NEAR_BLOCKS);
+		double reachSq = reach * reach;
+		for (ServerPlayer player : level.players()) {
+			if (player.isSpectator() || !player.isAlive()) {
+				continue;
+			}
+			if (player.distanceToSqr(x, y, z) <= reachSq) {
+				grant(player, SPIDER_SWARM);
+			}
+		}
+	}
+
+	/** Cave-spider poison just dealt damage at half a heart or below. */
+	public static void onPoisonLasts(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, POISON_LASTS);
+		}
+	}
+
+	/** A slime hit just applied poison. A small slime never does this. */
+	public static void onSlimePoison(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, SLIME_POISON);
+		}
+	}
+
+	/** An arrow from the long fast bow hit from past a normal bow's reach. */
+	public static void onFarShot(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, FAR_SHOT);
+		}
+	}
+
+	/** One arrow put the three effects on this player, and the sword came out. */
+	public static void onThreeEffects(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, THREE_EFFECTS);
+		}
+	}
+
+	/** Punch V or VI just hit this player. A blocked shot does not count. */
+	public static void onHardPunch(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, HARD_PUNCH);
+		}
+	}
+
+	/** After the glowing arrow, at least one other hostile turned on this player. */
+	public static void onAllTurned(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, ALL_TURNED);
+		}
+	}
+
+	/** The extra fire arrow hit this player. A normal flaming bow shot does not count. */
+	public static void onFireFollowed(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, FIRE_FOLLOWED);
+		}
+	}
+
+	/** Two or more arrows from the same volley hit this player. */
+	public static void onVolley(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, ARROW_VOLLEY);
+		}
+	}
+
+	/** Lit TNT was just placed at his feet, and this player is the one he is after, close enough to be there. */
+	public static void onFuseUnderfoot(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, FUSE_UNDERFOOT);
+		}
+	}
+
+	/** Neighbors just sped up while he could see this player. The head with nobody nearby does not count. */
+	public static void onNeighborsRan(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, NEIGHBORS_RAN);
+		}
+	}
+
+	/** The hit just applied weakness. */
+	public static void onWeakHands(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, WEAK_HANDS);
+		}
+	}
+
+	/** A rocket from the crossbow just hurt this player. A miss does not count. */
+	public static void onCrossbowFlash(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, CROSSBOW_FLASH);
+		}
+	}
+
+	/** The bite just applied weakness. Blindness is a different card. */
+	public static void onWeakerBite(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, WEAKER_BITE);
+		}
+	}
+
+	/** This sleepless wave is larger than the size the game rolled on its own. */
+	public static void onBiggerFlock(ServerPlayer player) {
+		if (!player.isSpectator()) {
+			grant(player, BIGGER_FLOCK);
 		}
 	}
 

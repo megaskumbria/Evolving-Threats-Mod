@@ -22,7 +22,7 @@ public class SpectralArrowHuntMixin {
 	private void evolvingthreats$alertMobs(LivingEntity hit, CallbackInfo ci) {
 		SpectralArrow arrow = (SpectralArrow) (Object) this;
 		if (arrow.getOwner() instanceof AbstractSkeleton && hit instanceof Player player) {
-			SpectralArrowHunt.alert(player);
+			SpectralArrowHunt.alert(player, arrow.getOwner());
 		}
 	}
 }

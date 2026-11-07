@@ -4,9 +4,11 @@ import com.example.threat.ThreatScale;
 
 import com.example.MobEnchantments;
 import com.example.RandomArmor;
+import com.example.advancement.ModAdvancements;
 import com.example.entity.TacticianSkeletonEntity;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -197,6 +199,9 @@ public final class TacticianSkeleton {
 			}
 			if (skeleton.getTarget() != player) {
 				skeleton.setTarget(player);
+			}
+			if (player instanceof ServerPlayer serverPlayer) {
+				ModAdvancements.onThreeEffects(serverPlayer);
 			}
 			return;
 		}

@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:light_out",
+  "display": {
+    "icon": { "id": "minecraft:lantern" },
+    "title": { "translate": "advancements.evolving-threats.neighbors_ran.title" },
+    "description": { "translate": "advancements.evolving-threats.neighbors_ran.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 100,
+    "loot": [ "evolving-threats:advancement/neighbors_ran" ]
+  },
+  "requirements": [[ "done" ]]
+}

@@ -1,5 +1,6 @@
 package com.example.creeper;
 
+import com.example.entity.BornChargedCreeperEntity;
 import com.example.mixin.CreeperPowerAccessor;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.monster.Creeper;
@@ -42,5 +43,9 @@ public final class ChargedCreeper {
 			return;
 		}
 		creeper.getEntityData().set(CreeperPowerAccessor.evolvingthreats$poweredId(), true);
+		// Lightning uses the same powered look, but does not set this, so its blast does not count.
+		if (creeper instanceof BornChargedCreeperEntity born) {
+			born.evolvingthreats$setBornCharged(true);
+		}
 	}
 }

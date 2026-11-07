@@ -20,7 +20,7 @@ import java.util.List;
 /**
  Random charms on weapons, tools and armor mobs (zombies, skeletons, robbers).
  * Weapons: swords, axes, pickaxes, shovels, hoes, bow and crossbow. Armor: helmet, breastplate, knives, shoes
- In zombies and skeletons (robbers do not wear armor).
+ On zombies, skeletons, pillagers, and vindicators. An illager set is not enchanted as a whole: each piece rolls alone.
  *
  How it works: after the mob has received weapons and armor, for each item
  There is a chance to “enchant”. If it falls out - from 1 to 5 charms suitable for this object are selected,
@@ -82,6 +82,13 @@ public final class MobEnchantments {
 
 	/*Same for the armor of skeletons and wanderers. 0.65 = 65% for each piece. 0 = Charm on the armor of skeletons will not. */
 	public static final float SKELETON_ARMOR_ENCHANT_CHANCE = 0.65f;
+
+	/**
+	 * Chance (0.0–1.0) that ONE piece of pillager or vindicator armor is enchanted on day 100.
+	 * Helmet, chest, legs, and boots each roll alone, so a set can have one enchanted piece or all four.
+	 * 0.65 = 65% per piece. Day 0 is {@link ThreatTable#ARMOR_ENCHANT_CHANCE_START} (1%). 0 = plain armor.
+	 */
+	public static final float ILLAGER_ARMOR_ENCHANT_CHANCE = 0.65f;
 
 	/**
 	 How many spells at once on one object-weapons. Index 0 = one charm, 1 = two, 2 = three, etc. Numbers - "weight" (a chance relative to others).
@@ -202,6 +209,11 @@ public final class MobEnchantments {
 	/*Called from SkeletonMixin after the skeleton has received armor (RandomArmor). */
 	public static void rollArmorForSkeleton(Mob mob) {
 		rollForArmor(mob, SKELETON_ARMOR_ENCHANT_CHANCE, true);
+	}
+
+	/** After a pillager or vindicator has a set on. Each piece rolls on its own. */
+	public static void rollArmorForIllager(Mob mob) {
+		rollForArmor(mob, ILLAGER_ARMOR_ENCHANT_CHANCE, true);
 	}
 
 	/**

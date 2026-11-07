@@ -218,6 +218,11 @@ public final class TntZombie {
 		}
 		level.addFreshEntity(tnt);
 		level.playSound(null, zombie.blockPosition(), SoundEvents.TNT_PRIMED, SoundSource.HOSTILE, 1.0f, 1.0f);
+		Player chasing = chasePlayer(zombie);
+		if (chasing instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+				&& zombie.distanceTo(chasing) <= Math.max(0.0, PATH_CHECK_BLOCKS)) {
+			com.example.advancement.ModAdvancements.onFuseUnderfoot(serverPlayer);
+		}
 	}
 
 	private static @Nullable Player chasePlayer(Zombie zombie) {

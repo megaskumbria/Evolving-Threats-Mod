@@ -3,7 +3,8 @@ Magic on Weapons, Instruments and Mob Armour
 
 Type: General mechanics for zombies, skeletons, wanderers, robbers and thugs.
 Weapons and tools: sword, axe, pickax, shovel, hoe, bow, crossbow.
-Armor: helmet, breastplate, knives, boots of zombies, skeletons and wanderers (robbers do not wear armor).
+Armor: helmet, breastplate, leggings, boots of zombies, skeletons, wanderers, pillagers, and vindicators.
+   On an illager each piece is rolled alone, so the set is not enchanted all at once.
 Code: MobEnchantments.java (settings and all logic)
 RandomArmor.java (isModArmor: what is considered fashion armor)
 mixin/ZombieMixin.java, mixin/SkeletonMixin.java (a challenge for zombies and skeletons)
@@ -50,6 +51,7 @@ ZOMBIE ENCHANT CHANCE - 0.30 - chance to enchant zombie weapons (30%)
 SKELETON ENCHANT CHANCE - 0.30 - the same for the skeleton / wanderer (bow and sword are thrown separately)
 ILLAGER ENCHANT CHANCE....... 0.30 – robber (crossbow, including in the raid), thug (axe, not in the raid)
 ZOMBIE ARMOR ENCHANT CHANCE 0.25 – a chance to enchant EVERY piece of zombie armor
+ILLAGER_ARMOR_ENCHANT_CHANCE .. 0.65 on day 100 per piece (helmet, chest, legs, boots roll separately). Day 0 is 1%
 SKELETON ARMOR ENCHANT CHANCE 0.25 - Same for skeleton/wanderer armor
 COUNT WEIGHTS . . . {55, 28, 12, 4, 1} - how many spells on a weapon
 ARMOR COUNT WEIGHTS {60, 28, 10, 2} - how many spells on a piece of armor

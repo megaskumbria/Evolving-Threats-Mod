@@ -1,6 +1,9 @@
 package com.example.skeleton;
 
+import com.example.advancement.ModAdvancements;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -40,8 +43,11 @@ public final class SpectralArrowHunt {
 	private SpectralArrowHunt() {
 	}
 
-	/** Call when a skeleton spectral arrow hits a player. */
-	public static void alert(Player player) {
+	/**
+	 * Call when a skeleton spectral arrow hits a player.
+	 * {@code shooter} is not counted: the card needs someone else to turn.
+	 */
+	public static void alert(Player player, Entity shooter) {
 		if (!(player.level() instanceof ServerLevel level)) {
 			return;
 		}
@@ -49,10 +55,17 @@ public final class SpectralArrowHunt {
 		long until = now + HUNT_SECONDS * 20L;
 		HUNTS.entrySet().removeIf(entry -> entry.getValue().untilGameTime < now);
 
+		int others = 0;
 		AABB area = player.getBoundingBox().inflate(AGGRO_RADIUS);
 		for (Monster monster : level.getEntitiesOfClass(Monster.class, area, mob -> mob.distanceTo(player) <= AGGRO_RADIUS)) {
 			HUNTS.put(monster.getUUID(), new Hunt(player.getUUID(), until));
 			monster.setTarget(player);
+			if (monster != shooter) {
+				others++;
+			}
+		}
+		if (others > 0 && player instanceof ServerPlayer serverPlayer) {
+			ModAdvancements.onAllTurned(serverPlayer);
 		}
 	}
 

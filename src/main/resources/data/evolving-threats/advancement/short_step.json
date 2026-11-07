@@ -1,0 +1,17 @@
+{
+  "parent": "evolving-threats:feint_creeper",
+  "display": {
+    "icon": { "id": "minecraft:sugar" },
+    "title": { "translate": "advancements.evolving-threats.short_step.title" },
+    "description": { "translate": "advancements.evolving-threats.short_step.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": { "done": { "trigger": "minecraft:impossible" } },
+  "rewards": {
+    "experience": 100,
+    "loot": [ "evolving-threats:advancement/short_step" ]
+  },
+  "requirements": [[ "done" ]]
+}

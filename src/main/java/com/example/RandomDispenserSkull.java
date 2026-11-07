@@ -1,8 +1,13 @@
 package com.example;
 
+import com.example.advancement.AdvancementMoments;
+import com.example.advancement.ModAdvancements;
 import com.example.threat.ThreatScale;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
@@ -31,6 +36,15 @@ public final class RandomDispenserSkull {
 	/*How many arrows are fired in one volley? */
 	public static final int BARRAGE_ARROW_COUNT = 14;
 
+	/**
+	 * How many arrows from one volley must hit the same player.
+	 * 2 = at least two. 1 would also count a single ordinary-looking shot.
+	 */
+	public static final int BARRAGE_HITS_FOR_CARD = 2;
+
+	/** Mark on each arrow of a volley. A normal bow shot does not have it. */
+	public static final String BARRAGE_TAG_PREFIX = "evolvingthreats_barrage_";
+
 	/*Each N tics (20 tics = 1 sec) is released another arrow in the volley. 2 = ~7 page/sec. */
 	public static final int BARRAGE_SHOOT_INTERVAL_TICKS = 2;
 
@@ -51,7 +65,33 @@ public final class RandomDispenserSkull {
 
 	// ========================================================================
 
+	/** Hits of one volley on one player. Cleared once the card counts. */
+	private static final java.util.Map<String, Integer> VOLLEY_HITS = new java.util.HashMap<>();
+
 	private RandomDispenserSkull() {
+	}
+
+	/** A volley arrow hit. Other arrows have no mark. One hit is not enough. */
+	public static void onArrowHit(AbstractArrow arrow, Entity hit) {
+		if (!(hit instanceof ServerPlayer player)) {
+			return;
+		}
+		String mark = null;
+		for (String tag : arrow.entityTags()) {
+			if (tag.startsWith(BARRAGE_TAG_PREFIX)) {
+				mark = tag;
+				break;
+			}
+		}
+		if (mark == null) {
+			return;
+		}
+		String key = player.getUUID() + mark;
+		int hits = VOLLEY_HITS.merge(key, 1, Integer::sum);
+		if (AdvancementMoments.volleyEnough(hits, BARRAGE_HITS_FOR_CARD)) {
+			ModAdvancements.onVolley(player);
+			VOLLEY_HITS.remove(key);
+		}
 	}
 
 	public static boolean isDispenserSkull(Mob mob) {
