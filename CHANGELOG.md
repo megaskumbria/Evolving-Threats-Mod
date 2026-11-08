@@ -1,3 +1,12 @@
+1.1.2 for Minecraft 26.3
+
+## Changes
+
+- Sleep is judged on the floor where the bed stands. A mine, a cellar, and the fences around the bottom of a tower do not change a bed upstairs. Those fences count again when the bed is on their floor.
+- An upper floor is not a safe room. The night outside its window or wall sets the chance, even when there is no stair down to the ground.
+- Every 2 points halves the chance of being woken: 0 is 100%, 2 is 50%, 4 is 25%, 6 is 12%, 8 is 6%. A wooden door with night outside is about 50%. One stone wall is about 25%.
+
+
 1.0.2 for Minecraft 26.3
 
 ## Changes
