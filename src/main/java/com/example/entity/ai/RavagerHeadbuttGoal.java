@@ -44,6 +44,8 @@ public class RavagerHeadbuttGoal extends Goal {
 		if (!RavagerWallBreak.canBreak(ravager) || ravager.isPassenger()) {
 			return false;
 		}
+		// The game drops a target it cannot see. Put it back before deciding to headbutt.
+		RavagerWallBreak.keepTargetThroughWall(ravager);
 		if (ravager.getStunnedTick() > 0 || ravager.getRoarTick() > 0) {
 			return false;
 		}

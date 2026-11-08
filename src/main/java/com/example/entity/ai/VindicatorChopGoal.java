@@ -18,7 +18,8 @@ import java.util.EnumSet;
 
 /**
  The champion cuts a wooden block if there is no way to the goal because of it.
- Stone and earth do not touch. If the player is already under attack, he does not start cutting.
+ Stone and earth do not touch. If he can already see and hit the target, he does not start cutting.
+ A target hidden by wood is kept: see {@link com.example.illager.VindicatorWoodBreak#keepTargetThroughWood}.
  As long as he cuts, the axe remains in his hand. As soon as the path is open or the goal is near,
  * The chopping lets it go and the usual axe kick works again.
  */
@@ -47,6 +48,8 @@ public class VindicatorChopGoal extends Goal {
 		if (!VindicatorWoodBreak.canChop(vindicator) || vindicator.isPassenger()) {
 			return false;
 		}
+		// The game drops a target it cannot see. Put it back before deciding to chop.
+		VindicatorWoodBreak.keepTargetThroughWood(vindicator);
 		long now = vindicator.level().getGameTime();
 		if (now < nextCheckGameTime) {
 			return false;
@@ -60,6 +63,7 @@ public class VindicatorChopGoal extends Goal {
 		if (!chopping || !VindicatorWoodBreak.canChop(vindicator)) {
 			return false;
 		}
+		VindicatorWoodBreak.keepTargetThroughWood(vindicator);
 		LivingEntity target = vindicator.getTarget();
 		if (target == null || !target.isAlive()) {
 			return false;
@@ -67,8 +71,9 @@ public class VindicatorChopGoal extends Goal {
 		if (vindicator.distanceTo(target) > VindicatorWoodBreak.MAX_DISTANCE_TO_TARGET) {
 			return false;
 		}
-		// Nearby you can already beat with an axe, the cabin should not intercept it.
-		return !vindicator.isWithinMeleeAttackRange(target);
+		// Close enough and the axe can actually reach the target: stop chopping and hit.
+		// A closed door also counts as "close", but the hit would land on the door, so keep chopping.
+		return !canHitDirectly(target);
 	}
 
 	@Override
@@ -88,6 +93,7 @@ public class VindicatorChopGoal extends Goal {
 
 	@Override
 	public void tick() {
+		VindicatorWoodBreak.keepTargetThroughWood(vindicator);
 		LivingEntity target = vindicator.getTarget();
 		if (target == null) {
 			return;
@@ -95,7 +101,7 @@ public class VindicatorChopGoal extends Goal {
 		Level level = vindicator.level();
 		long now = level.getGameTime();
 		if (vindicator.distanceTo(target) > VindicatorWoodBreak.MAX_DISTANCE_TO_TARGET
-				|| vindicator.isWithinMeleeAttackRange(target)) {
+				|| canHitDirectly(target)) {
 			finish();
 			return;
 		}
@@ -181,13 +187,18 @@ public class VindicatorChopGoal extends Goal {
 		if (vindicator.distanceTo(target) > VindicatorWoodBreak.MAX_DISTANCE_TO_TARGET) {
 			return false;
 		}
-		if (vindicator.isWithinMeleeAttackRange(target)) {
+		if (canHitDirectly(target)) {
 			return false;
 		}
 		if (hasReachablePath(target)) {
 			return false;
 		}
 		return pickWood(target) != null;
+	}
+
+	/** True when the axe can strike the target, not the wooden wall in front of it. */
+	private boolean canHitDirectly(LivingEntity target) {
+		return vindicator.isWithinMeleeAttackRange(target) && vindicator.getSensing().hasLineOfSight(target);
 	}
 
 	private boolean hasReachablePath(LivingEntity target) {

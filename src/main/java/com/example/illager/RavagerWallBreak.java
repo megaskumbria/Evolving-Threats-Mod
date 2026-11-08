@@ -6,14 +6,25 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
 /**
  The destroyer punches the wall with a blow of the head, if because of it there is no way to the goal.
@@ -29,15 +40,15 @@ public final class RavagerWallBreak {
 
 	/**
 	 Minimum pause between head impacts, in seconds.
-	 * 20 = twenty seconds. After hitting, the pause is random, from this number to {@link #COOLDOWN MAX SECONDS}.
+	 * 10 = ten seconds. After hitting, the pause is random, from this number to {@link #COOLDOWN_MAX_SECONDS}.
 	 */
-	public static final int COOLDOWN_MIN_SECONDS = 20;
+	public static final int COOLDOWN_MIN_SECONDS = 10;
 
 	/**
 	 Maximum pause between head impacts, in seconds.
-	 * 25 = twenty-five seconds. If it is the minimum, the pause is always the same.
+	 * 15 = fifteen seconds. If it equals the minimum, the pause is always the same.
 	 */
-	public static final int COOLDOWN_MAX_SECONDS = 25;
+	public static final int COOLDOWN_MAX_SECONDS = 15;
 
 	/**
 	 How many strokes does the stone need? 2 = the first blow only cracks, the second breaks.
@@ -83,7 +94,42 @@ public final class RavagerWallBreak {
 	 */
 	public static final boolean RESPECT_MOB_GRIEFING = true;
 
+	/**
+	 * True — a target hidden by a wall the ravager can break is not forgotten.
+	 * He keeps walking up and headbutts until he can see the target again.
+	 * Obsidian and bedrock do not count: those he still forgets, as in the normal game.
+	 * False — hiding in a house makes him lose the target, and the next headbutt never comes.
+	 */
+	public static final boolean KEEP_TARGET_BEHIND_WALL = true;
+
+	/**
+	 * After the ravager has seen the target again, hiding where he cannot break through
+	 * (obsidian, or no wall on the line of sight) drops the target after this many ticks.
+	 * 60 = 3 seconds, same as the normal game.
+	 * Does not apply while a breakable wall is between them, or while that chase is still on:
+	 * the pause between headbutts is longer than 3 seconds, and he must not forget during it.
+	 * 0 = once he can see the target again, the next such hide drops the target immediately.
+	 */
+	public static final int UNSEEN_FORGET_TICKS = 60;
+
 	// ========================================================================
+
+	/** Who the ravager was charging, and whether that chase is through a breakable wall. */
+	private static final Map<Ravager, Memory> MEMORY = new WeakHashMap<>();
+
+	private static final class Memory {
+		private UUID targetId;
+		/** True while a breakable wall hides this target and the ravager has not seen them since. */
+		private boolean holding;
+		/** True after a wall chase, so a later obsidian hide still expires like the normal game. */
+		private boolean everHeld;
+		/** Game time when the target was last hidden by something he cannot break. 0 = not counting. */
+		private long lostSightAt;
+
+		private Memory(UUID targetId) {
+			this.targetId = targetId;
+		}
+	}
 
 	/** Hardness of ordinary stone. A pickaxe block is not softer than this is considered a stone. */
 	private static final float STONE_HARDNESS = 1.5f;
@@ -92,6 +138,135 @@ public final class RavagerWallBreak {
 	private static final int TICKS_PER_SECOND = 20;
 
 	private RavagerWallBreak() {
+	}
+
+	/**
+	 * Call just before movement and the headbutt. If the game cleared the target because a
+	 * breakable wall is in the way, the target is put back. Obsidian and bedrock do not count.
+	 */
+	public static void keepTargetThroughWall(Ravager ravager) {
+		if (!KEEP_TARGET_BEHIND_WALL || !canBreak(ravager) || !ravager.isAlive()) {
+			return;
+		}
+		LivingEntity current = ravager.getTarget();
+		Memory memory = MEMORY.get(ravager);
+		if (current != null && current.isAlive()) {
+			if (memory == null || !memory.targetId.equals(current.getUUID())) {
+				memory = new Memory(current.getUUID());
+				MEMORY.put(ravager, memory);
+			}
+		}
+		if (memory == null) {
+			return;
+		}
+		LivingEntity remembered = findRemembered(ravager, memory.targetId);
+		if (!isChaseable(ravager, remembered)) {
+			if (remembered != null && ravager.getTarget() == remembered) {
+				ravager.setTarget(null);
+			}
+			MEMORY.remove(ravager);
+			return;
+		}
+		if (ravager.getSensing().hasLineOfSight(remembered)) {
+			memory.holding = false;
+			memory.lostSightAt = 0L;
+			return;
+		}
+		if (wallBlocksView(ravager, remembered)) {
+			memory.holding = true;
+			memory.everHeld = true;
+			memory.lostSightAt = 0L;
+			if (ravager.getTarget() != remembered) {
+				ravager.setTarget(remembered);
+			}
+			return;
+		}
+		if (memory.holding) {
+			if (ravager.getTarget() != remembered) {
+				ravager.setTarget(remembered);
+			}
+			return;
+		}
+		if (memory.everHeld && ravager.getTarget() == remembered && forgetAfterUnseen(ravager, memory)) {
+			ravager.setTarget(null);
+			MEMORY.remove(ravager);
+			return;
+		}
+		if (ravager.getTarget() == null) {
+			MEMORY.remove(ravager);
+		}
+	}
+
+	/** True when the unseen timer has run out. A timer of 0 forgets immediately. */
+	private static boolean forgetAfterUnseen(Ravager ravager, Memory memory) {
+		if (UNSEEN_FORGET_TICKS <= 0) {
+			return true;
+		}
+		long now = ravager.level().getGameTime();
+		if (memory.lostSightAt == 0L) {
+			memory.lostSightAt = now;
+			return false;
+		}
+		return now - memory.lostSightAt >= UNSEEN_FORGET_TICKS;
+	}
+
+	@Nullable
+	private static LivingEntity findRemembered(Ravager ravager, UUID id) {
+		if (!(ravager.level() instanceof ServerLevel level)) {
+			return null;
+		}
+		if (level.getEntity(id) instanceof LivingEntity living) {
+			return living;
+		}
+		return null;
+	}
+
+	/** Alive, same world, not a creative or spectator player, still inside the chase distance. */
+	private static boolean isChaseable(Ravager ravager, @Nullable LivingEntity target) {
+		if (target == null || !target.isAlive() || target.isRemoved() || target.level() != ravager.level()) {
+			return false;
+		}
+		if (target instanceof Player player && (player.isCreative() || player.isSpectator())) {
+			return false;
+		}
+		double range = keepRange(ravager);
+		return ravager.distanceToSqr(target) <= range * range;
+	}
+
+	/**
+	 * How far (blocks) a wall chase still holds. At least {@link #MAX_DISTANCE_TO_TARGET},
+	 * or the ravager's own follow range if a raid made that longer.
+	 */
+	private static double keepRange(Ravager ravager) {
+		var follow = ravager.getAttribute(Attributes.FOLLOW_RANGE);
+		double followRange = follow == null ? 0.0 : follow.getValue();
+		return Math.max(MAX_DISTANCE_TO_TARGET, followRange);
+	}
+
+	/**
+	 * A wall he can break is what blocks the view: a ray to the eyes, the body or the feet
+	 * hits dirt, wood, stone, glass, and the other blocks {@link #hitsNeeded} would strike.
+	 * Obsidian and bedrock do not.
+	 */
+	private static boolean wallBlocksView(Ravager ravager, LivingEntity target) {
+		Vec3 from = ravager.getEyePosition();
+		Vec3 eyes = target.getEyePosition();
+		Vec3 body = target.position().add(0.0, target.getBbHeight() * 0.5, 0.0);
+		Vec3 feet = new Vec3(target.getX(), target.getY() + 0.2, target.getZ());
+		return rayHitsBreakable(ravager, from, eyes)
+				|| rayHitsBreakable(ravager, from, body)
+				|| rayHitsBreakable(ravager, from, feet);
+	}
+
+	private static boolean rayHitsBreakable(Ravager ravager, Vec3 from, Vec3 to) {
+		BlockHitResult hit = ravager.level().clip(new ClipContext(
+				from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, ravager));
+		if (hit.getType() != HitResult.Type.BLOCK) {
+			return false;
+		}
+		BlockPos pos = hit.getBlockPos();
+		Level level = ravager.level();
+		return hitsNeeded(level, pos, level.getBlockState(pos)) > 0;
 	}
 
 	public static boolean canBreak(Ravager ravager) {

@@ -4,18 +4,25 @@ VINDICATOR CHOPS WOOD
 Type: vanilla vindicator. Does not break stone or dirt.
 Code: illager/VindicatorWoodBreak.java (what counts as wood and speed),
      entity/ai/VindicatorChopGoal.java (when to chop),
-     mixin/VindicatorChopMixin.java (hook up the goal).
+     mixin/VindicatorChopMixin.java (hook up the goal),
+     mixin/VindicatorWoodTargetMixin.java (keep the target behind wood).
 
 
 WHEN IT CHOPS
 -----------
 Has a target (player, villager, iron golem) within 32 blocks, no normal path,
-and a wooden block with collision directly in front of the vindicator.
-If the target is already in melee range, it attacks instead of chopping.
+and a wooden or glass block with collision directly in front of the vindicator.
+If he can already see the target and the axe reaches, he attacks instead of chopping.
+A closed door counts as close, but he still chops it: the swing would hit the door.
 If a path opens — drops the block and moves.
 The axe stays in hand while chopping, hits with it, not fists.
 As soon as the path is clear, attacks the player again with the same axe.
 Crack progress is not reset for 5 seconds if distracted and returning to the same block.
+
+Hiding in a wooden house (planks, logs, door, fence, trapdoor) or behind glass
+does not make him forget the target. He walks up and chops until he can see the target again.
+Stone and dirt do not count: he forgets those as in the normal game.
+After he sees the target again, hiding behind stone drops the target in 3 seconds.
 
 
 WHAT IT BREAKS
@@ -23,6 +30,7 @@ WHAT IT BREAKS
 Everything wooden that blocks the way:
   fence, gate, door, trapdoor, planks, logs, stairs, slabs,
   button, pressure plate, shelf, sign, bamboo.
+Glass that blocks the way: glass block, glass pane, stained glass, tinted glass.
 Nether and any non-wood fence is left alone.
 Chest and barrel are not broken: items are inside.
 Dirt, stone, cobblestone fence — no.
@@ -46,6 +54,9 @@ SETTINGS (VindicatorWoodBreak.java)
   KEEP_PROGRESS_TICKS .......... 100
   REACH ........................ 3.5
   RESPECT_MOB_GRIEFING ......... true
+  BREAK_GLASS .................. true
+  KEEP_TARGET_BEHIND_WOOD ...... true
+  UNSEEN_FORGET_TICKS .......... 60 — after he can see again, non-wood hide lasts 3 seconds
 
 
 TEST
@@ -54,3 +65,6 @@ TEST
 2. Iron axe is slower than diamond on the same fence.
 3. Stone fence and dirt are not broken: vindicator stands and looks for a path.
 4. /gamerule mobGriefing false — chopping stops.
+5. Hide in a wooden house and close the door. He keeps coming and chops the wood
+   until he can see you. A stone wall still makes him give up.
+6. A glass block or pane between you and a vindicator is chopped. He does not forget you behind it.
