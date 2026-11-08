@@ -178,6 +178,7 @@ Mob changes, rare variants, and world mechanics currently in **Evolving Threats*
 - Vindicators, Pillagers, and even Ravagers can appear near the player's base, creating an additional threat to their settlement.
 - Special ritual groups can appear throughout the world, each possessing unique abilities and behavioral characteristics.
 - Player bases can be subjected to full-scale sieges involving waves of Zombies and Skeletons. Players cannot sleep during these nights.
+- A bed skips the night only when the place is hard for the night to reach. Open ground always wakes the player. Torches, fences, doors, and thicker walls lower the chance. One or two zombies or skeletons appear beside the bed and one of them hits. A door or two blocks of the inner wall break. The night keeps going, and that night cannot be slept through again.
 - Mobs have an increased detection range, allowing them to spot players from much greater distances.
 - Hitting a Zombie's or Skeleton's shield with an axe temporarily disables it, following the same mechanics used against Vindicators.
 

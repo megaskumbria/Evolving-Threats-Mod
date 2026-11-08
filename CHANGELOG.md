@@ -5,6 +5,7 @@
 - Vindicators no longer lose a target that hides in a wooden house or behind glass. They chop through the wood and the glass until they can see it again.
 - Ravagers no longer lose a target hidden behind a wall they can break. They keep headbutting through the pause between hits until they can see it again. Obsidian and bedrock still make them give up.
 - Ravager headbutt cooldown is 10–15 seconds, down from 20–25.
+- Sleeping no longer skips every night. Open ground always wakes you. Torches, fences, doors, and walls lower the chance. A lit, fenced base inside 60 blocks rarely does. A failed attempt does not skip the night, and that same night cannot be tried again. The mobs appear beside the bed, and the door or two blocks of the inner wall break.
 
 
 1.0.1 for Minecraft 26.3

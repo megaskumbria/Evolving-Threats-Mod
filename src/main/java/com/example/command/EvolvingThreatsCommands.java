@@ -33,6 +33,7 @@ import com.example.skeleton.SniperSkeleton;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.golem.DamagedGolem;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.sleep.SleepShelter;
 import com.example.threat.ThreatEvents;
 import com.example.threat.ThreatScale;
 import com.example.tool.FloatingTool;
@@ -217,6 +218,10 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(root.then(Commands.literal("advancements")
 				.executes(ctx -> revealAdvancements(ctx.getSource()))));
 
+		// Points and wake chance for the block under your feet, as if that block were the bed.
+		dispatcher.register(root.then(Commands.literal("sleep")
+				.executes(ctx -> sleepChance(ctx.getSource()))));
+
 		dispatcher.register(root.then(Commands.literal("day")
 				.executes(ctx -> dayStatus(ctx.getSource()))
 				.then(Commands.literal("set")
@@ -385,6 +390,15 @@ public final class EvolvingThreatsCommands {
 				"Opened " + count + " mod advancements. No items and no experience. "
 						+ "To hide them again: /advancement revoke @s from evolving-threats:root"), true);
 		return Math.max(1, count);
+	}
+
+	private static int sleepChance(CommandSourceStack source) {
+		if (!(source.getEntity() instanceof ServerPlayer player)) {
+			source.sendFailure(Component.literal("Run this as a player."));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal(SleepShelter.describe(player)), false);
+		return 1;
 	}
 
 	private static int dayStatus(CommandSourceStack source) {

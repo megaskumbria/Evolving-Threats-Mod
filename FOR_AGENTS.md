@@ -57,6 +57,7 @@ Paths in the table are under `src/main/java/com/example/`.
 | Shields | `MobShields.java` | `mobs/common/shields.txt` |
 | Axe disables shield | `axe/AxeShieldDisable.java` | `mobs/common/axe-disables-shield.txt` |
 | Sight range | `sight/MobSight.java` | `mobs/common/sight-range.txt` |
+| Sleep shelter | `sleep/SleepShelterMath.java`, `sleep/SleepShelter.java` | `mobs/common/sleep.txt` |
 | Totem of undying | `MobTotem.java` | `mobs/common/totem-of-undying.txt` |
 | Spawn potion buffs | `MobPotionBuffs.java` | `mobs/common/potion-buffs.txt` |
 | Random health | `MobHealth.java` | `mobs/common/random-health.txt` |

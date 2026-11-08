@@ -7,6 +7,7 @@ import com.example.illager.IllagerPatrolEvents;
 import com.example.item.ModItems;
 import com.example.raid.RaidAnchorEvents;
 import com.example.siege.SiegeEvents;
+import com.example.sleep.SleepShelterEvents;
 import com.example.threat.ThreatEvents;
 import com.example.tool.FloatingTool;
 import net.fabricmc.api.ModInitializer;
@@ -39,6 +40,7 @@ public class EvolvingThreats implements ModInitializer {
 		RaidAnchorEvents.register();
 		IllagerPatrolEvents.register();
 		SiegeEvents.register();
+		SleepShelterEvents.register();
 		ThreatEvents.register();
 		ModAdvancements.register();
 	}

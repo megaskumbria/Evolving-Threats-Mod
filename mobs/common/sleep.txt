@@ -1,0 +1,90 @@
+Sleep
+=====
+
+Type: a rule for beds in the Overworld. Not a mob.
+Code: sleep/SleepShelterMath.java (the price of a path, and the numbers to edit),
+     sleep/SleepShelter.java (the roll, the wake, the one or two mobs),
+     sleep/SleepShelterData.java (a failed night is remembered),
+     sleep/SleepShelterEvents.java (connection).
+     The command /evolvingthreats sleep prints the chance for the block under your feet.
+Threat scale: FIXED from the first night. The chance does not grow with the day.
+
+
+ESSENCE
+----
+Lying down rolls one number. If the night can reach the bed easily, you wake up and the clock
+does not jump. The moon keeps moving from the moment you closed your eyes.
+If the roll says the bed is safe, the night skips as in the normal game.
+
+The price is the easiest way in. Every 2 points cuts the chance in half:
+  0 points = 100%, 2 = 50%, 4 = 25%, 6 = 12%, 8 = 6%.
+  A closed wooden door by itself is about 50%. One stone wall is about 25%.
+
+What adds points (SleepShelterMath):
+  • 8 blocks of walking = 1 point.
+  • One fence, wall, pane, or closed gate = 2 (about 50%). A second ring = 2 more.
+  • Closed wooden door = 2 (about 50%). Closed iron door = 4 (25%).
+  • One earth, wood, sand, or glass block that must be broken = 3 (about 35%).
+  • One stone or brick block = 4 (25%).
+  • One obsidian or bedrock block = 8 (about 6%).
+  • Stairs and ladders on the bed's own floor are a way through the room. They add the same as walking.
+  • The night just outside a window counts, on the ground floor and on a high floor.
+    A house in the air and a roofed platform count the same way. No stair down is required.
+  • The floor under the bed cuts off every lower floor. A mine, a cellar, and the fences
+    around the bottom of a tower do not change a bed upstairs. Those fences count again
+    when the bed is on their floor.
+  • No roof over the bed, or the bed itself dimmer than a torch = 0 points. Always.
+
+A block counts as night when its light is 7 or less.
+Open air at night counts as dark for the whole time a bed can be used, not only at midnight.
+A torch still lights the blocks next to it (about 7 blocks). The search looks 16 blocks
+past a window, so one torch beside a high window does not turn the room into a sealed box.
+The search looks 60 blocks out along the bed's floor, and 12 blocks up through a hole to the sky.
+It does not look under the floor. It does not load new chunks.
+If the whole circle is lit, the night just past the circle is what remains, so the chance stays small
+and does not become a special "never".
+
+One forgotten dark corner on the bed's own floor matters more than a thick wall on the other side.
+The search uses that corner and ignores the thicker side.
+
+
+WHAT YOU SEE
+----
+• The roll is made when you lie down. You stay down about 1.5 seconds (30 ticks).
+• Failed: 1 or 2 zombies or skeletons appear on the open floor beside the bed.
+  A low ceiling still counts. One of them hits as you get up. They are ordinary mobs of this mod, not a named boss.
+• If the way in was a door, that door is gone (both halves, wood or iron).
+  Glass and a fence lose the block they crossed. A stone or wood wall loses two blocks
+  on the inside: the first block and the one above it, a gap about as tall as a player.
+  A fully sealed room does this too. The mobs still appear in the room, beside the bed.
+  A thicker wall is not dug all the way through. Obsidian and bedrock stay.
+  The broken blocks drop, so the hole can be closed again.
+  Open ground and a dark room break nothing.
+• A monster already in the same room, within 16 blocks, wakes you with no new mob.
+  One that is chasing you inside that room counts out to 60 blocks.
+  A monster outside the walls does not count, even if it is just on the other side.
+• After a failure, that night cannot be slept through again, even if you kill them.
+  The next day can.
+• A failed sleep does not count as having slept. Phantoms keep growing.
+• The night of a siege still cannot be slept at all. That ban is unchanged.
+
+
+HOW TO TUNE
+----
+Chances, radius, light, doors, walls: the SETTINGS block at the top of SleepShelterMath.java.
+How long you lie there, how close a monster must be, how many appear, how many blocks break: SleepShelter.java.
+Turn the whole rule off: SleepShelterMath.ENABLED = false.
+
+
+CHECK
+----
+1. Stand in the open at night and use the bed. You are hit, and the time does not jump to morning.
+2. Try the same bed again the same night. You are refused.
+3. Sleep in a closed lit room with torches, a fence, and stone walls out to 60 blocks.
+   /evolvingthreats sleep while standing there should show a small percent.
+   Most nights the morning comes. A rare night does not.
+4. Stand on the bed block and run /evolvingthreats sleep to read the percent without lying down.
+   The command uses the block under your feet. If a door or a wall is the way in, it also says the way in would break.
+5. Sleep in a closed wooden house with night outside the door.
+   On a failed night the door is gone and the mobs are beside the bed. One hits.
+   A stone wall loses two blocks on the inside, one above the other. The rest of a thick wall stays.
