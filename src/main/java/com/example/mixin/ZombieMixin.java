@@ -62,7 +62,7 @@ public class ZombieMixin {
 			return;
 		}
 
-		// The higher the threat scale, the more often the night zombies are added to the same (ThreatPack).
+		// Clump of extra zombies beside this one. Off unless ThreatPack.ENABLED (HostileSpawnCap raises the night limit instead).
 		if (level instanceof ServerLevel packLevel) {
 			ThreatPack.tryAddExtras(zombie, packLevel, spawnReason);
 		}

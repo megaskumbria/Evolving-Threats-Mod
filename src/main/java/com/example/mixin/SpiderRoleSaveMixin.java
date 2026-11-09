@@ -1,6 +1,7 @@
 package com.example.mixin;
 
 import com.example.entity.SpiderRoleEntity;
+import com.example.spider.SpiderThreats;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -24,6 +25,7 @@ public class SpiderRoleSaveMixin {
 	private void evolvingthreats$loadSpiderRole(ValueInput input, CallbackInfo ci) {
 		if ((Object) this instanceof SpiderRoleEntity data) {
 			data.evolvingthreats$setSpiderRole(input.getIntOr("EvolvingThreatsSpiderRole", 0));
+			SpiderThreats.onRoleLoaded((Mob) (Object) this);
 		}
 	}
 }

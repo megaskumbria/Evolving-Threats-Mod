@@ -25,12 +25,20 @@ import com.example.threat.ThreatTable;
 import com.example.tool.FloatingTool;
 import com.example.zombie.ZombieExcalibur;
 import com.example.zombie.ZombieMjolnir;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EntityType;
@@ -49,7 +57,14 @@ import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
@@ -124,9 +139,22 @@ public final class ModAdvancements {
 	public static final double SWARM_NEAR_BLOCKS = 32.0;
 
 	/**
+	 * true — the first time a card is earned, chat names it the way the game does
+	 * (advancement, goal, or challenge) and lists the items and the experience.
+	 * false — no chat line. The corner toast still appears, and the items still arrive.
+	 * The game rule {@code /gamerule show_advancement_messages false} silences the line too.
+	 *
+	 * <p>The JSON files keep {@code announce_to_chat} false. If that flag is turned back
+	 * on, the game writes its own line, which does not mention the reward, and this
+	 * line writes a second time.
+	 */
+	public static final boolean ANNOUNCE_IN_CHAT = true;
+
+	/**
 	 * Rewards are not numbers here. The advancements screen reads them from JSON,
 	 * and the game gives them once, the first time the advancement completes.
 	 * Change a number there and both the screen and the payout change.
+	 * The chat line reads the same numbers, so it stays in step with the payout.
 	 *
 	 * <p>Experience is {@code rewards.experience} in
 	 * {@code data/evolving-threats/advancement/<name>.json}.
@@ -936,22 +964,7 @@ public final class ModAdvancements {
 	}
 
 	private static void grant(ServerPlayer player, Identifier id) {
-		if (!ENABLED) {
-			return;
-		}
-		MinecraftServer server = player.level().getServer();
-		if (server == null) {
-			return;
-		}
-		AdvancementHolder holder = server.getAdvancements().get(id);
-		if (holder == null) {
-			return;
-		}
-		var progress = player.getAdvancements().getOrStartProgress(holder);
-		if (progress.isDone()) {
-			return;
-		}
-		player.getAdvancements().award(holder, CRITERION);
+		grantCriterion(player, id, CRITERION);
 	}
 
 	/** One named line on a card that has several, such as a tool shape. The reward waits until every line is done. */
@@ -971,6 +984,104 @@ public final class ModAdvancements {
 		if (progress.isDone()) {
 			return;
 		}
-		player.getAdvancements().award(holder, criterion);
+		if (player.getAdvancements().award(holder, criterion)
+				&& player.getAdvancements().getOrStartProgress(holder).isDone()) {
+			announce(player, holder);
+		}
+	}
+
+	/**
+	 * One chat line for everyone, the first time the card completes.
+	 * The first sentence is the game's own ("has made the advancement",
+	 * "has reached the goal", "has completed the challenge").
+	 * The second sentence is the items and the experience that just arrived.
+	 * Root stays quiet: it has no toast.
+	 */
+	private static void announce(ServerPlayer player, AdvancementHolder holder) {
+		if (!ANNOUNCE_IN_CHAT) {
+			return;
+		}
+		if (!(player.level() instanceof ServerLevel level)) {
+			return;
+		}
+		if (!Boolean.TRUE.equals(level.getGameRules().get(GameRules.SHOW_ADVANCEMENT_MESSAGES))) {
+			return;
+		}
+		DisplayInfo display = holder.value().display().orElse(null);
+		if (display == null || !display.showToast()) {
+			return;
+		}
+		MutableComponent message = display.type().createAnnouncement(holder, player);
+		Component reward = rewardText(level, player, holder.value().rewards());
+		if (reward != null) {
+			message.append(Component.literal("\n")).append(reward);
+		}
+		level.getServer().getPlayerList().broadcastSystemMessage(message, false);
+	}
+
+	/**
+	 * What the player just received, in the order the loot table rolls it, then the experience.
+	 * Rolled again only to name the items. The tables are fixed, so this matches the payout.
+	 * Null when the card gives nothing.
+	 */
+	private static @Nullable Component rewardText(ServerLevel level, ServerPlayer player, AdvancementRewards rewards) {
+		MutableComponent parts = Component.empty();
+		boolean any = false;
+		if (rewards.loot().size() > 0) {
+			LootParams params = new LootParams.Builder(level)
+					.withParameter(LootContextParams.THIS_ENTITY, player)
+					.withParameter(LootContextParams.ORIGIN, player.position())
+					.create(LootContextParamSets.ADVANCEMENT_REWARD);
+			for (Holder<LootTable> table : rewards.loot()) {
+				for (ItemStack stack : table.value().getRandomItems(params)) {
+					if (stack.isEmpty()) {
+						continue;
+					}
+					if (any) {
+						parts.append(", ");
+					}
+					parts.append(describeStack(stack));
+					any = true;
+				}
+			}
+		}
+		if (rewards.experience() > 0) {
+			if (any) {
+				parts.append(", ");
+			}
+			parts.append(Component.translatable(
+					"chat.evolving-threats.reward.experience", rewards.experience()));
+			any = true;
+		}
+		if (!any) {
+			return null;
+		}
+		return Component.translatable("chat.evolving-threats.reward", parts)
+				.withStyle(ChatFormatting.GOLD);
+	}
+
+	/** Item name, enchantment in parentheses when the item carries one, and a count above 1. */
+	private static Component describeStack(ItemStack stack) {
+		MutableComponent name = Component.empty().append(stack.getHoverName());
+		ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+		if (enchantments == null || enchantments.isEmpty()) {
+			enchantments = stack.get(DataComponents.ENCHANTMENTS);
+		}
+		if (enchantments != null && !enchantments.isEmpty()) {
+			name.append(" (");
+			boolean first = true;
+			for (Object2IntMap.Entry<Holder<Enchantment>> entry : enchantments.entrySet()) {
+				if (!first) {
+					name.append(", ");
+				}
+				first = false;
+				name.append(Enchantment.getFullname(entry.getKey(), entry.getIntValue()));
+			}
+			name.append(")");
+		}
+		if (stack.getCount() <= 1) {
+			return name;
+		}
+		return Component.translatable("chat.evolving-threats.reward.stack", name, stack.getCount());
 	}
 }

@@ -60,7 +60,8 @@ WHAT TURNS ON FROM WHICH DAY (FIXED + day; moon does not matter)
              Spiky (zombie or skeleton, 0.2% chance): one armor piece deals 7–8 hearts through armor;
              magnet creeper (1%): pulls the player in, none before this day;
              super-fast creeper (3%): twice the speed, half-second fuse;
-             feint creeper (0.3%): walks slowly, then sprints at 6–7 blocks
+             feint creeper (0.3%): walks slowly, then sprints at 6–7 blocks;
+             hostile mob limit starts rising (still almost vanilla that night; see below)
   Day 60 ... Rotten overseer, skeleton captain, Bastion (zombie or skeleton, 0.2% chance)
   Day 80 ... Basilisk skeleton, Raid anchor (natural spawn, 0.1% on surface zombie at night,
              not more than once per 5 days)
@@ -85,8 +86,12 @@ Weapon enchantments ............... 1% → 70%
 Armor enchantments ................ 1% → 65% per piece (zombies, skeletons, pillagers, vindicators)
 Enchant count on weapons .......... mostly 1 → up to 5 (weights 85/11/3/1/0 → 55/28/12/4/1)
 Enchant level strength ............ mostly low → at max, high levels more common than low (3.0 → -0.3, Sharpness V ≈ 26%)
-Extra night spawns ................ 0–3 extra zombies/skeletons on night spawn:
-    chance 0% → 40% (ThreatPack.java; not in siege, not daytime)
+Hostile night limit ............... none extra before day 40. From day 40 the number of hostile
+    mobs the Overworld may hold at night grows. Day 40 is still almost vanilla (a full moon adds
+    a few). Day 100 full moon is about ×2 (about 140 instead of 70 around one player); new moon
+    about ×1.7. The game places them in its own dark spots, at least 24 blocks out. Not in siege,
+    not in daylight, not in the Nether or the End. HostileSpawnCap.java.
+    The old clump (extra zombies/skeletons beside one mob) is off: ThreatPack.ENABLED = false.
 Spawn potion buffs ................ almost none (96/3/1/0/0/0) → 50/24/13/7/4/2
 Special abilities (start = 10% of max):
     TNT zombie 4%, jack-o-lantern beacon 1%, spawner on head 0.5% (and wither skeletons 0.5%),

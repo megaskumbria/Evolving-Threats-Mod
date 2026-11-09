@@ -6,7 +6,7 @@
     "description": { "translate": "advancements.evolving-threats.short_step.description" },
     "frame": "goal",
     "show_toast": true,
-    "announce_to_chat": true
+    "announce_to_chat": false
   },
   "criteria": { "done": { "trigger": "minecraft:impossible" } },
   "rewards": {

@@ -1,3 +1,13 @@
+1.1.3 for Minecraft 26.3
+
+## Changes
+
+- Earning a mod advancement now writes it in chat: who made the advancement, reached the goal, or completed the challenge, and the reward under that line (the items and the experience).
+- The advancements tab is always named Evolving Threats, in every language.
+- A regular spider bites for 2 hearts. A matriarch bites for 4. Neither bite grows with the day.
+- Hostile mobs no longer pile up beside the one that just spawned. From day 40 the night can hold more of them at once, and the game places them in its own dark spots across the spawn area. That night is still almost the usual number. By day 100 a full moon is about twice as many (about 140 instead of 70 around one player); a new moon is about 1.7 times.
+
+
 1.1.2 for Minecraft 26.3
 
 ## Changes

@@ -26,6 +26,7 @@ Does not work if /gamerule mobGriefing is off (RESPECT_MOB_GRIEFING).
 MATRIARCH (MATRIARCH_SPAWN_CHANCE = 4%)
 -----------------------------------
 Spider with 40 HP (regular has 16), size x1.3 — to tell them apart.
+Bite is 4 hearts (a regular spider is 2 hearts). Fixed from day 0, does not grow.
 On spawn, 1–4 cave spiders appear nearby (within 2.5 blocks).
 Cave spiders are regular — not matriarchs or weavers.
 Matriarchs do not appear during chunk generation (there is no real world there for reinforcements).
@@ -39,6 +40,8 @@ SETTINGS (SpiderThreats.java)
   WEB_COOLDOWN_MIN/MAX_SECONDS . 5 / 9 — pause between cobwebs
   WEB_MAX_DISTANCE ............. 12 — range for placing web
   MATRIARCH_MAX_HEALTH ......... 40 — matriarch health
+  SPIDER_ATTACK_DAMAGE ......... 4 — normal spider bite, in half-hearts (4 = 2 hearts; cave spiders stay at 2)
+  MATRIARCH_ATTACK_DAMAGE ...... 8 — matriarch bite (8 = 4 hearts)
   MATRIARCH_CAVE_SPIDERS_MIN/MAX 1 / 4 — how many cave spiders
   MATRIARCH_SCALE .............. 1.3 — matriarch size (1.0 = regular)
 

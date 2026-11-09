@@ -45,6 +45,8 @@ public class SpiderRoleMixin implements SpiderRoleEntity {
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 		Spider spider = (Spider) (Object) this;
+		// Two hearts for a normal spider. A matriarch roll just below overwrites this with four.
+		SpiderThreats.applyBaseBite(spider);
 		SpiderThreats.rollOnSpawn(spider, level, spawnReason);
 		MobPotionBuffs.tryApply(spider);
 		// The cave spider also comes here, but he has no chance: only an ordinary spider is on the list.

@@ -34,6 +34,13 @@ public final class ThreatTable {
 	/** Zombies break blocks toward the player. Break speed does not scale by day. Siege zombies too from this day. */
 	public static final int BLOCK_BREAK_DAY = 40;
 
+	/**
+	 * Hostile mob limit in the Overworld at night ({@code HostileSpawnCap}).
+	 * Before this day the night holds the usual number. From this day the limit grows,
+	 * and by day 100 at full moon it is about twice vanilla. Moon still shifts it.
+	 */
+	public static final int HOSTILE_SPAWN_CAP_DAY = 40;
+
 	/** Zombie sorcerer. */
 	public static final int SORCERER_DAY = 40;
 

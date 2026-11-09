@@ -73,10 +73,10 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Magnet creeper: after it notices you, you can hold the edge of its sight, then it reels you in. 1% — FROM DAY 40, FIXED CHANCE. Can be charged
 
 8. Spiders
+- Bite is 2 hearts; matriarch bite is 4. Cave spiders stay at 1. — FIXED
 - Random health 16–30 HP. — FIXED
 - Some place cobweb under player. — FIXED
 - Swarm spawns. — FIXED
-- Broodmother with cave spiders. — FIXED
 - Cave spider poison can kill again; Easy none, Normal 7 s, Hard 15 s; witch/slime poison cannot finish — FIXED
 
 9. Slimes
@@ -135,7 +135,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Takes and places blocks more often — FIXED
 
 Other changes:
-- At night, 1–3 extra same-type mobs can join a spawned zombie/skeleton (ThreatPack). — GROWING
+- At night the world can hold more hostile mobs at once. They appear in normal dark spots across the spawn area, not in a clump beside one mob. About twice as many by day 100 on a full moon. — FROM DAY 40, GROWING
 - Mobs that noticed player within 16 blocks now notice at 32; longer range unchanged — FIXED
 - Many mobs spawn with potion buffs. — GROWING
 - Hostile floating tools/weapons. 2% of night spawns — FIXED

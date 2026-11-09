@@ -13,23 +13,22 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * More mobs as the threat scale rises: when a zombie or skeleton spawns at night, sometimes add a few more
- * of the same type (normal armor, weapons, and enchants per mod rules). Tag in mobs.txt: GROWING.
+ * Old clump: when a zombie or skeleton spawned at night, sometimes add 1–3 more right beside it.
+ * Turned off. A bigger night is {@link HostileSpawnCap} instead: the game places mobs in its own
+ * dark spots across the whole spawn area.
  *
- * <p>Called from ZombieMixin and SkeletonMixin on natural spawn. Vanilla already spawns zombies in groups;
- * we sometimes add 1–3 more near each one. Chance starts at zero and reaches {@link #EXTRA_CHANCE_END}
- * by day 100 (especially on full moon). Extras never spawn extras, and mini-bosses never appear among them
- * (they are not "natural" spawns).
+ * <p>Set {@link #ENABLED} back to true only if the clump should return. Do not run both at once.
+ * Extras never spawn extras, and mini-bosses never appear among them.
  *
- * <p>Skipped: daytime (if {@link #ONLY_AT_NIGHT}), non-Overworld, siege night
- * (siege has its own waves), husk, drowned, zombie villager, babies, stray, and wither skeleton.
+ * <p>Skipped when on: daytime (if {@link #ONLY_AT_NIGHT}), non-Overworld, siege night,
+ * husk, drowned, zombie villager, babies, stray, and wither skeleton.
  */
 public final class ThreatPack {
 
 	// ===================== SETTINGS (change these numbers) =====================
 
-	/** false — no extra mobs at all. */
-	public static final boolean ENABLED = true;
+	/** false — no extra mobs beside a spawn. The night population is {@link HostileSpawnCap}. */
+	public static final boolean ENABLED = false;
 
 	/**
 	 * Chance (0.0–1.0) to add extras when a zombie or skeleton spawns, on day 100 at full moon.

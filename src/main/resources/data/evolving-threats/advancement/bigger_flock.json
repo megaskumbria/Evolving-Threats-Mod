@@ -6,7 +6,7 @@
     "description": { "translate": "advancements.evolving-threats.bigger_flock.description" },
     "frame": "challenge",
     "show_toast": true,
-    "announce_to_chat": true
+    "announce_to_chat": false
   },
   "criteria": { "done": { "trigger": "minecraft:impossible" } },
   "rewards": {

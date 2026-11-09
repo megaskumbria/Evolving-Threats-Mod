@@ -4,7 +4,6 @@
   "entity.evolving-threats.damaged_golem": "Damaged Golem",
   "key.category.evolving-threats.threat": "Evolving Threats",
   "key.evolving-threats.toggle_threat_hud": "Show/Hide Threat Scale",
-  "advancements.evolving-threats.root.title": "Threats",
   "advancements.evolving-threats.root.description": "The world grows more dangerous",
   "advancements.evolving-threats.phase_1.title": "First Phase",
   "advancements.evolving-threats.phase_1.description": "Pass the first phase of the threat scale",
@@ -153,5 +152,8 @@
   "advancements.evolving-threats.weaker_bite.title": "Weaker after the bite",
   "advancements.evolving-threats.weaker_bite.description": "The bite made your hits weaker.",
   "advancements.evolving-threats.bigger_flock.title": "More than yesterday",
-  "advancements.evolving-threats.bigger_flock.description": "The wave had more of them than the first sleepless nights."
+  "advancements.evolving-threats.bigger_flock.description": "The wave had more of them than the first sleepless nights.",
+  "chat.evolving-threats.reward": "Reward: %s",
+  "chat.evolving-threats.reward.experience": "%s experience",
+  "chat.evolving-threats.reward.stack": "%s × %s"
 }

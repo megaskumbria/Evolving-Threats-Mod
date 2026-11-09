@@ -1,7 +1,6 @@
 {
   "key.category.evolving-threats.threat": "Evolving Threats",
   "key.evolving-threats.toggle_threat_hud": "Показать/скрыть шкалу угрозы",
-  "advancements.evolving-threats.root.title": "Угрозы",
   "advancements.evolving-threats.root.description": "Мир становится опаснее",
   "advancements.evolving-threats.phase_1.title": "Первая фаза",
   "advancements.evolving-threats.phase_1.description": "Пройдите первую фазу шкалы угрозы",
@@ -150,5 +149,8 @@
   "advancements.evolving-threats.weaker_bite.title": "Слабее после укуса",
   "advancements.evolving-threats.weaker_bite.description": "Укус ослабил удары.",
   "advancements.evolving-threats.bigger_flock.title": "Больше, чем вчера",
-  "advancements.evolving-threats.bigger_flock.description": "В волне их было больше, чем в первые ночи без сна."
+  "advancements.evolving-threats.bigger_flock.description": "В волне их было больше, чем в первые ночи без сна.",
+  "chat.evolving-threats.reward": "Награда: %s",
+  "chat.evolving-threats.reward.experience": "%s очков опыта",
+  "chat.evolving-threats.reward.stack": "%s × %s"
 }

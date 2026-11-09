@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
  * Two rare variants of the normal spider (cave spiders and jockey spiders excluded):
  * <ul>
  *   <li><b>Weaver</b> — places cobweb under the player's feet (goal {@link com.example.entity.ai.SpiderWebWeaveGoal});</li>
- *   <li><b>Matriarch</b> — 40 HP spider that spawns 1–4 cave spiders nearby on spawn.</li>
+ *   <li><b>Matriarch</b> — 40 HP spider, 4 hearts a bite, spawns 1–4 cave spiders nearby on spawn.</li>
  * </ul>
  * One roll on spawn: matriarch, else weaver, else swarm ({@link SpiderSwarm}), else normal spider.
  * Weaver cobweb does not decay on its own.
@@ -69,6 +69,19 @@ public final class SpiderThreats {
 
 	/** Matriarch health (normal spider 16). 40 = 20 hearts. */
 	public static final float MATRIARCH_MAX_HEALTH = 40.0f;
+
+	/**
+	 * Normal spider bite. Vanilla counts half-hearts: the game default is 2 = 1 heart.
+	 * 4 = 2 hearts. Fixed from day 0; does not grow with the threat scale.
+	 * Cave spiders are not changed. A matriarch overwrites this with {@link #MATRIARCH_ATTACK_DAMAGE}.
+	 */
+	public static final double SPIDER_ATTACK_DAMAGE = 4.0;
+
+	/**
+	 * Matriarch bite. 8 = 4 hearts. Fixed from day 0; does not grow with the threat scale.
+	 * Higher hurts more per hit. Lower brings her back toward a normal spider.
+	 */
+	public static final double MATRIARCH_ATTACK_DAMAGE = 8.0;
 
 	/** Cave spiders spawned near matriarch on spawn (inclusive range). */
 	public static final int MATRIARCH_CAVE_SPIDERS_MIN = 1;
@@ -132,6 +145,7 @@ public final class SpiderThreats {
 		spider.getAttribute(Attributes.MAX_HEALTH).setBaseValue(MATRIARCH_MAX_HEALTH);
 		spider.setHealth(MATRIARCH_MAX_HEALTH);
 		spider.getAttribute(Attributes.SCALE).setBaseValue(MATRIARCH_SCALE);
+		applyBite(spider);
 
 		int count = spider.getRandom().nextIntBetweenInclusive(MATRIARCH_CAVE_SPIDERS_MIN, MATRIARCH_CAVE_SPIDERS_MAX);
 		int spawned = 0;
@@ -143,6 +157,41 @@ public final class SpiderThreats {
 		// The card is the pack appearing, not the big spider merely existing.
 		if (spawned > 0) {
 			ModAdvancements.onLittleOnes(level, spider.getX(), spider.getY(), spider.getZ());
+		}
+	}
+
+	/**
+	 * After the world loads a saved spider. Bite only — a wounded matriarch is not healed.
+	 * A matriarch keeps 4 hearts; any other normal spider gets 2. Cave spiders stay at 1.
+	 */
+	public static void onRoleLoaded(Mob mob) {
+		if (!(mob instanceof Spider spider) || spider instanceof CaveSpider) {
+			return;
+		}
+		if (ENABLED && getRole(mob) == ROLE_MATRIARCH) {
+			applyBite(spider);
+			return;
+		}
+		applyBaseBite(spider);
+	}
+
+	/** Two hearts a bite for a normal spider, including a weaver. Cave spiders stay at one heart. */
+	public static void applyBaseBite(Spider spider) {
+		if (spider instanceof CaveSpider) {
+			return;
+		}
+		setBite(spider, SPIDER_ATTACK_DAMAGE);
+	}
+
+	/** Four hearts a bite. Safe if the attribute is missing. */
+	private static void applyBite(Spider spider) {
+		setBite(spider, MATRIARCH_ATTACK_DAMAGE);
+	}
+
+	private static void setBite(Spider spider, double damage) {
+		var attack = spider.getAttribute(Attributes.ATTACK_DAMAGE);
+		if (attack != null) {
+			attack.setBaseValue(damage);
 		}
 	}
 

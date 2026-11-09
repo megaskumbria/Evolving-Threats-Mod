@@ -3,9 +3,7 @@
     "icon": {
       "id": "minecraft:zombie_head"
     },
-    "title": {
-      "translate": "advancements.evolving-threats.root.title"
-    },
+    "title": "Evolving Threats",
     "description": {
       "translate": "advancements.evolving-threats.root.description"
     },

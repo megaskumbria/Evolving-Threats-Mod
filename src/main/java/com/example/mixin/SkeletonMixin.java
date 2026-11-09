@@ -54,7 +54,7 @@ public class SkeletonMixin {
 		AbstractSkeleton skeleton = (AbstractSkeleton) (Object) this;
 		try {
 
-		// The higher the threat scale, the more often the same ones are added to the night skeleton (ThreatPack).
+		// Clump of extra skeletons beside this one. Off unless ThreatPack.ENABLED (HostileSpawnCap raises the night limit instead).
 		if (level instanceof ServerLevel packLevel) {
 			ThreatPack.tryAddExtras(skeleton, packLevel, spawnReason);
 		}
