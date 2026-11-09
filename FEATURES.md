@@ -181,6 +181,7 @@ Mob changes, rare variants, and world mechanics currently in **Evolving Threats*
 - A bed skips the night only when the place is hard for the night to reach. Open ground always wakes the player. Torches, fences, doors, and thicker walls lower the chance. One or two zombies or skeletons appear beside the bed and one of them hits. A door or two blocks of the inner wall break. The night keeps going, and that night cannot be slept through again.
 - Mobs have an increased detection range, allowing them to spot players from much greater distances.
 - Hitting a Zombie's or Skeleton's shield with an axe temporarily disables it, following the same mechanics used against Vindicators.
+- When sleeping outdoors, mobs can wake you up. The chance of being woken up depends on the light level within a 60-block radius, wall thickness, and the presence of fences.
 
 **Named threats and traits**
 
