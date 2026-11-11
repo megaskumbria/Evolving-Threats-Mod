@@ -218,7 +218,7 @@ public final class EvolvingThreatsCommands {
 		dispatcher.register(root.then(Commands.literal("advancements")
 				.executes(ctx -> revealAdvancements(ctx.getSource()))));
 
-		// Points and wake chance for the block under your feet, as if that block were the bed.
+		// Points, wake chance, and one dry roll for the block under your feet, as if that block were the bed.
 		dispatcher.register(root.then(Commands.literal("sleep")
 				.executes(ctx -> sleepChance(ctx.getSource()))));
 

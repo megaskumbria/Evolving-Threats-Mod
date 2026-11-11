@@ -29,10 +29,16 @@ When adding a mob, ability, item, spawn chance, or event:
 3. If GROWING — confirm start value (or default via `ThreatScale.dangerousChance` / `growingChance` and `ThreatTable.DANGEROUS_START_RATIO`) and document it in `ThreatTable`.
 4. If “from day N” — add a day constant in `ThreatTable` and check with `ThreatScale.reached(level, ThreatTable.XXX_DAY)`.
 5. If the author is unsure — use your recommendation, use named constants, and **say it was an assumption**.
-6. After implementation, update `mobs.txt` (FIXED/GROWING on the new line) and `mobs/common/threat-scale.txt` if needed.
+6. After implementation, add one short line to `mobs.txt` (see below) and update `mobs/common/threat-scale.txt` if the scale type or a day threshold changed.
 7. If the player can notice the change, add one English bullet to the current version at the top of `CHANGELOG.md` before finishing. Write only what changed. Do not note that something else stayed the same. Do not open a new version number unless the author did. Skip comment-only edits and agent-instruction edits.
 
 Do not leave new mechanics unlabeled; do not apply the scale silently.
+
+## mobs.txt
+
+`mobs.txt` only lists what the mod has. One line: the feature in a few words, then FIXED, GROWING, or from day N.
+
+Do not write chances, timers, damage, how it works, or what it breaks. A bed line is "Bed does not skip a night for free — FIXED", not the path, the percents, or which blocks break. Numbers and behavior live in the note under `mobs/<folder>/` and in the SETTINGS comments.
 
 ## Where to look
 

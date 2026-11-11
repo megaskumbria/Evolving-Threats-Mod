@@ -54,7 +54,7 @@ import java.util.UUID;
  * A failed night keeps going from the moment you closed your eyes, and that same night
  * cannot be rolled again.
  *
- * <p>Numbers for walls, doors, light, and distance live in {@link SleepShelterMath}.
+ * <p>Numbers for walls, doors, and light on the path live in {@link SleepShelterMath}.
  */
 public final class SleepShelter {
 
@@ -226,7 +226,10 @@ public final class SleepShelter {
 		wakeLockedSleepers(level);
 	}
 
-	/** Text for {@code /evolvingthreats sleep}. Stands in for the block under your feet. */
+	/**
+	 * Text for {@code /evolvingthreats sleep}. Stands in for the block under your feet.
+	 * One dry roll is included so the chat shows what came up. Nothing spawns, and the night is not locked.
+	 */
 	public static String describe(ServerPlayer player) {
 		if (!SleepShelterMath.ENABLED) {
 			return "Sleep shelter is off.";
@@ -239,10 +242,22 @@ public final class SleepShelter {
 		}
 		BlockPos pos = player.blockPosition();
 		SleepShelterMath.Route route = SleepShelterMath.search(new WorldView(level), pos.getX(), pos.getY(), pos.getZ());
-		int percent = (int) Math.round(SleepShelterMath.wakeChance(route.points()) * 100.0);
-		String where = "They would appear by the bed, and one would hit."
-				+ (route.breach() == null ? "" : " The way in would break.");
-		return "Wake chance " + percent + "% (" + String.format(Locale.ROOT, "%.1f", route.points()) + " points). " + where;
+		double chance = SleepShelterMath.wakeChance(route.points());
+		int percent = (int) Math.round(chance * 100.0);
+		// Same comparison as lying down: a roll under the chance wakes you.
+		double roll = level.getRandom().nextDouble();
+		int rolled = (int) Math.floor(roll * 100.0);
+		boolean wake = roll < chance;
+		String outcome = wake
+				? "Rolled " + rolled + ". Mobs would come."
+				: "Rolled " + rolled + ". The night would pass.";
+		String where = "";
+		if (wake) {
+			where = " They would appear by the bed, and one would hit."
+					+ (route.breach() == null ? "" : " The way in would break.");
+		}
+		return "Wake chance " + percent + "% (" + String.format(Locale.ROOT, "%.1f", route.points()) + " points). "
+				+ outcome + where;
 	}
 
 	private static void finish(ServerPlayer player, Pending pending, boolean wake) {

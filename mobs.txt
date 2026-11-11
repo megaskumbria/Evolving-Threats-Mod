@@ -144,7 +144,7 @@ Other changes:
 - Patrols near base: vindicators, pillagers, ravagers — FIXED
 - Ritual bands with unique abilities — FIXED
 - Sieges on bases; cannot sleep that night — FROM DAY 25
-- Bed does not skip a night for free. Open ground is always interrupted. Light, fences, doors, and wall thickness set the chance. The formula does not grow with the day — FIXED
+- Bed does not skip a night for free. The weakest path within 60 blocks sets the chance: each fence, door, wall, and lit block on that path. Four stone blocks are about 36%. The chance never falls below 10% and does not grow with the day — FIXED
 - Undead siege mix (zombies, skeletons, creepers, spiders, witches, phantoms); no drowned/slimes — FROM DAY 25
 - Wither skeletons in siege only if someone visited Nether once per world — FIXED
 - Illager siege 25% from day 40 — FIXED

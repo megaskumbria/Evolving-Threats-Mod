@@ -6,46 +6,48 @@ Code: sleep/SleepShelterMath.java (the price of a path, and the numbers to edit)
      sleep/SleepShelter.java (the roll, the wake, the one or two mobs),
      sleep/SleepShelterData.java (a failed night is remembered),
      sleep/SleepShelterEvents.java (connection).
-     The command /evolvingthreats sleep prints the chance for the block under your feet.
+     The command /evolvingthreats sleep prints the chance for the block under your feet
+     and rolls once. The roll is only text: nothing spawns, and the night is not skipped.
 Threat scale: FIXED from the first night. The chance does not grow with the day.
 
 
 ESSENCE
 ----
-Lying down rolls one number. If the night can reach the bed easily, you wake up and the clock
-does not jump. The moon keeps moving from the moment you closed your eyes.
+Lying down rolls one number. The game looks for the weakest way in, not the shortest
+and not the strongest wall. A gap in a fence beats a row of fences on the other side.
+If that way is cheap, you wake up and the clock does not jump.
+The moon keeps moving from the moment you closed your eyes.
 If the roll says the bed is safe, the night skips as in the normal game.
 
-The price is the easiest way in. Every 2 points cuts the chance in half:
-  0 points = 100%, 2 = 50%, 4 = 25%, 6 = 12%, 8 = 6%.
-  A closed wooden door by itself is about 50%. One stone wall is about 25%.
+The path walks on the ground, on ladders, and on stairs, out to 60 blocks.
+It does not fly, and it does not dig the whole hill. It only pays for blocks it actually crosses.
+If the bed is upstairs or down a hole and there is no stair, the path comes to the spot
+under (or over) the bed and then goes straight up or down that column.
+Blocks and light on the column count, including each floor the column passes through.
+A tall tower gets safer from those floors alone.
+A cave is walked along its tunnel, from the entrance to the bed.
+Stone beside the tunnel does not count. A deep cave does not become a fortress.
+
+Until 20 points, each point removes 4%.
+After 20, every 4 points removes 10%. It never falls below 10%.
+  0 = 100%, 2 = 92%, 4 = 84%, 16 = 36%, 20 = 20%, 24 and above = 10%.
 
 What adds points (SleepShelterMath):
-  • 8 blocks of walking = 1 point.
-  • One fence, wall, pane, or closed gate = 2 (about 50%). A second ring = 2 more.
-  • Closed wooden door = 2 (about 50%). Closed iron door = 4 (25%).
-  • One earth, wood, sand, or glass block that must be broken = 3 (about 35%).
-  • One stone or brick block = 4 (25%).
-  • One obsidian or bedrock block = 8 (about 6%).
-  • Stairs and ladders on the bed's own floor are a way through the room. They add the same as walking.
-  • The night just outside a window counts, on the ground floor and on a high floor.
-    A house in the air and a roofed platform count the same way. No stair down is required.
-  • The floor under the bed cuts off every lower floor. A mine, a cellar, and the fences
-    around the bottom of a tower do not change a bed upstairs. Those fences count again
-    when the bed is on their floor.
-  • No roof over the bed, or the bed itself dimmer than a torch = 0 points. Always.
+  • One fence, wall, pane, or closed gate on the path = 2.
+  • Closed wooden door = 2. Closed iron door = 4.
+    A door by itself is about 92%. The light along the same path does the real work.
+  • One earth, wood, sand, or glass block the path breaks through = 3.
+  • One stone or brick block = 4. Four of them (a short dug roof) = 16, about 36%.
+  • One obsidian or bedrock block = 8. The block is not broken.
+  • One lit block on the path (light 8 or brighter, a torch) = 1.
+    Forty lit blocks are 40 points. A door (2) plus two fences (4) plus those 40 sits at 10%.
+    Torches off to the side, on a path the night does not use, add nothing.
+  • Stairs and ladders are a walk. They are not a wall.
+  • Open night ground is about light 4, so it adds nothing. Open ground is 100%.
+    An open unlit cave tunnel is 100% too.
 
-A block counts as night when its light is 7 or less.
-Open air at night counts as dark for the whole time a bed can be used, not only at midnight.
-A torch still lights the blocks next to it (about 7 blocks). The search looks 16 blocks
-past a window, so one torch beside a high window does not turn the room into a sealed box.
-The search looks 60 blocks out along the bed's floor, and 12 blocks up through a hole to the sky.
-It does not look under the floor. It does not load new chunks.
-If the whole circle is lit, the night just past the circle is what remains, so the chance stays small
-and does not become a special "never".
-
-One forgotten dark corner on the bed's own floor matters more than a thick wall on the other side.
-The search uses that corner and ignores the thicker side.
+The search looks 60 blocks out and 96 blocks up or down. It does not load new chunks.
+It runs once, when you lie down.
 
 
 WHAT YOU SEE
@@ -53,13 +55,14 @@ WHAT YOU SEE
 • The roll is made when you lie down. You stay down about 1.5 seconds (30 ticks).
 • Failed: 1 or 2 zombies or skeletons appear on the open floor beside the bed.
   A low ceiling still counts. One of them hits as you get up. They are ordinary mobs of this mod, not a named boss.
-• If the way in was a door, that door is gone (both halves, wood or iron).
-  Glass and a fence lose the block they crossed. A stone or wood wall loses two blocks
-  on the inside: the first block and the one above it, a gap about as tall as a player.
-  A fully sealed room does this too. The mobs still appear in the room, beside the bed.
-  A thicker wall is not dug all the way through. Obsidian and bedrock stay.
+• The first door, fence, or wall on the winning path is the one that breaks.
+  A door is gone (both halves, wood or iron).
+  A fence loses the block they crossed, plus another fence above it if there is one.
+  A stone or wood wall loses two blocks: the first block and the one above it,
+  a gap about as tall as a player. A thicker wall is not dug all the way through.
+  Obsidian and bedrock stay.
   The broken blocks drop, so the hole can be closed again.
-  Open ground and a dark room break nothing.
+  Open ground and an open tunnel break nothing.
 • A monster already in the same room, within 16 blocks, wakes you with no new mob.
   One that is chasing you inside that room counts out to 60 blocks.
   A monster outside the walls does not count, even if it is just on the other side.
@@ -80,11 +83,12 @@ CHECK
 ----
 1. Stand in the open at night and use the bed. You are hit, and the time does not jump to morning.
 2. Try the same bed again the same night. You are refused.
-3. Sleep in a closed lit room with torches, a fence, and stone walls out to 60 blocks.
-   /evolvingthreats sleep while standing there should show a small percent.
-   Most nights the morning comes. A rare night does not.
-4. Stand on the bed block and run /evolvingthreats sleep to read the percent without lying down.
-   The command uses the block under your feet. If a door or a wall is the way in, it also says the way in would break.
-5. Sleep in a closed wooden house with night outside the door.
-   On a failed night the door is gone and the mobs are beside the bed. One hits.
-   A stone wall loses two blocks on the inside, one above the other. The rest of a thick wall stays.
+3. Sleep where the weakest path has a door, two fences, and a long lit stretch.
+   /evolvingthreats sleep while standing there should show a small percent, down to about 10%.
+   Most nights the morning comes. About one night in ten does not, even in a fortress.
+4. Stand on the bed block and run /evolvingthreats sleep. The chat shows the percent and one roll.
+   The command uses the block under your feet. If that roll would wake you and a door or a wall is the way in,
+   it also says the way in would break. Nothing appears.
+5. Dig a few blocks down under stone and sleep there. Four stone blocks are about 36%, not a sure night.
+   A closed wooden door alone is about 92%. The door is gone on a failed night, and the mobs are beside the bed.
+   A stone wall loses two blocks. The rest of a thick wall stays.

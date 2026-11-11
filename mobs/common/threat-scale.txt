@@ -116,7 +116,7 @@ Random-arrow skeleton: 1% from day 0, moon ignored. See mobs/skeletons/random-ar
 Sniper skeleton: 1 in 500 from day 0, moon ignored. See mobs/skeletons/sniper.txt.
 Sight range: mobs that noticed the player only within 16 blocks now notice at 32. Does not grow with days.
 See sight-range.txt.
-Sleep: the chance a bed fails to skip the night is fixed from the first night. It depends on light, fences, doors, and walls around the bed, not on the day. See mobs/common/sleep.txt.
+Sleep: the chance a bed fails to skip the night is fixed from the first night. It follows the weakest path to the bed, not the day. See mobs/common/sleep.txt.
 Cave spider poison can kill from day 0, no chance roll. Witch and slime poison stops at half a heart.
 See mobs/spiders/cave-poison.txt.
 

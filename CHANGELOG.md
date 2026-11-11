@@ -1,3 +1,12 @@
+1.1.4 for Minecraft 26.3
+
+## Changes
+
+- Reworked how mobs are spawned beside a bed. From 60 blocks away the game now finds the least protected path to the bed the player lay down on, scores points from the blocks and the light on that path, and turns that score into the chance mobs spawn beside the bed. An upper floor with no stair is reached from the ground under the bed. A cave is scored along its tunnel.
+- Reworked how those points become the chance. Each point now lowers the chance more, so the same shelter wakes you less often.
+- Added a roll to /evolvingthreats sleep. For the block under your feet it writes in chat the wake chance, the number that came up, and whether that roll would wake you. No mobs spawn, and the night is not skipped.
+
+
 1.1.3 for Minecraft 26.3
 
 ## Changes
