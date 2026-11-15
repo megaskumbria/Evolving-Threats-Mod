@@ -1,8 +1,10 @@
 package com.example.mixin;
 
+import com.example.piglin.HellBerserk;
 import com.example.piglin.PiglinBruteArmorHit;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.entity.player.Player;
@@ -12,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- End of impact of any mob. Then we look only at the brutal piglin and only the punch.
- * who has already taken his health off. Chance and damage to the armor - {@link PiglinBruteArmorHit}.
+ * End of a hit from any mob. Only a piglin brute or a Hell Berserk, and only a hit
+ * that already took health off. Chance and armor damage — {@link PiglinBruteArmorHit}.
  */
 @Mixin(Mob.class)
 public class PiglinBruteArmorMixin {
@@ -23,8 +25,11 @@ public class PiglinBruteArmorMixin {
 		if (!Boolean.TRUE.equals(cir.getReturnValue())) {
 			return;
 		}
-		if ((Object) this instanceof PiglinBrute brute && target instanceof Player player) {
-			PiglinBruteArmorHit.onHit(brute, player);
+		if (!(target instanceof Player player)) {
+			return;
+		}
+		if ((Object) this instanceof PiglinBrute || (Object) this instanceof HellBerserk) {
+			PiglinBruteArmorHit.onHit((LivingEntity) (Object) this, player);
 		}
 	}
 }

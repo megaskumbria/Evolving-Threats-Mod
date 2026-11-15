@@ -11,7 +11,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.monster.piglin.PiglinBrute;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -64,20 +64,21 @@ public final class PiglinBruteArmorHit {
 	}
 
 	/**
-	 The blow has already taken off.
-	 Ordinary piglins and zombie piglins do not get here. A player in creative mode, too.
+	 The blow has already taken health off.
+	 A piglin brute and a Hell Berserk both get here. Ordinary piglins do not.
+	 A player in creative mode does not either.
 	 */
-	public static void onHit(PiglinBrute brute, Player player) {
+	public static void onHit(LivingEntity attacker, Player player) {
 		if (!ENABLED || HIT_CHANCE <= 0.0f || DURABILITY_FRACTION <= 0.0f) {
 			return;
 		}
 		if (player.level().isClientSide() || player.hasInfiniteMaterials()) {
 			return;
 		}
-		if (brute.getRandom().nextFloat() >= HIT_CHANCE) {
+		if (attacker.getRandom().nextFloat() >= HIT_CHANCE) {
 			return;
 		}
-		EquipmentSlot slot = pickSlot(player, brute.getRandom());
+		EquipmentSlot slot = pickSlot(player, attacker.getRandom());
 		if (slot == null) {
 			return;
 		}
@@ -92,7 +93,7 @@ public final class PiglinBruteArmorHit {
 					0,
 					false,
 					true,
-					true), brute);
+					true), attacker);
 		}
 	}
 

@@ -156,7 +156,9 @@ Paths in the table are under `src/main/java/com/example/`.
 | Shulker shots and teleport | `shulker/ShulkerThreats.java` | `mobs/shulkers/shots-and-teleport.txt` |
 | Shulker closed shell | `shulker/ShulkerShellDurability.java` | `mobs/shulkers/closed-shell.txt` |
 | Piglin brute health | `piglin/PiglinBruteHealth.java` | `mobs/piglins/health.txt` |
+| Hell Berserk | `piglin/HellBerserk.java` | `mobs/piglins/hell-berserk.txt` |
 | Piglin brute armor damage | `piglin/PiglinBruteArmorHit.java` | `mobs/piglins/armor-damage.txt` |
+| White Eyes | `whiteeyes/WhiteEyes.java`, `WhiteEyesNight.java` | `mobs/whiteeyes/white-eyes.txt` |
 
 Misc: `EvolvingThreats.java` — entrypoint; `command/EvolvingThreatsCommands.java` — test commands; `idea.txt` — design notes. New mechanics → new class; mixin → thin hook only.
 

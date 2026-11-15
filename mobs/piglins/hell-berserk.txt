@@ -1,0 +1,56 @@
+HELL BERSERK
+=============
+
+Type: his own mob. Not a piglin brute. He does not hunt piglins, and piglins do not hunt him.
+Spawn: anywhere in the Nether, in place of a hostile mob that has ground under it. A ghast in the air stays a ghast.
+Scale: FIXED. The chance does not grow with the day.
+Code: piglin/HellBerserk.java (health, axes, rage, spawn),
+      entity/ai/HellBerserkDigGoal.java (breaking blocks),
+      spawn/NaturalMonsterSwap.java (the Nether roll),
+      client/piglin/HellBerserkModel.java (the body),
+      client/piglin/HellBerserkRenderer.java and HellBerserkAxeLayer.java (axes in the hands).
+Test: /etberserk or /evolvingthreats spawn berserk. Spawns 6 blocks in front of you and looks at you.
+
+
+WHAT HAPPENS
+--------------
+1. About 4 of every 100 Nether hostile spawns are a Hell Berserk, after the floating netherite tool has had its roll.
+   The chance is the same from the first day. 0 turns natural spawns off. The test command ignores the chance.
+2. He has 80 health (40 hearts). Fire and lava do not hurt him.
+3. A netherite axe in each hand. Both hit. Neither axe drops.
+   About one hit in twenty that already took health also ruins one armor piece, the same as a piglin brute:
+   half that piece's bar, and 10 seconds of nausea. Unbreaking does not soften it.
+4. He chases players, and anyone who hit him. Follow range is 24 blocks.
+5. At half health (40) he rages, and he stays enraged even if healed. You hear the brute's angry sound.
+6. While enraged he has Speed II, and hits do not shove him.
+7. While enraged, if a wall blocks the way to the player, he breaks it. He does not dig before rage.
+   Bedrock, obsidian, and portals stay. Broken blocks do not drop. Turn off mob griefing and he stops digging.
+   An axe is slow on stone and fast on netherrack. 0.45 is a bit under half a player's speed.
+8. Killing him gives 60 experience. The mod's double for other monsters does not add on top.
+9. If a player landed the kill, a wither skeleton skull drops with the same chance as from a wither skeleton:
+   2.5%, and Looting adds 1% per level (I is 3.5%, II is 4.5%, III is 5.5%).
+   Another mob, lava, or a fall drops no skull.
+
+The body is the Piglin Brute Remake by LaserFont0103 (Sketchfab, CC BY). The lantern was removed.
+The axes are real items, drawn on the hands.
+
+
+SETTINGS (HellBerserk.java)
+----------------------------
+NATURAL_SPAWN_CHANCE — 0.04 = 4%, about one in twenty-five. 0 = never on his own. 0.1 = one in ten.
+MAX_HEALTH — 80 = 40 hearts.
+ATTACK_DAMAGE — 7 from the body, before the axes. Each axe adds its own damage.
+MOVE_SPEED — 0.35 before rage. Same as a brute.
+FOLLOW_RANGE — 24 blocks.
+KNOCKBACK_RESISTANCE — 0.5 before rage. A hit moves him half as far. 0 = a normal shove. 1 = no shove.
+RAGE_HEALTH_FRACTION — 0.5 = rage at half health.
+RAGE_SPEED_AMPLIFIER — 1 = Speed II. 0 = Speed I.
+RAGE_KNOCKBACK_RESISTANCE — 1.0 = hits do not shove him during rage.
+DIG_SPEED_MULTIPLIER — 0.45 = how fast he breaks a block in rage, compared with a player holding that axe.
+EXPERIENCE_REWARD — 60 for the kill. The usual monster double does not add on top.
+SKULL_DROP_CHANCE — 0.025 = 2.5%, a wither skeleton skull when a player kills him. 0 = never.
+SKULL_LOOTING_BONUS — 0.01 = 1% more per Looting level. 0 = Looting does not help.
+
+Armor crack uses the brute's numbers in PiglinBruteArmorHit.java: 5% of damaging hits, half the bar, 10 seconds of nausea.
+
+Hand position of the axes: HellBerserkAxeLayer.java, the OFFSET and ROT numbers.

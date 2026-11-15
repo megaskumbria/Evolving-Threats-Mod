@@ -123,6 +123,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - One hit removes half armor durability any enchants; brief nausea — FIXED
 - Golden axe disables shield 5 s; wooden does not — FIXED
 - 60 HP instead of 50 — FIXED
+- Hell Berserk in the Nether — FIXED
 
 18. Magma cube
 - Sets player on fire — FIXED
@@ -144,6 +145,7 @@ Other changes:
 - Patrols near base: vindicators, pillagers, ravagers — FIXED
 - Ritual bands with unique abilities — FIXED
 - Sieges on bases; cannot sleep that night — FROM DAY 25
+- White Eyes on night 100, then every 100 nights, until killed — FROM DAY 100
 - Bed does not skip a night for free. The weakest path within 60 blocks sets the chance: each fence, door, wall, and lit block on that path. Four stone blocks are about 36%. The chance never falls below 10% and does not grow with the day — FIXED
 - Undead siege mix (zombies, skeletons, creepers, spiders, witches, phantoms); no drowned/slimes — FROM DAY 25
 - Wither skeletons in siege only if someone visited Nether once per world — FIXED

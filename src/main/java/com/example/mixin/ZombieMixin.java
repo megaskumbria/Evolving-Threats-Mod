@@ -12,6 +12,7 @@ import com.example.spiky.Spiky;
 import com.example.beacon.JackLanternBeacon;
 import com.example.siege.SiegeNight;
 import com.example.spawnerhead.SpawnerHeadMob;
+import com.example.whiteeyes.WhiteEyes;
 import com.example.zombie.TntZombie;
 import com.example.zombie.ZombieExcalibur;
 import com.example.zombie.ZombieMjolnir;
@@ -59,6 +60,11 @@ public class ZombieMixin {
 
 		// The zombie piglin is peaceful until it is hit. We don't give him buffs and guns.
 		if (zombie instanceof ZombifiedPiglin) {
+			return;
+		}
+
+		// White Eyes wears his own kit. Random weapons, packs, and mini-boss rolls would replace it.
+		if (zombie instanceof WhiteEyes) {
 			return;
 		}
 

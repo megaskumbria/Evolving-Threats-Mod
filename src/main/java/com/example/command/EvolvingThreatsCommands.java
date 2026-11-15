@@ -32,11 +32,13 @@ import com.example.skeleton.RandomArrowSkeleton;
 import com.example.skeleton.SniperSkeleton;
 import com.example.skeleton.TacticianSkeleton;
 import com.example.golem.DamagedGolem;
+import com.example.piglin.HellBerserk;
 import com.example.spawnerhead.SpawnerHeadMob;
 import com.example.sleep.SleepShelter;
 import com.example.threat.ThreatEvents;
 import com.example.threat.ThreatScale;
 import com.example.tool.FloatingTool;
+import com.example.whiteeyes.WhiteEyes;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -147,6 +149,8 @@ public final class EvolvingThreatsCommands {
 						.executes(ctx -> spawnFloatingTool(ctx.getSource())))
 				.then(Commands.literal("golem")
 						.executes(ctx -> spawnDamagedGolem(ctx.getSource())))
+				.then(Commands.literal("berserk")
+						.executes(ctx -> spawnHellBerserk(ctx.getSource())))
 				.then(Commands.literal("punch")
 						.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
 						.then(Commands.literal("v")
@@ -364,6 +368,14 @@ public final class EvolvingThreatsCommands {
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnDamagedGolem(ctx.getSource())));
 
+		dispatcher.register(Commands.literal("etberserk")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnHellBerserk(ctx.getSource())));
+
+		dispatcher.register(Commands.literal("etwhiteeyes")
+				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+				.executes(ctx -> spawnWhiteEyes(ctx.getSource())));
+
 		dispatcher.register(Commands.literal("etpunch")
 				.requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
 				.executes(ctx -> spawnPunchBow(ctx.getSource(), SkeletonPunchBow.PUNCH_LEVEL_VI))
@@ -530,6 +542,58 @@ public final class EvolvingThreatsCommands {
 			return 0;
 		}
 		source.sendSuccess(() -> Component.literal("Spawned damaged golem"), true);
+		return 1;
+	}
+
+	private static int spawnHellBerserk(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			Vec3 look = self.getLookAngle();
+			Vec3 flat = new Vec3(look.x, 0.0, look.z);
+			if (flat.lengthSqr() < 1.0E-4) {
+				flat = new Vec3(0.0, 0.0, 1.0);
+			}
+			pos = self.position().add(flat.normalize().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (HellBerserk.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Could not spawn Hell Berserk"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned Hell Berserk"), true);
+		return 1;
+	}
+
+	private static int spawnWhiteEyes(CommandSourceStack source) {
+		if (!(source.getLevel() instanceof ServerLevel level)) {
+			source.sendFailure(Component.literal("Must run on server level"));
+			return 0;
+		}
+		LivingEntity lookAt = null;
+		Vec3 pos;
+		if (source.getEntity() instanceof ServerPlayer self) {
+			Vec3 look = self.getLookAngle();
+			Vec3 flat = new Vec3(look.x, 0.0, look.z);
+			if (flat.lengthSqr() < 1.0E-4) {
+				flat = new Vec3(0.0, 0.0, 1.0);
+			}
+			pos = self.position().add(flat.normalize().scale(6.0));
+			lookAt = self;
+		} else {
+			pos = source.getPosition();
+		}
+		if (WhiteEyes.spawn(level, pos, lookAt) == null) {
+			source.sendFailure(Component.literal("Could not spawn White Eyes"));
+			return 0;
+		}
+		source.sendSuccess(() -> Component.literal("Spawned White Eyes"), true);
 		return 1;
 	}
 

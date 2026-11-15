@@ -70,6 +70,7 @@ WHAT YOU SEE
   The next day can.
 • A failed sleep does not count as having slept. Phantoms keep growing.
 • The night of a siege still cannot be slept at all. That ban is unchanged.
+• The night White Eyes comes cannot be slept at all either. See mobs/whiteeyes/white-eyes.txt.
 
 
 HOW TO TUNE

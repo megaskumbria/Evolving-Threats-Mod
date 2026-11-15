@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.threat.ThreatScale;
+import com.example.whiteeyes.WhiteEyes;
 import com.example.threat.ThreatTable;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -60,7 +61,7 @@ public final class MobHealth {
 		if (!ENABLED || !(mob.level() instanceof ServerLevel)) {
 			return;
 		}
-		if (mob instanceof ZombifiedPiglin) {
+		if (mob instanceof ZombifiedPiglin || mob instanceof WhiteEyes) {
 			return;
 		}
 		int min;

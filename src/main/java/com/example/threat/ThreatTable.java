@@ -86,6 +86,12 @@ public final class ThreatTable {
 	/** Basilisk skeleton. */
 	public static final int BASILISK_DAY = 80;
 
+	/**
+	 * White Eyes arrives on this scale night, then again every same number of scale days
+	 * (100, 200, 300…). Not a spawn chance. The bar on screen stops at 100; this counter does not.
+	 */
+	public static final int WHITE_EYES_DAY = 100;
+
 	// ===================== DAY-0 START VALUES =====================
 
 	/**

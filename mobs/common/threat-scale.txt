@@ -155,6 +155,14 @@ Commands (cheats / OP):
 To test moon phases, use /time add (phase follows world day).
 Compare before/after: day set 0 and day set 100, then spawn a dozen zombies and skeletons.
 
+WHITE EYES
+----------
+Scale night 100, then 200, 300, and so on. Not a chance and not the moon.
+The on-screen bar still stops at 100. The counter used here keeps going.
+He stays until killed. That night a bed will not work. No warning line.
+See mobs/whiteeyes/white-eyes.txt. Day constant: ThreatTable.WHITE_EYES_DAY.
+
+
 ADVANCEMENTS
 ------------
 Four advancements follow this scale. Granted when the stretch ends, same days as the skull

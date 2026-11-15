@@ -23,7 +23,7 @@ HOW IT WORKS
 4. XP drops only if a player killed the mob. That is vanilla behavior.
 5. Custom numbers are unchanged; multiplier does not touch them:
    Excalibur — 30, Mjölnir — 20, sorcerer — 15, ritual band — 50, Basilisk — 100, Bastion — 200,
-   “700 IQ” skeleton — 30, wither skeleton — 25.
+   “700 IQ” skeleton — 30, wither skeleton — 25, White Eyes — 500.
 6. Floating tool is coded as 5; after multiplier drops 10.
    Damaged golem is coded as 10; after multiplier drops 20.
 

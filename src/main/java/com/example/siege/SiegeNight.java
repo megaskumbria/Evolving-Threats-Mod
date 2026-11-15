@@ -187,6 +187,31 @@ public final class SiegeNight {
 	/** One game day. 24000 ticks = 20 minutes. */
 	private static final long TICKS_PER_DAY = 24000L;
 
+	/**
+	 * White Eyes takes this world night. A siege already warning or marching today ends
+	 * without the dawn line. A siege only scheduled for today moves to tomorrow.
+	 */
+	public static void yieldTonight(ServerLevel level) {
+		if (level.dimension() != Level.OVERWORLD) {
+			return;
+		}
+		SiegeData data = SiegeData.get(level);
+		long clock = level.getOverworldClockTime();
+		long today = Math.floorDiv(clock, TICKS_PER_DAY);
+		boolean activeToday = data.phase != SiegeData.PHASE_IDLE
+				&& Math.floorDiv(data.nightStartClock, TICKS_PER_DAY) == today;
+		if (activeToday) {
+			finish(level, data, clock, false);
+			windowOpen = false;
+			nightActive = false;
+			return;
+		}
+		if (data.phase == SiegeData.PHASE_IDLE && data.nextSiegeDay == today) {
+			data.nextSiegeDay = today + 1;
+			data.setDirty();
+		}
+	}
+
 	/** True from warning until dawn. No sleep, no portals, no mini-bosses, no spawning. */
 	private static boolean windowOpen;
 

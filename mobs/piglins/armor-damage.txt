@@ -1,7 +1,7 @@
 PIGLIN BRUTE: ARMOR DAMAGE
 =================================
 
-Type: vanilla piglin brute (not a new mob). Regular piglin and zombified piglin do not do this.
+Type: vanilla piglin brute, and the Hell Berserk. Regular piglin and zombified piglin do not do this.
 Code: piglin/PiglinBruteArmorHit.java (chance, durability fraction, nausea),
      mixin/PiglinBruteArmorMixin.java (on hit).
 

@@ -4,7 +4,9 @@ import com.example.bastion.Bastion;
 import com.example.ritual.RitualBand;
 import com.example.skeleton.BasiliskSkeleton;
 import com.example.skeleton.TacticianSkeleton;
+import com.example.piglin.HellBerserk;
 import com.example.skeleton.WitherSkeletonSword;
+import com.example.whiteeyes.WhiteEyes;
 import com.example.zombie.ZombieExcalibur;
 import com.example.zombie.ZombieMjolnir;
 import com.example.zombie.ZombieSorcerer;
@@ -23,7 +25,7 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
  *
  <p>It works at the time of death, when the game has already counted its experience.
  We do not touch our experience: Excalibur, Mjölnir, sorcerers, ritual, basilisk, Bastion, skeleton "700 IQ",
- * exhumerator skeleton.
+ * wither skeleton, Hell Berserk.
  */
 public final class MobExperience {
 
@@ -73,7 +75,9 @@ public final class MobExperience {
 				return true;
 			}
 		}
-		return RitualBand.isRitual(mob)
+		return mob instanceof WhiteEyes
+				|| mob instanceof HellBerserk
+				|| RitualBand.isRitual(mob)
 				|| BasiliskSkeleton.isBasilisk(mob)
 				|| Bastion.isBastion(mob)
 				|| TacticianSkeleton.experienceReward(mob) >= 0

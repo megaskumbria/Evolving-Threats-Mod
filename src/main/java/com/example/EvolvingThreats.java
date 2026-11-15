@@ -3,6 +3,7 @@ package com.example;
 import com.example.advancement.ModAdvancements;
 import com.example.command.EvolvingThreatsCommands;
 import com.example.golem.DamagedGolem;
+import com.example.piglin.HellBerserk;
 import com.example.illager.IllagerPatrolEvents;
 import com.example.item.ModItems;
 import com.example.raid.RaidAnchorEvents;
@@ -10,6 +11,8 @@ import com.example.siege.SiegeEvents;
 import com.example.sleep.SleepShelterEvents;
 import com.example.threat.ThreatEvents;
 import com.example.tool.FloatingTool;
+import com.example.whiteeyes.WhiteEyes;
+import com.example.whiteeyes.WhiteEyesEvents;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.resources.Identifier;
@@ -36,6 +39,9 @@ public class EvolvingThreats implements ModInitializer {
 		ModItems.register();
 		FloatingTool.register();
 		DamagedGolem.register();
+		WhiteEyes.register();
+		HellBerserk.register();
+		WhiteEyesEvents.register();
 		EvolvingThreatsCommands.register();
 		RaidAnchorEvents.register();
 		IllagerPatrolEvents.register();

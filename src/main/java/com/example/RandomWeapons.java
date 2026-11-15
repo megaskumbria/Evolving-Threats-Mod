@@ -185,6 +185,11 @@ public final class RandomWeapons {
 		if (stack.isEmpty() || stack.is(Items.BOW)) {
 			return false;
 		}
+		// Not in the random list above. The Hell Berserk holds one in each hand,
+		// and the off hand still has to add its damage.
+		if (stack.is(Items.NETHERITE_AXE)) {
+			return true;
+		}
 		Item item = stack.getItem();
 		for (Item[] row : MATERIALS) {
 			for (Item tool : row) {

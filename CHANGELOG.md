@@ -1,3 +1,11 @@
+1.2.5 for Minecraft 26.3
+
+## Changes 
+
+- White Eyes no longer stops outside a shelter. A wall is not a finished path: he keeps walking into it and breaks it.
+- White Eyes no longer turns away and stands when the path ends. He keeps you as the target and searches again. 
+
+
 1.1.4 for Minecraft 26.3
 
 ## Changes
