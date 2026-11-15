@@ -64,6 +64,7 @@
 		"AxeShieldDisableMixin",
 		"PlayerShieldSilenceMixin",
 		"MobSightMixin",
+		"LivingEntityGlassSightMixin",
 		"LivingEntityMobShieldMixin",
 		"LivingEntityAdvancementMixin",
 		"PlayerAdvancementsDirtyAccessor",

@@ -3,9 +3,10 @@ package com.example.client.piglin;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -17,7 +18,7 @@ import org.joml.Vector3f;
  * Picture: textures/entity/hell_berserk.png. Author of the shape: LaserFont0103, CC BY.
  * Height is 1.95 blocks, the same as a piglin brute. Feet sit on the ground.
  */
-public class HellBerserkModel extends EntityModel<ArmedEntityRenderState> {
+public class HellBerserkModel extends EntityModel<HellBerserkRenderState> {
 
 	public final ModelPart head;
 	public final ModelPart body;
@@ -279,20 +280,27 @@ public class HellBerserkModel extends EntityModel<ArmedEntityRenderState> {
 	}
 
 	@Override
-	public void setupAnim(ArmedEntityRenderState state) {
+	public void setupAnim(HellBerserkRenderState state) {
 		this.resetPose();
+		// yRot here is already "where the head looks" minus "where the body faces".
+		// Subtracting bodyRot again turns the head backward while he chases.
+		this.head.xRot = state.xRot * ((float) Math.PI / 180.0f);
+		this.head.yRot = state.yRot * ((float) Math.PI / 180.0f);
 		float swing = state.walkAnimationPos;
 		float amount = state.walkAnimationSpeed;
+		// Same step as a piglin. Right leg and left arm together, then the other pair.
+		this.rightArm.xRot = Mth.cos(swing * 0.6662f + (float) Math.PI) * amount;
+		this.leftArm.xRot = Mth.cos(swing * 0.6662f) * amount;
 		this.rightLeg.xRot = Mth.cos(swing * 0.6662f) * 1.4f * amount;
 		this.leftLeg.xRot = Mth.cos(swing * 0.6662f + (float) Math.PI) * 1.4f * amount;
-		this.rightArm.xRot = Mth.cos(swing * 0.6662f + (float) Math.PI) * 1.4f * amount;
-		this.leftArm.xRot = Mth.cos(swing * 0.6662f) * 1.4f * amount;
-		// Both axes come forward together on a hit.
-		float attack = Mth.sin(Mth.sqrt(state.swingAnimation) * (float) Math.PI);
-		this.rightArm.xRot -= attack;
-		this.leftArm.xRot -= attack;
-		float headYaw = state.yRot - state.bodyRot;
-		this.head.yRot = headYaw * ((float) Math.PI / 180.0f);
-		this.head.xRot = state.xRot * ((float) Math.PI / 180.0f);
+		if (!state.aggressive) {
+			return;
+		}
+		if (state.swingAnimation > 0.0f) {
+			AnimationUtils.swingWeaponDown(this.rightArm, this.leftArm, HumanoidArm.RIGHT, state.swingAnimation, state.ageInTicks);
+		} else {
+			// Axe held up, the way a brute holds his before the swing.
+			this.rightArm.xRot = -1.8f;
+		}
 	}
 }

@@ -2,12 +2,12 @@ WHITE EYES
 ==========
 
 Type: one boss in the upper world. Looks like Steve with solid white eyes, iron armor, diamond sword.
-The eyes stay white in the dark.
-Code: whiteeyes/WhiteEyes.java (health, sword, digging, fire, teleport, spiders),
+The eyes stay white in the dark. The player drawing is not used: it puts Steve's purple pupils back.
+Code: whiteeyes/WhiteEyes.java (the fight),
      whiteeyes/WhiteEyesNight.java (which night, the bed),
      whiteeyes/WhiteEyesData.java (the world remembers the night).
 Picture: textures/entity/white_eyes.png, drawn by whiteeyes/WhiteEyesRenderer.java.
-The player drawing is not used. That drawing ignores this picture and puts Steve's purple pupils back.
+Test: /etwhiteeyes
 
 
 WHEN
@@ -18,101 +18,68 @@ Not a chance. The moon does not change it.
 Peaceful: he does not come, and the bed works.
 If nobody is in the upper world that night, that visit is missed until the next hundred.
 One at a time. If he is already alive, that night does not add another.
-He appears on the surface, 40 blocks from the player closest to world spawn, and walks at them.
-Test without waiting: /etwhiteeyes
-
-
-THE BED
--------
-That night, while it is dark, the bed will not take you.
-There is no bell and no line that something is coming.
+He appears on the surface, 40 blocks from the player closest to world spawn.
+That night, while it is dark, the bed will not take you. No bell, no warning line.
 The only text is the player's own short reason, in chat, when they try to lie down.
 A siege scheduled for the same night is pushed off.
 
 
-BODY
-----
-600 health (300 hearts). Second phase at 300 (150 hearts): one blaze shot sound and smoke.
-The sword does not hit harder after that. His other tricks come sooner.
-Sword before armor: 5 hearts on a naked player, about 1 heart in full diamond with Protection IV.
-Same hit on easy, normal, and hard.
-He hits a little faster than once a second, and only when the sword can touch you. He does not wave it on the way over.
-The sword does not knock you back, and hits do not knock him back.
-The iron helmet is drawn on his head. The eyes on the face are solid white.
-Sun, lava, and water do not kill him. In water he swims at the surface instead of sinking.
-Slowness, Weakness, and poison from you still work.
-Hurt sound is a blaze. Iron armor is Protection II. The sword shows Sharpness V.
-Armor and sword never drop. He drops a name tag "White Eyes", one enchanted golden apple, and 500 experience.
-The usual double experience does not multiply the 500.
-
-
 WHAT HE DOES
 ------------
-Test switches in the code are off: no throw, no teleport, no bow, no burst, no spiders, no wither, no fire, and his own digging is off.
-He still looks for the closest living player in this world every moment.
-The walk and the sword swing are the zombie's own attack goal. He does not drop that goal while you are alive, so he does not turn away and stand.
-When a path ends before he reaches you, he searches again. A normal zombie ends the goal there, looks away, and stays.
-If he can walk to you, he walks and hits. A real wall in front of him (solid at his legs and his head) is broken, even when a path goes around the house.
-One block at foot level is a step: he walks onto it. He does not dig the floor under his feet.
-If you stand above him, close, he breaks the glass over his head and the floor you are standing on.
-In water he swims straight toward you. He does not spin.
-Dirt is almost instant, stone about 1 second, obsidian about 8 seconds.
-A chest on the path breaks and the items fall.
-He does not break bedrock, a nether portal, or the end portal and its frame.
-A wall on the same floor he keeps digging. He does not teleport through it.
+1. 600 health (300 hearts). Iron armor is Protection II. The sword shows Sharpness V.
+   Sun, lava, and water do not kill him. In water he swims at the surface.
+   Slowness, Weakness, and poison from you still work. Hurt sound is a blaze.
+   Armor and the sword never drop. He drops a name tag "White Eyes", one enchanted golden apple, and 500 experience.
+   The usual double experience does not multiply the 500.
+   The killer also gets the challenge Unblinking once: one netherite block. No extra experience.
+2. Sword before armor: 5 hearts on a naked player, about 1 heart in full diamond with Protection IV.
+   Same hit on easy, normal, and hard. A little faster than once a second, and only when the blade can touch you.
+   The sword does not knock you back, and hits do not knock him back.
+   A raised shield blocks the sword. He does not knock the shield down.
+3. He hunts the closest living player in this world, including behind a hill or in a cave, until one of you dies.
+   A real wall in front of him is broken. Dirt is almost instant, stone about 1 second, obsidian about 8 seconds.
+   He does not dig the floor under his own feet, bedrock, a nether portal, or the end portal and its frame.
+   A chest on the path breaks and the items fall. One block at foot level is a step, not a wall.
+4. If you are 3 or more blocks above him and the path never reaches that floor, or there is no route
+   (no path, a path that goes nowhere, or you are more than 96 blocks away), he waits 5 seconds, then appears 2 blocks behind you.
+   In the second phase that wait is 3 seconds. He does not teleport through a wall he is already digging.
+   If there is no path and you are more than 8 blocks away, he teleports instead of digging a tunnel.
+   While you glide he keeps walking and does not teleport. Enderman sound and particles when he moves.
+   He does not swing for half a second after that, and he does not throw for 6 seconds. He will not teleport again for 8 seconds.
+5. Bow: every 14 to 16 seconds, if he can see you. He draws for 1 second, shoots, and the sword is back.
+   He keeps walking while he aims. Punch 5 throws you. About 2 hearts through full netherite with no Protection.
+   Protection makes it less. A shield stops the arrow. The bow never drops.
+   In water or lava the wait is gone: he shoots again as soon as the arrow leaves, while he can still see you.
+6. Throw: within 5 blocks, every 30 seconds, 50 to 60 blocks up. He does not stop to do it.
+   No Slow Falling. The landing is a normal fall. A shield does not stop it.
+7. Second phase at 150 health (75 hearts): one blaze shot and smoke. He walks faster, 0.40 instead of 0.30.
+   The sword does not hit harder. From then on he also lights fire and throws the wither bottle.
+   Fire: a 3×3 under you if you are farther than 4 blocks and standing on the ground. It stays lit 5 seconds even on stone.
+   A punch puts that flame out. Wood catches and the fire spreads. It does not start while you are in water.
+   Next fire after 14 seconds, or 9 in the second phase. A shield does not stop it.
+   Wither: a splash bottle, Wither I for 8 seconds, when you are 6–18 blocks away.
+   About 2 hearts through armor if you stay in it. Milk clears it. Every 30 seconds. A shield does not stop it.
+8. Bow, crossbow, or trident: he counts your hits. The cycle is randomly 2 or 4.
+   The last hit of that cycle is returned to you, then he rolls 2 or 4 again.
+   Your armor reduces the returned hit. A miss does not count.
+9. Another dimension, or you die: he waits 15 seconds, walks home, and heals to full over 20 seconds.
+   He does not wait by the bed.
 
-Teleport: if you are 3 or more blocks above him and the path does not reach that floor, or there is no path
-and he is not digging, he waits 5 seconds (3 in the second phase), then appears 2 blocks behind you.
-If there is no path at all and you are more than 8 blocks away, he teleports instead of digging a tunnel.
-On foot, a path around a hill is a path. He follows it. He does not stop, and he does not dig the hillside.
-A path that stops at a wall is not a route. He keeps walking into that wall and breaks it. He does not stand outside the shelter.
-If there is no route to you (no path at all, a path that goes nowhere, or you are more than 96 blocks away), he walks straight at you. After 5 seconds (3 in the second phase) he teleports.
-Walking around a building does not cancel the upstairs wait: if you are 3 or more blocks above him and the path never reaches that floor, he still teleports.
-While you glide he keeps walking straight at you and does not teleport. If you still have no route when you land, he teleports right away.
-Enderman stare at the start of the wait, enderman sound and particles when he moves.
-He does not swing for half a second after that, and he does not throw for 6 seconds. He will not teleport again for 8 seconds.
-If he was drawing the bow, that shot is dropped and the bow waits its usual gap.
-
-Bow: every 14 to 16 seconds, if he can see you, he pulls a bow for 1 second, shoots, and the sword is back.
-He keeps walking while he aims. Punch 5, so the arrow throws you. The shot is 5 hearts through a full netherite set with no Protection.
-Protection on that armor makes it less. A shield stops this arrow. The bow never drops, even if he dies while it is in his hand.
-
-Burst: if you are 8–20 blocks away, a heartbeat, then 3 seconds faster than a sprint. He does not stop to do it.
-Every 14 seconds, or 10 in the second phase.
-
-Throw: within 5 blocks, every 30 seconds. 50 to 60 blocks up, picked at random. He does not stop to do it.
-No Slow Falling. The landing is a normal fall from that height, so it kills anyone without feather falling.
-
-Sword hit, one effect for 6 seconds, in order: Slowness II, Weakness II, Blindness, Hunger III.
-
-Shield: a hit knocks it down for 5 seconds, then not again for 8 seconds.
-Fire, spiders, the bottle, and the throw are not stopped by a shield.
-
-Fire: if you are farther than 4 blocks and standing on the ground, a 3×3 under you.
-It stays lit 5 seconds even on stone. A hit puts that flame out for the rest of the patch, wherever he is.
-Wood catches and the fire spreads along the ground.
-It does not climb into the sky, and he does not light a new patch while the last one is still going.
-It does not start while you are in water.
-After the patch ends he waits 14 seconds, or 9 in the second phase.
-
-Wither: a splash bottle, Wither I for 8 seconds, when you are 6–18 blocks away.
-About 2 hearts through armor if you stay in it. Milk clears it.
-Every 30 seconds in both phases.
-
-Spiders: 2 cave spiders, never more than 4 alive, if you are within 24 blocks.
-Every 25 seconds. Their poison is the usual cave-spider poison of this mod.
-They go away when he gives up or dies.
-
-Bow, crossbow, or trident: he counts your hits. The cycle is randomly 2 or 4.
-The last hit of that cycle is returned to you, then he rolls 2 or 4 again.
-Your armor reduces the returned hit. A miss does not count.
+Not in the fight: the speed burst, cave spiders, sword effects, and knocking the shield down.
 
 
-IF YOU LEAVE
-------------
-He keeps coming while you are alive in this world, including a deep cave.
-Another dimension, or you die: he waits 15 seconds, then stops digging, the spiders go away, and he walks home.
-Once there he heals to full over 20 seconds. Damage from the last attempt is gone.
-He does not wait by the bed.
-
-/etwhiteeyes
+SETTINGS (WhiteEyes.java)
+--------------------------
+MAX_HEALTH — 600 = 300 hearts.
+PHASE_HEALTH — 150 = second phase. Fire, the wither bottle, and the faster walk start here.
+MOVE_SPEED — 0.30 before that. PHASE2_MOVE_SPEED — 0.40 after.
+SWORD_DAMAGE — 10 before armor. SWORD_REACH — 2 blocks.
+BOW_DAMAGE — 12 before armor. BOW_GAP_MIN_SECONDS / BOW_GAP_MAX_SECONDS — 14 and 16.
+FLUID_BOW_GAP_SECONDS — 0 = no wait between shots in water or lava. BOW_DRAW_SECONDS — 1. BOW_PUNCH — 5.
+THROW_RANGE — 5 blocks. THROW_BLOCKS_MIN / THROW_BLOCKS_MAX — 50 and 60. THROW_GAP_SECONDS — 30.
+THROW_AFTER_TELEPORT_SECONDS — 6.
+FIRE_MIN — 4 blocks. FIRE_PATCH — 3. FIRE_HOLD_SECONDS — 5.
+FIRE_GAP_SECONDS — 14. FIRE_GAP_PHASE2_SECONDS — 9.
+POTION_MIN / POTION_MAX — 6 and 18. WITHER_SECONDS — 8. POTION_GAP_SECONDS — 30.
+TELEPORT_WAIT_SECONDS — 5. TELEPORT_WAIT_PHASE2_SECONDS — 3. TELEPORT_GAP_SECONDS — 8. LEASH_BLOCKS — 96.
+SPAWN_DISTANCE — 40. GIVE_UP_SECONDS — 15. HEAL_SECONDS — 20. EXPERIENCE_REWARD — 500.

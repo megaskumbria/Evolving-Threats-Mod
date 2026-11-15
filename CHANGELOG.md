@@ -2,9 +2,12 @@
 
 ## Changes 
 
-- White Eyes no longer stops outside a shelter. A wall is not a finished path: he keeps walking into it and breaks it.
-- White Eyes no longer turns away and stands when the path ends. He keeps you as the target and searches again. 
-
+Added the Hell Berserker – a new type of Brutal Piglin with a unique model. Spawns throughout the Nether and wields a Netherite Axe. Enters a rage mode when its health drops below 50%.
+Added a boss for Day 100 – White Eyes. Features numerous combo attacks and relentlessly hunts down the player.
+Increased the speed at which zombies break blocks.
+Reworked the descriptions of all achievements. They now display specific objectives.
+Zombies can now detect players from distances of 100+ blocks.
+Zombies, Creepers, Skeletons, and Spiders can now detect players through transparent blocks.
 
 1.1.4 for Minecraft 26.3
 

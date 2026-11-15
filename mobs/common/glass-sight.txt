@@ -1,0 +1,52 @@
+GLASS SIGHT
+===========
+
+Type: zombies, skeletons, creepers, and spiders. Not a separate mob.
+Code: sight/GlassSight.java (the roll and which blocks),
+     mixin/LivingEntityGlassSightMixin.java (the look after a lucky roll),
+     mixin/MobSightMixin.java (asks each mob to roll).
+
+Scale: FIXED. 5% on each roll, from day 0. The moon does not change it.
+
+
+WHAT HAPPENS
+------------
+Any of these mobs can notice the player through glass. It is not decided at spawn.
+Every 30 seconds that mob rolls a number from 1 to 100.
+If it is 1, 2, 3, 4, or 5, he notices — that is 5%.
+The roll only matters when glass is all that stands between you.
+An open view does not roll: he notices the usual way.
+A stone wall, leaves, or water: no roll, he does not see you.
+
+Glass means glass, stained glass, tinted glass, and the panes of each.
+Distance is his normal sight (a zombie about 35, a skeleton or creeper 32, a spider 32).
+After a lucky roll he comes as if he had seen you in the open. A skeleton can also shoot
+through that window. He keeps you while you stay in that sight and the look is still
+only glass or air. Step behind stone and he loses you.
+A zombie who noticed you still remembers you for the usual 32 blocks,
+so stepping back from the window does not make that zombie forget.
+
+Each mob rolls on his own timer, so a crowd does not all look on the same tick.
+A miss just waits another 30 seconds.
+
+Not these: zombified piglin, wither skeleton, White Eyes.
+Yes: husk, zombie villager, drowned, stray, cave spider, and the other ordinary kinds.
+
+
+SETTINGS (GlassSight.java)
+--------------------------
+  ENABLED ................ false — nobody notices through glass
+  ROLL_EVERY_TICKS ....... 600 — how often he rolls. 20 ticks = 1 second, so 600 = 30 seconds
+  ROLL_OUT_OF ............ 100 — the roll is 1 through this
+  NOTICE_ON_OR_BELOW ..... 5 — notice on 1–5, which is 5%. 100 = always, on the half-minute
+  MAX_GLASS_BLOCKS ....... 8 — how many glass blocks one look may cross
+
+
+TEST
+----
+1. Build a glass box and stand inside. Summon a few zombies just outside, where they would
+   see you if the wall were air. Wait 30 seconds. About 1 in 20 rolls should start one walking.
+   To force it, set NOTICE_ON_OR_BELOW to 100 and restart.
+2. Replace one glass block with stone in front of a mob who was coming. He should lose you,
+   unless he is a zombie still inside his 32-block memory.
+3. Same wait with a skeleton (he may shoot), a creeper, and a spider.

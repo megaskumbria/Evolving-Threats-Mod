@@ -14,13 +14,15 @@ Test: /etberserk or /evolvingthreats spawn berserk. Spawns 6 blocks in front of 
 
 WHAT HAPPENS
 --------------
-1. About 4 of every 100 Nether hostile spawns are a Hell Berserk, after the floating netherite tool has had its roll.
+1. About 2 of every 100 Nether hostile spawns are a Hell Berserk, after the floating netherite tool has had its roll.
+   No name floats over his head. He does not drop a name tag.
    The chance is the same from the first day. 0 turns natural spawns off. The test command ignores the chance.
 2. He has 80 health (40 hearts). Fire and lava do not hurt him.
-3. A netherite axe in each hand. Both hit. Neither axe drops.
+3. One netherite axe in the main hand. It hits, and it does not drop. The off hand is empty.
    About one hit in twenty that already took health also ruins one armor piece, the same as a piglin brute:
    half that piece's bar, and 10 seconds of nausea. Unbreaking does not soften it.
-4. He chases players, and anyone who hit him. Follow range is 24 blocks.
+4. He chases and hits like a piglin brute: he closes in, holds the axe up, then swings.
+   Follow range is 24 blocks. Head and legs face the way he walks.
 5. At half health (40) he rages, and he stays enraged even if healed. You hear the brute's angry sound.
 6. While enraged he has Speed II, and hits do not shove him.
 7. While enraged, if a wall blocks the way to the player, he breaks it. He does not dig before rage.
@@ -37,9 +39,9 @@ The axes are real items, drawn on the hands.
 
 SETTINGS (HellBerserk.java)
 ----------------------------
-NATURAL_SPAWN_CHANCE — 0.04 = 4%, about one in twenty-five. 0 = never on his own. 0.1 = one in ten.
+NATURAL_SPAWN_CHANCE — 0.02 = 2%, about one in fifty. 0 = never on his own. 0.04 = one in twenty-five.
 MAX_HEALTH — 80 = 40 hearts.
-ATTACK_DAMAGE — 7 from the body, before the axes. Each axe adds its own damage.
+ATTACK_DAMAGE — 7 from the body, before the axe. The netherite axe adds its own damage.
 MOVE_SPEED — 0.35 before rage. Same as a brute.
 FOLLOW_RANGE — 24 blocks.
 KNOCKBACK_RESISTANCE — 0.5 before rage. A hit moves him half as far. 0 = a normal shove. 1 = no shove.
@@ -53,4 +55,4 @@ SKULL_LOOTING_BONUS — 0.01 = 1% more per Looting level. 0 = Looting does not h
 
 Armor crack uses the brute's numbers in PiglinBruteArmorHit.java: 5% of damaging hits, half the bar, 10 seconds of nausea.
 
-Hand position of the axes: HellBerserkAxeLayer.java, the OFFSET and ROT numbers.
+Axe in the hand: HellBerserkAxeLayer.java. OFFSET moves it, ROT turns it, SCALE 1.0 is a normal tool.

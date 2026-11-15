@@ -95,22 +95,22 @@ public class WhiteEyes extends Zombie {
 	public static final boolean RESPECT_MOB_GRIEFING = true;
 
 	// ================= DEBUG SWITCHES (temporary chase test) =================
-	// All false now. He uses the zombie's attack goal, with the "keep following when you cannot see the player" switch on.
-	// A normal zombie has that switch off: he walks to the last point and stops, then the stroll takes him somewhere else.
-	// His extra dig, teleport, and the other tricks stay off.
+	// Teleport, digging, the bow, and the upward throw are on for the whole fight.
+	// Fire and the wither bottle start at 150 health. Burst and spiders stay off.
+	// He still uses the zombie's attack goal, with the "keep following when you cannot see the player" switch on.
 
 	/** true = teleport on again; false = never teleports. */
-	public static final boolean DEBUG_TELEPORT = false;
+	public static final boolean DEBUG_TELEPORT = true;
 	/** true = wither potion on again; false = no potion. */
 	public static final boolean DEBUG_WITHER_POTION = false;
 	/** true = cave spiders on again; false = no spiders, and old summoned spiders are removed. */
 	public static final boolean DEBUG_SPIDERS = false;
 	/** true = bow on again; false = holds the sword only. */
-	public static final boolean DEBUG_BOW = false;
+	public static final boolean DEBUG_BOW = true;
 	/** true = heartbeat speed burst on again; false = normal walk speed only. */
 	public static final boolean DEBUG_BURST = false;
 	/** true = launching you upward on again; false = no throwing. */
-	public static final boolean DEBUG_THROW = false;
+	public static final boolean DEBUG_THROW = true;
 	/** true = floor fire on again; false = no fire patches. */
 	public static final boolean DEBUG_FIRE = false;
 	/** true = Slowness/Weakness/Blindness/Hunger from the sword on again; false = damage only. */
@@ -118,7 +118,7 @@ public class WhiteEyes extends Zombie {
 	/** true = shield disabling on again; false = no special shield break. */
 	public static final boolean DEBUG_SHIELD_BREAK = false;
 	/** true = he digs walls again; false = he never stops to break a block. */
-	public static final boolean DEBUG_DIG = false;
+	public static final boolean DEBUG_DIG = true;
 	/**
 	 * true = when the path ends short of you, he walks straight ahead.
 	 * false = he only follows a path, the same way a zombie does.
@@ -129,13 +129,13 @@ public class WhiteEyes extends Zombie {
 	public static final String NAME = "White Eyes";
 
 	/**
-	 * Health. 600 = 300 hearts. Half of this ({@link #PHASE_HEALTH}) is the second phase.
+	 * Health. 600 = 300 hearts. The second phase is {@link #PHASE_HEALTH}, not half of this.
 	 * A full Protection IV diamond set still takes about 1 heart from the sword.
 	 */
 	public static final float MAX_HEALTH = 600.0f;
 
-	/** Health where the second phase starts. 300 = 150 hearts. The sword does not get stronger. */
-	public static final float PHASE_HEALTH = 300.0f;
+	/** Health where the second phase starts. 150 = 75 hearts. The sword does not get stronger. */
+	public static final float PHASE_HEALTH = 150.0f;
 
 	/**
 	 * Experience when a player kills him. 500.
@@ -164,10 +164,16 @@ public class WhiteEyes extends Zombie {
 	public static final int ATTACK_INTERVAL_TICKS = 14;
 
 	/**
-	 * Walk speed. 0.30 is close to a sprint, so running away still works between bursts.
+	 * Walk speed before the second phase. 0.30 is close to a sprint, so running away still works.
 	 * Higher = he keeps up more often. Lower = he is easier to kite.
 	 */
 	public static final double MOVE_SPEED = 0.30;
+
+	/**
+	 * Walk speed from the moment he drops to {@link #PHASE_HEALTH}. 0.40 is clearly faster than 0.30.
+	 * This is not the short burst. Higher = the second phase is harder to outrun. Lower = closer to the first phase.
+	 */
+	public static final double PHASE2_MOVE_SPEED = 0.40;
 
 	/**
 	 * Added on top of {@link #MOVE_SPEED} during the burst. 0.16 makes 0.46, faster than a sprint.
@@ -322,12 +328,21 @@ public class WhiteEyes extends Zombie {
 	public static final int BOW_DRAW_SECONDS = 1;
 
 	/**
-	 * Arrow damage before armor. 25 is 5 hearts through a full netherite set with no Protection
-	 * (20 armor, 12 toughness). Protection on that armor makes the hit smaller.
-	 * A naked player takes 12.5 hearts. Easy and hard are adjusted so the hit stays 25.
-	 * The Power number on the bow follows this and {@link #BOW_SPEED}.
+	 * Seconds between bow shots while he is in water or lava.
+	 * 0 means he draws again as soon as the last arrow leaves, so he keeps shooting the whole time he is in the fluid.
+	 * On dry ground the wait stays {@link #BOW_GAP_MIN_SECONDS} to {@link #BOW_GAP_MAX_SECONDS}.
+	 * Higher = slower shooting in water and lava.
 	 */
-	public static final float BOW_DAMAGE = 25.0f;
+	public static final int FLUID_BOW_GAP_SECONDS = 0;
+
+	/**
+	 * Arrow damage before armor. 12 is about 2 hearts through a full netherite set with no Protection
+	 * (20 armor, 12 toughness). Protection on that armor makes the hit smaller.
+	 * A naked player takes 6 hearts. Easy and hard are adjusted so the hit stays 12.
+	 * The Power number on the bow follows this and {@link #BOW_SPEED}.
+	 * Higher = the arrow hurts more. Lower = it is closer to a sword hit.
+	 */
+	public static final float BOW_DAMAGE = 12.0f;
 
 	/**
 	 * How fast the arrow flies. 3 is a fully drawn bow. Lower = a slower arrow, same damage.
@@ -559,7 +574,7 @@ public class WhiteEyes extends Zombie {
 		this.fireCooldown = 80;
 		this.potionCooldown = 100;
 		this.spiderCooldown = 120;
-		this.bowCooldown = this.bowGap();
+		this.bowCooldown = this.bowGap(false);
 		return data;
 	}
 
@@ -818,7 +833,7 @@ public class WhiteEyes extends Zombie {
 			this.burstTicks = 0;
 			this.setBurst(false);
 		}
-		if (DEBUG_THROW || DEBUG_BURST || DEBUG_WITHER_POTION || DEBUG_FIRE || DEBUG_SPIDERS) {
+		if (this.phase2 || DEBUG_THROW || DEBUG_BURST || DEBUG_WITHER_POTION || DEBUG_FIRE || DEBUG_SPIDERS) {
 			this.tryStartSpecial(level, player);
 		}
 		if (DEBUG_DIG) {
@@ -871,12 +886,12 @@ public class WhiteEyes extends Zombie {
 			this.setBurst(true);
 			return;
 		}
-		if (this.potionCooldown <= 0 && DEBUG_WITHER_POTION && distance >= POTION_MIN && distance <= POTION_MAX) {
+		if (this.potionCooldown <= 0 && (this.phase2 || DEBUG_WITHER_POTION) && distance >= POTION_MIN && distance <= POTION_MAX) {
 			this.potionCooldown = (this.phase2 ? POTION_GAP_PHASE2_SECONDS : POTION_GAP_SECONDS) * 20;
 			this.throwWither(level, player);
 			return;
 		}
-		if (DEBUG_FIRE && this.fireCooldown <= 0 && this.fireHold <= 0 && this.fireSpread <= 0
+		if ((this.phase2 || DEBUG_FIRE) && this.fireCooldown <= 0 && this.fireHold <= 0 && this.fireSpread <= 0
 				&& distance > FIRE_MIN && player.onGround() && !player.isInWater()
 				&& this.lightFloor(level, player)) {
 			this.fireCooldown = (this.phase2 ? FIRE_GAP_PHASE2_SECONDS : FIRE_GAP_SECONDS) * 20;
@@ -1099,7 +1114,7 @@ public class WhiteEyes extends Zombie {
 	}
 
 	private void maintainFire(ServerLevel level) {
-		if (!DEBUG_FIRE) {
+		if (!this.phase2 && !DEBUG_FIRE) {
 			this.fireHold = 0;
 			this.fireSpread = 0;
 			this.fires.clear();
@@ -1371,6 +1386,7 @@ public class WhiteEyes extends Zombie {
 
 	private void enterPhase2(ServerLevel level) {
 		this.phase2 = true;
+		this.setBase(Attributes.MOVEMENT_SPEED, PHASE2_MOVE_SPEED);
 		this.playSound(SoundEvents.BLAZE_SHOOT, 1.2f, 0.7f);
 		level.sendParticles(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 1.0, this.getZ(), 24, 0.4, 0.6, 0.4, 0.02);
 	}
@@ -1616,13 +1632,17 @@ public class WhiteEyes extends Zombie {
 		if (this.swordItem.isEmpty() || this.bowItem.isEmpty()) {
 			this.equip(level);
 		}
+		boolean fluid = this.isInWater() || this.isInLava();
+		if (fluid && this.bowCooldown > FLUID_BOW_GAP_SECONDS * 20) {
+			this.bowCooldown = FLUID_BOW_GAP_SECONDS * 20;
+		}
 		if (this.bowDraw > 0) {
 			this.bowDraw--;
 			this.getLookControl().setLookAt(player, 30.0f, 30.0f);
 			if (this.bowDraw == 0) {
 				this.shootBow(level, player);
 				this.holdSword();
-				this.bowCooldown = this.bowGap();
+				this.bowCooldown = this.bowGap(fluid);
 			}
 			return;
 		}
@@ -1633,13 +1653,16 @@ public class WhiteEyes extends Zombie {
 		if (BOW_DRAW_SECONDS <= 0) {
 			this.shootBow(level, player);
 			this.holdSword();
-			this.bowCooldown = this.bowGap();
+			this.bowCooldown = this.bowGap(fluid);
 			return;
 		}
 		this.bowDraw = BOW_DRAW_SECONDS * 20;
 	}
 
-	private int bowGap() {
+	private int bowGap(boolean fluid) {
+		if (fluid) {
+			return FLUID_BOW_GAP_SECONDS * 20;
+		}
 		int min = BOW_GAP_MIN_SECONDS * 20;
 		int max = Math.max(min, BOW_GAP_MAX_SECONDS * 20);
 		if (max == min) {
@@ -1733,7 +1756,7 @@ public class WhiteEyes extends Zombie {
 
 	private void applyAttributes(boolean fillHealth) {
 		this.setBase(Attributes.MAX_HEALTH, MAX_HEALTH);
-		this.setBase(Attributes.MOVEMENT_SPEED, MOVE_SPEED);
+		this.setBase(Attributes.MOVEMENT_SPEED, this.phase2 ? PHASE2_MOVE_SPEED : MOVE_SPEED);
 		this.setBase(Attributes.FOLLOW_RANGE, PATH_RANGE);
 		this.setBase(Attributes.KNOCKBACK_RESISTANCE, 1.0);
 		this.setBase(Attributes.SPAWN_REINFORCEMENTS_CHANCE, 0.0);

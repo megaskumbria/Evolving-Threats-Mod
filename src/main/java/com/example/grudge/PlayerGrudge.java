@@ -4,6 +4,8 @@ import com.example.entity.RaidParticipantEntity;
 import com.example.entity.ZombieGrudgeEntity;
 import com.example.entity.ZombieOverseerEntity;
 import com.example.ritual.RitualBand;
+import com.example.whiteeyes.WhiteEyes;
+import com.example.zombie.FarSightZombie;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.zombie.Drowned;
@@ -29,12 +31,16 @@ public final class PlayerGrudge {
 	public static final boolean ENABLED = true;
 
 	/**
-	 At what distance (blocks) the zombie still remembers the player and holds the goal.
+	 At what distance (blocks) an ordinary zombie still remembers the player and holds the goal.
 	 Then he forgets (as if he had gone too far). Coincides with the default digging radius.
+	 A zombie on a far hunt uses {@link FarSightZombie#SEE_BLOCKS} instead, until that hunt ends.
 	 */
 	public static final double GRUDGE_MAX_DISTANCE = 32.0;
 
-	/*Maximum hunting time without repeated contact (tics): 6000 = 5 minutes. 0 = no time limit. */
+	/**
+	 Maximum hunting time without repeated contact (ticks): 6000 = 5 minutes. 0 = no time limit.
+	 A zombie on a far hunt ignores this until the player dies or leaves the long distance.
+	 */
 	public static final int GRUDGE_TIMEOUT_TICKS = 5 * 60 * 20;
 
 	// ========================================================================
@@ -50,6 +56,10 @@ public final class PlayerGrudge {
 			return false;
 		}
 		if (zombie instanceof ZombieOverseerEntity overseer && overseer.evolvingthreats$isOverseer()) {
+			return false;
+		}
+		// White Eyes hunts across the whole world. This memory forgets the player past 32 blocks and was stopping him there.
+		if (zombie instanceof WhiteEyes) {
 			return false;
 		}
 		if (zombie instanceof RaidParticipantEntity raid && raid.evolvingthreats$isRaidParticipant()) {
@@ -123,14 +133,16 @@ public final class PlayerGrudge {
 			return null;
 		}
 
-		double maxSqr = GRUDGE_MAX_DISTANCE * GRUDGE_MAX_DISTANCE;
+		boolean farSight = FarSightZombie.isMarked(zombie);
+		double maxDistance = farSight ? FarSightZombie.SEE_BLOCKS : GRUDGE_MAX_DISTANCE;
+		double maxSqr = maxDistance * maxDistance;
 		if (zombie.distanceToSqr(player) > maxSqr) {
 			clear(zombie);
 			zombie.setTarget(null);
 			return null;
 		}
 
-		if (GRUDGE_TIMEOUT_TICKS > 0) {
+		if (!farSight && GRUDGE_TIMEOUT_TICKS > 0) {
 			long started = grudge.evolvingthreats$getGrudgeStartedGameTime();
 			if (started > 0 && serverLevel.getGameTime() - started >= GRUDGE_TIMEOUT_TICKS) {
 				clear(zombie);

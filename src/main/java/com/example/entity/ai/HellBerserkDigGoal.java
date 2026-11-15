@@ -69,11 +69,13 @@ public class HellBerserkDigGoal extends Goal {
 	public void start() {
 		this.digging = true;
 		this.ticksSinceSwing = 0;
+		this.berserk.setBreakingBlock(true);
 	}
 
 	@Override
 	public void stop() {
 		this.digging = false;
+		this.berserk.setBreakingBlock(false);
 		this.clearCracks();
 		this.breakPos = null;
 		this.progress = 0.0f;

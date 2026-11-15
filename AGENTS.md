@@ -30,7 +30,7 @@ When adding a mob, ability, item, spawn chance, or event:
 4. If “from day N” — add a day constant in `ThreatTable` and check with `ThreatScale.reached(level, ThreatTable.XXX_DAY)`.
 5. If the author is unsure — use your recommendation, use named constants, and **say it was an assumption**.
 6. After implementation, add one short line to `mobs.txt` (see below) and update `mobs/common/threat-scale.txt` if the scale type or a day threshold changed.
-7. If the player can notice the change, add one English bullet to the current version at the top of `CHANGELOG.md` before finishing. Write only what changed. Do not note that something else stayed the same. Do not open a new version number unless the author did. Skip comment-only edits and agent-instruction edits.
+7. Do not edit `CHANGELOG.md`. The author writes that file.
 
 Do not leave new mechanics unlabeled; do not apply the scale silently.
 
@@ -64,6 +64,7 @@ Paths in the table are under `src/main/java/com/example/`.
 | Shields | `MobShields.java` | `mobs/common/shields.txt` |
 | Axe disables shield | `axe/AxeShieldDisable.java` | `mobs/common/axe-disables-shield.txt` |
 | Sight range | `sight/MobSight.java` | `mobs/common/sight-range.txt` |
+| Glass sight | `sight/GlassSight.java` | `mobs/common/glass-sight.txt` |
 | Sleep shelter | `sleep/SleepShelterMath.java`, `sleep/SleepShelter.java` | `mobs/common/sleep.txt` |
 | Totem of undying | `MobTotem.java` | `mobs/common/totem-of-undying.txt` |
 | Spawn potion buffs | `MobPotionBuffs.java` | `mobs/common/potion-buffs.txt` |
@@ -106,6 +107,7 @@ Paths in the table are under `src/main/java/com/example/`.
 | Light seeking | `light/LightSeeking.java` | `mobs/zombies/light-seeking.txt` |
 | Block breaking | `digging/BlockBreaking.java` | `mobs/zombies/block-breaking.txt` |
 | Player grudge | `grudge/PlayerGrudge.java` | no separate note; used by light and digging |
+| Far sight | `zombie/FarSightZombie.java` | `mobs/zombies/far-sight.txt` |
 | Jack-o’-lantern beacon | `beacon/JackLanternBeacon.java`, `JackLanternLight.java` | `mobs/zombies/jack-o-lantern.txt` and `mobs/skeletons/jack-o-lantern.txt` |
 | Spawner head | `spawnerhead/SpawnerHeadMob.java` | `mobs/zombies/spawner-head.txt` |
 | Rotten overseer | `overseer/ZombieOverseer.java` | `mobs/zombies/rotten-overseer.txt` |

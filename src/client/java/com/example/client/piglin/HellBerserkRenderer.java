@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.resources.Identifier;
 
 /**
- * Draws the berserk from {@link HellBerserkModel} and a netherite axe in each hand.
+ * Draws the berserk from {@link HellBerserkModel} and one netherite axe in the right hand.
  */
-public class HellBerserkRenderer extends LivingEntityRenderer<HellBerserk, ArmedEntityRenderState, HellBerserkModel> {
+public class HellBerserkRenderer extends LivingEntityRenderer<HellBerserk, HellBerserkRenderState, HellBerserkModel> {
 
 	private static final Identifier TEXTURE = EvolvingThreats.id("textures/entity/hell_berserk.png");
 
@@ -24,18 +24,25 @@ public class HellBerserkRenderer extends LivingEntityRenderer<HellBerserk, Armed
 	}
 
 	@Override
-	public Identifier getTextureLocation(ArmedEntityRenderState state) {
+	public Identifier getTextureLocation(HellBerserkRenderState state) {
 		return TEXTURE;
 	}
 
 	@Override
-	public ArmedEntityRenderState createRenderState() {
-		return new ArmedEntityRenderState();
+	public HellBerserkRenderState createRenderState() {
+		return new HellBerserkRenderState();
+	}
+
+	/** No name over his head. The game would otherwise write "Hell Berserk" whenever you look at him. */
+	@Override
+	protected boolean shouldShowName(HellBerserk entity, double distanceSquared) {
+		return false;
 	}
 
 	@Override
-	public void extractRenderState(HellBerserk entity, ArmedEntityRenderState state, float partialTicks) {
+	public void extractRenderState(HellBerserk entity, HellBerserkRenderState state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
 		ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, this.itemModels, partialTicks);
+		state.aggressive = entity.isAggressive();
 	}
 }

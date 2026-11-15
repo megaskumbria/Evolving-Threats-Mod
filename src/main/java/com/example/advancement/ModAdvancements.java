@@ -23,6 +23,7 @@ import com.example.threat.ThreatData;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 import com.example.tool.FloatingTool;
+import com.example.whiteeyes.WhiteEyes;
 import com.example.zombie.ZombieExcalibur;
 import com.example.zombie.ZombieMjolnir;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -60,7 +61,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -142,11 +142,15 @@ public final class ModAdvancements {
 	 * true — the first time a card is earned, chat names it the way the game does
 	 * (advancement, goal, or challenge) and lists the items and the experience.
 	 * false — no chat line. The corner toast still appears, and the items still arrive.
-	 * The game rule {@code /gamerule show_advancement_messages false} silences the line too.
+	 *
+	 * <p>This does not follow {@code /gamerule show_advancement_messages}. Packs such as
+	 * Blaze and Caves set that rule to false in every dimension and write their own lines
+	 * with commands. Following the rule hid every card from this mod. To silence these
+	 * lines, set this to false.
 	 *
 	 * <p>The JSON files keep {@code announce_to_chat} false. If that flag is turned back
 	 * on, the game writes its own line, which does not mention the reward, and this
-	 * line writes a second time.
+	 * line writes a second time. The game's own line still obeys the gamerule.
 	 */
 	public static final boolean ANNOUNCE_IN_CHAT = true;
 
@@ -186,6 +190,7 @@ public final class ModAdvancements {
 	 *   <li>excalibur — Sharpness IV book ({@code minecraft:sharpness}), 100 xp. The sword still does not drop.</li>
 	 *   <li>mjolnir — Knockback II book ({@code minecraft:knockback}), 100 xp.</li>
 	 *   <li>overseer — 1 golden apple, 150 xp.</li>
+	 *   <li>white_eyes — 1 netherite block. No extra experience: the kill already drops 500.</li>
 	 *   <li>captain — 32 arrows, 100 xp.</li>
 	 *   <li>nether_tool — fire resistance potion (3 minutes, {@code minecraft:fire_resistance}), 100 xp.</li>
 	 *   <li>basilisk — Protection IV book, 200 xp.</li>
@@ -278,6 +283,7 @@ public final class ModAdvancements {
 	private static final Identifier EXCALIBUR = EvolvingThreats.id("excalibur");
 	private static final Identifier MJOLNIR = EvolvingThreats.id("mjolnir");
 	private static final Identifier OVERSEER = EvolvingThreats.id("overseer");
+	private static final Identifier WHITE_EYES = EvolvingThreats.id("white_eyes");
 	private static final Identifier CAPTAIN = EvolvingThreats.id("captain");
 	private static final Identifier NETHER_TOOL = EvolvingThreats.id("nether_tool");
 	private static final Identifier BASILISK = EvolvingThreats.id("basilisk");
@@ -453,6 +459,9 @@ public final class ModAdvancements {
 		}
 		if (mob instanceof ZombieOverseerEntity overseer && overseer.evolvingthreats$isOverseer()) {
 			grant(player, OVERSEER);
+		}
+		if (mob instanceof WhiteEyes) {
+			grant(player, WHITE_EYES);
 		}
 		if (SkeletonCaptain.isCaptain(mob)) {
 			grant(player, CAPTAIN);
@@ -996,15 +1005,13 @@ public final class ModAdvancements {
 	 * "has reached the goal", "has completed the challenge").
 	 * The second sentence is the items and the experience that just arrived.
 	 * Root stays quiet: it has no toast.
+	 * The show_advancement_messages gamerule is ignored on purpose: see {@link #ANNOUNCE_IN_CHAT}.
 	 */
 	private static void announce(ServerPlayer player, AdvancementHolder holder) {
 		if (!ANNOUNCE_IN_CHAT) {
 			return;
 		}
 		if (!(player.level() instanceof ServerLevel level)) {
-			return;
-		}
-		if (!Boolean.TRUE.equals(level.getGameRules().get(GameRules.SHOW_ADVANCEMENT_MESSAGES))) {
 			return;
 		}
 		DisplayInfo display = holder.value().display().orElse(null);

@@ -1,0 +1,51 @@
+FAR-SIGHT ZOMBIE
+================
+
+Type: zombie behavior (not a separate mob).
+Code: zombie/FarSightZombie.java (the roll and the distance),
+     grudge/PlayerGrudge.java (keeps walking after the lucky look),
+     mixin/MobGrudgeAiMixin.java (asks each zombie to roll).
+
+Scale: FIXED. 5% on each roll, from day 0. The moon does not change it.
+
+
+WHAT HAPPENS
+------------
+Any ordinary zombie can notice the player from 112 blocks
+(a bit past 100; a normal zombie still notices from 35).
+It is not decided at spawn.
+Every 30 seconds he rolls a number from 1 to 100.
+If it is 1, 2, 3, 4, or 5, he notices — that is 5%.
+The roll only matters when you are farther than his normal sight and the view is clear.
+A wall, a hill, or the ground blocks that first look. Closer than 35 blocks he does not roll:
+he already notices the usual way.
+A miss just waits another 30 seconds.
+
+After the lucky look he keeps walking even behind walls and underground,
+until the player dies or gets farther than 112 blocks.
+He does not forget after 5 minutes the way an ordinary zombie does.
+When the hunt ends, his sight goes back to 35.
+
+Each zombie rolls on his own timer, so a crowd does not all look on the same tick.
+
+Not these: drowned, zombified piglin, Rotten Overseer, White Eyes,
+raid zombies, ritual band. They already hunt their own way.
+
+
+SETTINGS (FarSightZombie.java)
+------------------------------
+  ENABLED ................ false — nobody notices from the long distance
+  ROLL_EVERY_TICKS ....... 600 — how often he rolls. 20 ticks = 1 second, so 600 = 30 seconds
+  ROLL_OUT_OF ............ 100 — the roll is 1 through this
+  NOTICE_ON_OR_BELOW ..... 5 — notice on 1–5, which is 5%. 100 = always, on the half-minute
+  SEE_BLOCKS ............. 112 — the lucky look, and how far he still chases. 35 = normal zombie
+  NORMAL_SIGHT ........... 35 — sight restored when the hunt ends
+
+
+TEST
+----
+1. Stand in an open field. Summon a few zombies about 80 blocks away, where they can see you.
+   Wait 30 seconds. About 1 in 20 rolls should start one walking. The rest ignore you.
+   To force it, set NOTICE_ON_OR_BELOW to 100 and restart.
+2. Duck behind a hill after one has started walking. He should keep coming.
+3. Get more than 112 blocks away. He should give up.

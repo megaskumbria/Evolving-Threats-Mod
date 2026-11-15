@@ -7,6 +7,7 @@ Code: sight/MobSight.java (numbers),
 
 Cows, pigs, and villagers unchanged.
 Sight does not pass through walls: mob targets only if it sees the player.
+Any zombie, skeleton, creeper, or spider may notice you through glass on a rare roll (glass-sight.txt).
 From day one, does not grow with threat scale (FIXED).
 Already living mobs keep old range until they respawn.
 
@@ -18,6 +19,7 @@ WHAT HAPPENS
    Vindicator and brute saw from 12 — also become 32.
 2. Who already saw farther stays the same:
    zombie 35, blaze 48, enderman 64, ghast 100.
+   An ordinary zombie may notice you from 112 on a rare roll (far-sight.txt).
    Mod specials too: overseer and captain 112, Basilisk 64, siege 96,
    fast creeper 48, long bow 36, ritual band 52.
 3. Floating tool (24) and damaged golem (24) already beyond 16, untouched.

@@ -85,7 +85,7 @@ public final class LightSeeking {
 
 	// The breaking speed of light has no separate constant: it is the same as that of ordinary blocks.
 	// (BlockBreaking.SPEED MULTIPLIER + block hardness + tool in zombie hand)
-	// A torch/lamp with a hardness of 0 breaks immediately, a lightstone breaks in a couple of seconds.
+	// A torch/lamp with a hardness of 0 breaks immediately. Glowstone takes about 0.6 sec with a bare hand (SPEED_MULTIPLIER 0.7).
 	// If a zombie spots a player or a resident while it breaks, it will throw lights and hit its target.
 
 	/*How much do not return to the light already visited (tics): 2400 = 2 minutes. */

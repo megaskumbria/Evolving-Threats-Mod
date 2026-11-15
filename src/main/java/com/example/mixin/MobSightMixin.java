@@ -1,5 +1,6 @@
 package com.example.mixin;
 
+import com.example.sight.GlassSight;
 import com.example.sight.MobSight;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -26,5 +28,11 @@ public class MobSightMixin {
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 		MobSight.raiseShortSight((Mob) (Object) this);
+	}
+
+	/** Once a server step. The glass roll itself waits 30 seconds inside GlassSight. */
+	@Inject(method = "serverAiStep", at = @At("HEAD"))
+	private void evolvingthreats$glassSightRoll(CallbackInfo ci) {
+		GlassSight.tick((Mob) (Object) this);
 	}
 }

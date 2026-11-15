@@ -14,7 +14,7 @@ HOW IT WORKS
 2. It finds the nearest bright light source (brightness 12+) that it can see in a straight line
    (not through walls) — and walks to it.
 3. When it arrives (closer than ~2.5 blocks) it BREAKS it at the same speed as ordinary blocks
-   (cracks grow on the block; a torch breaks at once, glowstone in a couple of seconds) (see block-breaking.txt). If the light cannot be broken (bedrock/obsidian)
+   (cracks grow on the block; a torch breaks at once, glowstone in about 0.6 sec) (see block-breaking.txt). If the light cannot be broken (bedrock/obsidian)
    or breaking is turned off — it stands for ~4 seconds and leaves.
 4. If the light is still there, it counts as "visited" for 2 minutes, and the zombie looks for another one or wanders as usual.
 5. As soon as the zombie notices a player — it attacks the player. While it remembers the player

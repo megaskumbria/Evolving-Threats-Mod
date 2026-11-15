@@ -3,6 +3,7 @@ GROWING — chance rises as world difficulty increases.
 
 Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5. — FIXED
 - Rare Mirror on zombies, skeletons, wither skeletons, blazes, spiders, piglins, brutes, endermen, silverfish, creepers, and witches. Melee hit reflects damage to the player; armor applies. Chance 0.3% — FIXED
+- Some zombies, skeletons, creepers, and spiders can notice the player through glass — FIXED
 
 1. Phantoms
 - More phantoms can spawn. — FIXED
@@ -20,6 +21,7 @@ Double XP for killing any hostile mob. A bare mob usually gives 10 instead of 5.
 - Rare full armor set of one material; none early in the game. — GROWING
 - Can spawn with positive potion effects. — GROWING
 - Can break blocks. — FROM DAY 40; DO NOT CHANGE BREAK SPEED
+- Some zombies notice the player from much farther and keep walking to them — FIXED
 - Can gather on light and destroy light sources. — FROM DAY 40
 - Jack-o’-lantern on head attracts nearby zombies. — GROWING
 - Can spawn with TNT and blast obstacles. — GROWING

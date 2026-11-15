@@ -50,12 +50,12 @@ public final class BlockBreaking {
 	public static final double BREAKER_FRACTION = 1.0;
 
 	/**
-	 Speed multiplier relative to player: 0.3 = 30% of player speed.
+	 Speed multiplier relative to player: 0.7 = 70% of player speed.
 	 More is faster to break (1.0 = as a player). Less is slower.
-	 Examples at 0.3: earth with a bare hand ~2.5 sec; stone with a bare hand ~25 sec.
-	 Stone with an iron pickaxe ~1.5 seconds.
+	 Examples at 0.7: dirt with a bare hand ~1.1 sec; stone with a bare hand ~11 sec.
+	 Stone with an iron pickaxe ~0.5 sec. Dirt with an iron shovel ~0.2 sec.
 	 */
-	public static final float SPEED_MULTIPLIER = 0.3f;
+	public static final float SPEED_MULTIPLIER = 0.7f;
 
 	/*Do items fall out of broken zombie blocks? False: The block just disappears. */
 	public static final boolean DROP_ITEMS = false;

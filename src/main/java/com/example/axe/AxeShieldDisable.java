@@ -1,5 +1,6 @@
 package com.example.axe;
 
+import com.example.piglin.HellBerserk;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
@@ -68,7 +69,8 @@ public final class AxeShieldDisable {
 	private static boolean applies(LivingEntity attacker) {
 		return attacker instanceof Zombie
 				|| attacker instanceof AbstractSkeleton
-				|| attacker instanceof PiglinBrute;
+				// Hell Berserk is a brute subclass. His netherite axe does not disable a shield.
+				|| (attacker instanceof PiglinBrute && !(attacker instanceof HellBerserk));
 	}
 
 	/** {@code wooden} — looking for a wooden axe. Otherwise, any other one from the list. We look at both hands. */

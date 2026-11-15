@@ -25,14 +25,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -46,28 +39,28 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A piglin brute with his own body, two netherite axes, and a rage.
+ * A piglin brute's brain and fight, with his own body and one netherite axe.
  * Spawns in the Nether in place of some hostile mobs. Chance does not grow with the day.
  * Picture and walk: client/piglin/HellBerserkModel.
  */
-public class HellBerserk extends Monster {
+public class HellBerserk extends PiglinBrute {
 
 	// ===================== SETTINGS (change these numbers) =====================
 
 	/**
 	 * Chance (0.0–1.0) that a natural Nether monster is this berserk instead.
-	 * 0.04 = 4%, about one in twenty-five. FIXED: the same from the first day, the threat scale does not raise it.
+	 * 0.02 = 2%, about one in fifty. FIXED: the same from the first day, the threat scale does not raise it.
 	 * Rolled after the floating netherite tool (5%). If the spot is too low for him, the original mob stays.
 	 * /etberserk ignores this chance. 0 = he never appears on his own.
 	 */
-	public static final float NATURAL_SPAWN_CHANCE = 0.04f;
+	public static final float NATURAL_SPAWN_CHANCE = 0.02f;
 
 	/** Health. 80 = 40 hearts. A normal brute in this mod has 60. */
 	public static final double MAX_HEALTH = 80.0;
 
 	/**
-	 * How hard the body hits before the axes. A brute is 7.
-	 * Each netherite axe adds its own damage on top: one in the main hand, one in the off hand.
+	 * How hard the body hits before the axe. A brute is 7.
+	 * The netherite axe in his main hand adds its own damage on top.
 	 */
 	public static final double ATTACK_DAMAGE = 7.0;
 
@@ -103,7 +96,7 @@ public class HellBerserk extends Monster {
 
 	/**
 	 * How fast he breaks a block in rage, compared with a player holding the same axe.
-	 * 0.45 = a bit under half a player's speed. Zombies use 0.3.
+	 * 0.45 = a bit under half a player's speed. Zombies use 0.7.
 	 * Netherack goes quickly. Stone is slow: an axe is the wrong tool for it.
 	 * 1.0 = as fast as the player. He does not break blocks before rage.
 	 */
@@ -135,6 +128,8 @@ public class HellBerserk extends Monster {
 	public static EntityType<HellBerserk> TYPE;
 
 	private boolean raging;
+	/** True while he is breaking a block. The brute brain stays paused so he does not walk off. */
+	private boolean breakingBlock;
 
 	public HellBerserk(EntityType<? extends HellBerserk> type, Level level) {
 		super(type, level);
@@ -159,7 +154,7 @@ public class HellBerserk extends Monster {
 	}
 
 	public static AttributeSupplier.Builder createAttributes() {
-		return Monster.createMonsterAttributes()
+		return PiglinBrute.createAttributes()
 				.add(Attributes.MAX_HEALTH, MAX_HEALTH)
 				.add(Attributes.MOVEMENT_SPEED, MOVE_SPEED)
 				.add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)
@@ -170,6 +165,11 @@ public class HellBerserk extends Monster {
 	/** True once he has dropped to half health. Stays true. */
 	public boolean isRaging() {
 		return this.raging;
+	}
+
+	/** Dig goal. True = do not run the brute brain this tick. */
+	public void setBreakingBlock(boolean breaking) {
+		this.breakingBlock = breaking;
 	}
 
 	/**
@@ -212,14 +212,18 @@ public class HellBerserk extends Monster {
 
 	@Override
 	protected void registerGoals() {
-		// Dig only while enraged and the path is blocked. Priority 2 beats the attack, so he stops to break the wall.
-		this.goalSelector.addGoal(2, new HellBerserkDigGoal(this));
-		this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, false));
-		this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
-		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0f));
-		this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
-		this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+		super.registerGoals();
+		// Chase, look, and the hit are the piglin brute brain. This only stops him to break a wall in rage.
+		this.goalSelector.addGoal(1, new HellBerserkDigGoal(this));
+	}
+
+	@Override
+	protected void customServerAiStep(ServerLevel level) {
+		if (this.breakingBlock) {
+			// The brute brain would path around the wall and walk him off the block he is breaking.
+			return;
+		}
+		super.customServerAiStep(level);
 	}
 
 	@Override
@@ -229,16 +233,24 @@ public class HellBerserk extends Monster {
 			EntitySpawnReason reason,
 			@Nullable SpawnGroupData groupData) {
 		SpawnGroupData data = super.finalizeSpawn(level, difficulty, reason, groupData);
+		// PiglinBruteHealth writes 60 onto every brute. This mob keeps his own 80.
+		AttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
+		if (health != null) {
+			health.setBaseValue(MAX_HEALTH);
+		}
+		this.setHealth(this.getMaxHealth());
 		this.setCanPickUpLoot(false);
 		this.setLeftHanded(false);
-		this.equipAxes();
+		this.setCustomName(null);
+		this.setCustomNameVisible(false);
+		this.equipAxe();
 		return data;
 	}
 
-	/** One netherite axe in each hand. They do not drop. */
-	private void equipAxes() {
+	/** One netherite axe in the main hand. It does not drop. The off hand stays empty. */
+	private void equipAxe() {
 		this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_AXE));
-		this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.NETHERITE_AXE));
+		this.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
 		this.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
 		this.setDropChance(EquipmentSlot.OFFHAND, 0.0f);
 	}

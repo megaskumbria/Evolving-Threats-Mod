@@ -1,6 +1,7 @@
 package com.example.mixin;
 
 import com.example.mirror.Mirror;
+import com.example.piglin.HellBerserk;
 import com.example.piglin.PiglinBruteHealth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -27,6 +28,10 @@ public class PiglinBruteHealthMixin {
 			SpawnGroupData groupData,
 			CallbackInfoReturnable<SpawnGroupData> cir) {
 		PiglinBrute brute = (PiglinBrute) (Object) this;
+		// Hell Berserk keeps the 80 in his own class. This 60 is only the vanilla brute.
+		if (brute instanceof HellBerserk) {
+			return;
+		}
 		PiglinBruteHealth.onSpawn(brute);
 		Mirror.tryRoll(brute, spawnReason);
 	}

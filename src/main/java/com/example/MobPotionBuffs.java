@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.piglin.HellBerserk;
 import com.example.threat.ThreatScale;
 import com.example.threat.ThreatTable;
 import com.example.tool.FloatingTool;
@@ -114,7 +115,8 @@ public final class MobPotionBuffs {
 				|| mob instanceof Guardian
 				|| mob instanceof Shulker
 				|| mob instanceof Piglin
-				|| mob instanceof PiglinBrute
+				// Hell Berserk is a brute subclass. His rage already gives Speed. No extra potions.
+				|| (mob instanceof PiglinBrute && !(mob instanceof HellBerserk))
 				|| mob instanceof Hoglin
 				|| mob instanceof Zoglin) {
 			tryApply(mob);

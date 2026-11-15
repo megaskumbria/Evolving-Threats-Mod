@@ -1,6 +1,7 @@
 package com.example.mixin;
 
 import com.example.grudge.PlayerGrudge;
+import com.example.zombie.FarSightZombie;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +25,7 @@ public abstract class MobGrudgeAiMixin {
 	private void evolvingthreats$syncGrudgeBeforeRunGoals(CallbackInfo ci) {
 		Mob self = (Mob) (Object) this;
 		if (self instanceof Zombie zombie) {
+			FarSightZombie.tick(zombie);
 			PlayerGrudge.syncTarget(zombie);
 		}
 	}
