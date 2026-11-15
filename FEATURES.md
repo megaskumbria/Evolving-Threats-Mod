@@ -37,6 +37,7 @@ Mob changes, rare variants, and world mechanics currently in **Evolving Threats*
 - Some Zombies spawn holding TNT, which they use to destroy obstacles.
 - Rare Zombies can spawn with a spawner on their heads. Every second hit they receive summons two additional minions.
 - Some Zombies can steal items directly from the player's hands.
+- You can be spotted from 120+ blocks away
 
 **Rare variants**
 
@@ -181,6 +182,9 @@ Mob changes, rare variants, and world mechanics currently in **Evolving Threats*
 - Mobs have an increased detection range, allowing them to spot players from much greater distances.
 - Hitting a Zombie's or Skeleton's shield with an axe temporarily disables it, following the same mechanics used against Vindicators.
 - When sleeping, mobs can wake you up. Torches only help on the path the night actually uses. A lit side path does not cover a dark gap.
+- Hell Berserker – a brutal Piglin with Wither Skeleton Skulls on his shoulders and a Netherite Axe in his hands. Deals massive damage and gains increased movement speed and knockback resistance when at low health.
+- On the 100th day, the White Eyes boss appears. He can teleport to you, set blocks beneath you on fire, summon reinforcements, inflict negative potion effects, destroy blocks, and phase through walls.
+- Zombies, Creepers, Skeletons, and Spiders can spot you through transparent blocks.
 
 **Named threats and traits**
 
